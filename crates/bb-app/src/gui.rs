@@ -14,6 +14,7 @@ use raw_window_handle::{HasWindowHandle, RawWindowHandle};
 use slint::{ComponentHandle, Model, SharedString};
 use ui::{AccountRow, MainWindow};
 
+use crate::launcher::LaunchMode;
 use crate::{game, launcher};
 
 /// Code generated from `ui/app.slint`.
@@ -121,8 +122,26 @@ pub fn run() -> Result<(), slint::PlatformError> {
                     .map(|row| AccountId(row.id as u32))
                     .collect();
                 for id in idle_ids {
-                    start_account(&window, &app, &queue, id);
+                    start_account(&window, &app, &queue, id, LaunchMode::Play);
                 }
+            }
+        }
+    });
+
+    window.on_set_up_login({
+        let app = Rc::clone(&app);
+        let queue = Rc::clone(&queue);
+        let weak = window.as_weak();
+        move |id| {
+            let Some(window) = weak.upgrade() else {
+                return;
+            };
+            let id = AccountId(id as u32);
+            let idle = account_rows_snapshot(&window)
+                .iter()
+                .any(|row| row.id == id.0 as i32 && !row.running);
+            if idle {
+                start_account(&window, &app, &queue, id, LaunchMode::SetUpLogin);
             }
         }
     });
@@ -168,13 +187,19 @@ fn toggle_account(window: &MainWindow, app: &RefCell<App>, queue: &LaunchQueue, 
                 window.set_notice(format!("The client could not be stopped: {error}").into());
             }
         }
-        _ => start_account(window, app, queue, id),
+        _ => start_account(window, app, queue, id, LaunchMode::Play),
     }
 }
 
 /// Queues `id`'s launch. The row counts as running (with no handle yet) from now on, so it can't
 /// be queued twice.
-fn start_account(window: &MainWindow, app: &RefCell<App>, queue: &LaunchQueue, id: AccountId) {
+fn start_account(
+    window: &MainWindow,
+    app: &RefCell<App>,
+    queue: &LaunchQueue,
+    id: AccountId,
+    mode: LaunchMode,
+) {
     let (gw2_path, account) = {
         let app = app.borrow();
         (
@@ -195,13 +220,18 @@ fn start_account(window: &MainWindow, app: &RefCell<App>, queue: &LaunchQueue, i
         row.handle = 0;
         row.status = "Starting…".into();
     });
-    queue.push(LaunchJob { gw2_path, account });
+    queue.push(LaunchJob {
+        gw2_path,
+        account,
+        mode,
+    });
 }
 
 #[derive(Debug)]
 struct LaunchJob {
     gw2_path: PathBuf,
     account: Account,
+    mode: LaunchMode,
 }
 
 /// Runs launches one after another on a single background thread.
@@ -236,7 +266,7 @@ fn run_launch(window: &slint::Weak<MainWindow>, job: LaunchJob) {
     let id = job.account.id;
     let name = job.account.name.clone();
 
-    let launched = match launcher::launch(&job.gw2_path, &job.account) {
+    let launched = match launcher::launch(&job.gw2_path, &job.account, job.mode) {
         Ok(launched) => launched,
         Err(error) => {
             let message = error.to_string();
@@ -259,8 +289,8 @@ fn run_launch(window: &slint::Weak<MainWindow>, job: LaunchJob) {
     let notice = match (launched.setup, launched.warning) {
         (_, Some(warning)) => Some(warning),
         (true, None) => Some(format!(
-            "Setting up {name}: log in and tick \"Remember email/password\". \
-             Other accounts can be started once this client is closed again."
+            "Setting up {name}: log in with \"Remember email/password\" ticked, then close the \
+             client normally so the login is saved. Other accounts can be started afterwards."
         )),
         (false, None) => None,
     };

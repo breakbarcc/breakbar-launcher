@@ -56,9 +56,13 @@ no sleep/retry loops.
   been locked for a few seconds → point back at `shared`. Launches are serialized on one background
   worker. Leaving the junction on an account breaks already running clients the next time they open
   something by path.
-- A client started with `-shareArchive` cannot create a missing `Local.dat` ("data archive cannot be
-  opened"). A new account therefore gets a one-time **setup launch** without `-shareArchive`, which
-  requires that no other client runs; the user logs in with "remember email/password" once.
+- A client started with `-shareArchive` opens `Local.dat` **read-only**: it cannot create a missing
+  one ("data archive cannot be opened") and never writes anything back — including a remembered
+  login (verified: its `Local.dat` kept its old write time after a session with "remember" ticked).
+  Saving a login therefore needs a **"Set up login" launch** without `-shareArchive`, which requires
+  that no other client runs (such a client locks `Gw2.dat` exclusively). Accounts without a
+  `Local.dat` get this automatically on their first start; whether an existing `Local.dat` holds
+  credentials can't be told from outside, so the action is also available on demand.
 - Graphics settings are written by path during play and so live in `shared` for all accounts
   (as with Launchbuddy); per-account graphics settings are a possible later extension.
 

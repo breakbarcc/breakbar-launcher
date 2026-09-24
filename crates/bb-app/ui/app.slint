@@ -26,6 +26,8 @@ export component MainWindow inherits Window {
     in-out property <string> new-account-name;
 
     callback launch-account(int);
+    /// Start the client without `-shareArchive` so a remembered login can be saved.
+    callback set-up-login(int);
     callback launch-all();
     callback choose-gw2-path();
     /// Temporary until the full account editor (phase 3.4+) replaces it.
@@ -95,6 +97,13 @@ export component MainWindow inherits Window {
                         text: account.provider + " · " + account.status;
                         font-size: 12px;
                         opacity: 0.6;
+                    }
+                }
+
+                if !account.running: Button {
+                    text: "Set up login";
+                    clicked => {
+                        root.set-up-login(account.id);
                     }
                 }
 

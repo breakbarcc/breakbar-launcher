@@ -27,10 +27,7 @@ const ERROR_SHARING_VIOLATION: i32 = 32;
 pub enum LaunchError {
     #[error("Guild Wars 2 is not configured yet.")]
     NoGamePath,
-    #[error(
-        "{0} hasn't been set up yet. Close all other Guild Wars 2 clients, then start it once \
-         on its own to log in."
-    )]
+    #[error("Setting up the login of {0} needs all other Guild Wars 2 clients to be closed first.")]
     SetupNeedsExclusive(String),
     #[error("An account is currently being set up. Close that client before starting another one.")]
     SetupClientRunning,
@@ -71,11 +68,22 @@ impl RunningClient {
     }
 }
 
+/// How to start a client.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum LaunchMode {
+    /// Normal multi-launch start with `-shareArchive` (falls back to [`LaunchMode::SetUpLogin`]
+    /// if the account has no `Local.dat` yet).
+    Play,
+    /// Start without `-shareArchive` so the client can write its `Local.dat` — the only way to
+    /// save a remembered login. Requires that no other client runs.
+    SetUpLogin,
+}
+
 /// Result of a successful [`launch`].
 #[derive(Debug)]
 pub struct Launched {
     pub client: RunningClient,
-    /// This was the account's one-time setup launch (no `Local.dat` yet).
+    /// Started without `-shareArchive` to set up / save the account's login.
     pub setup: bool,
     /// Something the user should know even though the client is running.
     pub warning: Option<String>,
@@ -88,14 +96,20 @@ pub struct Launched {
 /// [`crate::profile_link`]) and is pointed back at the shared profile before returning, on every
 /// path.
 ///
-/// An account without its own `Local.dat` gets a one-time setup launch without `-shareArchive`
-/// (a shared-archive client cannot create `Local.dat`), which requires that no other client runs.
-pub fn launch(gw2_path: &Path, account: &Account) -> Result<Launched, LaunchError> {
+/// A client started with `-shareArchive` opens `Local.dat` read-only: it can't create a missing
+/// one ("data archive cannot be opened") and never writes a remembered login back. Setting up or
+/// renewing a login therefore needs a launch without it ([`LaunchMode::SetUpLogin`]), which is
+/// only possible while no other client runs, because such a client locks `Gw2.dat` exclusively.
+pub fn launch(
+    gw2_path: &Path,
+    account: &Account,
+    mode: LaunchMode,
+) -> Result<Launched, LaunchError> {
     if !gw2_path.is_file() {
         return Err(LaunchError::NoGamePath);
     }
 
-    let setup = !bb_store::is_set_up(account.id);
+    let setup = mode == LaunchMode::SetUpLogin || !bb_store::is_set_up(account.id);
     let others_running = !running_clients(gw2_path).is_empty();
     if setup && others_running {
         return Err(LaunchError::SetupNeedsExclusive(account.name.clone()));
@@ -266,7 +280,11 @@ mod tests {
     fn missing_game_path_is_rejected() {
         // No isolation needed: rejected before anything touches a profile.
         let account = Account::new(AccountId(1), "Main");
-        let result = launch(&PathBuf::from(r"C:\does\not\exist\Gw2-64.exe"), &account);
+        let result = launch(
+            &PathBuf::from(r"C:\does\not\exist\Gw2-64.exe"),
+            &account,
+            LaunchMode::Play,
+        );
         assert!(matches!(result, Err(LaunchError::NoGamePath)));
     }
 
@@ -303,7 +321,7 @@ mod tests {
             let stand_in = PathBuf::from(&windir).join("System32").join("ping.exe");
             let account = Account::new(AccountId(1), "Main");
 
-            let result = launch(&stand_in, &account);
+            let result = launch(&stand_in, &account, LaunchMode::Play);
 
             assert!(matches!(result, Err(LaunchError::ExitedDuringStartup(_))));
             let real = root.join("Roaming").join("Guild Wars 2");
