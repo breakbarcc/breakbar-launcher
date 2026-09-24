@@ -10,5 +10,6 @@ pub mod mutex;
 mod nt;
 pub mod process;
 pub mod registry;
+pub mod time;
 pub mod version;
 pub mod window;

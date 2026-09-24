@@ -1,6 +1,10 @@
 //! Finding and closing the top-level windows of a process.
 
 use windows::Win32::Foundation::{HWND, LPARAM, WPARAM};
+use windows::Win32::Graphics::Dwm::{
+    DWMWA_BORDER_COLOR, DWMWA_CAPTION_COLOR, DWMWA_TEXT_COLOR, DWMWA_USE_IMMERSIVE_DARK_MODE,
+    DwmSetWindowAttribute,
+};
 use windows::Win32::UI::WindowsAndMessaging::{
     EnumWindows, GetClassNameW, GetWindowThreadProcessId, IsWindowVisible, PostMessageW, WM_CLOSE,
 };
@@ -58,6 +62,50 @@ pub fn request_close(pid: u32) -> Result<usize> {
     Ok(windows.len())
 }
 
+/// Colors of a window's frame, as `0xRRGGBB`.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct FrameColors {
+    pub caption: u32,
+    pub text: u32,
+    pub border: u32,
+}
+
+/// Colors the native title bar and border of window `hwnd` to match the UI, in dark or light
+/// mode. Custom colors need Windows 11; Windows 10 only follows the dark/light mode. Best-effort:
+/// attributes the system doesn't know are ignored.
+pub fn set_frame(hwnd: isize, dark: bool, colors: FrameColors) {
+    let hwnd = HWND(hwnd as *mut _);
+    let dark = BOOL::from(dark);
+    // SAFETY: each call passes a pointer to a value that lives for the call, with its size.
+    unsafe {
+        let _ = DwmSetWindowAttribute(
+            hwnd,
+            DWMWA_USE_IMMERSIVE_DARK_MODE,
+            (&raw const dark).cast(),
+            size_of::<BOOL>() as u32,
+        );
+        for (attribute, rgb) in [
+            (DWMWA_CAPTION_COLOR, colors.caption),
+            (DWMWA_TEXT_COLOR, colors.text),
+            (DWMWA_BORDER_COLOR, colors.border),
+        ] {
+            let colorref = colorref(rgb);
+            let _ = DwmSetWindowAttribute(
+                hwnd,
+                attribute,
+                (&raw const colorref).cast(),
+                size_of::<u32>() as u32,
+            );
+        }
+    }
+}
+
+/// `0xRRGGBB` → `COLORREF` (`0x00BBGGRR`).
+fn colorref(rgb: u32) -> u32 {
+    let (r, g, b) = ((rgb >> 16) & 0xff, (rgb >> 8) & 0xff, rgb & 0xff);
+    (b << 16) | (g << 8) | r
+}
+
 unsafe extern "system" fn collect(hwnd: HWND, lparam: LPARAM) -> BOOL {
     // SAFETY: `lparam` is the `&mut Vec<HWND>` passed by `process_windows`.
     let all = unsafe { &mut *(lparam.0 as *mut Vec<HWND>) };
@@ -89,6 +137,11 @@ mod tests {
         let windows = process_windows(std::process::id()).unwrap();
         assert!(windows.iter().all(|window| !window.visible));
         assert!(!has_visible_window(std::process::id(), &["ArenaNet_Gr_Window_Class"]).unwrap());
+    }
+
+    #[test]
+    fn colorref_swaps_red_and_blue() {
+        assert_eq!(colorref(0x0d0f12), 0x120f0d);
     }
 
     #[test]

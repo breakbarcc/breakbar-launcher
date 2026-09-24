@@ -1,0 +1,104 @@
+// Design tokens of the Breakbar design (design hand-off: tokens/theme.slint), dark and light (cream).
+// Every color and size of the UI comes from here.
+
+import { Palette } from "std-widgets.slint";
+
+export global Theme {
+    /// Follows the Windows app theme; Rust overrides it once the user picks a theme explicitly.
+    in-out property <bool> dark: Palette.color-scheme != ColorScheme.light;
+
+    // Window background
+    out property <color> bg: dark ? #0d0f12 : #ece2cc;
+    // Title bar
+    out property <color> title-bar: dark ? #0d0f12 : #ece2cc;
+    // Cards, account rows
+    out property <color> surface: dark ? #111418 : #f3ead8;
+    // Hover, secondary buttons, segmented control background
+    out property <color> surface-2: dark ? #171b20 : #e4d8bf;
+    // Menus, toasts, tooltips (with shadow)
+    out property <color> elevated: dark ? #191d23 : #f6eedd;
+    // Text fields
+    out property <color> input: dark ? #0b0d10 : #f6eede;
+    // Card borders, separators
+    out property <color> line: dark ? #1c2026 : #dbcdb0;
+    // Control borders, menu separators
+    out property <color> line-2: dark ? #2a3038 : #cbbb9a;
+    // Checkbox/toggle off, border while dragging
+    out property <color> line-3: dark ? #39424b : #a8987a;
+    // Primary text
+    out property <color> text: dark ? #f2f5f9 : #1c1810;
+    // Secondary text, labels
+    out property <color> text-muted: dark ? #98a0ab : #554c3c;
+    // Help text, mono labels
+    out property <color> text-dim: dark ? #7d858f : #645a48;
+    // Decorative only (contrast < 4.5)
+    out property <color> text-faint: dark ? #6b737e : #8c816b;
+    // Accent (turquoise): links, active states, focus ring
+    out property <color> accent: dark ? #5fe3d0 : #096a5f;
+    // Primary button fill
+    out property <color> primary: dark ? #5fe3d0 : #096a5f;
+    // Primary button hover
+    out property <color> primary-hover: dark ? #8af0e2 : #07564d;
+    // Text/icon on primary
+    out property <color> on-primary: dark ? #0d0f12 : #f6eedd;
+    // Selection background
+    out property <color> accent-soft: dark ? #5fe3d014 : #096a5f17;
+    // Selection border
+    out property <color> accent-line: dark ? #5fe3d066 : #096a5f6b;
+    // Status running
+    out property <color> ok: dark ? #7fd66a : #2a6c1d;
+    // Success background
+    out property <color> ok-soft: dark ? #7fd66a1a : #2a6c1d1a;
+    // Status login required, warning
+    out property <color> warn: dark ? #e0b062 : #7a4c05;
+    out property <color> warn-bg: dark ? #1c1710 : #f1ddb5;
+    out property <color> warn-line: dark ? #4a3b1f : #d9bd83;
+    // Status update required
+    out property <color> update: dark ? #a99bff : #5040bd;
+    out property <color> update-bg: dark ? #16142a : #e4dbe6;
+    out property <color> update-line: dark ? #373163 : #c9bcdc;
+    // Status error, stop icon, delete
+    out property <color> error: dark ? #f0686c : #ad2228;
+    out property <color> error-bg: dark ? #1f1214 : #f1d8c8;
+    out property <color> error-line: dark ? #4d2327 : #ddb09e;
+    // Active segment
+    out property <color> segment-active: dark ? #262c34 : #f6eedd;
+    // Switcher at rest
+    out property <color> overlay-idle: dark ? #0d0f1294 : #f3ead8ad;
+    // Switcher on hover
+    out property <color> overlay-hover: dark ? #111418f5 : #f3ead8f7;
+    // Switcher border (hover only)
+    out property <color> overlay-line: dark ? #ffffff1a : #1c181029;
+    // Active instance in the switcher
+    out property <color> overlay-chip-active: dark ? #5fe3d029 : #096a5f24;
+    out property <color> overlay-chip-hover: dark ? #ffffff12 : #1c181012;
+    // Tooltip background
+    out property <color> tooltip: dark ? #1f242b : #f6eedd;
+
+    // Shadow (menus, toasts, switcher hover)
+    out property <color> shadow-color: dark ? #0000008c : #46320f2e;
+    out property <length> shadow-blur: 32px;
+    out property <length> shadow-offset-y: 12px;
+
+    // Sizes
+    out property <length> radius-control: 6px;
+    out property <length> radius-card: 8px;
+    out property <length> radius-overlay: 7px;
+    out property <length> control-height: 32px;
+    out property <length> control-height-lg: 36px;
+    out property <length> input-height: 34px;
+    out property <length> row-height: 54px;
+    out property <length> titlebar-height: 32px;
+    out property <length> focus-ring-width: 2px;
+
+    // Typography
+    out property <string> font-ui: "Segoe UI";
+    out property <string> font-mono: "Cascadia Mono";
+    out property <length> fs-title: 20px;
+    out property <length> fs-page-title: 16px;
+    out property <length> fs-name: 14px;
+    out property <length> fs-body: 13px;
+    out property <length> fs-help: 12px;
+    out property <length> fs-label-mono: 11px;
+    out property <length> fs-badge-mono: 10px;
+}

@@ -1,0 +1,257 @@
+// One account in the list.
+
+import { Theme } from "theme.slint";
+import { Icons } from "icons.slint";
+import { Icon, Spinner, Button, IconButton, CheckBox, Badge, MenuItem, Elevated } from "components.slint";
+
+export enum AccountState {
+    idle,
+    /// Has no `Local.dat` yet: the next start sets up the login.
+    needs-login,
+    /// Queued or starting (waiting for its `Local.dat`).
+    starting,
+    running,
+    stopping,
+    /// A Steam account while another Steam account runs.
+    locked,
+    /// The last start failed or the client exited with an error.
+    error,
+}
+
+export struct AccountRow {
+    id: int,
+    name: string,
+    /// Display name of the platform: "ArenaNet" or "Steam".
+    provider: string,
+    steam: bool,
+    state: AccountState,
+    /// Local start time ("14:02") while running.
+    since: string,
+    /// Short reason shown after "Error · ".
+    detail: string,
+    /// The client's raw OS process handle while running (0 otherwise); only used by Rust to stop it.
+    handle: int,
+    selected: bool,
+    /// Blish HUD is started together with this account.
+    blish: bool,
+    /// A companion app is running for this account's client.
+    addon-active: bool,
+}
+
+component StatusLabel {
+    in property <AccountRow> account;
+    property <color> tone: account.state == AccountState.needs-login ? Theme.warn
+        : account.state == AccountState.starting ? Theme.accent
+        : account.state == AccountState.running ? Theme.ok
+        : account.state == AccountState.error ? Theme.error
+        : account.state == AccountState.locked ? Theme.text-dim
+        : Theme.text-muted;
+    property <string> main: account.state == AccountState.needs-login ? @tr("Login required")
+        : account.state == AccountState.starting ? @tr("Starting…")
+        : account.state == AccountState.running ? @tr("Running")
+        : account.state == AccountState.stopping ? @tr("Stopping…")
+        : account.state == AccountState.locked ? @tr("Locked")
+        : account.state == AccountState.error ? @tr("Error")
+        : @tr("Ready");
+    property <string> suffix: account.state == AccountState.running && account.since != "" ? @tr(" · since {}", account.since)
+        : account.state == AccountState.locked ? @tr(" · Steam running")
+        : account.state == AccountState.error && account.detail != "" ? " · " + account.detail
+        : "";
+
+    HorizontalLayout {
+        spacing: 5px;
+        if account.state == AccountState.starting || account.state == AccountState.stopping: Spinner {
+            y: (parent.height - self.height) / 2;
+            color: root.tone;
+        }
+        if account.state != AccountState.starting && account.state != AccountState.stopping: Icon {
+            y: (parent.height - self.height) / 2;
+            size: 13px;
+            weight: 2;
+            color: root.tone;
+            path: account.state == AccountState.needs-login ? Icons.key
+                : account.state == AccountState.running ? Icons.dot
+                : account.state == AccountState.error ? Icons.xcircle
+                : account.state == AccountState.locked ? Icons.lock
+                : Icons.ring;
+            fill-path: account.state == AccountState.running ? Icons.dot-fill : "";
+        }
+        HorizontalLayout {
+            horizontal-stretch: 1;
+            Text {
+                vertical-alignment: center;
+                font-size: 12.5px;
+                font-weight: 500;
+                color: root.tone;
+                text: root.main;
+            }
+            Text {
+                horizontal-stretch: 1;
+                min-width: 0px;
+                vertical-alignment: center;
+                overflow: elide;
+                font-size: 12.5px;
+                color: Theme.text-dim;
+                text: root.suffix;
+            }
+        }
+    }
+}
+
+export component AccountCard {
+    in property <AccountRow> account;
+    /// Blish HUD's path is set, so it can be toggled per account.
+    in property <bool> blish-available;
+    /// Narrow window: icon-only action button.
+    in property <bool> compact;
+    callback action();
+    callback toggle-selected();
+    callback set-up-login();
+    callback set-blish(bool);
+
+    property <bool> busy: account.state == AccountState.starting || account.state == AccountState.stopping;
+    property <bool> can-set-up-login: !account.steam && (account.state == AccountState.idle
+        || account.state == AccountState.needs-login || account.state == AccountState.error);
+    property <bool> has-menu: root.can-set-up-login || root.blish-available;
+
+    height: 54px;
+    accessible-role: list-item;
+    accessible-label: account.name;
+
+    card := Rectangle {
+        border-radius: Theme.radius-card;
+        border-width: 1px;
+        background: account.selected ? Theme.accent-soft : hover.has-hover ? Theme.surface-2 : Theme.surface;
+        border-color: account.selected ? Theme.accent-line : hover.has-hover ? Theme.line-2 : Theme.line;
+    }
+
+    hover := TouchArea {
+        // Only tracks hover; clicks go to the controls on top.
+    }
+
+    HorizontalLayout {
+        padding-left: 10px;
+        padding-right: 8px;
+        padding-top: 8px;
+        padding-bottom: 8px;
+        spacing: 10px;
+
+        CheckBox {
+            y: (parent.height - self.height) / 2;
+            checked: account.selected;
+            label: @tr("Select {}", account.name);
+            toggled => { root.toggle-selected(); }
+        }
+
+        VerticalLayout {
+            horizontal-stretch: 1;
+            spacing: 3px;
+            alignment: center;
+            opacity: account.state == AccountState.locked ? 0.6 : 1;
+
+            Text {
+                text: account.name;
+                font-size: Theme.fs-name;
+                font-weight: 600;
+                color: Theme.text;
+                overflow: elide;
+            }
+            HorizontalLayout {
+                spacing: 7px;
+                Badge {
+                    text: account.steam ? "STEAM" : "ARENANET";
+                }
+                StatusLabel {
+                    horizontal-stretch: 1;
+                    account: root.account;
+                }
+            }
+        }
+
+        if account.blish: Icon {
+            y: (parent.height - self.height) / 2;
+            path: Icons.layers;
+            color: account.addon-active ? Theme.accent : Theme.text-dim;
+            accessible-role: image;
+            accessible-label: account.addon-active ? @tr("Blish HUD running") : @tr("Starts with: Blish HUD");
+        }
+
+        Button {
+            y: (parent.height - self.height) / 2;
+            min-width-hint: root.compact ? 32px : 76px;
+            icon-only: root.compact;
+            enabled: !root.busy && account.state != AccountState.locked && !(account.state == AccountState.running && account.handle == 0);
+            text: account.state == AccountState.running || root.busy ? "Stop"
+                : account.state == AccountState.needs-login ? "Login"
+                : account.state == AccountState.error ? @tr("Retry")
+                : "Play";
+            icon: account.state == AccountState.running || root.busy ? Icons.stop
+                : account.state == AccountState.needs-login ? Icons.login
+                : account.state == AccountState.error ? Icons.refresh
+                : Icons.play;
+            icon-color: account.state == AccountState.running || root.busy || account.state == AccountState.error ? Theme.error
+                : account.state == AccountState.needs-login ? Theme.warn
+                : Theme.accent;
+            clicked => { root.action(); }
+        }
+
+        IconButton {
+            y: (parent.height - self.height) / 2;
+            size: 28px;
+            icon: Icons.more;
+            label: @tr("More actions for {}", account.name);
+            enabled: root.has-menu;
+            clicked => { menu.show(); }
+        }
+    }
+
+    // Starting: thin progress strip along the bottom edge.
+    if account.state == AccountState.starting: Rectangle {
+        x: 10px;
+        y: parent.height - 5px;
+        width: parent.width - 20px;
+        height: 2px;
+        clip: true;
+        Rectangle {
+            border-radius: 1px;
+            background: Theme.line-2;
+        }
+        Rectangle {
+            property <float> phase: mod(animation-tick() / 1ms, 1400) / 1400;
+            width: parent.width * 0.35;
+            x: (parent.width + self.width) * self.phase - self.width;
+            border-radius: 1px;
+            background: Theme.accent;
+        }
+    }
+
+    menu := PopupWindow {
+        x: root.width - 250px - 8px;
+        y: root.height - 6px;
+        width: 250px;
+        close-policy: close-on-click-outside;
+
+        Elevated {
+            VerticalLayout {
+                padding: 4px;
+                if root.can-set-up-login: MenuItem {
+                    text: @tr("Set up login");
+                    icon: Icons.login;
+                    activated => {
+                        menu.close();
+                        root.set-up-login();
+                    }
+                }
+                if root.blish-available: MenuItem {
+                    text: @tr("Start Blish HUD with it");
+                    icon: Icons.layers;
+                    checked: account.blish;
+                    activated => {
+                        menu.close();
+                        root.set-blish(!account.blish);
+                    }
+                }
+            }
+        }
+    }
+}

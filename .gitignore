@@ -19,3 +19,6 @@ desktop.ini
 *.dat
 profiles/
 *.log
+
+# Design hand-off (kept locally as reference, not part of the repository)
+/design/

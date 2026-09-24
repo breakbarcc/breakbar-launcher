@@ -117,7 +117,17 @@ pub struct Launched {
     /// Started without `-shareArchive` to set up / save the account's login.
     pub setup: bool,
     /// Something the user should know even though the client is running.
-    pub warning: Option<String>,
+    pub warning: Option<LaunchWarning>,
+}
+
+/// A problem that doesn't stop the client from running.
+#[derive(Debug)]
+pub enum LaunchWarning {
+    /// The client took unusually long to take its `Local.dat`; it may have picked up another
+    /// account's login if the profile was switched meanwhile.
+    SlowStart,
+    /// `%APPDATA%Guild Wars 2` could not be pointed back at the shared profile.
+    ProfileNotRestored(ProfileLinkError),
 }
 
 /// Starts `account`'s client and waits until it has taken its own `Local.dat`.
@@ -174,9 +184,7 @@ pub fn launch(
     let restored = profile_link::point_to_shared();
     let (client, mut warning) = started?;
     if let Err(error) = restored {
-        warning = Some(format!(
-            "Guild Wars 2's data folder could not be switched back to the shared profile: {error}"
-        ));
+        warning = Some(LaunchWarning::ProfileNotRestored(error));
     }
 
     // Release this client's single-instance mutex right away, so the next launch doesn't have
@@ -198,7 +206,7 @@ fn start_and_wait(
     options: LaunchOptions,
     temp_dir: &Path,
     local_dat: &Path,
-) -> Result<(RunningClient, Option<String>), LaunchError> {
+) -> Result<(RunningClient, Option<LaunchWarning>), LaunchError> {
     let working_dir = gw2_path.parent().unwrap_or(gw2_path);
     let mut command = Command::new(gw2_path);
     command
@@ -213,11 +221,7 @@ fn start_and_wait(
 
     let warning = match wait_until_locked(&mut child, local_dat)? {
         true => None,
-        false => Some(
-            "Guild Wars 2 took unusually long to start. If it logs in with the wrong account, \
-             close it and start it again."
-                .to_owned(),
-        ),
+        false => Some(LaunchWarning::SlowStart),
     };
 
     Ok((

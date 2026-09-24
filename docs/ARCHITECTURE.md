@@ -142,6 +142,31 @@ struct CompanionApp {
 - Error dialogs (`ArenaNet_Dialog_Class`, e.g. "needs to be patched before using -shareArchive") are
   detected and surfaced inline.
 
+## User interface
+
+- **Design source:** the design hand-off (spec `DESIGN.md`, screens for both themes, tokens, icons,
+  app icon), exported from the design canvas in German. It is not part of the repository; keep it
+  locally in `design/` (git-ignored). It is the reference for all UI work; sections 1 and 8 of
+  `DESIGN.md` are the ground rules. Two of its screens are in `docs/images/` for the README.
+- **Tokens:** `crates/bb-app/ui/theme.slint` is `design/tokens/theme.slint` (comments in English).
+  Every color and size comes from it; `Theme.dark` follows the Windows app theme until a theme is
+  chosen in the settings. The native title bar is kept (the spec allows it) and colored to match
+  via DWM (`bb_win::window::set_frame`), also when the theme changes.
+- **Icons:** `ui/icons.slint` is generated from `design/icons/ui/*.svg` into path commands drawn by
+  Slint's `Path` (crisp at any scale, colored per use, no image decoding). Lucide, ISC license
+  (`ui/LICENSE-lucide`).
+- **App icon:** `assets/icon/breakbar.ico` (the pixel-tuned 16–256 px set from the design) is
+  embedded as the exe icon; `breakbar-64.png` is the window icon.
+- **Translations:** all user-visible text goes through Slint's `@tr` — texts the Rust side shows
+  (toasts, error details) are functions of the `Messages` global in `ui/messages.slint`. English
+  is the source language; German lives in `lang/de/LC_MESSAGES/breakbar.po` and is bundled at
+  compile time; the language follows Windows. After changing texts:
+  `slint-tr-extractor -j -o lang/de/LC_MESSAGES/breakbar.po ui/*.slint` (from `crates/bb-app`),
+  then translate the new entries.
+- **Previews without a window:** `cargo test -p breakbar -- --ignored render_ui_previews` renders
+  the main states in both themes with the software renderer into `%TEMP%\breakbar-ui\*.bmp` —
+  no window opens, so it is safe to run while playing.
+
 ## Workspace layout
 
 ```
@@ -170,6 +195,12 @@ Config: `%APPDATA%\Breakbar\config.toml` (atomic write via temp file + `ReplaceF
 | 3.4 | ✅ Per-account `Local.dat` via a junction swapped only during launch, serialized launches, one-time setup launch |
 | 3.5 | ✅ Steam accounts: direct start with `-provider Steam` + `SteamAppId`, Steam install auto-selected, one Steam account at a time (not yet tested with a real Steam account) |
 | 3.6 | ✅ Companion apps (per-client / shared, start on process or game window, graceful close), Blish HUD preset (not yet tested with a real Blish HUD) |
-| 4 | UX: status per account, launch-all queue, tray, hotkeys, dark/light, shortcuts/CLI |
+| 4.1 | ✅ Design: new UI in both themes (tokens, components, account rows with all states, selection, toasts, empty state, narrow layout), app icon, English + German |
+| 4.1b | Account management: edit page, duplicate, delete, desktop shortcut, profile folder, drag & drop order, companion editor, first-start wizard |
+| 4.2 | Settings page: paths |
+| 4.3 | Start with Windows |
+| 4.4 | Close behavior and tray |
+| 4.5 | Instance switcher overlay |
+| 4.6 | Login set-up flow |
 | 5 | Patch detection + Local.dat refresh, window layout per account, priority/affinity, GFX per account |
 | 6 | Code signing (SignPath/Azure Trusted Signing), releases, winget |

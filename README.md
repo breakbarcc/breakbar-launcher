@@ -10,6 +10,11 @@ A fast, lightweight multi-launcher for **Guild Wars 2** on Windows.
 
 > **Status:** early development – see [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
 
+<p align="center">
+  <img src="docs/images/main-window-dark.png" alt="Breakbar Launcher, dark theme: several accounts running, two selected" width="420">
+  <img src="docs/images/main-window-light.png" alt="Breakbar Launcher, light theme: several accounts running, two selected" width="420">
+</p>
+
 ## How multi-launching works
 
 GW2 holds a named mutex (`AN-Mutex-Window-Guild Wars 2`) to prevent a second instance and locks

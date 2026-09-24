@@ -1,0 +1,610 @@
+// Building blocks of the Breakbar design (design hand-off: DESIGN.md, section 4).
+
+import { Theme } from "theme.slint";
+import { Icons } from "icons.slint";
+
+/// A Lucide-style icon: stroked path commands on a 24 x 24 grid.
+export component Icon {
+    in property <string> path;
+    /// Optional filled part, such as the dot of "running".
+    in property <string> fill-path;
+    in property <color> color: Theme.text-muted;
+    /// Stroke width in grid units: 1.75, in buttons 2.
+    in property <float> weight: 1.75;
+    in property <length> size: 16px;
+    width: root.size;
+    height: root.size;
+
+    Path {
+        width: 100%;
+        height: 100%;
+        viewbox-width: 24;
+        viewbox-height: 24;
+        commands: root.path;
+        fill: transparent;
+        stroke: root.color;
+        stroke-width: root.weight * root.size / 24;
+        stroke-line-cap: round;
+        stroke-line-join: round;
+    }
+
+    if root.fill-path != "": Path {
+        width: 100%;
+        height: 100%;
+        viewbox-width: 24;
+        viewbox-height: 24;
+        commands: root.fill-path;
+        fill: root.color;
+    }
+}
+
+/// The loader arc, turning while visible.
+export component Spinner {
+    in property <color> color: Theme.accent;
+    in property <float> weight: 2;
+    in property <length> size: 13px;
+    width: root.size;
+    height: root.size;
+
+    Rectangle {
+        transform-rotation: mod(animation-tick() / 1ms, 900) / 900 * 360deg;
+        Icon {
+            path: Icons.loader;
+            color: root.color;
+            weight: root.weight;
+            size: root.size;
+        }
+    }
+}
+
+/// Keyboard focus ring: 2 px `accent` with a 2 px gap, around a control of the given size
+/// (placed as a child of that control).
+export component FocusRing inherits Rectangle {
+    in property <length> radius: Theme.radius-control;
+    in property <length> around-width;
+    in property <length> around-height;
+    x: -4px;
+    y: -4px;
+    width: root.around-width + 8px;
+    height: root.around-height + 8px;
+    border-radius: root.radius + 4px;
+    border-width: Theme.focus-ring-width;
+    border-color: Theme.accent;
+}
+
+/// Space and Enter activate a focused control.
+component Activation inherits FocusScope {
+    callback activated;
+    key-pressed(event) => {
+        if event.text == " " || event.text == "\n" {
+            root.activated();
+            return accept;
+        }
+        reject
+    }
+}
+
+export enum ButtonKind { primary, secondary, ghost, danger }
+
+/// Text button with an optional leading icon.
+export component Button {
+    in property <string> text;
+    in property <string> icon;
+    in property <string> icon-fill;
+    /// Color of the leading icon. In account rows only the icon is colored (Play = accent,
+    /// Stop = error, Login = warn).
+    in property <color> icon-color: root.kind == ButtonKind.primary ? Theme.on-primary
+        : root.kind == ButtonKind.danger ? Theme.error
+        : root.kind == ButtonKind.ghost ? root.text-color
+        : Theme.accent;
+    in property <ButtonKind> kind: ButtonKind.secondary;
+    in property <bool> enabled: true;
+    /// 36 px instead of 32 px, with more padding.
+    in property <bool> large;
+    /// Show only the icon (narrow window); the text stays the accessible label.
+    in property <bool> icon-only;
+    in property <length> min-width-hint: 0px;
+    callback clicked;
+
+    property <bool> hovered: touch.has-hover && root.enabled;
+    property <color> text-color: root.kind == ButtonKind.primary ? Theme.on-primary
+        : root.kind == ButtonKind.danger ? Theme.error
+        : root.kind == ButtonKind.ghost ? (root.hovered ? Theme.text : Theme.text-muted)
+        : Theme.text;
+
+    height: root.large ? Theme.control-height-lg : Theme.control-height;
+    min-width: max(root.min-width-hint, root.height);
+    horizontal-stretch: 0;
+    opacity: root.enabled ? 1 : 0.42;
+    forward-focus: focus;
+    accessible-role: button;
+    accessible-label: root.text;
+    accessible-enabled: root.enabled;
+    accessible-action-default => { root.clicked(); }
+
+    Rectangle {
+        border-radius: Theme.radius-control;
+        background: root.kind == ButtonKind.primary ? (root.hovered ? Theme.primary-hover : Theme.primary)
+            : root.kind == ButtonKind.secondary ? (root.hovered ? Theme.line-2 : Theme.surface-2)
+            : root.kind == ButtonKind.danger ? (root.hovered ? Theme.error-bg : transparent)
+            : (root.hovered ? Theme.surface-2 : transparent);
+        border-width: root.kind == ButtonKind.secondary || root.kind == ButtonKind.danger ? 1px : 0px;
+        border-color: root.kind == ButtonKind.danger ? Theme.error-line : Theme.line-2;
+    }
+
+    if focus.has-focus: FocusRing {
+        around-width: root.width;
+        around-height: root.height;
+    }
+
+    HorizontalLayout {
+        padding-left: root.icon-only ? 0px : root.large ? 14px : 11px;
+        padding-right: self.padding-left;
+        spacing: 7px;
+        alignment: center;
+
+        if root.icon != "": Icon {
+            y: (parent.height - self.height) / 2;
+            path: root.icon;
+            fill-path: root.icon-fill;
+            color: root.icon-color;
+            weight: 2;
+            size: root.large ? 16px : 14px;
+        }
+        if !root.icon-only: Text {
+            text: root.text;
+            color: root.text-color;
+            font-size: Theme.fs-body;
+            font-weight: 600;
+            vertical-alignment: center;
+        }
+    }
+
+    touch := TouchArea {
+        enabled: root.enabled;
+        mouse-cursor: root.enabled ? pointer : default;
+        clicked => {
+            focus.focus();
+            root.clicked();
+        }
+    }
+
+    focus := Activation {
+        enabled: root.enabled;
+        activated => { root.clicked(); }
+    }
+}
+
+/// Square, borderless icon button (toolbar actions, "more", close).
+export component IconButton {
+    in property <string> icon;
+    in property <string> label;
+    in property <length> size: 32px;
+    in property <length> icon-size: 16px;
+    in property <color> color: Theme.text-muted;
+    in property <bool> enabled: true;
+    callback clicked;
+
+    width: root.size;
+    // Click targets are at least 32 px high; only small in-popup buttons (24 px) are smaller.
+    height: root.size < 28px ? root.size : 32px;
+    opacity: root.enabled ? 1 : 0.42;
+    forward-focus: focus;
+    accessible-role: button;
+    accessible-label: root.label;
+    accessible-enabled: root.enabled;
+    accessible-action-default => { root.clicked(); }
+
+    Rectangle {
+        border-radius: Theme.radius-control;
+        background: touch.has-hover && root.enabled ? Theme.surface-2 : transparent;
+    }
+    if focus.has-focus: FocusRing {
+        around-width: root.width;
+        around-height: root.height;
+    }
+    Icon {
+        path: root.icon;
+        color: touch.has-hover && root.enabled ? Theme.text : root.color;
+        size: root.icon-size;
+    }
+    touch := TouchArea {
+        enabled: root.enabled;
+        mouse-cursor: pointer;
+        clicked => { root.clicked(); }
+    }
+    focus := Activation {
+        enabled: root.enabled;
+        activated => { root.clicked(); }
+    }
+}
+
+export component CheckBox {
+    in property <bool> checked;
+    in property <string> label;
+    callback toggled;
+
+    width: 16px;
+    height: 16px;
+    forward-focus: focus;
+    accessible-role: checkbox;
+    accessible-checkable: true;
+    accessible-checked: root.checked;
+    accessible-label: root.label;
+    accessible-action-default => { root.toggled(); }
+
+    Rectangle {
+        border-radius: 4px;
+        border-width: 1.5px;
+        border-color: root.checked ? Theme.primary : touch.has-hover ? Theme.text-dim : Theme.line-3;
+        background: root.checked ? Theme.primary : transparent;
+    }
+    if focus.has-focus: FocusRing {
+        radius: 4px;
+        around-width: root.width;
+        around-height: root.height;
+    }
+    if root.checked: Icon {
+        path: Icons.check;
+        color: Theme.on-primary;
+        weight: 3;
+        size: 12px;
+    }
+    touch := TouchArea {
+        // Larger than the box: it is a small target.
+        x: -8px;
+        y: -8px;
+        width: parent.width + 16px;
+        height: parent.height + 16px;
+        mouse-cursor: pointer;
+        clicked => { root.toggled(); }
+    }
+    focus := Activation {
+        activated => { root.toggled(); }
+    }
+}
+
+/// Platform badge ("ARENANET", "STEAM"): mono, uppercase, outlined, no logo.
+export component Badge inherits Rectangle {
+    in property <string> text;
+    border-radius: 4px;
+    border-width: 1px;
+    border-color: Theme.line-2;
+    horizontal-stretch: 0;
+    HorizontalLayout {
+        padding-left: 5px;
+        padding-right: 5px;
+        padding-top: 1px;
+        padding-bottom: 1px;
+        Text {
+            text: root.text;
+            font-family: Theme.font-mono;
+            font-size: Theme.fs-badge-mono;
+            letter-spacing: 0.06 * Theme.fs-badge-mono;
+            color: Theme.text-muted;
+            vertical-alignment: center;
+        }
+    }
+}
+
+/// Mono section label such as "// ACCOUNTS · 6".
+export component SectionLabel inherits Text {
+    font-family: Theme.font-mono;
+    font-size: Theme.fs-label-mono;
+    letter-spacing: 0.08 * Theme.fs-label-mono;
+    color: Theme.text-dim;
+}
+
+/// Link-style text button.
+export component LinkButton {
+    in property <string> text;
+    callback clicked;
+    horizontal-stretch: 0;
+    forward-focus: focus;
+    accessible-role: button;
+    accessible-label: root.text;
+    accessible-action-default => { root.clicked(); }
+
+    if focus.has-focus: FocusRing {
+        radius: 3px;
+        around-width: root.width;
+        around-height: root.height;
+    }
+    HorizontalLayout {
+        Text {
+            text: root.text;
+            color: touch.has-hover ? Theme.primary-hover : Theme.accent;
+            font-size: Theme.fs-help;
+            font-weight: 600;
+            vertical-alignment: center;
+        }
+    }
+    touch := TouchArea {
+        mouse-cursor: pointer;
+        clicked => { root.clicked(); }
+    }
+    focus := Activation {
+        activated => { root.clicked(); }
+    }
+}
+
+/// Single-line text field.
+export component TextField {
+    in-out property <string> text <=> input.text;
+    in property <string> placeholder;
+    /// Paths and arguments are shown in mono.
+    in property <bool> mono;
+    in property <bool> invalid;
+    callback accepted(string);
+    callback edited(string);
+    height: Theme.input-height;
+    forward-focus: input;
+
+    Rectangle {
+        border-radius: Theme.radius-control;
+        background: Theme.input;
+        border-width: 1px;
+        border-color: root.invalid ? Theme.error : input.has-focus ? Theme.accent : Theme.line-2;
+        clip: true;
+        // Fluent-style focus line along the bottom edge.
+        if input.has-focus: Rectangle {
+            y: parent.height - 2px;
+            height: 2px;
+            background: root.invalid ? Theme.error : Theme.accent;
+        }
+    }
+    HorizontalLayout {
+        padding-left: 10px;
+        padding-right: 10px;
+        input := TextInput {
+            vertical-alignment: center;
+            color: Theme.text;
+            font-size: root.mono ? Theme.fs-help : Theme.fs-body;
+            font-family: root.mono ? Theme.font-mono : Theme.font-ui;
+            selection-background-color: Theme.accent-line;
+            selection-foreground-color: Theme.text;
+            single-line: true;
+            accepted => { root.accepted(self.text); }
+            edited => { root.edited(self.text); }
+        }
+    }
+    if input.text == "": Text {
+        x: 10px;
+        height: parent.height;
+        vertical-alignment: center;
+        text: root.placeholder;
+        color: Theme.text-dim;
+        font-size: Theme.fs-body;
+    }
+}
+
+/// Segmented control, e.g. "ArenaNet | Steam". Arrow keys move the selection.
+export component Segmented {
+    in property <[string]> options;
+    in-out property <int> selected;
+    callback changed(int);
+    height: 34px;
+    forward-focus: focus;
+
+    function select(index: int) {
+        if index >= 0 && index < root.options.length && index != root.selected {
+            root.selected = index;
+            root.changed(index);
+        }
+    }
+
+    Rectangle {
+        border-radius: Theme.radius-control;
+        background: Theme.surface-2;
+        border-width: 1px;
+        border-color: Theme.line-2;
+    }
+    if focus.has-focus: FocusRing {
+        around-width: root.width;
+        around-height: root.height;
+    }
+    HorizontalLayout {
+        padding: 2px;
+        spacing: 2px;
+        for option[index] in root.options: Rectangle {
+            border-radius: Theme.radius-control - 2px;
+            background: index == root.selected ? Theme.segment-active : transparent;
+            drop-shadow-color: index == root.selected && !Theme.dark ? Theme.shadow-color : transparent;
+            drop-shadow-blur: 3px;
+            drop-shadow-offset-y: 1px;
+            accessible-role: button;
+            accessible-label: option;
+            accessible-checkable: true;
+            accessible-checked: index == root.selected;
+            Text {
+                text: option;
+                font-size: Theme.fs-body;
+                font-weight: index == root.selected ? 600 : 400;
+                color: index == root.selected ? Theme.text : Theme.text-muted;
+            }
+            TouchArea {
+                mouse-cursor: pointer;
+                clicked => {
+                    focus.focus();
+                    root.select(index);
+                }
+            }
+        }
+    }
+    focus := FocusScope {
+        key-pressed(event) => {
+            if event.text == Key.LeftArrow {
+                root.select(root.selected - 1);
+                return accept;
+            }
+            if event.text == Key.RightArrow {
+                root.select(root.selected + 1);
+                return accept;
+            }
+            reject
+        }
+    }
+}
+
+/// The recurring segment bar from the breakbar.cc logo: `full` segments in `accent`, then
+/// `partial` ones at 45 %, the rest empty.
+export component SegmentBar {
+    in property <int> total;
+    in property <int> full;
+    in property <int> partial;
+    in property <length> thickness: 3px;
+    height: root.thickness;
+    HorizontalLayout {
+        spacing: 2px;
+        for i in max(root.total, 1): Rectangle {
+            height: root.thickness;
+            border-radius: 1px;
+            background: i < root.full ? Theme.accent
+                : i < root.full + root.partial ? Theme.accent.with-alpha(0.45) : Theme.line-2;
+        }
+    }
+}
+
+/// One entry of a popup menu (32 px, icon 15 px, shortcut in mono on the right).
+export component MenuItem {
+    in property <string> text;
+    in property <string> icon;
+    in property <string> shortcut;
+    in property <bool> checked;
+    in property <bool> danger;
+    callback activated;
+    height: 32px;
+    forward-focus: focus;
+    accessible-role: button;
+    accessible-label: root.text;
+    accessible-action-default => { root.activated(); }
+
+    Rectangle {
+        border-radius: 5px;
+        background: touch.has-hover || focus.has-focus ? Theme.surface-2 : transparent;
+    }
+    HorizontalLayout {
+        padding-left: 10px;
+        padding-right: 10px;
+        spacing: 10px;
+        Icon {
+            y: (parent.height - self.height) / 2;
+            path: root.icon;
+            color: root.danger ? Theme.error : Theme.text-muted;
+            size: 15px;
+        }
+        Text {
+            horizontal-stretch: 1;
+            text: root.text;
+            color: root.danger ? Theme.error : Theme.text;
+            font-size: Theme.fs-body;
+            vertical-alignment: center;
+            overflow: elide;
+        }
+        if root.checked: Icon {
+            y: (parent.height - self.height) / 2;
+            path: Icons.check;
+            color: Theme.accent;
+            weight: 2;
+            size: 14px;
+        }
+        if root.shortcut != "": Text {
+            text: root.shortcut;
+            font-family: Theme.font-mono;
+            font-size: Theme.fs-label-mono;
+            color: Theme.text-dim;
+            vertical-alignment: center;
+        }
+    }
+    touch := TouchArea {
+        mouse-cursor: pointer;
+        clicked => { root.activated(); }
+    }
+    focus := Activation {
+        activated => { root.activated(); }
+    }
+}
+
+/// Background of menus, toasts and tooltips: elevated surface with a soft shadow.
+export component Elevated inherits Rectangle {
+    border-radius: Theme.radius-card;
+    background: Theme.elevated;
+    border-width: 1px;
+    border-color: Theme.line-2;
+    drop-shadow-blur: Theme.shadow-blur;
+    drop-shadow-offset-y: Theme.shadow-offset-y;
+    drop-shadow-color: Theme.shadow-color;
+}
+
+export enum ToastKind { info, success, warning, error }
+
+export struct ToastData {
+    id: int,
+    kind: ToastKind,
+    title: string,
+    message: string,
+}
+
+export component Toast inherits Elevated {
+    in property <ToastData> data;
+    /// Hovered: the toast stays until the pointer leaves.
+    out property <bool> hovered: hover.has-hover;
+    callback dismissed;
+    callback hover-changed(bool);
+
+    changed hovered => { root.hover-changed(self.hovered); }
+    accessible-role: text;
+    accessible-label: root.data.title;
+
+    hover := TouchArea { }
+
+    HorizontalLayout {
+        padding-left: 12px;
+        padding-right: 8px;
+        padding-top: 10px;
+        padding-bottom: 10px;
+        spacing: 10px;
+
+        VerticalLayout {
+            padding-top: 1px;
+            alignment: start;
+            Icon {
+                path: root.data.kind == ToastKind.error ? Icons.xcircle
+                    : root.data.kind == ToastKind.warning ? Icons.alert
+                    : root.data.kind == ToastKind.success ? Icons.checkcircle : Icons.info;
+                color: root.data.kind == ToastKind.error ? Theme.error
+                    : root.data.kind == ToastKind.warning ? Theme.warn
+                    : root.data.kind == ToastKind.success ? Theme.ok : Theme.accent;
+                weight: 2;
+            }
+        }
+        VerticalLayout {
+            horizontal-stretch: 1;
+            spacing: 2px;
+            alignment: center;
+            Text {
+                text: root.data.title;
+                color: Theme.text;
+                font-size: Theme.fs-body;
+                font-weight: 600;
+                wrap: word-wrap;
+            }
+            if root.data.message != "": Text {
+                text: root.data.message;
+                color: Theme.text-muted;
+                font-size: Theme.fs-help;
+                wrap: word-wrap;
+            }
+        }
+        VerticalLayout {
+            alignment: start;
+            IconButton {
+                icon: Icons.x;
+                label: @tr("Dismiss");
+                size: 24px;
+                icon-size: 14px;
+                clicked => { root.dismissed(); }
+            }
+        }
+    }
+}

@@ -1,184 +1,481 @@
-import { Button, CheckBox, LineEdit, ListView, VerticalBox, HorizontalBox, Palette } from "std-widgets.slint";
+import { Theme } from "theme.slint";
+import { Icons } from "icons.slint";
+import {
+    Icon, Button, ButtonKind, IconButton, SectionLabel, LinkButton, TextField, Segmented, SegmentBar,
+    Toast, ToastData, ToastKind,
+} from "components.slint";
+import { AccountCard, AccountRow, AccountState } from "account-card.slint";
+import { Messages, LaunchFailure, PathProblem } from "messages.slint";
 
-export struct AccountRow {
-    id: int,
-    name: string,
-    provider: string,
-    status: string,
-    running: bool,
-    /// Blish HUD is started together with this account.
-    blish: bool,
-    /// 0 when not running. The client's raw OS process handle, only used by Rust to stop it;
-    /// not displayed.
-    handle: int,
+export { Theme, AccountRow, AccountState, ToastData, ToastKind, Messages, LaunchFailure, PathProblem }
+
+export enum Page { accounts, add-account }
+
+/// Skeleton card of the empty state.
+component GhostCard inherits Rectangle {
+    in property <length> line-width;
+    height: 38px;
+    border-radius: Theme.radius-card;
+    background: Theme.surface;
+    border-width: 1px;
+    border-color: Theme.line;
+    Rectangle {
+        x: 12px;
+        width: 14px;
+        height: 14px;
+        border-radius: 3px;
+        border-width: 1.5px;
+        border-color: Theme.line-2;
+    }
+    Rectangle {
+        x: 38px;
+        y: 11px;
+        width: root.line-width;
+        height: 6px;
+        border-radius: 3px;
+        background: Theme.line-2;
+    }
+    Rectangle {
+        x: 38px;
+        y: 22px;
+        width: root.line-width * 0.55;
+        height: 5px;
+        border-radius: 3px;
+        background: Theme.line;
+    }
+    Rectangle {
+        x: parent.width - 60px;
+        width: 48px;
+        height: 18px;
+        border-radius: 4px;
+        background: Theme.surface-2;
+    }
+}
+
+/// A configured path with its state, e.g. in the footer.
+component PathRow {
+    in property <string> path;
+    in property <string> missing-text;
+    in property <string> action-text;
+    in property <bool> ok;
+    callback change();
+    height: 22px;
+    HorizontalLayout {
+        spacing: 8px;
+        Icon {
+            y: (parent.height - self.height) / 2;
+            size: 14px;
+            weight: 2;
+            path: root.ok ? Icons.checkcircle : Icons.xcircle;
+            color: root.ok ? Theme.ok : Theme.text-dim;
+        }
+        Text {
+            horizontal-stretch: 1;
+            text: root.path == "" ? root.missing-text : root.path;
+            font-family: root.path == "" ? Theme.font-ui : Theme.font-mono;
+            font-size: root.path == "" ? Theme.fs-help : Theme.fs-label-mono;
+            color: Theme.text-muted;
+            vertical-alignment: center;
+            overflow: elide;
+        }
+        LinkButton {
+            text: root.action-text;
+            clicked => { root.change(); }
+        }
+    }
+}
+
+/// Name and platform of a new account.
+component AddAccountPage inherits VerticalLayout {
+    callback submitted(string, bool);
+    callback cancelled;
+
+    function submit() {
+        if name-field.text != "" {
+            root.submitted(name-field.text, platform.selected == 1);
+        }
+    }
+
+    init => {
+        name-field.focus();
+    }
+
+    HorizontalLayout {
+        padding-left: 12px;
+        padding-right: 12px;
+        padding-top: 10px;
+        padding-bottom: 10px;
+        spacing: 8px;
+        IconButton {
+            y: (parent.height - self.height) / 2;
+            icon: Icons.back;
+            label: @tr("Back");
+            clicked => { root.cancelled(); }
+        }
+        Text {
+            text: @tr("Add account");
+            font-family: Theme.font-ui;
+            font-size: Theme.fs-page-title;
+            font-weight: 600;
+            color: Theme.text;
+            vertical-alignment: center;
+        }
+    }
+    Rectangle {
+        height: 1px;
+        background: Theme.line;
+    }
+    VerticalLayout {
+        vertical-stretch: 1;
+        padding: 16px;
+        spacing: 8px;
+        alignment: start;
+
+        SectionLabel {
+            text: @tr("// GENERAL");
+        }
+        Text {
+            text: @tr("Name");
+            font-size: Theme.fs-body;
+            font-weight: 600;
+            color: Theme.text;
+        }
+        name-field := TextField {
+            placeholder: @tr("e.g. Main");
+            accepted => { root.submit(); }
+        }
+        Rectangle {
+            height: 6px;
+        }
+        Text {
+            text: @tr("Platform");
+            font-size: Theme.fs-body;
+            font-weight: 600;
+            color: Theme.text;
+        }
+        platform := Segmented {
+            options: ["ArenaNet", "Steam"];
+        }
+        Text {
+            text: platform.selected == 1
+                ? @tr("Steam signs the game in with the Steam user that is currently signed in. Only one Steam account can run at a time.")
+                : @tr("On the first start the normal Guild Wars 2 login opens: log in once with „Remember email/password“ ticked. Breakbar stores no passwords.");
+            font-size: Theme.fs-help;
+            color: Theme.text-muted;
+            wrap: word-wrap;
+        }
+    }
+    Rectangle {
+        height: 1px;
+        background: Theme.line;
+    }
+    HorizontalLayout {
+        padding: 12px;
+        spacing: 8px;
+        Button {
+            kind: ButtonKind.ghost;
+            icon: Icons.back;
+            icon-color: Theme.text-muted;
+            text: @tr("Cancel");
+            clicked => { root.cancelled(); }
+        }
+        Rectangle {
+            horizontal-stretch: 1;
+        }
+        Button {
+            large: true;
+            kind: ButtonKind.primary;
+            icon: Icons.check;
+            enabled: name-field.text != "";
+            text: @tr("Add account");
+            clicked => { root.submit(); }
+        }
+    }
 }
 
 export component MainWindow inherits Window {
-    title: "Breakbar";
+    title: "Breakbar Launcher";
+    icon: @image-url("../assets/icon/breakbar-64.png");
+    background: Theme.bg;
+    default-font-family: Theme.font-ui;
+    default-font-size: Theme.fs-body;
     preferred-width: 420px;
     preferred-height: 520px;
     min-width: 320px;
     min-height: 360px;
 
     in property <[AccountRow]> accounts;
+    in property <int> running-count;
+    in property <int> starting-count;
+    in property <int> selected-count;
     in property <string> gw2-path;
+    in property <bool> gw2-path-ok;
     /// Path to `Blish HUD.exe`; empty if not configured.
     in property <string> blish-path;
-    /// Error or hint shown above the footer; empty hides it.
-    in property <string> notice;
-    /// Bound to the "add account" field so Rust can clear it after adding.
-    in-out property <string> new-account-name;
-    /// Whether the account being added is Steam-linked.
-    in-out property <bool> new-account-steam;
+    in property <[ToastData]> toasts;
+    in-out property <Page> page: Page.accounts;
 
+    /// Start the account if idle, stop it if running.
     callback launch-account(int);
     /// Start the client without `-shareArchive` so a remembered login can be saved.
     callback set-up-login(int);
+    /// Start all idle accounts, or only the selected ones if there is a selection.
     callback launch-all();
+    callback toggle-selected(int);
+    callback clear-selection();
     callback choose-gw2-path();
     callback choose-blish-path();
     /// Start Blish HUD together with the account, or stop doing so.
     callback set-blish(int, bool);
-    /// Temporary until the full account editor (phase 3.4+) replaces it.
-    callback add-account(string);
+    /// Name and whether it is a Steam account.
+    callback add-account(string, bool);
+    callback dismiss-toast(int);
+    /// The theme switched between dark and light (the native title bar has to follow).
+    callback theme-changed(bool);
 
-    VerticalBox {
-        HorizontalBox {
-            padding: 0;
-            Text {
-                text: "Accounts";
-                font-size: 20px;
-                font-weight: 600;
-                vertical-alignment: center;
-                horizontal-stretch: 1;
-            }
+    /// Id of the toast under the pointer (0 if none); it stays while hovered.
+    out property <int> hovered-toast;
+
+    property <bool> compact: self.width < 360px;
+    property <bool> dark: Theme.dark;
+
+    changed dark => { root.theme-changed(self.dark); }
+
+    function open-add-account() {
+        root.page = Page.add-account;
+    }
+
+    // ── Accounts page ────────────────────────────────────────────────────────────────────────
+    if root.page == Page.accounts: VerticalLayout {
+        // Header: launch button, running counter, add.
+        HorizontalLayout {
+            padding-left: 16px;
+            padding-right: 12px;
+            padding-top: 10px;
+            padding-bottom: 10px;
+            spacing: 12px;
 
             Button {
-                text: "Launch all";
-                primary: true;
+                y: (parent.height - self.height) / 2;
+                large: true;
+                kind: ButtonKind.primary;
+                icon: Icons.play;
                 enabled: root.accounts.length > 0;
-                clicked => {
-                    root.launch-all();
+                text: root.selected-count > 0
+                    ? (root.compact ? @tr("Start · {}", root.selected-count) : @tr("Start selection · {}", root.selected-count))
+                    : (root.compact ? @tr("All") : @tr("Launch all"));
+                clicked => { root.launch-all(); }
+            }
+
+            VerticalLayout {
+                width: root.compact ? 64px : 96px;
+                spacing: 5px;
+                alignment: center;
+                accessible-role: text;
+                accessible-label: @tr("{} of {} clients running", root.running-count, root.accounts.length);
+                HorizontalLayout {
+                    spacing: 5px;
+                    alignment: start;
+                    HorizontalLayout {
+                        Text {
+                            text: root.running-count;
+                            font-family: Theme.font-mono;
+                            font-size: Theme.fs-name;
+                            font-weight: 600;
+                            color: Theme.text;
+                        }
+                        Text {
+                            text: "/" + root.accounts.length;
+                            font-family: Theme.font-mono;
+                            font-size: Theme.fs-name;
+                            font-weight: 600;
+                            color: Theme.text-dim;
+                        }
+                    }
+                    if !root.compact: Text {
+                        horizontal-stretch: 1;
+                        text: @tr("RUNNING");
+                        font-family: Theme.font-mono;
+                        font-size: 10.5px;
+                        letter-spacing: 0.8px;
+                        color: Theme.text-dim;
+                        vertical-alignment: bottom;
+                    }
                 }
+                SegmentBar {
+                    total: root.accounts.length;
+                    full: root.running-count;
+                    partial: root.starting-count;
+                }
+            }
+
+            Rectangle {
+                horizontal-stretch: 1;
+            }
+
+            IconButton {
+                y: (parent.height - self.height) / 2;
+                icon: Icons.plus;
+                label: @tr("Add account");
+                clicked => { root.open-add-account(); }
             }
         }
 
-        HorizontalBox {
-            padding: 0;
-            name-field := LineEdit {
-                placeholder-text: "New account name…";
-                text <=> root.new-account-name;
-                accepted(text) => {
-                    root.add-account(text);
-                }
-            }
-
-            CheckBox {
-                text: "Steam";
-                checked <=> root.new-account-steam;
-            }
-
-            Button {
-                text: "Add";
-                enabled: root.new-account-name != "";
-                clicked => {
-                    root.add-account(root.new-account-name);
-                }
-            }
-        }
-
-        if root.accounts.length == 0: Text {
-            text: "No accounts yet.";
-            color: Palette.foreground;
-            opacity: 0.6;
-            horizontal-alignment: center;
-            vertical-alignment: center;
+        if root.accounts.length == 0: VerticalLayout {
             vertical-stretch: 1;
-        }
+            padding-left: 24px;
+            padding-right: 24px;
+            spacing: 10px;
+            alignment: center;
 
-        if root.accounts.length > 0: ListView {
-            vertical-stretch: 1;
-            for account in root.accounts: HorizontalBox {
-                VerticalLayout {
-                    horizontal-stretch: 1;
-                    alignment: center;
-                    Text {
-                        text: account.name;
-                        font-weight: 600;
-                    }
-
-                    Text {
-                        text: account.provider + " · " + account.status;
-                        font-size: 12px;
-                        opacity: 0.6;
-                    }
+            VerticalLayout {
+                padding-left: 48px;
+                padding-right: 48px;
+                padding-bottom: 20px;
+                spacing: 6px;
+                GhostCard {
+                    line-width: 120px;
                 }
-
-                if root.blish-path != "": CheckBox {
-                    text: "Blish HUD";
-                    checked: account.blish;
-                    toggled => {
-                        root.set-blish(account.id, self.checked);
-                    }
+                GhostCard {
+                    line-width: 90px;
+                    opacity: 0.7;
                 }
-
-                if !account.running && account.provider != "Steam": Button {
-                    text: "Set up login";
-                    clicked => {
-                        root.set-up-login(account.id);
-                    }
+                GhostCard {
+                    line-width: 105px;
+                    opacity: 0.35;
                 }
-
+            }
+            Text {
+                text: @tr("No accounts yet");
+                font-family: Theme.font-ui;
+                font-size: 17px;
+                font-weight: 600;
+                color: Theme.text;
+                horizontal-alignment: center;
+            }
+            Text {
+                text: @tr("Add an account and start it with one click. Several accounts run side by side.");
+                color: Theme.text-muted;
+                horizontal-alignment: center;
+                wrap: word-wrap;
+            }
+            HorizontalLayout {
+                padding-top: 8px;
+                alignment: center;
                 Button {
-                    text: account.running ? "Stop" : "Play";
-                    clicked => {
-                        root.launch-account(account.id);
-                    }
+                    large: true;
+                    kind: ButtonKind.primary;
+                    icon: Icons.plus;
+                    text: @tr("Add account");
+                    clicked => { root.open-add-account(); }
                 }
             }
         }
 
-        if root.notice != "": Text {
-            text: root.notice;
-            wrap: word-wrap;
-            font-size: 12px;
-            color: Palette.color-scheme == ColorScheme.dark ? #ff99a4 : #c42b1c;
-        }
-
-        HorizontalBox {
-            padding: 0;
-            Text {
-                text: root.gw2-path == "" ? "Guild Wars 2 not configured" : root.gw2-path;
-                overflow: elide;
-                font-size: 12px;
-                opacity: 0.7;
-                vertical-alignment: center;
+        if root.accounts.length > 0: HorizontalLayout {
+            padding-left: 16px;
+            padding-right: 16px;
+            padding-top: 2px;
+            padding-bottom: 6px;
+            height: 26px;
+            SectionLabel {
                 horizontal-stretch: 1;
+                text: @tr("// ACCOUNTS · {}", root.accounts.length);
+                vertical-alignment: center;
             }
-
-            Button {
-                text: "Browse…";
-                clicked => {
-                    root.choose-gw2-path();
+            if root.selected-count > 0: HorizontalLayout {
+                spacing: 8px;
+                Text {
+                    text: @tr("{} selected", root.selected-count);
+                    font-size: Theme.fs-help;
+                    font-weight: 600;
+                    color: Theme.text;
+                    vertical-alignment: center;
+                }
+                LinkButton {
+                    text: @tr("Clear");
+                    clicked => { root.clear-selection(); }
                 }
             }
         }
 
-        HorizontalBox {
-            padding: 0;
-            Text {
-                text: root.blish-path == "" ? "Blish HUD not configured" : root.blish-path;
-                overflow: elide;
-                font-size: 12px;
-                opacity: 0.7;
-                vertical-alignment: center;
-                horizontal-stretch: 1;
-            }
+        if root.accounts.length > 0: Flickable {
+            vertical-stretch: 1;
+            content-height: list.preferred-height;
 
-            Button {
-                text: "Browse…";
-                clicked => {
-                    root.choose-blish-path();
+            list := VerticalLayout {
+                padding-left: 10px;
+                padding-right: 10px;
+                padding-bottom: 10px;
+                spacing: 4px;
+                alignment: start;
+                for account in root.accounts: AccountCard {
+                    account: account;
+                    compact: root.compact;
+                    blish-available: root.blish-path != "";
+                    action => { root.launch-account(account.id); }
+                    toggle-selected => { root.toggle-selected(account.id); }
+                    set-up-login => { root.set-up-login(account.id); }
+                    set-blish(enabled) => { root.set-blish(account.id, enabled); }
+                }
+            }
+        }
+
+        // Paths; they move into the settings page later.
+        Rectangle {
+            height: 1px;
+            background: Theme.line;
+        }
+        VerticalLayout {
+            padding-left: 16px;
+            padding-right: 16px;
+            padding-top: 8px;
+            padding-bottom: 8px;
+            spacing: 2px;
+            PathRow {
+                path: root.gw2-path;
+                ok: root.gw2-path-ok;
+                missing-text: @tr("Guild Wars 2 not found");
+                action-text: root.gw2-path == "" ? @tr("Choose") : @tr("Change");
+                change => { root.choose-gw2-path(); }
+            }
+            PathRow {
+                path: root.blish-path;
+                ok: root.blish-path != "";
+                missing-text: @tr("Blish HUD not set (optional)");
+                action-text: root.blish-path == "" ? @tr("Choose") : @tr("Change");
+                change => { root.choose-blish-path(); }
+            }
+        }
+    }
+
+    // ── Add account page ─────────────────────────────────────────────────────────────────────
+    if root.page == Page.add-account: AddAccountPage {
+        submitted(name, steam) => {
+            root.add-account(name, steam);
+            root.page = Page.accounts;
+        }
+        cancelled => { root.page = Page.accounts; }
+    }
+
+    // ── Toasts ───────────────────────────────────────────────────────────────────────────────
+    // Stacked from the bottom edge. The layout spans the window but only the toasts take input.
+    if root.toasts.length > 0: VerticalLayout {
+        x: 0;
+        y: 0;
+        width: root.width;
+        height: root.height;
+        padding: 12px;
+        spacing: 8px;
+        alignment: end;
+        for toast in root.toasts: Toast {
+            data: toast;
+            dismissed => { root.dismiss-toast(toast.id); }
+            hover-changed(hovered) => {
+                if hovered {
+                    root.hovered-toast = toast.id;
+                } else if root.hovered-toast == toast.id {
+                    root.hovered-toast = 0;
                 }
             }
         }

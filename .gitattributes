@@ -2,3 +2,6 @@
 *.ico binary
 *.png binary
 *.exe binary
+
+# README screenshots: documentation only, left out of source archives.
+docs/images/ export-ignore

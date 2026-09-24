@@ -2,3 +2,6 @@
 #define CREATEPROCESS_MANIFEST_RESOURCE_ID 1
 
 CREATEPROCESS_MANIFEST_RESOURCE_ID RT_MANIFEST "app.manifest"
+
+// Pixel-tuned sizes 16-256 from the design; the first icon is the one Explorer shows.
+1 ICON "icon/breakbar.ico"

@@ -1,0 +1,152 @@
+// Texts the Rust side shows (toasts, card details). They live here so that all user-visible
+// text is translated in one place, through Slint's `@tr`.
+
+export enum LaunchFailure {
+    no-game-path,
+    steam-not-running,
+    steam-install-missing,
+    setup-needs-exclusive,
+    setup-client-running,
+    profile,
+    profile-link,
+    spawn,
+    exited-during-startup,
+}
+
+export enum PathProblem { not-found, unreadable, not-executable, not-64-bit, not-gw2 }
+
+export global Messages {
+    public pure function start-failed() -> string {
+        @tr("Start failed")
+    }
+
+    /// Why starting `name` failed. `detail` is the OS error or exit code, where there is one.
+    public pure function launch-failure(kind: LaunchFailure, name: string, detail: string) -> string {
+        if kind == LaunchFailure.no-game-path {
+            return @tr("Guild Wars 2 is not configured yet.");
+        }
+        if kind == LaunchFailure.steam-not-running {
+            return @tr("„{}“ is a Steam account: start Steam and sign in with the Steam user it is linked to first.", name);
+        }
+        if kind == LaunchFailure.steam-install-missing {
+            return @tr("„{}“ is a Steam account, but no Guild Wars 2 installation with Steam support was found. Install Guild Wars 2 through Steam; that installation can be used for all accounts.", name);
+        }
+        if kind == LaunchFailure.setup-needs-exclusive {
+            return @tr("Setting up the login of „{}“ needs all other Guild Wars 2 clients to be closed first.", name);
+        }
+        if kind == LaunchFailure.setup-client-running {
+            return @tr("An account is currently being set up. Close that client before starting another one.");
+        }
+        if kind == LaunchFailure.profile {
+            return @tr("„{}“: the profile folder could not be prepared: {}", name, detail);
+        }
+        if kind == LaunchFailure.profile-link {
+            return @tr("„{}“: Guild Wars 2 could not be switched to this account's profile: {}", name, detail);
+        }
+        if kind == LaunchFailure.spawn {
+            return @tr("„{}“: Gw2-64.exe could not be started: {}", name, detail);
+        }
+        @tr("„{}“: Gw2-64.exe closed during startup (code {}).", name, detail)
+    }
+
+    public pure function exited-title() -> string {
+        @tr("Client exited")
+    }
+
+    public pure function exited(name: string, code: string) -> string {
+        @tr("„{}“: Gw2-64.exe exited (code {}).", name, code)
+    }
+
+    /// Card detail after "Error · ".
+    public pure function exited-detail(code: string) -> string {
+        @tr("Exited (code {})", code)
+    }
+
+    public pure function start-failed-detail() -> string {
+        @tr("Start failed")
+    }
+
+    public pure function setting-up-title(name: string) -> string {
+        @tr("Setting up „{}“", name)
+    }
+
+    public pure function setting-up() -> string {
+        @tr("Log in with „Remember email/password“ ticked, then close the client normally so the login is saved. Other accounts can be started afterwards.")
+    }
+
+    public pure function slow-start-title() -> string {
+        @tr("Unusually slow start")
+    }
+
+    public pure function slow-start(name: string) -> string {
+        @tr("„{}“ took unusually long to start. If it logs in with the wrong account, close it and start it again.", name)
+    }
+
+    public pure function profile-restore-title() -> string {
+        @tr("Profile not switched back")
+    }
+
+    public pure function profile-restore(detail: string) -> string {
+        @tr("Guild Wars 2's data folder could not be switched back to the shared profile: {}", detail)
+    }
+
+    public pure function companion-failed-title(app: string) -> string {
+        @tr("{} could not be started", app)
+    }
+
+    public pure function steam-busy-title() -> string {
+        @tr("Steam account already running")
+    }
+
+    public pure function steam-busy(name: string, running: string) -> string {
+        @tr("„{}“ is locked until „{}“ has exited.", name, running)
+    }
+
+    public pure function stop-failed-title() -> string {
+        @tr("Client could not be stopped")
+    }
+
+    public pure function settings-load-failed(detail: string) -> string {
+        @tr("Settings could not be loaded, changes won't be saved: {}", detail)
+    }
+
+    public pure function settings-save-failed(detail: string) -> string {
+        @tr("Settings could not be saved: {}", detail)
+    }
+
+    public pure function settings-title() -> string {
+        @tr("Settings")
+    }
+
+    public pure function dialog-failed(detail: string) -> string {
+        @tr("The file dialog could not be opened: {}", detail)
+    }
+
+    public pure function set-path-first() -> string {
+        @tr("Choose the Guild Wars 2 client first.")
+    }
+
+    public pure function path-invalid-title() -> string {
+        @tr("Not the Guild Wars 2 client")
+    }
+
+    public pure function path-unusable-title() -> string {
+        @tr("Guild Wars 2 client not usable")
+    }
+
+    public pure function path-problem(kind: PathProblem, detail: string) -> string {
+        if kind == PathProblem.not-found {
+            return @tr("The file does not exist.");
+        }
+        if kind == PathProblem.unreadable {
+            return @tr("The file could not be read: {}", detail);
+        }
+        if kind == PathProblem.not-executable {
+            return @tr("The file is not a Windows program.");
+        }
+        if kind == PathProblem.not-64-bit {
+            return @tr("Only the 64-bit client (Gw2-64.exe) is supported.");
+        }
+        @tr("The file is not the Guild Wars 2 client.")
+    }
+}

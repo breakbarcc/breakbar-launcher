@@ -1,0 +1,421 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"POT-Creation-Date: 2026-09-24 18:15+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#: ui/account-card.slint:49
+msgctxt "StatusLabel"
+msgid "Login required"
+msgstr ""
+
+#: ui/account-card.slint:50
+msgctxt "StatusLabel"
+msgid "Starting…"
+msgstr ""
+
+#: ui/account-card.slint:51
+msgctxt "StatusLabel"
+msgid "Running"
+msgstr ""
+
+#: ui/account-card.slint:52
+msgctxt "StatusLabel"
+msgid "Stopping…"
+msgstr ""
+
+#: ui/account-card.slint:53
+msgctxt "StatusLabel"
+msgid "Locked"
+msgstr ""
+
+#: ui/account-card.slint:54
+msgctxt "StatusLabel"
+msgid "Error"
+msgstr ""
+
+#: ui/account-card.slint:55
+msgctxt "StatusLabel"
+msgid "Ready"
+msgstr ""
+
+#: ui/account-card.slint:56
+msgctxt "StatusLabel"
+msgid " · since {}"
+msgstr ""
+
+#: ui/account-card.slint:57
+msgctxt "StatusLabel"
+msgid " · Steam running"
+msgstr ""
+
+#: ui/account-card.slint:139
+msgctxt "AccountCard"
+msgid "Select {}"
+msgstr ""
+
+#: ui/account-card.slint:173
+msgctxt "AccountCard"
+msgid "Blish HUD running"
+msgstr ""
+
+#: ui/account-card.slint:173
+msgctxt "AccountCard"
+msgid "Starts with: Blish HUD"
+msgstr ""
+
+#: ui/account-card.slint:183
+msgctxt "AccountCard"
+msgid "Retry"
+msgstr ""
+
+#: ui/account-card.slint:199
+msgctxt "AccountCard"
+msgid "More actions for {}"
+msgstr ""
+
+#: ui/account-card.slint:235
+msgctxt "AccountCard"
+msgid "Set up login"
+msgstr ""
+
+#: ui/account-card.slint:243
+msgctxt "AccountCard"
+msgid "Start Blish HUD with it"
+msgstr ""
+
+#: ui/app.slint:112
+msgctxt "AddAccountPage"
+msgid "Back"
+msgstr ""
+
+#: ui/app.slint:116 ui/app.slint:190
+msgctxt "AddAccountPage"
+msgid "Add account"
+msgstr ""
+
+#: ui/app.slint:135
+msgctxt "AddAccountPage"
+msgid "// GENERAL"
+msgstr ""
+
+#: ui/app.slint:138
+msgctxt "AddAccountPage"
+msgid "Name"
+msgstr ""
+
+#: ui/app.slint:144
+msgctxt "AddAccountPage"
+msgid "e.g. Main"
+msgstr ""
+
+#: ui/app.slint:151
+msgctxt "AddAccountPage"
+msgid "Platform"
+msgstr ""
+
+#: ui/app.slint:161
+msgctxt "AddAccountPage"
+msgid ""
+"Steam signs the game in with the Steam user that is currently signed in. "
+"Only one Steam account can run at a time."
+msgstr ""
+
+#: ui/app.slint:162
+msgctxt "AddAccountPage"
+msgid ""
+"On the first start the normal Guild Wars 2 login opens: log in once with "
+"„Remember email/password“ ticked. Breakbar stores no passwords."
+msgstr ""
+
+#: ui/app.slint:179
+msgctxt "AddAccountPage"
+msgid "Cancel"
+msgstr ""
+
+#: ui/app.slint:257
+msgctxt "MainWindow"
+msgid "Start · {}"
+msgstr ""
+
+#: ui/app.slint:257
+msgctxt "MainWindow"
+msgid "Start selection · {}"
+msgstr ""
+
+#: ui/app.slint:258
+msgctxt "MainWindow"
+msgid "All"
+msgstr ""
+
+#: ui/app.slint:258
+msgctxt "MainWindow"
+msgid "Launch all"
+msgstr ""
+
+#: ui/app.slint:267
+msgctxt "MainWindow"
+msgid "{} of {} clients running"
+msgstr ""
+
+#: ui/app.slint:286
+msgctxt "MainWindow"
+msgid "RUNNING"
+msgstr ""
+
+#: ui/app.slint:308 ui/app.slint:358
+msgctxt "MainWindow"
+msgid "Add account"
+msgstr ""
+
+#: ui/app.slint:338
+msgctxt "MainWindow"
+msgid "No accounts yet"
+msgstr ""
+
+#: ui/app.slint:346
+msgctxt "MainWindow"
+msgid ""
+"Add an account and start it with one click. Several accounts run side by "
+"side."
+msgstr ""
+
+#: ui/app.slint:372
+msgctxt "MainWindow"
+msgid "// ACCOUNTS · {}"
+msgstr ""
+
+#: ui/app.slint:378
+msgctxt "MainWindow"
+msgid "{} selected"
+msgstr ""
+
+#: ui/app.slint:385
+msgctxt "MainWindow"
+msgid "Clear"
+msgstr ""
+
+#: ui/app.slint:427
+msgctxt "MainWindow"
+msgid "Guild Wars 2 not found"
+msgstr ""
+
+#: ui/app.slint:428 ui/app.slint:435
+msgctxt "MainWindow"
+msgid "Choose"
+msgstr ""
+
+#: ui/app.slint:428 ui/app.slint:435
+msgctxt "MainWindow"
+msgid "Change"
+msgstr ""
+
+#: ui/app.slint:434
+msgctxt "MainWindow"
+msgid "Blish HUD not set (optional)"
+msgstr ""
+
+#: ui/components.slint:511
+msgctxt "Toast"
+msgid "Dismiss"
+msgstr ""
+
+#: ui/messages.slint:20 ui/messages.slint:66
+msgctxt "Messages"
+msgid "Start failed"
+msgstr ""
+
+#: ui/messages.slint:26
+msgctxt "Messages"
+msgid "Guild Wars 2 is not configured yet."
+msgstr ""
+
+#: ui/messages.slint:29
+msgctxt "Messages"
+msgid ""
+"„{}“ is a Steam account: start Steam and sign in with the Steam user it "
+"is linked to first."
+msgstr ""
+
+#: ui/messages.slint:32
+msgctxt "Messages"
+msgid ""
+"„{}“ is a Steam account, but no Guild Wars 2 installation with Steam "
+"support was found. Install Guild Wars 2 through Steam; that installation can "
+"be used for all accounts."
+msgstr ""
+
+#: ui/messages.slint:35
+msgctxt "Messages"
+msgid ""
+"Setting up the login of „{}“ needs all other Guild Wars 2 clients to be "
+"closed first."
+msgstr ""
+
+#: ui/messages.slint:38
+msgctxt "Messages"
+msgid ""
+"An account is currently being set up. Close that client before starting "
+"another one."
+msgstr ""
+
+#: ui/messages.slint:41
+msgctxt "Messages"
+msgid "„{}“: the profile folder could not be prepared: {}"
+msgstr ""
+
+#: ui/messages.slint:44
+msgctxt "Messages"
+msgid "„{}“: Guild Wars 2 could not be switched to this account's profile: {}"
+msgstr ""
+
+#: ui/messages.slint:47
+msgctxt "Messages"
+msgid "„{}“: Gw2-64.exe could not be started: {}"
+msgstr ""
+
+#: ui/messages.slint:49
+msgctxt "Messages"
+msgid "„{}“: Gw2-64.exe closed during startup (code {})."
+msgstr ""
+
+#: ui/messages.slint:53
+msgctxt "Messages"
+msgid "Client exited"
+msgstr ""
+
+#: ui/messages.slint:57
+msgctxt "Messages"
+msgid "„{}“: Gw2-64.exe exited (code {})."
+msgstr ""
+
+#: ui/messages.slint:62
+msgctxt "Messages"
+msgid "Exited (code {})"
+msgstr ""
+
+#: ui/messages.slint:70
+msgctxt "Messages"
+msgid "Setting up „{}“"
+msgstr ""
+
+#: ui/messages.slint:74
+msgctxt "Messages"
+msgid ""
+"Log in with „Remember email/password“ ticked, then close the client "
+"normally so the login is saved. Other accounts can be started afterwards."
+msgstr ""
+
+#: ui/messages.slint:78
+msgctxt "Messages"
+msgid "Unusually slow start"
+msgstr ""
+
+#: ui/messages.slint:82
+msgctxt "Messages"
+msgid ""
+"„{}“ took unusually long to start. If it logs in with the wrong account, "
+"close it and start it again."
+msgstr ""
+
+#: ui/messages.slint:86
+msgctxt "Messages"
+msgid "Profile not switched back"
+msgstr ""
+
+#: ui/messages.slint:90
+msgctxt "Messages"
+msgid ""
+"Guild Wars 2's data folder could not be switched back to the shared profile: "
+"{}"
+msgstr ""
+
+#: ui/messages.slint:94
+msgctxt "Messages"
+msgid "{} could not be started"
+msgstr ""
+
+#: ui/messages.slint:98
+msgctxt "Messages"
+msgid "Steam account already running"
+msgstr ""
+
+#: ui/messages.slint:102
+msgctxt "Messages"
+msgid ""
+"„{}“ is locked until „{}“ has exited: Steam signs the game in with "
+"the Steam user that is currently signed in."
+msgstr ""
+
+#: ui/messages.slint:106
+msgctxt "Messages"
+msgid "Client could not be stopped"
+msgstr ""
+
+#: ui/messages.slint:110
+msgctxt "Messages"
+msgid "Settings could not be loaded, changes won't be saved: {}"
+msgstr ""
+
+#: ui/messages.slint:114
+msgctxt "Messages"
+msgid "Settings could not be saved: {}"
+msgstr ""
+
+#: ui/messages.slint:118
+msgctxt "Messages"
+msgid "Settings"
+msgstr ""
+
+#: ui/messages.slint:122
+msgctxt "Messages"
+msgid "The file dialog could not be opened: {}"
+msgstr ""
+
+#: ui/messages.slint:126
+msgctxt "Messages"
+msgid "Choose the Guild Wars 2 client first."
+msgstr ""
+
+#: ui/messages.slint:130
+msgctxt "Messages"
+msgid "Not the Guild Wars 2 client"
+msgstr ""
+
+#: ui/messages.slint:134
+msgctxt "Messages"
+msgid "Guild Wars 2 client not usable"
+msgstr ""
+
+#: ui/messages.slint:139
+msgctxt "Messages"
+msgid "The file does not exist."
+msgstr ""
+
+#: ui/messages.slint:142
+msgctxt "Messages"
+msgid "The file could not be read: {}"
+msgstr ""
+
+#: ui/messages.slint:145
+msgctxt "Messages"
+msgid "The file is not a Windows program."
+msgstr ""
+
+#: ui/messages.slint:148
+msgctxt "Messages"
+msgid "Only the 64-bit client (Gw2-64.exe) is supported."
+msgstr ""
+
+#: ui/messages.slint:150
+msgctxt "Messages"
+msgid "The file is not the Guild Wars 2 client."
+msgstr ""

@@ -78,14 +78,19 @@ impl Session {
         }
     }
 
+    /// Whether at least one companion has been started (or joined, if shared).
+    pub fn has_started(&self) -> bool {
+        !self.owned.is_empty() || !self.joined.is_empty()
+    }
+
     /// Whether any companion waits for `trigger`.
     pub fn waits_for(&self, trigger: Trigger) -> bool {
         self.apps.iter().any(|app| app.start_when == trigger)
     }
 
-    /// Starts every companion whose trigger is `trigger`. Returns one message per app that could
-    /// not be started; the others are started regardless.
-    pub fn start(&mut self, trigger: Trigger) -> Vec<String> {
+    /// Starts every companion whose trigger is `trigger`. Returns the name and error of each app
+    /// that could not be started; the others are started regardless.
+    pub fn start(&mut self, trigger: Trigger) -> Vec<(String, io::Error)> {
         let apps: Vec<CompanionApp> = self
             .apps
             .iter()
@@ -96,7 +101,7 @@ impl Session {
             .filter_map(|app| {
                 self.start_one(app)
                     .err()
-                    .map(|error| format!("{} could not be started: {error}", app.name))
+                    .map(|error| (app.name.clone(), error))
             })
             .collect()
     }
@@ -314,7 +319,8 @@ mod tests {
         let errors = session.start(Trigger::ProcessStarted);
 
         assert_eq!(errors.len(), 1);
-        assert!(errors[0].starts_with("ping 3 could not be started"));
+        assert_eq!(errors[0].0, "ping 3");
+        assert_eq!(errors[0].1.kind(), io::ErrorKind::NotFound);
         assert_eq!(session.owned.len(), 1);
         session.stop();
     }
