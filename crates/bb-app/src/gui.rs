@@ -5,15 +5,16 @@ use std::io;
 use std::path::{Path, PathBuf};
 use std::process::ExitStatus;
 use std::rc::Rc;
-use std::sync::mpsc;
+use std::sync::{Arc, mpsc};
 use std::thread;
 
-use bb_core::{Account, AccountId, Provider};
+use bb_core::{Account, AccountId, BLISH_HUD, CompanionApp, CompanionId, Provider, Trigger};
 use bb_store::Config;
 use raw_window_handle::{HasWindowHandle, RawWindowHandle};
 use slint::{ComponentHandle, Model, SharedString};
 use ui::{AccountRow, MainWindow};
 
+use crate::companions::{self, SharedInstances};
 use crate::launcher::LaunchMode;
 use crate::{game, launcher};
 
@@ -62,6 +63,24 @@ impl App {
         }
     }
 
+    /// The Blish HUD preset, if its path has been set.
+    fn blish_hud(&self) -> Option<&CompanionApp> {
+        self.config
+            .companions
+            .iter()
+            .find(|app| app.name == BLISH_HUD)
+    }
+
+    /// The companion apps to start with `account`.
+    fn companions_of(&self, account: &Account) -> Vec<CompanionApp> {
+        self.config
+            .companions
+            .iter()
+            .filter(|app| account.companions.contains(&app.id))
+            .cloned()
+            .collect()
+    }
+
     fn save(&self) -> Result<(), String> {
         let Some(path) = &self.config_path else {
             return Err("Settings could not be loaded, changes won't be saved.".to_owned());
@@ -94,6 +113,7 @@ pub fn run() -> Result<(), slint::PlatformError> {
     let window = MainWindow::new()?;
     set_rows(&window, account_rows(&app.config));
     window.set_gw2_path(display_path(app.config.gw2_path.as_deref()).into());
+    window.set_blish_path(display_path(app.blish_hud().map(|app| app.exe.as_path())).into());
     window.set_notice(notice.unwrap_or_default().into());
 
     let app = Rc::new(RefCell::new(app));
@@ -166,6 +186,26 @@ pub fn run() -> Result<(), slint::PlatformError> {
         }
     });
 
+    window.on_choose_blish_path({
+        let app = Rc::clone(&app);
+        let weak = window.as_weak();
+        move || {
+            if let Some(window) = weak.upgrade() {
+                choose_blish_path(&window, &app);
+            }
+        }
+    });
+
+    window.on_set_blish({
+        let app = Rc::clone(&app);
+        let weak = window.as_weak();
+        move |id, enabled| {
+            if let Some(window) = weak.upgrade() {
+                set_blish(&window, &app, AccountId(id as u32), enabled);
+            }
+        }
+    });
+
     window.run()
 }
 
@@ -200,12 +240,14 @@ fn start_account(
     id: AccountId,
     mode: LaunchMode,
 ) {
-    let (gw2_path, account) = {
+    let (gw2_path, account, companions) = {
         let app = app.borrow();
-        (
-            app.config.gw2_path.clone(),
-            app.config.accounts.iter().find(|a| a.id == id).cloned(),
-        )
+        let account = app.config.accounts.iter().find(|a| a.id == id).cloned();
+        let companions = account
+            .as_ref()
+            .map(|account| app.companions_of(account))
+            .unwrap_or_default();
+        (app.config.gw2_path.clone(), account, companions)
     };
     let Some(gw2_path) = gw2_path else {
         window.set_notice("Set the Guild Wars 2 path first.".into());
@@ -240,6 +282,7 @@ fn start_account(
         gw2_path,
         account,
         mode,
+        companions,
     });
 }
 
@@ -248,6 +291,8 @@ struct LaunchJob {
     gw2_path: PathBuf,
     account: Account,
     mode: LaunchMode,
+    /// Started together with the client, closed after it exits.
+    companions: Vec<CompanionApp>,
 }
 
 /// Runs launches one after another on a single background thread.
@@ -263,9 +308,10 @@ struct LaunchQueue {
 impl LaunchQueue {
     fn start(window: slint::Weak<MainWindow>) -> Self {
         let (jobs, receiver) = mpsc::channel::<LaunchJob>();
+        let shared = Arc::new(SharedInstances::default());
         thread::spawn(move || {
             for job in receiver {
-                run_launch(&window, job);
+                run_launch(&window, &shared, job);
             }
         });
         Self { jobs }
@@ -278,7 +324,7 @@ impl LaunchQueue {
 }
 
 /// Launches one client (on the queue's worker thread) and hands the result to the UI thread.
-fn run_launch(window: &slint::Weak<MainWindow>, job: LaunchJob) {
+fn run_launch(window: &slint::Weak<MainWindow>, shared: &Arc<SharedInstances>, job: LaunchJob) {
     let id = job.account.id;
     let name = job.account.name.clone();
 
@@ -321,9 +367,23 @@ fn run_launch(window: &slint::Weak<MainWindow>, job: LaunchJob) {
     });
 
     let window = window.clone();
-    let client = launched.client;
+    let mut client = launched.client;
+    let mut session =
+        companions::Session::new(Arc::clone(shared), job.companions, &job.account, pid);
     thread::spawn(move || {
+        let mut errors = session.start(Trigger::ProcessStarted);
+        if session.waits_for(Trigger::WindowShown) && client.wait_for_game_window() {
+            errors.extend(session.start(Trigger::WindowShown));
+        }
+        if !errors.is_empty() {
+            let message = errors.join("\n");
+            let _ = window.upgrade_in_event_loop(move |window| {
+                window.set_notice(message.into());
+            });
+        }
+
         let result = client.wait_for_exit();
+        session.stop();
         // Marshal back to the UI thread: Slint's model and window may only be touched there.
         let _ = window.upgrade_in_event_loop(move |window| {
             update_row(&window, id, |row| {
@@ -394,6 +454,7 @@ fn add_account(window: &MainWindow, app: &RefCell<App>, name: &str) {
         provider: provider.display_name().into(),
         status: idle_status_text(next_id),
         running: false,
+        blish: false,
         handle: 0,
     });
     set_rows(window, rows);
@@ -439,7 +500,70 @@ fn choose_gw2_path(window: &MainWindow, app: &RefCell<App>) {
     window.set_notice(app.save().err().unwrap_or_default().into());
 }
 
+fn choose_blish_path(window: &MainWindow, app: &RefCell<App>) {
+    let initial_dir = app
+        .borrow()
+        .blish_hud()
+        .and_then(|blish| blish.exe.parent())
+        .map(Path::to_path_buf);
+
+    let picked = bb_win::dialog::open_file(
+        native_handle(window),
+        "Select Blish HUD",
+        &[("Blish HUD", "Blish HUD.exe"), ("Programs", "*.exe")],
+        initial_dir.as_deref(),
+    );
+    let path = match picked {
+        Ok(Some(path)) => path,
+        Ok(None) => return,
+        Err(error) => {
+            window.set_notice(format!("The file dialog could not be opened: {error}").into());
+            return;
+        }
+    };
+
+    let mut app = app.borrow_mut();
+    let companions = &mut app.config.companions;
+    match companions.iter_mut().find(|app| app.name == BLISH_HUD) {
+        Some(blish) => blish.exe = path.clone(),
+        None => {
+            let id = CompanionId(companions.iter().map(|app| app.id.0).max().unwrap_or(0) + 1);
+            companions.push(CompanionApp::blish_hud(id, path.clone()));
+        }
+    }
+    window.set_blish_path(display_path(Some(&path)).into());
+    window.set_notice(app.save().err().unwrap_or_default().into());
+}
+
+/// Adds Blish HUD to `id`'s companions or removes it. Takes effect from the account's next
+/// launch; an instance already running with it is left alone.
+fn set_blish(window: &MainWindow, app: &RefCell<App>, id: AccountId, enabled: bool) {
+    let mut app_ref = app.borrow_mut();
+    let Some(blish) = app_ref.blish_hud().map(|blish| blish.id) else {
+        return;
+    };
+    let Some(account) = app_ref.config.accounts.iter_mut().find(|a| a.id == id) else {
+        return;
+    };
+    account.companions.retain(|&companion| companion != blish);
+    if enabled {
+        account.companions.push(blish);
+    }
+    let save_result = app_ref.save();
+    drop(app_ref);
+
+    update_row(window, id, |row| row.blish = enabled);
+    if let Err(error) = save_result {
+        window.set_notice(error.into());
+    }
+}
+
 fn account_rows(config: &Config) -> Vec<AccountRow> {
+    let blish = config
+        .companions
+        .iter()
+        .find(|app| app.name == BLISH_HUD)
+        .map(|app| app.id);
     config
         .accounts
         .iter()
@@ -449,6 +573,7 @@ fn account_rows(config: &Config) -> Vec<AccountRow> {
             provider: account.provider.display_name().into(),
             status: idle_status_text(account.id),
             running: false,
+            blish: blish.is_some_and(|blish| account.companions.contains(&blish)),
             handle: 0,
         })
         .collect()

@@ -11,3 +11,4 @@ mod nt;
 pub mod process;
 pub mod registry;
 pub mod version;
+pub mod window;

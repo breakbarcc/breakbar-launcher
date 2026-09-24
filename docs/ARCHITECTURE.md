@@ -98,15 +98,38 @@ struct CompanionApp {
 }
 ```
 
-- **PerClient** (Blish HUD): one instance per GW2 client, terminated when that client exits.
+- **PerClient** (Blish HUD): one instance per GW2 client, closed when that client exits.
   Preset args: `--pid {pid} --mumble {mumble}`.
-- **Shared**: one instance for all clients, reference-counted, terminated when the last client exits.
+- **Shared**: one instance for all clients, reference-counted, closed when the last client exits.
 - Each GW2 client gets a unique MumbleLink name (`Breakbar_<id>`) so overlays never read another client's data.
+- Placeholders are substituted per argument after splitting the template, so a value with spaces
+  (e.g. `{account}`) stays one argument. Companions run with their own folder as working directory.
+- Everything runs on the client's monitor thread: start `ProcessStarted` apps → wait for the game
+  window (only if an app needs it) → start `WindowShown` apps → wait for exit → close them.
+- Closing is graceful: `WM_CLOSE` to the companion's top-level windows (lets it save its settings),
+  terminate only after 5 s. Apps with `close_with_game = false` are left running.
+- A companion that fails to start is reported in the UI; the client and other companions keep running.
+
+**Blish HUD specifics** (from its source, `ApplicationSettings.cs` / `Program.cs`):
+
+- `--pid` / `-P` attaches to a process, `--mumble` / `-m` sets the MumbleLink name; `--settings` /
+  `-s` would allow per-account settings via `{account}` (not used by the preset: all instances share
+  Blish HUD's settings, as when started by hand).
+- Its single-instance mutex is `<guid>:<mumble name>`, so one instance per client works as long as
+  every client has its own MumbleLink name.
+- It ignores the launcher/patcher window (class `ArenaNet`) and waits for the game window
+  (`ArenaNet_Gr_Window_Class` for DX11, `ArenaNet_Dx_Window_Class` for DX9). Breakbar uses the same
+  classes for `WindowShown`, so Blish HUD only starts once the account is past the launcher.
+- UI (until the design lands): Blish HUD's path is picked by file dialog; a per-account checkbox
+  adds or removes it. There is no install location to auto-detect (it ships as a zip).
 
 ## Process monitoring
 
 - All child handles are waited on by thread-pool waits (`RegisterWaitForSingleObject`) → 0 % CPU when idle.
-- Window appearance per PID via `SetWinEventHook(EVENT_OBJECT_SHOW)` – no polling.
+- Window appearance per PID: currently `EnumWindows` every 250 ms, only while a client with
+  `WindowShown` companions has not shown its game window yet (microseconds per check).
+  `SetWinEventHook(EVENT_OBJECT_SHOW)` would avoid even that, but needs a message loop per waiting
+  thread; revisit if measurements show a need.
 - Error dialogs (`ArenaNet_Dialog_Class`, e.g. "needs to be patched before using -shareArchive") are
   detected and surfaced inline.
 
@@ -137,7 +160,7 @@ Config: `%APPDATA%\Breakbar\config.toml` (atomic write via temp file + `ReplaceF
 | 3.3 | Multi-launch (mutex kill + `-shareArchive`), benchmarks with 2–5 clients |
 | 3.4 | ✅ Per-account `Local.dat` via a junction swapped only during launch, serialized launches, one-time setup launch |
 | 3.5 | ✅ Steam accounts: direct start with `-provider Steam` + `SteamAppId`, Steam install auto-selected, one Steam account at a time (not yet tested with a real Steam account) |
-| 3.6 | Companion apps, Blish HUD preset |
+| 3.6 | ✅ Companion apps (per-client / shared, start on process or game window, graceful close), Blish HUD preset (not yet tested with a real Blish HUD) |
 | 4 | UX: status per account, launch-all queue, tray, hotkeys, dark/light, shortcuts/CLI |
 | 5 | Patch detection + Local.dat refresh, window layout per account, priority/affinity, GFX per account |
 | 6 | Code signing (SignPath/Azure Trusted Signing), releases, winget |

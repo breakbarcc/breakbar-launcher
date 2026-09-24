@@ -71,11 +71,33 @@ impl RunningClient {
         self.child.as_raw_handle() as isize
     }
 
+    /// Blocks until the client shows its game window (not the launcher/patcher window, which has
+    /// a different class). Returns `false` if the client exits first.
+    ///
+    /// Polls a few times per second: the enumeration costs microseconds, and this only runs
+    /// until the game window appears, and only for clients with companions waiting for it.
+    pub fn wait_for_game_window(&mut self) -> bool {
+        loop {
+            if !matches!(self.child.try_wait(), Ok(None)) {
+                return false;
+            }
+            if bb_win::window::has_visible_window(self.pid, GAME_WINDOW_CLASSES).unwrap_or(false) {
+                return true;
+            }
+            thread::sleep(WINDOW_POLL_INTERVAL);
+        }
+    }
+
     /// Blocks the calling thread until the client process exits.
     pub fn wait_for_exit(mut self) -> io::Result<ExitStatus> {
         self.child.wait()
     }
 }
+
+/// Window classes of the game window (DirectX 11 and DirectX 9 renderer). The launcher and
+/// patcher window uses the class `ArenaNet` instead — the same distinction Blish HUD makes.
+const GAME_WINDOW_CLASSES: &[&str] = &["ArenaNet_Gr_Window_Class", "ArenaNet_Dx_Window_Class"];
+const WINDOW_POLL_INTERVAL: Duration = Duration::from_millis(250);
 
 /// How to start a client.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]

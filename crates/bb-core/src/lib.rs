@@ -9,5 +9,5 @@ pub mod pe;
 pub mod steam;
 
 pub use account::{Account, AccountId, Provider};
-pub use companion::{ArgContext, CompanionApp, CompanionId, Scope, Trigger};
+pub use companion::{ArgContext, BLISH_HUD, CompanionApp, CompanionId, Scope, Trigger};
 pub use launch::{LaunchOptions, game_args, split_args};

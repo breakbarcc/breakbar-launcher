@@ -6,6 +6,8 @@ export struct AccountRow {
     provider: string,
     status: string,
     running: bool,
+    /// Blish HUD is started together with this account.
+    blish: bool,
     /// 0 when not running. The client's raw OS process handle, only used by Rust to stop it;
     /// not displayed.
     handle: int,
@@ -20,6 +22,8 @@ export component MainWindow inherits Window {
 
     in property <[AccountRow]> accounts;
     in property <string> gw2-path;
+    /// Path to `Blish HUD.exe`; empty if not configured.
+    in property <string> blish-path;
     /// Error or hint shown above the footer; empty hides it.
     in property <string> notice;
     /// Bound to the "add account" field so Rust can clear it after adding.
@@ -32,6 +36,9 @@ export component MainWindow inherits Window {
     callback set-up-login(int);
     callback launch-all();
     callback choose-gw2-path();
+    callback choose-blish-path();
+    /// Start Blish HUD together with the account, or stop doing so.
+    callback set-blish(int, bool);
     /// Temporary until the full account editor (phase 3.4+) replaces it.
     callback add-account(string);
 
@@ -107,6 +114,14 @@ export component MainWindow inherits Window {
                     }
                 }
 
+                if root.blish-path != "": CheckBox {
+                    text: "Blish HUD";
+                    checked: account.blish;
+                    toggled => {
+                        root.set-blish(account.id, self.checked);
+                    }
+                }
+
                 if !account.running && account.provider != "Steam": Button {
                     text: "Set up login";
                     clicked => {
@@ -145,6 +160,25 @@ export component MainWindow inherits Window {
                 text: "Browse…";
                 clicked => {
                     root.choose-gw2-path();
+                }
+            }
+        }
+
+        HorizontalBox {
+            padding: 0;
+            Text {
+                text: root.blish-path == "" ? "Blish HUD not configured" : root.blish-path;
+                overflow: elide;
+                font-size: 12px;
+                opacity: 0.7;
+                vertical-alignment: center;
+                horizontal-stretch: 1;
+            }
+
+            Button {
+                text: "Browse…";
+                clicked => {
+                    root.choose-blish-path();
                 }
             }
         }

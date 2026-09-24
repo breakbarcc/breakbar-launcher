@@ -4,6 +4,8 @@ use std::path::PathBuf;
 
 use serde::{Deserialize, Serialize};
 
+use crate::launch::split_args;
+
 /// Stable identifier of a companion app.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord, Serialize, Deserialize)]
 #[serde(transparent)]
@@ -60,12 +62,21 @@ pub struct ArgContext<'a> {
     pub account: &'a str,
 }
 
+/// Display name of the Blish HUD preset.
+pub const BLISH_HUD: &str = "Blish HUD";
+
 impl CompanionApp {
     /// Preset for Blish HUD: one instance per client, attached via PID and MumbleLink name.
+    ///
+    /// Blish HUD's single-instance mutex includes the MumbleLink name, so one instance per
+    /// client works as long as every client has its own name (see
+    /// [`crate::Account::mumble_link_name`]). It waits for the game window itself, but starting
+    /// it only once that window is shown keeps it from starting for a client that never gets
+    /// past the launcher.
     pub fn blish_hud(id: CompanionId, exe: impl Into<PathBuf>) -> Self {
         Self {
             id,
-            name: "Blish HUD".to_owned(),
+            name: BLISH_HUD.to_owned(),
             exe: exe.into(),
             args: "--pid {pid} --mumble {mumble}".to_owned(),
             scope: Scope::PerClient,
@@ -74,12 +85,21 @@ impl CompanionApp {
         }
     }
 
-    /// Expands the argument template for a concrete client.
-    pub fn expand_args(&self, ctx: &ArgContext<'_>) -> String {
-        self.args
-            .replace("{pid}", &ctx.pid.to_string())
-            .replace("{mumble}", ctx.mumble)
-            .replace("{account}", ctx.account)
+    /// Expands the argument template for a concrete client into individual argv entries.
+    ///
+    /// The template is split first, so a substituted value containing spaces (such as an
+    /// account name) stays a single argument.
+    pub fn expand_args(&self, ctx: &ArgContext<'_>) -> Vec<String> {
+        let pid = ctx.pid.to_string();
+        split_args(&self.args)
+            .into_iter()
+            .map(|token| {
+                token
+                    .replace("{pid}", &pid)
+                    .replace("{mumble}", ctx.mumble)
+                    .replace("{account}", ctx.account)
+            })
+            .collect()
     }
 }
 
@@ -95,6 +115,24 @@ mod tests {
             mumble: "Breakbar_3",
             account: "Main",
         };
-        assert_eq!(blish.expand_args(&ctx), "--pid 4242 --mumble Breakbar_3");
+        assert_eq!(
+            blish.expand_args(&ctx),
+            ["--pid", "4242", "--mumble", "Breakbar_3"]
+        );
+    }
+
+    #[test]
+    fn substituted_values_stay_single_arguments() {
+        let mut app = CompanionApp::blish_hud(CompanionId(1), "x.exe");
+        app.args = r#"--settings "C:\Blish\{account}" --pid {pid}"#.to_owned();
+        let ctx = ArgContext {
+            pid: 7,
+            mumble: "Breakbar_1",
+            account: "My Alt",
+        };
+        assert_eq!(
+            app.expand_args(&ctx),
+            ["--settings", r"C:\Blish\My Alt", "--pid", "7"]
+        );
     }
 }
