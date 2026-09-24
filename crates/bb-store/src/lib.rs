@@ -11,7 +11,7 @@ use std::path::{Path, PathBuf};
 use bb_core::{Account, CompanionApp};
 use serde::{Deserialize, Serialize};
 
-pub use profile::{ensure_profile_dir, has_saved_login, local_dat_path, profile_dir};
+pub use profile::{ensure_profile_dir, is_set_up, local_dat_path, profile_dir, shared_profile_dir};
 
 const CURRENT_VERSION: u32 = 1;
 

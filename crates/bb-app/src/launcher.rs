@@ -1,24 +1,47 @@
 //! Spawning game clients and observing their lifetime.
 
+use std::fs::OpenOptions;
 use std::io;
+use std::os::windows::fs::OpenOptionsExt;
 use std::os::windows::io::AsRawHandle;
 use std::path::Path;
 use std::process::{Child, Command, ExitStatus};
+use std::thread;
+use std::time::{Duration, Instant};
 
 use bb_core::{Account, LaunchOptions, game_args};
 
 use crate::profile_link::{self, ProfileLinkError};
 
+/// How often to check whether a starting client has taken its `Local.dat`.
+const POLL_INTERVAL: Duration = Duration::from_millis(100);
+/// How long `Local.dat` must stay locked before the client is considered to own it for good,
+/// guarding against the client briefly opening and re-opening it during startup.
+const LOCK_STABLE_FOR: Duration = Duration::from_secs(3);
+/// Upper bound for startup; generous because a client may check for updates first.
+const STARTUP_TIMEOUT: Duration = Duration::from_secs(120);
+/// `ERROR_SHARING_VIOLATION`.
+const ERROR_SHARING_VIOLATION: i32 = 32;
+
 #[derive(Debug, thiserror::Error)]
 pub enum LaunchError {
     #[error("Guild Wars 2 is not configured yet.")]
     NoGamePath,
+    #[error(
+        "{0} hasn't been set up yet. Close all other Guild Wars 2 clients, then start it once \
+         on its own to log in."
+    )]
+    SetupNeedsExclusive(String),
+    #[error("An account is currently being set up. Close that client before starting another one.")]
+    SetupClientRunning,
     #[error("could not prepare the account's profile folder: {0}")]
     Profile(#[from] bb_store::StoreError),
     #[error("could not switch Guild Wars 2 to this account's profile: {0}")]
     ProfileLink(#[from] ProfileLinkError),
     #[error("failed to start Guild Wars 2: {0}")]
     Spawn(#[source] io::Error),
+    #[error("Guild Wars 2 closed during startup ({0}).")]
+    ExitedDuringStartup(ExitStatus),
 }
 
 /// A game client that was just started.
@@ -37,7 +60,7 @@ impl RunningClient {
     }
 
     /// Raw OS handle of the client process, valid until this value (or the `Child` it borrows
-    /// from) is dropped. Used to stop the process without the PID-reuse race described above.
+    /// from) is dropped. Used to stop the process without the PID-reuse race of re-opening it.
     pub fn raw_handle(&self) -> isize {
         self.child.as_raw_handle() as isize
     }
@@ -48,67 +71,171 @@ impl RunningClient {
     }
 }
 
-/// Starts `account`'s game client.
+/// Result of a successful [`launch`].
+#[derive(Debug)]
+pub struct Launched {
+    pub client: RunningClient,
+    /// This was the account's one-time setup launch (no `Local.dat` yet).
+    pub setup: bool,
+    /// Something the user should know even though the client is running.
+    pub warning: Option<String>,
+}
+
+/// Starts `account`'s client and waits until it has taken its own `Local.dat`.
 ///
-/// The working directory is set to the client's own folder, matching how the ArenaNet launcher
-/// starts it, so the client finds its side-by-side files. If another client already holds GW2's
-/// single-instance mutex, that mutex is closed first (see [`ensure_mutex_clear`]) so this
-/// client doesn't just get refused.
+/// **Blocks for several seconds** — call it off the UI thread, and never run two launches at
+/// once: `%APPDATA%\Guild Wars 2` points at the launching account for the whole call (see
+/// [`crate::profile_link`]) and is pointed back at the shared profile before returning, on every
+/// path.
 ///
-/// The real `%APPDATA%\Guild Wars 2` is pointed at the account's own profile folder first (see
-/// [`crate::profile_link::activate`] for why that, rather than redirecting the child's own
-/// `APPDATA`, is what's actually needed), so each account keeps its own `Local.dat` and never
-/// overwrites another account's. `TMP`/`TEMP` are additionally redirected to the account's
-/// profile, which the client's embedded browser component does respect, keeping concurrent
-/// clients from fighting over the same cache. `options.autologin` is overridden based on
-/// whether that profile already has a saved login — passing `-autologin` before one exists
-/// would do nothing but isn't harmful either, so this only matters for showing the right thing
-/// to the user, not for correctness.
-///
-/// Only one account's data can be linked in at a time, so launching two accounts that have
-/// *never* logged in before at the exact same moment can race (see the module-level caveat in
-/// [`crate::profile_link`]); accounts that already have a saved login are unaffected once
-/// running, since by then they've already read what they need.
-pub fn spawn(
-    gw2_path: &Path,
-    account: &Account,
-    mut options: LaunchOptions,
-) -> Result<RunningClient, LaunchError> {
+/// An account without its own `Local.dat` gets a one-time setup launch without `-shareArchive`
+/// (a shared-archive client cannot create `Local.dat`), which requires that no other client runs.
+pub fn launch(gw2_path: &Path, account: &Account) -> Result<Launched, LaunchError> {
     if !gw2_path.is_file() {
         return Err(LaunchError::NoGamePath);
     }
-    let working_dir = gw2_path.parent().unwrap_or(gw2_path);
+
+    let setup = !bb_store::is_set_up(account.id);
+    let others_running = !running_clients(gw2_path).is_empty();
+    if setup && others_running {
+        return Err(LaunchError::SetupNeedsExclusive(account.name.clone()));
+    }
+    if !setup && archive_held_exclusively(gw2_path) {
+        return Err(LaunchError::SetupClientRunning);
+    }
+
+    let options = LaunchOptions {
+        share_archive: !setup,
+        autologin: !setup,
+    };
+    let local_dat = bb_store::local_dat_path(account.id)?;
+    let temp_dir = bb_store::ensure_profile_dir(account.id)?.join("Temp");
+    std::fs::create_dir_all(&temp_dir).map_err(LaunchError::Spawn)?;
 
     ensure_mutex_clear(gw2_path);
-    profile_link::activate(account.id)?;
+    profile_link::point_to_account(account.id)?;
 
-    let profile_dir = bb_store::ensure_profile_dir(account.id)?;
-    let temp_dir = profile_dir.join("Temp");
-    std::fs::create_dir_all(&temp_dir).map_err(LaunchError::Spawn)?;
-    options.autologin = bb_store::has_saved_login(account.id);
+    let started = start_and_wait(gw2_path, account, options, &temp_dir, &local_dat);
 
-    let child = Command::new(gw2_path)
+    let restored = profile_link::point_to_shared();
+    let (client, mut warning) = started?;
+    if let Err(error) = restored {
+        warning = Some(format!(
+            "Guild Wars 2's data folder could not be switched back to the shared profile: {error}"
+        ));
+    }
+
+    // Release this client's single-instance mutex right away, so the next launch doesn't have
+    // to search for it (best-effort; the next launch checks again anyway).
+    let _ = bb_win::mutex::kill_gw2_mutex(client.pid());
+
+    Ok(Launched {
+        client,
+        setup,
+        warning,
+    })
+}
+
+/// Spawns the client and waits until it owns `local_dat`. On a timeout the client is kept (it may
+/// just be updating), with a warning instead of an error.
+fn start_and_wait(
+    gw2_path: &Path,
+    account: &Account,
+    options: LaunchOptions,
+    temp_dir: &Path,
+    local_dat: &Path,
+) -> Result<(RunningClient, Option<String>), LaunchError> {
+    let working_dir = gw2_path.parent().unwrap_or(gw2_path);
+    let mut child = Command::new(gw2_path)
         .args(game_args(account, options))
         .current_dir(working_dir)
-        .env("TMP", &temp_dir)
-        .env("TEMP", &temp_dir)
+        .env("TMP", temp_dir)
+        .env("TEMP", temp_dir)
         .spawn()
         .map_err(LaunchError::Spawn)?;
 
-    Ok(RunningClient {
-        pid: child.id(),
-        child,
+    let warning = match wait_until_locked(&mut child, local_dat)? {
+        true => None,
+        false => Some(
+            "Guild Wars 2 took unusually long to start. If it logs in with the wrong account, \
+             close it and start it again."
+                .to_owned(),
+        ),
+    };
+
+    Ok((
+        RunningClient {
+            pid: child.id(),
+            child,
+        },
+        warning,
+    ))
+}
+
+/// Waits until `path` has been locked for [`LOCK_STABLE_FOR`] without interruption. Returns
+/// `Ok(false)` on timeout and an error if the client exits first.
+fn wait_until_locked(child: &mut Child, path: &Path) -> Result<bool, LaunchError> {
+    let started = Instant::now();
+    let mut locked_since: Option<Instant> = None;
+    loop {
+        if let Some(status) = child.try_wait().map_err(LaunchError::Spawn)? {
+            return Err(LaunchError::ExitedDuringStartup(status));
+        }
+        if is_locked(path) {
+            let since = *locked_since.get_or_insert_with(Instant::now);
+            if since.elapsed() >= LOCK_STABLE_FOR {
+                return Ok(true);
+            }
+        } else {
+            locked_since = None;
+        }
+        if started.elapsed() >= STARTUP_TIMEOUT {
+            return Ok(false);
+        }
+        thread::sleep(POLL_INTERVAL);
+    }
+}
+
+/// Whether another process holds `path` open without allowing others to read it.
+fn is_locked(path: &Path) -> bool {
+    match OpenOptions::new().read(true).share_mode(0).open(path) {
+        Ok(_) => false,
+        Err(error) => error.raw_os_error() == Some(ERROR_SHARING_VIOLATION),
+    }
+}
+
+/// Whether a client started without `-shareArchive` (a setup launch) holds `Gw2.dat`, which
+/// would make every other client fail to open it.
+fn archive_held_exclusively(gw2_path: &Path) -> bool {
+    const FILE_SHARE_READ: u32 = 1;
+    let archive = gw2_path.with_file_name("Gw2.dat");
+    match OpenOptions::new()
+        .read(true)
+        .share_mode(FILE_SHARE_READ)
+        .open(archive)
+    {
+        Ok(_) => false,
+        Err(error) => error.raw_os_error() == Some(ERROR_SHARING_VIOLATION),
+    }
+}
+
+fn running_clients(gw2_path: &Path) -> Vec<u32> {
+    let exe_name = gw2_path
+        .file_name()
+        .and_then(|name| name.to_str())
+        .unwrap_or(crate::game::GW2_EXE);
+    bb_win::process::find_processes_by_name(exe_name).unwrap_or_else(|error| {
+        eprintln!("could not list running Guild Wars 2 clients: {error}");
+        Vec::new()
     })
 }
 
 /// If a GW2 client currently holds the single-instance mutex, closes that handle so a new
 /// client can create its own instead of being refused.
 ///
-/// This looks at every running process with the same executable name, not just ones Breakbar
-/// itself started, so a client already running from a previous session (or started outside
-/// Breakbar) doesn't block a new launch either. Best-effort: if the check or the close attempt
-/// fails, launching proceeds anyway — worst case GW2 itself refuses to start, which is no worse
-/// than before this step existed.
+/// Looks at every running client, not just ones Breakbar started, so a client left over from a
+/// previous session doesn't block a new launch either. Best-effort: if this fails, launching
+/// proceeds anyway — worst case GW2 itself refuses to start.
 fn ensure_mutex_clear(gw2_path: &Path) {
     match bb_win::mutex::gw2_mutex_exists() {
         Ok(true) => {}
@@ -118,20 +245,7 @@ fn ensure_mutex_clear(gw2_path: &Path) {
             return;
         }
     }
-
-    let exe_name = gw2_path
-        .file_name()
-        .and_then(|name| name.to_str())
-        .unwrap_or(crate::game::GW2_EXE);
-    let pids = match bb_win::process::find_processes_by_name(exe_name) {
-        Ok(pids) => pids,
-        Err(error) => {
-            eprintln!("could not list running Guild Wars 2 clients: {error}");
-            return;
-        }
-    };
-
-    for pid in pids {
+    for pid in running_clients(gw2_path) {
         match bb_win::mutex::kill_gw2_mutex(pid) {
             Ok(true) => return,
             Ok(false) => {}
@@ -145,57 +259,58 @@ mod tests {
     use super::*;
     use crate::test_support::with_isolated_appdata;
     use bb_core::AccountId;
+    use std::fs;
     use std::path::PathBuf;
 
     #[test]
     fn missing_game_path_is_rejected() {
         // No isolation needed: rejected before anything touches a profile.
         let account = Account::new(AccountId(1), "Main");
-        let result = spawn(
-            &PathBuf::from(r"C:\does\not\exist\Gw2-64.exe"),
-            &account,
-            LaunchOptions::default(),
-        );
+        let result = launch(&PathBuf::from(r"C:\does\not\exist\Gw2-64.exe"), &account);
         assert!(matches!(result, Err(LaunchError::NoGamePath)));
     }
 
-    /// Stands in for the game client: any executable can be waited on the same way, so the
-    /// spawn → observe-exit path is exercised without starting GW2. `ping.exe` rejects the
-    /// (nonsensical, for it) GW2 switches `spawn` always prepends and exits immediately with
-    /// an error, which is all this test needs: a fast, deterministic exit.
     #[test]
-    fn spawned_process_can_be_waited_on() {
-        with_isolated_appdata("spawn-wait", |_| {
-            let windir = std::env::var_os("SystemRoot").expect("SystemRoot is set");
-            let stand_in = PathBuf::from(&windir).join("System32").join("ping.exe");
-            let account = Account::new(AccountId(1), "Main");
+    fn exclusive_open_counts_as_locked() {
+        let path = std::env::temp_dir().join(format!("breakbar-lock-{}", std::process::id()));
+        fs::write(&path, b"x").unwrap();
+        assert!(!is_locked(&path));
 
-            let running = spawn(&stand_in, &account, LaunchOptions::default()).unwrap();
-            assert!(running.pid() > 0);
+        let holder = OpenOptions::new()
+            .read(true)
+            .share_mode(0)
+            .open(&path)
+            .unwrap();
+        assert!(is_locked(&path));
 
-            running.wait_for_exit().unwrap();
-        });
+        drop(holder);
+        assert!(!is_locked(&path));
+        fs::remove_file(&path).unwrap();
     }
 
     #[test]
-    fn spawn_links_the_account_into_the_real_gw2_appdata_folder() {
-        with_isolated_appdata("spawn-profile", |root| {
+    fn missing_file_is_not_locked() {
+        assert!(!is_locked(Path::new(r"C:\does\not\exist\Local.dat")));
+    }
+
+    /// Stands in for the game client with `ping.exe`, which rejects the GW2 switches and exits
+    /// at once: startup must report that instead of waiting, and the real GW2 folder must end up
+    /// pointing at the shared profile again.
+    #[test]
+    fn client_exiting_during_startup_restores_the_shared_profile() {
+        with_isolated_appdata("launch-exit", |root| {
             let windir = std::env::var_os("SystemRoot").expect("SystemRoot is set");
             let stand_in = PathBuf::from(&windir).join("System32").join("ping.exe");
             let account = Account::new(AccountId(1), "Main");
-            assert!(!bb_store::has_saved_login(account.id));
 
-            let running = spawn(&stand_in, &account, LaunchOptions::default()).unwrap();
-            running.wait_for_exit().unwrap();
+            let result = launch(&stand_in, &account);
 
-            let real_gw2_dir = root.join("Roaming").join("Guild Wars 2");
-            let account_gw2_dir = bb_store::profile_dir(account.id)
-                .unwrap()
-                .join("Guild Wars 2");
+            assert!(matches!(result, Err(LaunchError::ExitedDuringStartup(_))));
+            let real = root.join("Roaming").join("Guild Wars 2");
+            let shared = bb_store::shared_profile_dir().unwrap().join("Guild Wars 2");
             assert_eq!(
-                std::fs::canonicalize(&real_gw2_dir).unwrap(),
-                std::fs::canonicalize(&account_gw2_dir).unwrap(),
-                "the real GW2 AppData folder should be linked to the account's profile",
+                fs::canonicalize(&real).unwrap(),
+                fs::canonicalize(&shared).unwrap()
             );
         });
     }

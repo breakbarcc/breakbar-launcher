@@ -15,11 +15,21 @@ use crate::StoreError;
 
 /// The account's isolated profile folder. Does not create it; see [`ensure_profile_dir`].
 pub fn profile_dir(account_id: AccountId) -> Result<PathBuf, StoreError> {
+    Ok(profiles_root()?.join(account_id.0.to_string()))
+}
+
+/// The shared default profile: what `%APPDATA%\Guild Wars 2` points at whenever no launch is in
+/// progress, so clients started outside Breakbar and settings written by running clients (such
+/// as graphics settings) land here. Account ids are numeric, so this name never collides.
+pub fn shared_profile_dir() -> Result<PathBuf, StoreError> {
+    Ok(profiles_root()?.join("shared"))
+}
+
+fn profiles_root() -> Result<PathBuf, StoreError> {
     let local_app_data = std::env::var_os("LOCALAPPDATA").ok_or(StoreError::NoLocalAppData)?;
     Ok(PathBuf::from(local_app_data)
         .join("Breakbar")
-        .join("profiles")
-        .join(account_id.0.to_string()))
+        .join("profiles"))
 }
 
 /// [`profile_dir`], creating it (and its parents) first if it doesn't exist yet.
@@ -39,12 +49,13 @@ pub fn local_dat_path(account_id: AccountId) -> Result<PathBuf, StoreError> {
         .join("Local.dat"))
 }
 
-/// Whether the account has a saved login yet, i.e. whether `-autologin` will do anything.
+/// Whether the account has been set up, i.e. its profile has its own `Local.dat`.
 ///
-/// `false` before the account's first manual login, or if the account's profile can't be
-/// located at all (treated as "needs login" rather than an error, since the caller's next step
-/// is the same either way: let the user log in normally).
-pub fn has_saved_login(account_id: AccountId) -> bool {
+/// A client started with `-shareArchive` cannot create a missing `Local.dat` (it fails with
+/// "data archive cannot be opened"), so an account without one needs a single setup launch
+/// without `-shareArchive` first. Whether the file also holds remembered credentials can't be
+/// told from outside; that only decides whether `-autologin` skips the login screen.
+pub fn is_set_up(account_id: AccountId) -> bool {
     local_dat_path(account_id).is_ok_and(|path| path.is_file())
 }
 
@@ -61,9 +72,9 @@ mod tests {
     }
 
     #[test]
-    fn fresh_account_has_no_saved_login() {
+    fn fresh_account_is_not_set_up() {
         // A random, never-used id: nothing has ever created this profile's Local.dat.
-        assert!(!has_saved_login(AccountId(u32::MAX)));
+        assert!(!is_set_up(AccountId(u32::MAX)));
     }
 
     #[test]

@@ -35,22 +35,32 @@ no sleep/retry loops.
 
 ## Login via Local.dat
 
-Every account owns a profile directory:
-
 ```
-%LOCALAPPDATA%\Breakbar\profiles\<account-id>\
-    Guild Wars 2\Local.dat
-    Guild Wars 2\GFXSettings.Gw2-64.exe.xml   (later)
+%APPDATA%\Guild Wars 2              → NTFS junction, normally → profiles\shared\Guild Wars 2
+%LOCALAPPDATA%\Breakbar\profiles\
+    shared\Guild Wars 2\            the original installation's folder (moved here once)
+    <account-id>\Guild Wars 2\Local.dat
+    <account-id>\Temp\              TMP/TEMP of that account's client
 ```
 
-**First launch of an account:** the client starts with an empty profile, the user logs in once with
-"remember email/password", GW2 writes `Local.dat` into the profile. All later launches use `-autologin`.
+**Spike S1 result (revised after real-world testing):**
 
-**Spike S1 result:** Approach A (redirect `APPDATA`/`TMP`/`TEMP` in the child's environment block) —
-implemented in `bb-store::profile` and `bb-app::launcher::spawn`. No admin rights, no race, and
-verified against the real client: two accounts stay up concurrently, each with its own `Local.dat`
-and temp/cache files. Approach B (symlink-swapping one shared `Local.dat`, needing Developer
-Mode/admin and serialized launches) was not needed.
+- GW2 ignores a redirected `APPDATA` environment variable (it resolves the folder through the
+  Windows known-folder API), so only a link on the real `%APPDATA%\Guild Wars 2` works.
+- A running client opens `Local.dat` **exclusively** at startup (no read, write, rename or delete
+  possible from outside) and keeps it open all session; in-game writes go through that handle.
+  Copying, renaming or hard-linking per launch is therefore impossible — only a reparse point on the
+  path works. A folder junction needs no admin rights or Developer Mode (a file symlink would).
+- The junction must only point at an account **during its launch** (same as Launchbuddy's
+  `Local.dat` symlink swap): point at the account → start the client → wait until its `Local.dat` has
+  been locked for a few seconds → point back at `shared`. Launches are serialized on one background
+  worker. Leaving the junction on an account breaks already running clients the next time they open
+  something by path.
+- A client started with `-shareArchive` cannot create a missing `Local.dat` ("data archive cannot be
+  opened"). A new account therefore gets a one-time **setup launch** without `-shareArchive`, which
+  requires that no other client runs; the user logs in with "remember email/password" once.
+- Graphics settings are written by path during play and so live in `shared` for all accounts
+  (as with Launchbuddy); per-account graphics settings are a possible later extension.
 
 **After a game patch** `Local.dat` files of an older build must be refreshed (one normal launch per
 account). Breakbar detects the build mismatch and guides the user instead of failing.
@@ -111,7 +121,7 @@ Config: `%APPDATA%\Breakbar\config.toml` (atomic write via temp file + `ReplaceF
 | 3.1 | GW2 path selection + validation (file dialog, registry/Steam auto-detect) |
 | 3.2 | Single launch + process monitoring |
 | 3.3 | Multi-launch (mutex kill + `-shareArchive`), benchmarks with 2–5 clients |
-| 3.4 | ✅ Per-account profile folders (Spike S1: Approach A), `-autologin` gated on a saved login |
+| 3.4 | ✅ Per-account `Local.dat` via a junction swapped only during launch, serialized launches, one-time setup launch |
 | 3.5 | Steam accounts (Spike S2) |
 | 3.6 | Companion apps, Blish HUD preset |
 | 4 | UX: status per account, launch-all queue, tray, hotkeys, dark/light, shortcuts/CLI |

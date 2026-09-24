@@ -5,9 +5,10 @@ use std::io;
 use std::path::{Path, PathBuf};
 use std::process::ExitStatus;
 use std::rc::Rc;
+use std::sync::mpsc;
 use std::thread;
 
-use bb_core::{Account, AccountId, LaunchOptions, Provider};
+use bb_core::{Account, AccountId, Provider};
 use bb_store::Config;
 use raw_window_handle::{HasWindowHandle, RawWindowHandle};
 use slint::{ComponentHandle, Model, SharedString};
@@ -95,19 +96,22 @@ pub fn run() -> Result<(), slint::PlatformError> {
     window.set_notice(notice.unwrap_or_default().into());
 
     let app = Rc::new(RefCell::new(app));
+    let queue = Rc::new(LaunchQueue::start(window.as_weak()));
 
     window.on_launch_account({
         let app = Rc::clone(&app);
+        let queue = Rc::clone(&queue);
         let weak = window.as_weak();
         move |id| {
             if let Some(window) = weak.upgrade() {
-                toggle_account(&window, &app, AccountId(id as u32));
+                toggle_account(&window, &app, &queue, AccountId(id as u32));
             }
         }
     });
 
     window.on_launch_all({
         let app = Rc::clone(&app);
+        let queue = Rc::clone(&queue);
         let weak = window.as_weak();
         move || {
             if let Some(window) = weak.upgrade() {
@@ -117,7 +121,7 @@ pub fn run() -> Result<(), slint::PlatformError> {
                     .map(|row| AccountId(row.id as u32))
                     .collect();
                 for id in idle_ids {
-                    start_account(&window, &app, id);
+                    start_account(&window, &app, &queue, id);
                 }
             }
         }
@@ -148,26 +152,29 @@ pub fn run() -> Result<(), slint::PlatformError> {
 
 /// Starts `id` if idle, or requests that its running client stop.
 ///
-/// Stopping only asks the client to terminate; the status returns to "Idle" once the
-/// background monitor thread (started in [`start_account`]) observes the actual exit.
-fn toggle_account(window: &MainWindow, app: &RefCell<App>, id: AccountId) {
+/// Stopping only asks the client to terminate; the status returns to idle once the background
+/// monitor thread observes the actual exit. A client that is still starting (queued or waiting
+/// for its `Local.dat`) can't be stopped or started again until its launch finishes.
+fn toggle_account(window: &MainWindow, app: &RefCell<App>, queue: &LaunchQueue, id: AccountId) {
     let row = account_rows_snapshot(window)
         .into_iter()
         .find(|row| row.id == id.0 as i32);
 
     match row {
+        Some(row) if row.running && row.handle == 0 => {}
         Some(row) if row.running => {
             update_row(window, id, |row| row.status = "Stopping…".into());
             if let Err(error) = bb_win::process::terminate(row.handle as isize) {
                 window.set_notice(format!("The client could not be stopped: {error}").into());
             }
         }
-        _ => start_account(window, app, id),
+        _ => start_account(window, app, queue, id),
     }
 }
 
-/// Spawns `id`'s client and starts a background thread that reports its exit back to the UI.
-fn start_account(window: &MainWindow, app: &RefCell<App>, id: AccountId) {
+/// Queues `id`'s launch. The row counts as running (with no handle yet) from now on, so it can't
+/// be queued twice.
+fn start_account(window: &MainWindow, app: &RefCell<App>, queue: &LaunchQueue, id: AccountId) {
     let (gw2_path, account) = {
         let app = app.borrow();
         (
@@ -183,39 +190,101 @@ fn start_account(window: &MainWindow, app: &RefCell<App>, id: AccountId) {
         return;
     };
 
-    update_row(window, id, |row| row.status = "Starting…".into());
+    update_row(window, id, |row| {
+        row.running = true;
+        row.handle = 0;
+        row.status = "Starting…".into();
+    });
+    queue.push(LaunchJob { gw2_path, account });
+}
 
-    let running = match launcher::spawn(&gw2_path, &account, LaunchOptions::default()) {
-        Ok(running) => running,
+#[derive(Debug)]
+struct LaunchJob {
+    gw2_path: PathBuf,
+    account: Account,
+}
+
+/// Runs launches one after another on a single background thread.
+///
+/// Each launch blocks for several seconds while `%APPDATA%\Guild Wars 2` points at that account
+/// (see [`launcher::launch`]), so launches must never overlap and must never run on the UI
+/// thread. A channel keeps them in click order.
+#[derive(Debug)]
+struct LaunchQueue {
+    jobs: mpsc::Sender<LaunchJob>,
+}
+
+impl LaunchQueue {
+    fn start(window: slint::Weak<MainWindow>) -> Self {
+        let (jobs, receiver) = mpsc::channel::<LaunchJob>();
+        thread::spawn(move || {
+            for job in receiver {
+                run_launch(&window, job);
+            }
+        });
+        Self { jobs }
+    }
+
+    fn push(&self, job: LaunchJob) {
+        // The worker only stops when the sender is dropped, i.e. when the window is gone.
+        let _ = self.jobs.send(job);
+    }
+}
+
+/// Launches one client (on the queue's worker thread) and hands the result to the UI thread.
+fn run_launch(window: &slint::Weak<MainWindow>, job: LaunchJob) {
+    let id = job.account.id;
+    let name = job.account.name.clone();
+
+    let launched = match launcher::launch(&job.gw2_path, &job.account) {
+        Ok(launched) => launched,
         Err(error) => {
-            update_row(window, id, |row| row.status = idle_status_text(id));
-            window.set_notice(error.to_string().into());
+            let message = error.to_string();
+            let _ = window.upgrade_in_event_loop(move |window| {
+                update_row(&window, id, |row| {
+                    row.running = false;
+                    row.handle = 0;
+                    row.status = idle_status_text(id);
+                });
+                window.set_notice(message.into());
+            });
             return;
         }
     };
 
-    let pid = running.pid();
+    let pid = launched.client.pid();
     // Slint's `int` is 32-bit; real process handle values comfortably fit in practice (they are
     // small table indices even in a 64-bit process), so this narrowing is safe here.
-    let handle = running.raw_handle() as i32;
-    update_row(window, id, |row| {
-        row.running = true;
-        row.handle = handle;
-        row.status = format!("Running (PID {pid})").into();
+    let handle = launched.client.raw_handle() as i32;
+    let notice = match (launched.setup, launched.warning) {
+        (_, Some(warning)) => Some(warning),
+        (true, None) => Some(format!(
+            "Setting up {name}: log in and tick \"Remember email/password\". \
+             Other accounts can be started once this client is closed again."
+        )),
+        (false, None) => None,
+    };
+    let _ = window.upgrade_in_event_loop(move |window| {
+        update_row(&window, id, |row| {
+            row.handle = handle;
+            row.status = format!("Running (PID {pid})").into();
+        });
+        if let Some(notice) = notice {
+            window.set_notice(notice.into());
+        }
     });
 
-    let weak = window.as_weak();
+    let window = window.clone();
+    let client = launched.client;
     thread::spawn(move || {
-        let result = running.wait_for_exit();
+        let result = client.wait_for_exit();
         // Marshal back to the UI thread: Slint's model and window may only be touched there.
-        let _ = slint::invoke_from_event_loop(move || {
-            if let Some(window) = weak.upgrade() {
-                update_row(&window, id, |row| {
-                    row.running = false;
-                    row.handle = 0;
-                    row.status = exit_status_text(id, &result);
-                });
-            }
+        let _ = window.upgrade_in_event_loop(move |window| {
+            update_row(&window, id, |row| {
+                row.running = false;
+                row.handle = 0;
+                row.status = exit_status_text(id, &result);
+            });
         });
     });
 }
@@ -233,14 +302,13 @@ fn exit_status_text(id: AccountId, result: &io::Result<ExitStatus>) -> SharedStr
     }
 }
 
-/// "Idle" once the account has a saved login (its profile has a `Local.dat`), otherwise a hint
-/// that it still needs one — the account's very first launch always starts at the normal login
-/// screen no matter what, so this is purely informational.
+/// "Idle" once the account has its own `Local.dat`, otherwise a hint that its next launch is the
+/// one-time setup (which needs all other clients closed).
 fn idle_status_text(id: AccountId) -> SharedString {
-    if bb_store::has_saved_login(id) {
+    if bb_store::is_set_up(id) {
         "Idle".into()
     } else {
-        "Needs login".into()
+        "Needs setup".into()
     }
 }
 

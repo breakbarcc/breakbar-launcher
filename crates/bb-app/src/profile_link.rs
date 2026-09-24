@@ -1,9 +1,22 @@
-//! Pointing the real `%APPDATA%\Guild Wars 2` at an account's own profile.
+//! Pointing the real `%APPDATA%\Guild Wars 2` at an account's own profile during a launch.
 //!
 //! Guild Wars 2 only ever reads and writes `%APPDATA%\Guild Wars 2` — see [`bb_win::junction`]'s
-//! module docs for why redirecting a child process's own environment doesn't work. This module
-//! instead retargets that real folder itself, via an NTFS junction, to whichever account is
-//! about to launch.
+//! module docs for why redirecting a child process's own environment doesn't work. That real
+//! folder is therefore turned into an NTFS junction which normally points at a shared default
+//! profile, and is pointed at an account's own profile only for the few seconds it takes that
+//! account's client to start and take its `Local.dat`:
+//!
+//! 1. [`point_to_account`] — the client about to start will find that account's `Local.dat`.
+//! 2. The client starts and opens `Local.dat` exclusively; from then on it only uses that open
+//!    handle for it (verified: it stays locked all session and in-game writes go through it).
+//! 3. [`point_to_shared`] — anything later opened by path (graphics settings) and any client
+//!    started outside Breakbar use the shared profile again.
+//!
+//! This mirrors Launchbuddy's approach (a `Local.dat` symlink swapped only during launch), but a
+//! junction needs no admin rights or Developer Mode, and because GW2 re-creates `Local.dat` on
+//! startup, a folder-level link also keeps that fresh file inside the account's profile.
+//! Retargeting the junction while other clients run is safe: it changes the folder's reparse
+//! point, not the files those clients hold open.
 
 use std::fs;
 use std::os::windows::fs::MetadataExt;
@@ -13,12 +26,13 @@ use bb_core::AccountId;
 
 /// `FILE_ATTRIBUTE_REPARSE_POINT`.
 const FILE_ATTRIBUTE_REPARSE_POINT: u32 = 0x400;
+const GW2_FOLDER: &str = "Guild Wars 2";
 
 #[derive(Debug, thiserror::Error)]
 pub enum ProfileLinkError {
     #[error("the APPDATA environment variable is not set")]
     NoAppData,
-    #[error("could not determine the account's profile folder: {0}")]
+    #[error("could not determine the profile folder: {0}")]
     Profile(#[from] bb_store::StoreError),
     #[error("could not prepare {path}: {source}")]
     Io {
@@ -26,67 +40,84 @@ pub enum ProfileLinkError {
         source: std::io::Error,
     },
     #[error(
-        "{path} already holds data for a different account; \
-         not overwriting it with {other_account_dir}"
+        "both {real} and {shared} exist as ordinary folders; move one of them away so \
+         Breakbar doesn't overwrite either"
     )]
-    WouldOverwriteAnotherAccount {
-        path: PathBuf,
-        other_account_dir: PathBuf,
-    },
-    #[error("could not link Guild Wars 2's data folder to this account's profile: {0}")]
+    Conflict { real: PathBuf, shared: PathBuf },
+    #[error("could not link Guild Wars 2's data folder: {0}")]
     Link(String),
 }
 
-/// Points the real `%APPDATA%\Guild Wars 2` at `account_id`'s own profile folder, so the next
-/// launch reads and writes that account's own `Local.dat` instead of whichever account (if any)
-/// used it last.
-///
-/// Does nothing if it's already pointed there. The very first time this runs for any account, if
-/// `%APPDATA%\Guild Wars 2` is still a real, ordinary folder — i.e. Breakbar has never linked it
-/// before — that folder, and whatever login it already holds, is *moved* (not deleted, not
-/// copied) into `account_id`'s profile, so the first account you launch through Breakbar keeps
-/// its existing login instead of losing it.
-pub fn activate(account_id: AccountId) -> Result<(), ProfileLinkError> {
-    let real_gw2_dir = real_gw2_dir()?;
-    let account_gw2_dir = bb_store::profile_dir(account_id)?.join("Guild Wars 2");
+/// The folder the account's client reads and writes as `%APPDATA%\Guild Wars 2`.
+pub fn account_gw2_dir(account_id: AccountId) -> Result<PathBuf, ProfileLinkError> {
+    Ok(bb_store::profile_dir(account_id)?.join(GW2_FOLDER))
+}
 
-    if already_linked_to(&real_gw2_dir, &account_gw2_dir) {
+/// Points the real `%APPDATA%\Guild Wars 2` at `account_id`'s own profile.
+pub fn point_to_account(account_id: AccountId) -> Result<(), ProfileLinkError> {
+    point_to(&account_gw2_dir(account_id)?)
+}
+
+/// Points the real `%APPDATA%\Guild Wars 2` back at the shared default profile.
+pub fn point_to_shared() -> Result<(), ProfileLinkError> {
+    point_to(&shared_gw2_dir()?)
+}
+
+fn point_to(target: &Path) -> Result<(), ProfileLinkError> {
+    let real = real_gw2_dir()?;
+    ensure_linked(&real)?;
+    if already_linked_to(&real, target) {
         return Ok(());
     }
+    ensure_dir(target)?;
+    bb_win::junction::create(&real, target)
+        .map_err(|error| ProfileLinkError::Link(error.to_string()))
+}
 
-    if is_reparse_point(&real_gw2_dir)? {
-        // Already linked to a *different* account (or a stale link) — just retarget it.
-        ensure_dir(&account_gw2_dir)?;
-    } else if real_gw2_dir.is_dir() {
-        // First run: adopt the existing installation's data instead of orphaning it.
-        if account_gw2_dir.exists() {
-            return Err(ProfileLinkError::WouldOverwriteAnotherAccount {
-                path: real_gw2_dir,
-                other_account_dir: account_gw2_dir,
+/// Makes sure `real` is a junction, creating the shared profile if needed.
+///
+/// The first time Breakbar runs, `real` is still an ordinary folder holding the existing
+/// installation's data. That folder is *moved* (never deleted or overwritten) to become the
+/// shared profile, so clients started outside Breakbar keep working exactly as before.
+fn ensure_linked(real: &Path) -> Result<(), ProfileLinkError> {
+    let shared = shared_gw2_dir()?;
+
+    if is_reparse_point(real)? {
+        return ensure_dir(&shared);
+    }
+
+    if real.is_dir() {
+        if shared.exists() {
+            return Err(ProfileLinkError::Conflict {
+                real: real.to_owned(),
+                shared,
             });
         }
-        if let Some(parent) = account_gw2_dir.parent() {
+        if let Some(parent) = shared.parent() {
             ensure_dir(parent)?;
         }
-        fs::rename(&real_gw2_dir, &account_gw2_dir).map_err(|source| ProfileLinkError::Io {
-            path: real_gw2_dir.clone(),
+        fs::rename(real, &shared).map_err(|source| ProfileLinkError::Io {
+            path: real.to_owned(),
             source,
         })?;
     } else {
-        ensure_dir(&account_gw2_dir)?;
+        ensure_dir(&shared)?;
     }
 
-    // `real_gw2_dir` no longer exists (just moved away above) or never did: recreate it as a
-    // plain empty directory so the junction has something to attach its reparse point to.
-    ensure_dir(&real_gw2_dir)?;
-    bb_win::junction::create(&real_gw2_dir, &account_gw2_dir)
-        .map_err(|error| ProfileLinkError::Link(error.to_string()))?;
-    Ok(())
+    // `real` was just moved away or never existed: recreate it as an empty directory so the
+    // junction has something to attach its reparse point to.
+    ensure_dir(real)?;
+    bb_win::junction::create(real, &shared)
+        .map_err(|error| ProfileLinkError::Link(error.to_string()))
 }
 
 fn real_gw2_dir() -> Result<PathBuf, ProfileLinkError> {
     let appdata = std::env::var_os("APPDATA").ok_or(ProfileLinkError::NoAppData)?;
-    Ok(PathBuf::from(appdata).join("Guild Wars 2"))
+    Ok(PathBuf::from(appdata).join(GW2_FOLDER))
+}
+
+fn shared_gw2_dir() -> Result<PathBuf, ProfileLinkError> {
+    Ok(bb_store::shared_profile_dir()?.join(GW2_FOLDER))
 }
 
 fn ensure_dir(path: &Path) -> Result<(), ProfileLinkError> {
@@ -98,18 +129,18 @@ fn ensure_dir(path: &Path) -> Result<(), ProfileLinkError> {
 
 /// Whether `path` currently has a reparse point (junction or symlink) set on it.
 fn is_reparse_point(path: &Path) -> Result<bool, ProfileLinkError> {
-    if !path.exists() {
-        return Ok(false);
+    match fs::symlink_metadata(path) {
+        Ok(metadata) => Ok(metadata.file_attributes() & FILE_ATTRIBUTE_REPARSE_POINT != 0),
+        Err(error) if error.kind() == std::io::ErrorKind::NotFound => Ok(false),
+        Err(source) => Err(ProfileLinkError::Io {
+            path: path.to_owned(),
+            source,
+        }),
     }
-    let metadata = fs::symlink_metadata(path).map_err(|source| ProfileLinkError::Io {
-        path: path.to_owned(),
-        source,
-    })?;
-    Ok(metadata.file_attributes() & FILE_ATTRIBUTE_REPARSE_POINT != 0)
 }
 
-/// Whether `link` is a reparse point that already resolves to `target`, without needing to parse
-/// the reparse point's raw data ourselves: `canonicalize` follows it and returns the real path.
+/// Whether `link` already resolves to `target`, without parsing the reparse point ourselves:
+/// `canonicalize` follows it and returns the real path.
 fn already_linked_to(link: &Path, target: &Path) -> bool {
     let (Ok(link), Ok(target)) = (fs::canonicalize(link), fs::canonicalize(target)) else {
         return false;
@@ -121,103 +152,99 @@ fn already_linked_to(link: &Path, target: &Path) -> bool {
 mod tests {
     use super::*;
     use crate::test_support::with_isolated_appdata;
-    use bb_core::AccountId;
+
+    fn real(root: &Path) -> PathBuf {
+        root.join("Roaming").join(GW2_FOLDER)
+    }
+
+    fn profile(root: &Path, name: &str) -> PathBuf {
+        root.join("Local")
+            .join("Breakbar")
+            .join("profiles")
+            .join(name)
+            .join(GW2_FOLDER)
+    }
 
     #[test]
-    fn fresh_install_just_creates_and_links_the_account_folder() {
+    fn fresh_install_links_to_an_empty_shared_profile() {
         with_isolated_appdata("fresh", |root| {
-            let id = AccountId(1);
+            point_to_shared().unwrap();
 
-            activate(id).unwrap();
-
-            let real = root.join("Roaming").join("Guild Wars 2");
-            let account = root
-                .join("Local")
-                .join("Breakbar")
-                .join("profiles")
-                .join("1")
-                .join("Guild Wars 2");
-            assert!(is_reparse_point(&real).unwrap());
-            assert!(already_linked_to(&real, &account));
+            assert!(is_reparse_point(&real(root)).unwrap());
+            assert!(already_linked_to(&real(root), &profile(root, "shared")));
         });
     }
 
     #[test]
-    fn existing_installation_is_moved_not_deleted() {
+    fn existing_installation_becomes_the_shared_profile() {
         with_isolated_appdata("migrate", |root| {
-            let real = root.join("Roaming").join("Guild Wars 2");
-            fs::create_dir_all(&real).unwrap();
-            fs::write(real.join("Local.dat"), b"pretend save data").unwrap();
+            fs::create_dir_all(real(root)).unwrap();
+            fs::write(real(root).join("Local.dat"), b"existing data").unwrap();
 
-            activate(AccountId(1)).unwrap();
+            point_to_shared().unwrap();
 
-            let account = root
-                .join("Local")
-                .join("Breakbar")
-                .join("profiles")
-                .join("1")
-                .join("Guild Wars 2");
+            let shared = profile(root, "shared");
             assert_eq!(
-                fs::read(account.join("Local.dat")).unwrap(),
-                b"pretend save data"
+                fs::read(shared.join("Local.dat")).unwrap(),
+                b"existing data"
             );
-            assert!(is_reparse_point(&real).unwrap());
+            assert!(is_reparse_point(&real(root)).unwrap());
             assert_eq!(
-                fs::read(real.join("Local.dat")).unwrap(),
-                b"pretend save data"
+                fs::read(real(root).join("Local.dat")).unwrap(),
+                b"existing data"
             );
         });
     }
 
     #[test]
-    fn switching_accounts_retargets_without_touching_either_profile() {
+    fn launch_window_switches_to_the_account_and_back() {
         with_isolated_appdata("switch", |root| {
-            activate(AccountId(1)).unwrap();
-            let real = root.join("Roaming").join("Guild Wars 2");
-            fs::write(real.join("Local.dat"), b"account one's data").unwrap();
+            fs::create_dir_all(real(root)).unwrap();
+            fs::write(real(root).join("Local.dat"), b"shared data").unwrap();
 
-            activate(AccountId(2)).unwrap();
-            fs::write(real.join("Local.dat"), b"account two's data").unwrap();
+            point_to_account(AccountId(1)).unwrap();
+            assert!(already_linked_to(&real(root), &profile(root, "1")));
+            fs::write(real(root).join("Local.dat"), b"account one").unwrap();
 
-            activate(AccountId(1)).unwrap();
-
-            let profile_1 = root
-                .join("Local")
-                .join("Breakbar")
-                .join("profiles")
-                .join("1")
-                .join("Guild Wars 2");
-            let profile_2 = root
-                .join("Local")
-                .join("Breakbar")
-                .join("profiles")
-                .join("2")
-                .join("Guild Wars 2");
+            point_to_shared().unwrap();
             assert_eq!(
-                fs::read(profile_1.join("Local.dat")).unwrap(),
-                b"account one's data"
+                fs::read(real(root).join("Local.dat")).unwrap(),
+                b"shared data"
             );
             assert_eq!(
-                fs::read(profile_2.join("Local.dat")).unwrap(),
-                b"account two's data"
+                fs::read(profile(root, "1").join("Local.dat")).unwrap(),
+                b"account one"
             );
-            assert!(already_linked_to(&real, &profile_1));
         });
     }
 
     #[test]
-    fn activating_the_same_account_twice_is_a_cheap_no_op() {
-        with_isolated_appdata("idempotent", |root| {
-            activate(AccountId(1)).unwrap();
-            let real = root.join("Roaming").join("Guild Wars 2");
-            fs::write(real.join("Local.dat"), b"data").unwrap();
+    fn junction_from_an_older_version_is_reused() {
+        with_isolated_appdata("legacy", |root| {
+            // Earlier builds left the real folder linked straight to an account profile.
+            let account = profile(root, "2");
+            fs::create_dir_all(&account).unwrap();
+            fs::create_dir_all(real(root)).unwrap();
+            bb_win::junction::create(&real(root), &account).unwrap();
 
-            activate(AccountId(1)).unwrap();
+            point_to_shared().unwrap();
 
-            // Still there and unchanged — a real re-link would have gone through the
-            // create-empty-dir-then-junction path again, which is harmless here anyway, but the
-            // early return means it never even touched the filesystem a second time.
-            assert_eq!(fs::read(real.join("Local.dat")).unwrap(), b"data");
+            assert!(already_linked_to(&real(root), &profile(root, "shared")));
+            assert!(account.is_dir(), "the account profile must be left alone");
+        });
+    }
+
+    #[test]
+    fn two_ordinary_folders_are_never_overwritten() {
+        with_isolated_appdata("conflict", |root| {
+            fs::create_dir_all(real(root)).unwrap();
+            fs::create_dir_all(profile(root, "shared")).unwrap();
+
+            assert!(matches!(
+                point_to_shared(),
+                Err(ProfileLinkError::Conflict { .. })
+            ));
+            assert!(!is_reparse_point(&real(root)).unwrap());
         });
     }
 }
