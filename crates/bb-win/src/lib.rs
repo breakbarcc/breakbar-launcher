@@ -3,6 +3,7 @@
 //! All `unsafe` code of the project lives in this crate so that the rest of the
 //! workspace can stay safe Rust.
 
+pub mod autostart;
 mod com;
 pub mod console;
 pub mod dialog;

@@ -1,9 +1,13 @@
 //! Registry reads.
 
+use std::io;
+
+use windows::Win32::Foundation::ERROR_FILE_NOT_FOUND;
 use windows::Win32::System::Registry::{
-    HKEY, HKEY_CURRENT_USER, HKEY_LOCAL_MACHINE, RRF_RT_REG_SZ, RegGetValueW,
+    HKEY, HKEY_CURRENT_USER, HKEY_LOCAL_MACHINE, KEY_SET_VALUE, REG_OPTION_NON_VOLATILE, REG_SZ,
+    RRF_RT_REG_SZ, RegCloseKey, RegCreateKeyExW, RegDeleteKeyValueW, RegGetValueW, RegSetValueExW,
 };
-use windows::core::HSTRING;
+use windows::core::{HSTRING, PCWSTR};
 
 /// Registry hive to read from.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -64,6 +68,59 @@ pub fn read_string(root: Root, subkey: &str, value: &str) -> Option<String> {
 
     let end = buffer.iter().position(|&c| c == 0).unwrap_or(buffer.len());
     String::from_utf16(&buffer[..end]).ok()
+}
+
+/// Writes a `REG_SZ` value, creating `subkey` if it doesn't exist yet.
+pub fn write_string(root: Root, subkey: &str, value: &str, data: &str) -> Result<(), io::Error> {
+    let subkey = HSTRING::from(subkey);
+    let value = HSTRING::from(value);
+    let mut data: Vec<u16> = data.encode_utf16().chain([0]).collect();
+    // SAFETY: reinterpreting the u16 buffer as bytes for the byte-oriented registry API; the
+    // slice stays within `data`'s allocation and doesn't outlive it.
+    let data =
+        unsafe { std::slice::from_raw_parts(data.as_mut_ptr().cast::<u8>(), data.len() * 2) };
+
+    let mut hkey = HKEY::default();
+    // SAFETY: `hkey` receives the opened/created key; no other pointers are stored past this call.
+    let status = unsafe {
+        RegCreateKeyExW(
+            root.hkey(),
+            &subkey,
+            None,
+            PCWSTR::null(),
+            REG_OPTION_NON_VOLATILE,
+            KEY_SET_VALUE,
+            None,
+            &mut hkey,
+            None,
+        )
+    };
+    if status.is_err() {
+        return Err(io::Error::from_raw_os_error(status.0 as i32));
+    }
+
+    // SAFETY: `hkey` was just opened above and is closed below regardless of the outcome.
+    let status = unsafe { RegSetValueExW(hkey, &value, None, REG_SZ, Some(data)) };
+    // SAFETY: `hkey` is a valid, still-open key handle.
+    unsafe {
+        let _ = RegCloseKey(hkey);
+    }
+    if status.is_err() {
+        return Err(io::Error::from_raw_os_error(status.0 as i32));
+    }
+    Ok(())
+}
+
+/// Deletes a value. Missing keys or values are not an error.
+pub fn delete_value(root: Root, subkey: &str, value: &str) -> Result<(), io::Error> {
+    let subkey = HSTRING::from(subkey);
+    let value = HSTRING::from(value);
+    // SAFETY: all arguments are valid wide strings.
+    let status = unsafe { RegDeleteKeyValueW(root.hkey(), &subkey, &value) };
+    if status.is_err() && status != ERROR_FILE_NOT_FOUND {
+        return Err(io::Error::from_raw_os_error(status.0 as i32));
+    }
+    Ok(())
 }
 
 #[cfg(test)]

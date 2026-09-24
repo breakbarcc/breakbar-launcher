@@ -46,6 +46,9 @@ const MAX_TOASTS: usize = 3;
 /// Toasts disappear after this long, unless the pointer is on them.
 const TOAST_LIFETIME: Duration = Duration::from_secs(6);
 
+/// `Run` key entry name for starting Breakbar with Windows.
+const AUTOSTART_NAME: &str = "Breakbar Launcher";
+
 /// Application state shared between UI callbacks.
 ///
 /// Only ever touched on the UI thread: Slint callbacks run there, and so does the
@@ -200,6 +203,7 @@ pub fn run() -> Result<(), slint::PlatformError> {
     set_rows(&window, account_rows(&app.config));
     show_gw2_path(&window, app.config.gw2_path.as_deref());
     show_blish_path(&window, app.blish_hud().map(|app| app.exe.as_path()));
+    window.set_autostart(bb_win::autostart::is_enabled(AUTOSTART_NAME));
     refresh(&window);
 
     let app = Rc::new(RefCell::new(app));
@@ -397,6 +401,15 @@ pub fn run() -> Result<(), slint::PlatformError> {
         move || {
             if let Some(window) = weak.upgrade() {
                 choose_blish_path(&window, &app);
+            }
+        }
+    });
+
+    window.on_toggle_autostart({
+        let weak = window.as_weak();
+        move || {
+            if let Some(window) = weak.upgrade() {
+                toggle_autostart(&window);
             }
         }
     });
@@ -1255,6 +1268,31 @@ fn choose_blish_path(window: &MainWindow, app: &RefCell<App>) {
     app.save(window);
 }
 
+/// Flips the `Run` key entry that starts Breakbar with Windows. The registry is the source of
+/// truth (like the path fields above), not the config file, so this stays correct even if the
+/// install is moved without opening Breakbar in between.
+fn toggle_autostart(window: &MainWindow) {
+    let enable = !window.get_autostart();
+    let result = if enable {
+        std::env::current_exe().and_then(|exe| bb_win::autostart::enable(AUTOSTART_NAME, &exe))
+    } else {
+        bb_win::autostart::disable(AUTOSTART_NAME)
+    };
+    match result {
+        Ok(()) => window.set_autostart(enable),
+        Err(error) => {
+            window.set_autostart(bb_win::autostart::is_enabled(AUTOSTART_NAME));
+            let messages = window.global::<Messages>();
+            push_toast(
+                window,
+                ToastKind::Error,
+                messages.invoke_autostart_failed_title(),
+                messages.invoke_autostart_failed(error.to_string().into()),
+            );
+        }
+    }
+}
+
 fn account_rows(config: &Config) -> Vec<AccountRow> {
     config
         .accounts
@@ -1574,6 +1612,7 @@ mod preview {
             ui.set_gw2_path_ok(true);
             ui.set_blish_path(r"D:\Tools\Blish HUD\Blish HUD.exe".into());
             ui.set_blish_path_ok(name != "settings-dark");
+            ui.set_autostart(name == "settings-dark");
             ui.set_setup_detected_path(r"C:\Program Files\Guild Wars 2\Gw2-64.exe".into());
             if demo {
                 set_rows(&ui, demo_rows());

@@ -167,9 +167,14 @@ struct CompanionApp {
   the main states in both themes with the software renderer into `%TEMP%\breakbar-ui\*.bmp` —
   no window opens, so it is safe to run while playing.
 - **Settings page** (`ui/settings.slint`, reached via the gear icon next to "Add account"): so far
-  only the "// Paths" section (screen 11), showing the same Guild Wars 2 / Blish HUD paths that
-  used to sit in the main window's footer. The rest of that screen (companion app editor, startup
-  behavior, appearance, about) lands with the steps that need it.
+  the "// Paths" section (screen 11), showing the same Guild Wars 2 / Blish HUD paths that used to
+  sit in the main window's footer, and a "// Behavior" section with the "Start with Windows"
+  toggle. The rest of that screen (companion app editor, the after-start radio group, appearance,
+  about) lands with the steps that need it.
+- **Start with Windows** (`bb_win::autostart`) writes/removes a `HKCU\...\Run` entry pointing at
+  the current `breakbar.exe`, no admin rights needed. The registry is the source of truth — like
+  the path fields' found/not-found checks — rather than a flag in `config.toml`, so the toggle
+  always reflects reality even if the install was moved without opening Breakbar in between.
 - **Pitfall: `TouchArea` + `FocusScope` pairs.** Every clickable component pairs a `TouchArea`
   (the click) with a `FocusScope`-derived one (keyboard activation, e.g. our shared `Activation`
   helper). `FocusScope`'s `focus-on-click` defaults to `true` and grabs the mouse-down itself to
@@ -232,7 +237,7 @@ Config: `%APPDATA%\Breakbar\config.toml` (atomic write via temp file + `ReplaceF
 | 4.1 | ✅ Design: new UI in both themes (tokens, components, account rows with all states, selection, toasts, empty state, narrow layout), app icon, English + German |
 | 4.1b | ✅ Account management: edit page, duplicate, delete, desktop shortcut, profile folder, drag & drop order, first-start setup, shortcut starts without a window (companion editor moved to 4.2) |
 | 4.2 | ✅ Settings page: paths (companion app editor still pending) |
-| 4.3 | Start with Windows |
+| 4.3 | ✅ Start with Windows (`HKCU\...\Run`, toggle in Settings) |
 | 4.4 | Close behavior and tray |
 | 4.5 | Instance switcher overlay |
 | 4.6 | Login set-up flow |

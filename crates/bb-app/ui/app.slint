@@ -160,6 +160,7 @@ export component MainWindow inherits Window {
     /// Path to `Blish HUD.exe`; empty if not configured.
     in property <string> blish-path;
     in property <bool> blish-path-ok;
+    in property <bool> autostart;
     in property <[ToastData]> toasts;
     in-out property <Page> page: Page.accounts;
     /// What the editor page shows; set by Rust before switching to it.
@@ -179,6 +180,7 @@ export component MainWindow inherits Window {
     callback clear-selection();
     callback choose-gw2-path();
     callback choose-blish-path();
+    callback toggle-autostart();
     /// Open the editor for an account (0 = a new one).
     callback edit-account(int);
     /// Editor: switch a companion app for the account being edited.
@@ -506,9 +508,11 @@ export component MainWindow inherits Window {
         gw2-path-ok: root.gw2-path-ok;
         blish-path: root.blish-path;
         blish-path-ok: root.blish-path-ok;
+        autostart: root.autostart;
         back => { root.page = Page.accounts; }
         choose-gw2-path => { root.choose-gw2-path(); }
         choose-blish-path => { root.choose-blish-path(); }
+        toggle-autostart => { root.toggle-autostart(); }
     }
 
     // ── Toasts ───────────────────────────────────────────────────────────────────────────────

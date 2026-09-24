@@ -122,6 +122,14 @@ export global Messages {
         @tr("Settings")
     }
 
+    public pure function autostart-failed-title() -> string {
+        @tr("Could not change the Windows startup setting")
+    }
+
+    public pure function autostart-failed(detail: string) -> string {
+        @tr("{}", detail)
+    }
+
     public pure function dialog-failed(detail: string) -> string {
         @tr("The file dialog could not be opened: {}", detail)
     }

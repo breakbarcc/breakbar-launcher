@@ -58,7 +58,8 @@ msgid " · Steam running"
 msgstr " · Steam läuft"
 
 #: ui/account-card.slint:139 ui/account-card.slint:225
-#: ui/account-card.slint:139 ui/account-card.slint:225
+#: ui/account-card.slint:139 ui/account-card.slint:225 ui/account-card.slint:225
+#: ui/account-card.slint:139 ui/account-card.slint:225 ui/account-card.slint:225
 msgctxt "AccountCard"
 msgid "Select {}"
 msgstr "{} auswählen"
@@ -74,13 +75,15 @@ msgid "Starts with: Blish HUD"
 msgstr "Mitgestartet: Blish HUD"
 
 #: ui/account-card.slint:183 ui/account-card.slint:269
-#: ui/account-card.slint:183 ui/account-card.slint:269
+#: ui/account-card.slint:183 ui/account-card.slint:269 ui/account-card.slint:269
+#: ui/account-card.slint:183 ui/account-card.slint:269 ui/account-card.slint:269
 msgctxt "AccountCard"
 msgid "Retry"
 msgstr "Erneut"
 
 #: ui/account-card.slint:199 ui/account-card.slint:285
-#: ui/account-card.slint:199 ui/account-card.slint:285
+#: ui/account-card.slint:199 ui/account-card.slint:285 ui/account-card.slint:285
+#: ui/account-card.slint:199 ui/account-card.slint:285 ui/account-card.slint:285
 msgctxt "AccountCard"
 msgid "More actions for {}"
 msgstr "Mehr Aktionen für {}"
@@ -148,48 +151,49 @@ msgctxt "AddAccountPage"
 msgid "Cancel"
 msgstr "Abbrechen"
 
-#: ui/app.slint:257 ui/app.slint:278 ui/app.slint:247
+#: ui/app.slint:257 ui/app.slint:278 ui/app.slint:247 ui/app.slint:249
 msgctxt "MainWindow"
 msgid "Start · {}"
 msgstr "Starten · {}"
 
-#: ui/app.slint:257 ui/app.slint:278 ui/app.slint:247
+#: ui/app.slint:257 ui/app.slint:278 ui/app.slint:247 ui/app.slint:249
 msgctxt "MainWindow"
 msgid "Start selection · {}"
 msgstr "Auswahl starten · {}"
 
-#: ui/app.slint:258 ui/app.slint:279 ui/app.slint:248
+#: ui/app.slint:258 ui/app.slint:279 ui/app.slint:248 ui/app.slint:250
 msgctxt "MainWindow"
 msgid "All"
 msgstr "Alle"
 
-#: ui/app.slint:258 ui/app.slint:279 ui/app.slint:248
+#: ui/app.slint:258 ui/app.slint:279 ui/app.slint:248 ui/app.slint:250
 msgctxt "MainWindow"
 msgid "Launch all"
 msgstr "Launch all"
 
-#: ui/app.slint:267 ui/app.slint:288 ui/app.slint:257
+#: ui/app.slint:267 ui/app.slint:288 ui/app.slint:257 ui/app.slint:259
 msgctxt "MainWindow"
 msgid "{} of {} clients running"
 msgstr "{} von {} Clients laufen"
 
-#: ui/app.slint:286 ui/app.slint:310 ui/app.slint:279
+#: ui/app.slint:286 ui/app.slint:310 ui/app.slint:279 ui/app.slint:281
 msgctxt "MainWindow"
 msgid "RUNNING"
 msgstr "LAUFEN"
 
 #: ui/app.slint:308 ui/app.slint:358 ui/app.slint:332 ui/app.slint:381
-#: ui/app.slint:308 ui/app.slint:358 ui/app.slint:332 ui/app.slint:381 ui/app.slint:357
+#: ui/app.slint:308 ui/app.slint:358 ui/app.slint:332 ui/app.slint:381 ui/app.slint:358 ui/app.slint:332 ui/app.slint:381
+#: ui/app.slint:308 ui/app.slint:358 ui/app.slint:332 ui/app.slint:381 ui/app.slint:358 ui/app.slint:332 ui/app.slint:381 ui/app.slint:303 ui/app.slint:359
 msgctxt "MainWindow"
 msgid "Add account"
 msgstr "Account hinzufügen"
 
-#: ui/app.slint:338 ui/app.slint:362
+#: ui/app.slint:338 ui/app.slint:362 ui/app.slint:340
 msgctxt "MainWindow"
 msgid "No accounts yet"
 msgstr "Noch keine Accounts"
 
-#: ui/app.slint:346 ui/app.slint:369 ui/app.slint:345
+#: ui/app.slint:346 ui/app.slint:369 ui/app.slint:345 ui/app.slint:347
 msgctxt "MainWindow"
 msgid ""
 "Add an account and start it with one click. Several accounts run side by "
@@ -198,17 +202,17 @@ msgstr ""
 "Lege einen Account an und starte ihn mit einem Klick. Mehrere Accounts "
 "laufen parallel."
 
-#: ui/app.slint:372 ui/app.slint:396
+#: ui/app.slint:372 ui/app.slint:396 ui/app.slint:374
 msgctxt "MainWindow"
 msgid "// ACCOUNTS · {}"
 msgstr "// ACCOUNTS · {}"
 
-#: ui/app.slint:378 ui/app.slint:407 ui/app.slint:383
+#: ui/app.slint:378 ui/app.slint:407 ui/app.slint:383 ui/app.slint:385
 msgctxt "MainWindow"
 msgid "{} selected"
 msgstr "{} ausgewählt"
 
-#: ui/app.slint:385 ui/app.slint:414 ui/app.slint:390
+#: ui/app.slint:385 ui/app.slint:414 ui/app.slint:390 ui/app.slint:392
 msgctxt "MainWindow"
 msgid "Clear"
 msgstr "Aufheben"
@@ -240,7 +244,9 @@ msgstr "Hinweis schließen"
 
 #: ui/messages.slint:20 ui/messages.slint:66 ui/messages.slint:21
 #: ui/messages.slint:20 ui/messages.slint:66 ui/messages.slint:21 ui/messages.slint:66 ui/messages.slint:21
-#: ui/messages.slint:20 ui/messages.slint:66 ui/messages.slint:21 ui/messages.slint:66 ui/messages.slint:21
+#: ui/messages.slint:20 ui/messages.slint:66 ui/messages.slint:21 ui/messages.slint:66 ui/messages.slint:21 ui/messages.slint:21 ui/messages.slint:20
+#: ui/messages.slint:20 ui/messages.slint:66 ui/messages.slint:21 ui/messages.slint:66 ui/messages.slint:21 ui/messages.slint:21 ui/messages.slint:20 ui/messages.slint:21 ui/messages.slint:66
+#: ui/messages.slint:20 ui/messages.slint:66 ui/messages.slint:21 ui/messages.slint:66 ui/messages.slint:21 ui/messages.slint:21 ui/messages.slint:20 ui/messages.slint:21 ui/messages.slint:66 ui/messages.slint:70
 msgctxt "Messages"
 msgid "Start failed"
 msgstr "Start fehlgeschlagen"
@@ -405,47 +411,47 @@ msgctxt "Messages"
 msgid "Settings"
 msgstr "Einstellungen"
 
-#: ui/messages.slint:122 ui/messages.slint:126
+#: ui/messages.slint:122 ui/messages.slint:126 ui/messages.slint:134
 msgctxt "Messages"
 msgid "The file dialog could not be opened: {}"
 msgstr "Der Dateidialog konnte nicht geöffnet werden: {}"
 
-#: ui/messages.slint:126 ui/messages.slint:130
+#: ui/messages.slint:126 ui/messages.slint:130 ui/messages.slint:138
 msgctxt "Messages"
 msgid "Choose the Guild Wars 2 client first."
 msgstr "Wähle zuerst den Guild-Wars-2-Client."
 
-#: ui/messages.slint:130 ui/messages.slint:134
+#: ui/messages.slint:130 ui/messages.slint:134 ui/messages.slint:142
 msgctxt "Messages"
 msgid "Not the Guild Wars 2 client"
 msgstr "Nicht der Guild-Wars-2-Client"
 
-#: ui/messages.slint:134 ui/messages.slint:138
+#: ui/messages.slint:134 ui/messages.slint:138 ui/messages.slint:146
 msgctxt "Messages"
 msgid "Guild Wars 2 client not usable"
 msgstr "Guild-Wars-2-Client nicht nutzbar"
 
-#: ui/messages.slint:139 ui/messages.slint:186
+#: ui/messages.slint:139 ui/messages.slint:186 ui/messages.slint:194
 msgctxt "Messages"
 msgid "The file does not exist."
 msgstr "Die Datei existiert nicht."
 
-#: ui/messages.slint:142 ui/messages.slint:189
+#: ui/messages.slint:142 ui/messages.slint:189 ui/messages.slint:197
 msgctxt "Messages"
 msgid "The file could not be read: {}"
 msgstr "Die Datei konnte nicht gelesen werden: {}"
 
-#: ui/messages.slint:145 ui/messages.slint:192
+#: ui/messages.slint:145 ui/messages.slint:192 ui/messages.slint:200
 msgctxt "Messages"
 msgid "The file is not a Windows program."
 msgstr "Die Datei ist kein Windows-Programm."
 
-#: ui/messages.slint:148 ui/messages.slint:195
+#: ui/messages.slint:148 ui/messages.slint:195 ui/messages.slint:203
 msgctxt "Messages"
 msgid "Only the 64-bit client (Gw2-64.exe) is supported."
 msgstr "Nur der 64-Bit-Client (Gw2-64.exe) wird unterstützt."
 
-#: ui/messages.slint:150 ui/messages.slint:197
+#: ui/messages.slint:150 ui/messages.slint:197 ui/messages.slint:205
 msgctxt "Messages"
 msgid "The file is not the Guild Wars 2 client."
 msgstr "Die Datei ist nicht der Guild-Wars-2-Client."
@@ -524,12 +530,12 @@ msgctxt "MainWindow"
 msgid "Breakbar Launcher – Setup"
 msgstr "Breakbar Launcher – Einrichtung"
 
-#: ui/app.slint:400 ui/app.slint:376
+#: ui/app.slint:400 ui/app.slint:376 ui/app.slint:378
 msgctxt "MainWindow"
 msgid "POS {}/{}"
 msgstr "POS {}/{}"
 
-#: ui/app.slint:419 ui/app.slint:395
+#: ui/app.slint:419 ui/app.slint:395 ui/app.slint:397
 msgctxt "MainWindow"
 msgid "Drag to sort"
 msgstr "Ziehen zum Sortieren"
@@ -714,52 +720,52 @@ msgctxt "Messages"
 msgid "„{}“ is already running."
 msgstr "„{}“ läuft bereits."
 
-#: ui/messages.slint:143
+#: ui/messages.slint:143 ui/messages.slint:151
 msgctxt "Messages"
 msgid "{} (copy)"
 msgstr "{} (Kopie)"
 
-#: ui/messages.slint:147
+#: ui/messages.slint:147 ui/messages.slint:155
 msgctxt "Messages"
 msgid "Desktop shortcut created"
 msgstr "Desktop-Verknüpfung erstellt"
 
-#: ui/messages.slint:151
+#: ui/messages.slint:151 ui/messages.slint:159
 msgctxt "Messages"
 msgid "„{}“ starts the account without opening the launcher."
 msgstr "„{}“ startet den Account, ohne den Launcher zu öffnen."
 
-#: ui/messages.slint:155
+#: ui/messages.slint:155 ui/messages.slint:163
 msgctxt "Messages"
 msgid "Shortcut could not be created"
 msgstr "Verknüpfung konnte nicht erstellt werden"
 
-#: ui/messages.slint:160
+#: ui/messages.slint:160 ui/messages.slint:168
 msgctxt "Messages"
 msgid "Start „{}“ with Breakbar"
 msgstr "„{}“ mit Breakbar starten"
 
-#: ui/messages.slint:164
+#: ui/messages.slint:164 ui/messages.slint:172
 msgctxt "Messages"
 msgid "„{}“ deleted"
 msgstr "„{}“ gelöscht"
 
-#: ui/messages.slint:168
+#: ui/messages.slint:168 ui/messages.slint:176
 msgctxt "Messages"
 msgid "Profile folder could not be deleted"
 msgstr "Profilordner konnte nicht gelöscht werden"
 
-#: ui/messages.slint:172
+#: ui/messages.slint:172 ui/messages.slint:180
 msgctxt "Messages"
 msgid "„{}“ is running. Stop it before deleting it."
 msgstr "„{}“ läuft. Beende den Client, bevor du den Account löschst."
 
-#: ui/messages.slint:176
+#: ui/messages.slint:176 ui/messages.slint:184
 msgctxt "Messages"
 msgid "Profile folder could not be opened"
 msgstr "Profilordner konnte nicht geöffnet werden"
 
-#: ui/messages.slint:181
+#: ui/messages.slint:181 ui/messages.slint:189
 msgctxt "Messages"
 msgid "There is no account „{}“."
 msgstr "Es gibt keinen Account „{}“."
@@ -877,7 +883,7 @@ msgctxt "SetupAccountPage"
 msgid "Create account"
 msgstr "Account anlegen"
 
-#: ui/app.slint:308
+#: ui/app.slint:308 ui/app.slint:310
 msgctxt "MainWindow"
 msgid "Settings"
 msgstr "Einstellungen"
@@ -887,33 +893,58 @@ msgctxt "PathField"
 msgid "Browse…"
 msgstr "Durchsuchen…"
 
-#: ui/settings.slint:94
+#: ui/settings.slint:94 ui/settings.slint:96
 msgctxt "SettingsPage"
 msgid "Back"
 msgstr "Zurück"
 
-#: ui/settings.slint:98
+#: ui/settings.slint:98 ui/settings.slint:100
 msgctxt "SettingsPage"
 msgid "Settings"
 msgstr "Einstellungen"
 
-#: ui/settings.slint:120
+#: ui/settings.slint:120 ui/settings.slint:122
 msgctxt "SettingsPage"
 msgid "// PATHS"
 msgstr "// PFADE"
 
-#: ui/settings.slint:126
+#: ui/settings.slint:126 ui/settings.slint:128
 msgctxt "SettingsPage"
 msgid "Gw2-64.exe found"
 msgstr "Gw2-64.exe gefunden"
 
-#: ui/settings.slint:127 ui/settings.slint:135
+#: ui/settings.slint:127 ui/settings.slint:135 ui/settings.slint:129
+#: ui/settings.slint:127 ui/settings.slint:135 ui/settings.slint:129
 msgctxt "SettingsPage"
 msgid "File not found. Check the path."
 msgstr "Datei nicht gefunden. Prüfe den Pfad."
 
-#: ui/settings.slint:134
-
+#: ui/settings.slint:134 ui/settings.slint:136
 msgctxt "SettingsPage"
 msgid "Blish HUD.exe found"
 msgstr "Blish HUD.exe gefunden"
+
+#: ui/messages.slint:126
+msgctxt "Messages"
+msgid "Could not change the Windows startup setting"
+msgstr "Windows-Start-Einstellung konnte nicht geändert werden"
+
+#: ui/messages.slint:130
+msgctxt "Messages"
+msgid "{}"
+msgstr "{}"
+
+#: ui/settings.slint:142
+msgctxt "SettingsPage"
+msgid "// BEHAVIOR"
+msgstr "// VERHALTEN"
+
+#: ui/settings.slint:150 ui/settings.slint:164
+msgctxt "SettingsPage"
+msgid "Start with Windows"
+msgstr "Mit Windows starten"
+
+#: ui/settings.slint:155
+msgctxt "SettingsPage"
+msgid "Opens the launcher when you sign in."
+msgstr "Öffnet den Launcher bei der Anmeldung."

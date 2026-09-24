@@ -3,7 +3,7 @@
 
 import { Theme } from "theme.slint";
 import { Icons } from "icons.slint";
-import { Icon, Button, IconButton, SectionLabel, FieldLabel } from "components.slint";
+import { Icon, Button, IconButton, SectionLabel, FieldLabel, Toggle } from "components.slint";
 
 /// A configured executable path: a mono display field, a "Browse…" button, and a status line
 /// once a path is set.
@@ -77,9 +77,11 @@ export component SettingsPage inherits VerticalLayout {
     in property <bool> gw2-path-ok;
     in property <string> blish-path;
     in property <bool> blish-path-ok;
+    in property <bool> autostart;
     callback back();
     callback choose-gw2-path();
     callback choose-blish-path();
+    callback toggle-autostart();
 
     // Header: back arrow, title (matches the account editor's).
     HorizontalLayout {
@@ -134,6 +136,34 @@ export component SettingsPage inherits VerticalLayout {
                 ok-text: @tr("Blish HUD.exe found");
                 error-text: @tr("File not found. Check the path.");
                 browse => { root.choose-blish-path(); }
+            }
+
+            SectionLabel {
+                text: @tr("// BEHAVIOR");
+            }
+            HorizontalLayout {
+                spacing: 12px;
+                VerticalLayout {
+                    horizontal-stretch: 1;
+                    spacing: 2px;
+                    Text {
+                        text: @tr("Start with Windows");
+                        font-size: Theme.fs-body;
+                        color: Theme.text;
+                    }
+                    Text {
+                        text: @tr("Opens the launcher when you sign in.");
+                        font-size: Theme.fs-help;
+                        color: Theme.text-dim;
+                        wrap: word-wrap;
+                    }
+                }
+                Toggle {
+                    y: (parent.height - self.height) / 2;
+                    checked: root.autostart;
+                    label: @tr("Start with Windows");
+                    toggled => { root.toggle-autostart(); }
+                }
             }
         }
     }
