@@ -1,0 +1,21 @@
+# Rust
+/target/
+**/*.rs.bk
+*.pdb
+
+# IDE
+.vs/
+.vscode/*
+!.vscode/extensions.json
+.idea/
+*.iml
+
+# OS
+Thumbs.db
+desktop.ini
+.DS_Store
+
+# Local test data – never commit login files
+*.dat
+profiles/
+*.log
