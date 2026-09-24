@@ -73,7 +73,16 @@ export component FocusRing inherits Rectangle {
 }
 
 /// Space and Enter activate a focused control.
+///
+/// `focus-on-click` is turned off: it defaults to on for `FocusScope`, which would grab the
+/// mouse press itself to focus on the first click, before the sibling `TouchArea` handling the
+/// actual click ever sees that press — so the first click only shows the focus ring and does
+/// nothing else, and only a second click (now already focused, so this `FocusScope` no longer
+/// wants the press) reaches the `TouchArea`. Each user of `Activation` calls `.focus()` itself
+/// from its `TouchArea`'s `clicked` handler instead, so the focus ring still appears, just
+/// without racing the click that earns it.
 component Activation inherits FocusScope {
+    focus-on-click: false;
     callback activated;
     key-pressed(event) => {
         if event.text == " " || event.text == "\n" {
@@ -211,7 +220,10 @@ export component IconButton {
     touch := TouchArea {
         enabled: root.enabled;
         mouse-cursor: pointer;
-        clicked => { root.clicked(); }
+        clicked => {
+            focus.focus();
+            root.clicked();
+        }
     }
     focus := Activation {
         enabled: root.enabled;
@@ -257,7 +269,10 @@ export component CheckBox {
         width: parent.width + 16px;
         height: parent.height + 16px;
         mouse-cursor: pointer;
-        clicked => { root.toggled(); }
+        clicked => {
+            focus.focus();
+            root.toggled();
+        }
     }
     focus := Activation {
         activated => { root.toggled(); }
@@ -321,7 +336,10 @@ export component LinkButton {
     }
     touch := TouchArea {
         mouse-cursor: pointer;
-        clicked => { root.clicked(); }
+        clicked => {
+            focus.focus();
+            root.clicked();
+        }
     }
     focus := Activation {
         activated => { root.clicked(); }
@@ -431,7 +449,10 @@ export component Segmented {
             }
         }
     }
+    // Turned off for the same reason as in `Activation` (see its doc comment): the per-option
+    // `TouchArea` already calls `.focus()` itself, so this must not race it for the first click.
     focus := FocusScope {
+        focus-on-click: false;
         key-pressed(event) => {
             if event.text == Key.LeftArrow {
                 root.select(root.selected - 1);
@@ -522,7 +543,10 @@ export component MenuItem {
     touch := TouchArea {
         enabled: root.enabled;
         mouse-cursor: pointer;
-        clicked => { root.activated(); }
+        clicked => {
+            focus.focus();
+            root.activated();
+        }
     }
     focus := Activation {
         enabled: root.enabled;

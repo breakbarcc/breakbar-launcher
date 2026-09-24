@@ -165,7 +165,11 @@ export component AccountCard {
         }
     }
 
+    // Turned off: `hover` above already calls `.focus()` itself on every path. See
+    // `Activation`'s doc comment in components.slint for why FocusScope's own click-to-focus
+    // otherwise steals the first click from a sibling TouchArea.
     focus := FocusScope {
+        focus-on-click: false;
         key-pressed(event) => {
             if event.text == " " {
                 root.toggle-selected();

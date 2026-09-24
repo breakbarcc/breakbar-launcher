@@ -65,8 +65,12 @@ component RadioCard {
             root.chosen();
         }
     }
+    // Turned off: the TouchArea above already calls `.focus()` itself. See `Activation`'s doc
+    // comment in components.slint for why FocusScope's own click-to-focus otherwise steals the
+    // first click from a sibling TouchArea.
     focus := FocusScope {
         enabled: root.enabled;
+        focus-on-click: false;
         key-pressed(event) => {
             if event.text == " " || event.text == "\n" {
                 root.chosen();
