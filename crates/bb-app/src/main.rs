@@ -12,6 +12,9 @@ use slint::ComponentHandle;
 use ui::{AccountRow, MainWindow};
 
 /// Code generated from `ui/app.slint`.
+///
+/// Slint's generated component types don't implement `Debug`, and generated code can't be
+/// edited, so our workspace-wide `missing_debug_implementations` lint is disabled here only.
 mod ui {
     #![allow(missing_debug_implementations)]
     slint::include_modules!();
