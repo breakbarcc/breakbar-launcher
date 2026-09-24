@@ -1,10 +1,14 @@
-import { Button, ListView, VerticalBox, HorizontalBox, Palette } from "std-widgets.slint";
+import { Button, LineEdit, ListView, VerticalBox, HorizontalBox, Palette } from "std-widgets.slint";
 
 export struct AccountRow {
     id: int,
     name: string,
     provider: string,
     status: string,
+    running: bool,
+    /// 0 when not running. The client's raw OS process handle, only used by Rust to stop it;
+    /// not displayed.
+    handle: int,
 }
 
 export component MainWindow inherits Window {
@@ -18,10 +22,14 @@ export component MainWindow inherits Window {
     in property <string> gw2-path;
     /// Error or hint shown above the footer; empty hides it.
     in property <string> notice;
+    /// Bound to the "add account" field so Rust can clear it after adding.
+    in-out property <string> new-account-name;
 
     callback launch-account(int);
     callback launch-all();
     callback choose-gw2-path();
+    /// Temporary until the full account editor (phase 3.4+) replaces it.
+    callback add-account(string);
 
     VerticalBox {
         HorizontalBox {
@@ -40,6 +48,25 @@ export component MainWindow inherits Window {
                 enabled: root.accounts.length > 0;
                 clicked => {
                     root.launch-all();
+                }
+            }
+        }
+
+        HorizontalBox {
+            padding: 0;
+            name-field := LineEdit {
+                placeholder-text: "New account name…";
+                text <=> root.new-account-name;
+                accepted(text) => {
+                    root.add-account(text);
+                }
+            }
+
+            Button {
+                text: "Add";
+                enabled: root.new-account-name != "";
+                clicked => {
+                    root.add-account(root.new-account-name);
                 }
             }
         }
@@ -72,7 +99,7 @@ export component MainWindow inherits Window {
                 }
 
                 Button {
-                    text: "Play";
+                    text: account.running ? "Stop" : "Play";
                     clicked => {
                         root.launch-account(account.id);
                     }

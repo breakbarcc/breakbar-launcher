@@ -4,6 +4,7 @@
 mod cli;
 mod game;
 mod gui;
+mod launcher;
 
 use std::process::ExitCode;
 

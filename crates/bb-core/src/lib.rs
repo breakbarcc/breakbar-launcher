@@ -10,4 +10,4 @@ pub mod steam;
 
 pub use account::{Account, AccountId, Provider};
 pub use companion::{ArgContext, CompanionApp, CompanionId, Scope, Trigger};
-pub use launch::{LaunchOptions, game_command_line};
+pub use launch::{LaunchOptions, game_args, split_args};
