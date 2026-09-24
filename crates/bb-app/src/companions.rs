@@ -14,8 +14,22 @@ use std::time::{Duration, Instant};
 
 use bb_core::{Account, ArgContext, CompanionApp, CompanionId, Scope, Trigger};
 
+/// How long a companion gets to exit on its own after its client exited. Blish HUD, started with
+/// `--pid`, notices that itself and shuts down (unloading modules, saving settings); interfering
+/// with that is pointless at best.
+#[cfg(not(test))]
+const SELF_EXIT_GRACE: Duration = Duration::from_secs(3);
 /// How long a companion may take to exit after being asked to close before it is terminated.
-const CLOSE_GRACE: Duration = Duration::from_secs(5);
+/// Generous: terminating it mid-shutdown would lose the settings it is about to save.
+#[cfg(not(test))]
+const CLOSE_GRACE: Duration = Duration::from_secs(15);
+
+// The tests' stand-in never exits on its own and has no window, so it always runs into both
+// timeouts; keep them short there.
+#[cfg(test)]
+const SELF_EXIT_GRACE: Duration = Duration::from_millis(200);
+#[cfg(test)]
+const CLOSE_GRACE: Duration = Duration::from_millis(200);
 const EXIT_POLL_INTERVAL: Duration = Duration::from_millis(100);
 
 /// Companion apps with [`Scope::Shared`] that are currently running, across all clients.
@@ -133,7 +147,7 @@ impl Session {
     }
 
     /// Closes this client's companions after it has exited: its own instances, and shared ones
-    /// no other client uses anymore. Blocks for up to [`CLOSE_GRACE`].
+    /// no other client uses anymore. Blocks until they have exited (see [`close_all`]).
     pub fn stop(self) {
         let mut to_close: Vec<Child> = self
             .owned
@@ -161,24 +175,34 @@ impl Session {
     }
 }
 
-/// Asks every process in `children` to close, then terminates the ones still running after
-/// [`CLOSE_GRACE`]. A program closed through its window can save its settings first, which
-/// terminating it outright would prevent.
+/// Ends every process in `children`, as gently as possible:
+///
+/// 1. give each [`SELF_EXIT_GRACE`] to exit on its own (Blish HUD follows its game client out);
+/// 2. ask the remaining ones to close through their windows (`WM_CLOSE`, like `taskkill` without
+///    `/f`), so they can save their settings, and wait up to [`CLOSE_GRACE`];
+/// 3. terminate what is still running — only a hung program gets here.
 pub fn close_all(mut children: Vec<Child>) {
-    children.retain_mut(is_running);
+    wait_for_exit(&mut children, SELF_EXIT_GRACE);
     for child in &children {
         let _ = bb_win::window::request_close(child.id());
     }
-
-    let deadline = Instant::now() + CLOSE_GRACE;
-    while !children.is_empty() && Instant::now() < deadline {
-        thread::sleep(EXIT_POLL_INTERVAL);
-        children.retain_mut(is_running);
-    }
+    wait_for_exit(&mut children, CLOSE_GRACE);
 
     for mut child in children {
         let _ = child.kill();
         let _ = child.wait();
+    }
+}
+
+/// Waits up to `timeout` for `children` to exit, removing each one that has.
+fn wait_for_exit(children: &mut Vec<Child>, timeout: Duration) {
+    let deadline = Instant::now() + timeout;
+    loop {
+        children.retain_mut(is_running);
+        if children.is_empty() || Instant::now() >= deadline {
+            return;
+        }
+        thread::sleep(EXIT_POLL_INTERVAL);
     }
 }
 

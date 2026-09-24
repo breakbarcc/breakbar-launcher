@@ -106,8 +106,9 @@ struct CompanionApp {
   (e.g. `{account}`) stays one argument. Companions run with their own folder as working directory.
 - Everything runs on the client's monitor thread: start `ProcessStarted` apps → wait for the game
   window (only if an app needs it) → start `WindowShown` apps → wait for exit → close them.
-- Closing is graceful: `WM_CLOSE` to the companion's top-level windows (lets it save its settings),
-  terminate only after 5 s. Apps with `close_with_game = false` are left running.
+- Closing is graceful: wait 3 s for the companion to exit on its own (Blish HUD follows its client
+  out), then `WM_CLOSE` to its top-level windows (like `taskkill` without `/f`, lets it save its
+  settings), terminate only after another 15 s. Apps with `close_with_game = false` are left running.
 - A companion that fails to start is reported in the UI; the client and other companions keep running.
 
 **Blish HUD specifics** (from its source, `ApplicationSettings.cs` / `Program.cs`):
@@ -120,6 +121,14 @@ struct CompanionApp {
 - It ignores the launcher/patcher window (class `ArenaNet`) and waits for the game window
   (`ArenaNet_Gr_Window_Class` for DX11, `ArenaNet_Dx_Window_Class` for DX9). Breakbar uses the same
   classes for `WindowShown`, so Blish HUD only starts once the account is past the launcher.
+- With `--pid` it exits by itself when its client exits (it only restarts into the tray when
+  started without `--pid`/`--startgw2`). Every instance therefore loads its modules anew, and only
+  once the character is in game (verified in its logs; same as when started by hand).
+- **Shared settings are last-writer-wins:** `SettingsService` reads `settings.json` once at start
+  and writes its whole in-memory copy back on every change (4 s debounce) and on exit. With two
+  instances running, a setting changed in one is overwritten when the other one saves or exits.
+  Verified in its source; not fixable from outside. Options: accept and document it, or give each
+  account its own `--settings` folder (decision pending).
 - UI (until the design lands): Blish HUD's path is picked by file dialog; a per-account checkbox
   adds or removes it. There is no install location to auto-detect (it ships as a zip).
 
