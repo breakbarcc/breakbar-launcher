@@ -6,6 +6,7 @@
 pub mod console;
 pub mod dialog;
 pub mod mutex;
+mod nt;
 pub mod process;
 pub mod registry;
 pub mod version;

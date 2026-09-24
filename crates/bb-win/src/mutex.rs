@@ -27,6 +27,16 @@ pub fn gw2_mutex_exists() -> Result<bool> {
     mutex_exists(GW2_MUTEX_NAME)
 }
 
+/// Closes the single-instance mutex handle held by the Guild Wars 2 process `pid`, so a second
+/// client can start. `pid` must be a client Breakbar itself launched (see [`crate::nt`] for why
+/// and how).
+///
+/// Returns `Ok(true)` if the mutex was found and closed, `Ok(false)` if `pid` didn't have one
+/// open (nothing to do — for example, it hasn't created it yet, or already lost it).
+pub fn kill_gw2_mutex(pid: u32) -> Result<bool> {
+    crate::nt::close_named_mutex_in_process(pid, GW2_MUTEX_NAME)
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

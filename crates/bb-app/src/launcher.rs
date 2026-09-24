@@ -45,7 +45,9 @@ impl RunningClient {
 /// Starts `account`'s game client.
 ///
 /// The working directory is set to the client's own folder, matching how the ArenaNet launcher
-/// starts it, so the client finds its side-by-side files.
+/// starts it, so the client finds its side-by-side files. If another client already holds GW2's
+/// single-instance mutex, that mutex is closed first (see [`ensure_mutex_clear`]) so this
+/// client doesn't just get refused.
 pub fn spawn(
     gw2_path: &Path,
     account: &Account,
@@ -55,6 +57,8 @@ pub fn spawn(
         return Err(LaunchError::NoGamePath);
     }
     let working_dir = gw2_path.parent().unwrap_or(gw2_path);
+
+    ensure_mutex_clear(gw2_path);
 
     let child = Command::new(gw2_path)
         .args(game_args(account, options))
@@ -66,6 +70,45 @@ pub fn spawn(
         pid: child.id(),
         child,
     })
+}
+
+/// If a GW2 client currently holds the single-instance mutex, closes that handle so a new
+/// client can create its own instead of being refused.
+///
+/// This looks at every running process with the same executable name, not just ones Breakbar
+/// itself started, so a client already running from a previous session (or started outside
+/// Breakbar) doesn't block a new launch either. Best-effort: if the check or the close attempt
+/// fails, launching proceeds anyway — worst case GW2 itself refuses to start, which is no worse
+/// than before this step existed.
+fn ensure_mutex_clear(gw2_path: &Path) {
+    match bb_win::mutex::gw2_mutex_exists() {
+        Ok(true) => {}
+        Ok(false) => return,
+        Err(error) => {
+            eprintln!("could not check the Guild Wars 2 mutex, launching anyway: {error}");
+            return;
+        }
+    }
+
+    let exe_name = gw2_path
+        .file_name()
+        .and_then(|name| name.to_str())
+        .unwrap_or(crate::game::GW2_EXE);
+    let pids = match bb_win::process::find_processes_by_name(exe_name) {
+        Ok(pids) => pids,
+        Err(error) => {
+            eprintln!("could not list running Guild Wars 2 clients: {error}");
+            return;
+        }
+    };
+
+    for pid in pids {
+        match bb_win::mutex::kill_gw2_mutex(pid) {
+            Ok(true) => return,
+            Ok(false) => {}
+            Err(error) => eprintln!("could not close the mutex held by PID {pid}: {error}"),
+        }
+    }
 }
 
 #[cfg(test)]
