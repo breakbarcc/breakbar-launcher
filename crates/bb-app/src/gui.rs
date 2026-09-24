@@ -24,7 +24,7 @@ use crate::{game, launcher};
 ///
 /// Slint's generated component types don't implement `Debug`, and generated code can't be
 /// edited, so our workspace-wide `missing_debug_implementations` lint is disabled here only.
-mod ui {
+pub(crate) mod ui {
     #![allow(missing_debug_implementations)]
     slint::include_modules!();
 }
@@ -57,8 +57,8 @@ const INSTANCE_MUTEX_NAME: &str = "Breakbar-Instance";
 /// Only ever touched on the UI thread: Slint callbacks run there, and so does the
 /// `invoke_from_event_loop` closure that background launch-monitoring threads hand back.
 #[derive(Debug)]
-struct App {
-    config: Config,
+pub(crate) struct App {
+    pub(crate) config: Config,
     /// `None` if the config could not be loaded; saving is then disabled so a broken
     /// config file is never overwritten with defaults.
     config_path: Option<PathBuf>,
@@ -135,6 +135,15 @@ impl App {
             .find(|app| app.name == BLISH_HUD)
     }
 
+    /// Persists the overlay's dragged-to position, best-effort: this runs on every drag, so a
+    /// failure isn't worth a toast over something this minor.
+    pub(crate) fn save_overlay_position(&mut self, position: bb_store::OverlayPosition) {
+        self.config.overlay_position = Some(position);
+        if let Some(path) = &self.config_path {
+            let _ = self.config.save(path);
+        }
+    }
+
     /// The companion apps to start with `account`.
     fn companions_of(&self, account: &Account) -> Vec<CompanionApp> {
         self.config
@@ -146,7 +155,7 @@ impl App {
     }
 
     /// Saves the config; on failure tells the user in a toast.
-    fn save(&self, window: &MainWindow) {
+    pub(crate) fn save(&self, window: &MainWindow) {
         let messages = window.global::<Messages>();
         let detail = match &self.config_path {
             None => messages.invoke_settings_load_failed("".into()),
@@ -223,6 +232,19 @@ pub fn run() -> Result<(), slint::PlatformError> {
 
     let app = Rc::new(RefCell::new(app));
     let queue = Rc::new(LaunchQueue::start(window.as_weak()));
+
+    let _overlay = match crate::overlay::Overlay::new(&window, &app, &queue) {
+        Ok(overlay) => Some(overlay),
+        Err(error) => {
+            push_toast(
+                &window,
+                ToastKind::Error,
+                messages.invoke_overlay_failed_title(),
+                error.to_string().into(),
+            );
+            None
+        }
+    };
 
     window.on_launch_account({
         let app = Rc::clone(&app);
@@ -665,7 +687,7 @@ impl Texts {
 }
 
 /// Whether an account in `state` can be started.
-fn is_startable(state: AccountState) -> bool {
+pub(crate) fn is_startable(state: AccountState) -> bool {
     matches!(
         state,
         AccountState::Idle | AccountState::NeedsLogin | AccountState::Error
@@ -673,7 +695,7 @@ fn is_startable(state: AccountState) -> bool {
 }
 
 /// Whether the account's client is starting, running or being stopped.
-fn is_active(state: AccountState) -> bool {
+pub(crate) fn is_active(state: AccountState) -> bool {
     matches!(
         state,
         AccountState::Starting | AccountState::Running | AccountState::Stopping
@@ -690,25 +712,35 @@ fn toggle_account(window: &MainWindow, app: &RefCell<App>, queue: &LaunchQueue, 
         return;
     };
     match row.state {
-        AccountState::Running if row.handle != 0 => {
-            update_row(window, id, |row| row.state = AccountState::Stopping);
-            if let Err(error) = bb_win::process::terminate(row.handle as isize) {
-                update_row(window, id, |row| row.state = AccountState::Running);
-                push_toast(
-                    window,
-                    ToastKind::Error,
-                    window.global::<Messages>().invoke_stop_failed_title(),
-                    error.to_string().into(),
-                );
-            }
-        }
+        AccountState::Running if row.handle != 0 => stop_account(window, id),
         state if is_startable(state) => start_account(window, app, queue, id, LaunchMode::Play),
         _ => {}
     }
 }
 
+/// Terminates `id`'s running client, if it has one. A no-op for any other state (not running yet,
+/// already stopping, ...).
+pub(crate) fn stop_account(window: &MainWindow, id: AccountId) {
+    let Some(row) = row(window, id) else {
+        return;
+    };
+    if row.state != AccountState::Running || row.handle == 0 {
+        return;
+    }
+    update_row(window, id, |row| row.state = AccountState::Stopping);
+    if let Err(error) = bb_win::process::terminate(row.handle as isize) {
+        update_row(window, id, |row| row.state = AccountState::Running);
+        push_toast(
+            window,
+            ToastKind::Error,
+            window.global::<Messages>().invoke_stop_failed_title(),
+            error.to_string().into(),
+        );
+    }
+}
+
 /// Starts the selected accounts, or all startable ones if nothing is selected.
-fn launch_all(window: &MainWindow, app: &RefCell<App>, queue: &LaunchQueue) {
+pub(crate) fn launch_all(window: &MainWindow, app: &RefCell<App>, queue: &LaunchQueue) {
     let rows = rows(window);
     let any_selected = rows.iter().any(|row| row.selected);
     let ids: Vec<AccountId> = rows
@@ -723,7 +755,7 @@ fn launch_all(window: &MainWindow, app: &RefCell<App>, queue: &LaunchQueue) {
 }
 
 /// Queues `id`'s launch. The row counts as starting from now on, so it can't be queued twice.
-fn start_account(
+pub(crate) fn start_account(
     window: &MainWindow,
     app: &RefCell<App>,
     queue: &LaunchQueue,
@@ -801,7 +833,7 @@ struct LaunchJob {
 /// (see [`launcher::launch`]), so launches must never overlap and must never run on the UI
 /// thread. A channel keeps them in click order.
 #[derive(Debug)]
-struct LaunchQueue {
+pub(crate) struct LaunchQueue {
     jobs: mpsc::Sender<LaunchJob>,
 }
 
@@ -1542,7 +1574,7 @@ fn demo_rows() -> Vec<AccountRow> {
 }
 
 /// Reads all rows out of the window's current model.
-fn rows(window: &MainWindow) -> Vec<AccountRow> {
+pub(crate) fn rows(window: &MainWindow) -> Vec<AccountRow> {
     let model = window.get_accounts();
     (0..model.row_count())
         .filter_map(|i| model.row_data(i))
@@ -1833,6 +1865,58 @@ mod preview {
             });
             write_bmp(&dir.join(format!("{name}.bmp")), w, h, &pixels);
             ui.hide().unwrap();
+        }
+
+        // The overlay is a separate top-level component (its own window), so it's rendered the
+        // same way but outside the `MainWindow` loop above.
+        for (name, dark) in [("overlay-dark", true), ("overlay-light", false)] {
+            let (width, height) = (260, 32);
+            window.set_size(PhysicalSize::new(width, height));
+            let overlay = ui::OverlaySwitcher::new().unwrap();
+            overlay.global::<Theme>().set_dark(dark);
+            overlay.set_entries(
+                Rc::new(slint::VecModel::from(vec![
+                    ui::SwitcherEntry {
+                        id: 1,
+                        name: "Main".into(),
+                        active: true,
+                        starting: false,
+                    },
+                    ui::SwitcherEntry {
+                        id: 2,
+                        name: "Raid Chrono".into(),
+                        active: false,
+                        starting: false,
+                    },
+                    ui::SwitcherEntry {
+                        id: 3,
+                        name: "Farm Alt".into(),
+                        active: false,
+                        starting: true,
+                    },
+                ]))
+                .into(),
+            );
+            overlay.set_startable(
+                Rc::new(slint::VecModel::from(vec![ui::StartableEntry {
+                    id: 4,
+                    name: "Steam".into(),
+                    enabled: true,
+                }]))
+                .into(),
+            );
+            overlay.set_launch_all_count(1);
+            overlay.show().unwrap();
+            slint::platform::update_timers_and_animations();
+
+            let (w, h) = (width as usize, height as usize);
+            let mut pixels = vec![Rgb8Pixel::default(); w * h];
+            window.request_redraw();
+            window.draw_if_needed(|renderer| {
+                renderer.render(&mut pixels, w);
+            });
+            write_bmp(&dir.join(format!("{name}.bmp")), w, h, &pixels);
+            overlay.hide().unwrap();
         }
     }
 }

@@ -1,12 +1,14 @@
 //! Finding and closing the top-level windows of a process.
 
-use windows::Win32::Foundation::{HWND, LPARAM, WPARAM};
+use windows::Win32::Foundation::{HANDLE, HWND, LPARAM, WPARAM};
 use windows::Win32::Graphics::Dwm::{
     DWMWA_BORDER_COLOR, DWMWA_CAPTION_COLOR, DWMWA_TEXT_COLOR, DWMWA_USE_IMMERSIVE_DARK_MODE,
     DwmSetWindowAttribute,
 };
+use windows::Win32::System::Threading::GetProcessId;
 use windows::Win32::UI::WindowsAndMessaging::{
-    EnumWindows, GetClassNameW, GetWindowThreadProcessId, IsWindowVisible, PostMessageW, WM_CLOSE,
+    EnumWindows, GetClassNameW, GetForegroundWindow, GetWindowThreadProcessId, IsIconic,
+    IsWindowVisible, PostMessageW, SW_RESTORE, SetForegroundWindow, ShowWindow, WM_CLOSE,
 };
 use windows::core::{BOOL, Result};
 
@@ -60,6 +62,39 @@ pub fn request_close(pid: u32) -> Result<usize> {
         };
     }
     Ok(windows.len())
+}
+
+/// Restores (if minimized) and activates the first visible window of `pid` whose class is one of
+/// `classes`. Returns whether such a window was found.
+pub fn activate_window(pid: u32, classes: &[&str]) -> Result<bool> {
+    let Some(window) = process_windows(pid)?
+        .into_iter()
+        .find(|window| window.visible && classes.contains(&window.class_name.as_str()))
+    else {
+        return Ok(false);
+    };
+    let hwnd = HWND(window.hwnd as *mut _);
+    // SAFETY: `hwnd` was just found by `process_windows` and is used only for these two calls.
+    unsafe {
+        if IsIconic(hwnd).as_bool() {
+            let _ = ShowWindow(hwnd, SW_RESTORE);
+        }
+        let _ = SetForegroundWindow(hwnd);
+    }
+    Ok(true)
+}
+
+/// PID owning the current foreground window, or 0 if there is none.
+pub fn foreground_pid() -> u32 {
+    // SAFETY: takes no arguments; a missing foreground window yields a null handle, and
+    // `window_pid` reports that as PID 0.
+    window_pid(unsafe { GetForegroundWindow() })
+}
+
+/// PID of the process behind an open handle to it (such as a `Child`'s raw handle).
+pub fn pid_of(handle: isize) -> u32 {
+    // SAFETY: `handle` is a still-open handle owned by the caller; this call only reads it.
+    unsafe { GetProcessId(HANDLE(handle as *mut _)) }
 }
 
 /// Colors of a window's frame, as `0xRRGGBB`.

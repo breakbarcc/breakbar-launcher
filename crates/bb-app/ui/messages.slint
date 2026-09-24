@@ -172,6 +172,10 @@ export global Messages {
         @tr("Tray icon could not be created")
     }
 
+    public pure function overlay-failed-title() -> string {
+        @tr("Switcher overlay could not be created")
+    }
+
     public pure function dialog-failed(detail: string) -> string {
         @tr("The file dialog could not be opened: {}", detail)
     }

@@ -61,6 +61,17 @@ pub struct Config {
     pub companions: Vec<CompanionApp>,
     #[serde(default)]
     pub after_start: AfterStart,
+    /// Last dragged-to position of the instance-switcher overlay. `None` before it's ever been
+    /// moved, so it starts at a fixed default position.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub overlay_position: Option<OverlayPosition>,
+}
+
+/// A saved screen position, in physical pixels.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub struct OverlayPosition {
+    pub x: i32,
+    pub y: i32,
 }
 
 impl Default for Config {
@@ -71,6 +82,7 @@ impl Default for Config {
             accounts: Vec::new(),
             companions: Vec::new(),
             after_start: AfterStart::default(),
+            overlay_position: None,
         }
     }
 }

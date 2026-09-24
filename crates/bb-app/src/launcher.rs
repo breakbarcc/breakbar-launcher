@@ -101,7 +101,8 @@ impl RunningClient {
 
 /// Window classes of the game window (DirectX 11 and DirectX 9 renderer). The launcher and
 /// patcher window uses the class `ArenaNet` instead — the same distinction Blish HUD makes.
-const GAME_WINDOW_CLASSES: &[&str] = &["ArenaNet_Gr_Window_Class", "ArenaNet_Dx_Window_Class"];
+pub(crate) const GAME_WINDOW_CLASSES: &[&str] =
+    &["ArenaNet_Gr_Window_Class", "ArenaNet_Dx_Window_Class"];
 const WINDOW_POLL_INTERVAL: Duration = Duration::from_millis(250);
 
 /// How to start a client.

@@ -1,0 +1,233 @@
+// Instance-switcher overlay (design hand-off section 6, screens 13-15). First pass: the bar
+// itself, at a fixed "Compact" size, with click-to-switch and the "+" menu. Global hotkeys, the
+// other two sizes, vertical orientation, opacity and the dedicated settings section (screen 15)
+// come with a later refinement.
+
+import { Theme } from "theme.slint";
+import { Icons } from "icons.slint";
+import { Icon, Spinner, MenuItem, Elevated } from "components.slint";
+
+/// One running (or starting) account shown as a chip.
+export struct SwitcherEntry {
+    id: int,
+    name: string,
+    /// Its client is the current foreground window.
+    active: bool,
+    /// Still starting: shows a spinner instead of its number.
+    starting: bool,
+}
+
+/// One account offered in the "+" menu (not currently running).
+export struct StartableEntry {
+    id: int,
+    name: string,
+    /// `false` for a Steam account while another one is already running.
+    enabled: bool,
+}
+
+component Chip {
+    in property <SwitcherEntry> entry;
+    in property <int> number;
+    callback activate();
+    callback stop();
+    callback show-in-launcher();
+
+    height: 24px;
+    // Inactive chips are a fixed square (like the design's number-only buttons); the active one
+    // grows to fit its name.
+    width: entry.active ? layout.preferred-width : 24px;
+    accessible-role: button;
+    accessible-label: entry.name;
+
+    Rectangle {
+        border-radius: 5px;
+        background: entry.active ? Theme.overlay-chip-active
+            : touch.has-hover ? Theme.overlay-chip-hover : transparent;
+    }
+    layout := HorizontalLayout {
+        padding-left: entry.active ? 7px : 0px;
+        padding-right: entry.active ? 8px : 0px;
+        spacing: 5px;
+        alignment: center;
+        if entry.starting: Spinner {
+            size: 11px;
+            color: entry.active ? Theme.accent : Theme.text-muted;
+        }
+        if !entry.starting: Text {
+            text: root.number;
+            font-family: Theme.font-mono;
+            font-size: 11px;
+            font-weight: 600;
+            color: entry.active ? Theme.accent : Theme.text-muted;
+        }
+        if entry.active: Text {
+            text: entry.name;
+            font-size: 11.5px;
+            font-weight: 600;
+            color: Theme.accent;
+            max-width: 80px;
+            overflow: elide;
+        }
+    }
+
+    touch := TouchArea {
+        mouse-cursor: pointer;
+        clicked => { root.activate(); }
+        pointer-event(event) => {
+            if event.button == PointerEventButton.right && event.kind == PointerEventKind.up {
+                menu.show();
+            }
+        }
+    }
+
+    menu := PopupWindow {
+        x: 0px;
+        y: root.height + 2px;
+        width: 170px;
+        close-policy: close-on-click-outside;
+        Elevated {
+            VerticalLayout {
+                padding: 4px;
+                MenuItem {
+                    text: @tr("Show in launcher");
+                    icon: Icons.monitor;
+                    activated => {
+                        menu.close();
+                        root.show-in-launcher();
+                    }
+                }
+                MenuItem {
+                    text: @tr("Stop");
+                    icon: Icons.stop;
+                    danger: true;
+                    activated => {
+                        menu.close();
+                        root.stop();
+                    }
+                }
+            }
+        }
+    }
+}
+
+export component OverlaySwitcher inherits Window {
+    title: "Breakbar Switcher";
+    no-frame: true;
+    always-on-top: true;
+    background: transparent;
+    default-font-family: Theme.font-ui;
+    default-font-size: Theme.fs-body;
+
+    in property <[SwitcherEntry]> entries;
+    in property <[StartableEntry]> startable;
+    in property <int> launch-all-count;
+    /// Bring `id`'s client to the foreground.
+    callback activate(int);
+    /// Stop `id`'s client.
+    callback stop(int);
+    /// Show the main window (a chip's "Show in launcher").
+    callback show-in-launcher(int);
+    /// Start `id` from the "+" menu.
+    callback launch(int);
+    callback launch-all();
+    callback open-launcher();
+
+    preferred-width: bar.width;
+    preferred-height: bar.height;
+
+    hover := TouchArea { }
+    dragger := WindowMoveArea { }
+
+    bar := Rectangle {
+        width: content.preferred-width + 4px;
+        height: content.preferred-height + 4px;
+        border-radius: Theme.radius-overlay;
+        background: hover.has-hover ? Theme.overlay-hover : Theme.overlay-idle;
+        border-width: 1px;
+        border-color: hover.has-hover ? Theme.overlay-line : transparent;
+        drop-shadow-color: hover.has-hover ? Theme.shadow-color : transparent;
+        drop-shadow-blur: 32px;
+        drop-shadow-offset-y: 12px;
+
+        content := HorizontalLayout {
+            padding: 2px;
+            spacing: 1px;
+            for entry[index] in root.entries: Chip {
+                entry: entry;
+                number: index + 1;
+                activate => { root.activate(entry.id); }
+                stop => { root.stop(entry.id); }
+                show-in-launcher => { root.show-in-launcher(entry.id); }
+            }
+            add := Rectangle {
+                width: 24px;
+                height: 24px;
+                border-radius: 5px;
+                background: add-touch.has-hover ? Theme.overlay-chip-hover : transparent;
+                Icon {
+                    x: (parent.width - self.width) / 2;
+                    y: (parent.height - self.height) / 2;
+                    path: Icons.plus;
+                    color: Theme.text-muted;
+                    size: 13px;
+                    weight: 2.25;
+                }
+                add-touch := TouchArea {
+                    mouse-cursor: pointer;
+                    clicked => { add-menu.show(); }
+                }
+                add-menu := PopupWindow {
+                    x: parent.width - 200px;
+                    y: parent.height + 2px;
+                    width: 200px;
+                    close-policy: close-on-click-outside;
+                    Elevated {
+                        VerticalLayout {
+                            padding: 4px;
+                            MenuItem {
+                                text: @tr("Launch all ({})", root.launch-all-count);
+                                icon: Icons.play;
+                                enabled: root.launch-all-count > 0;
+                                activated => {
+                                    add-menu.close();
+                                    root.launch-all();
+                                }
+                            }
+                            if root.startable.length > 0: Rectangle {
+                                height: 9px;
+                                Rectangle {
+                                    height: 1px;
+                                    background: Theme.line-2;
+                                }
+                            }
+                            for entry in root.startable: MenuItem {
+                                text: entry.name;
+                                icon: Icons.play;
+                                enabled: entry.enabled;
+                                activated => {
+                                    add-menu.close();
+                                    root.launch(entry.id);
+                                }
+                            }
+                            Rectangle {
+                                height: 9px;
+                                Rectangle {
+                                    height: 1px;
+                                    background: Theme.line-2;
+                                }
+                            }
+                            MenuItem {
+                                text: @tr("Open launcher");
+                                icon: Icons.monitor;
+                                activated => {
+                                    add-menu.close();
+                                    root.open-launcher();
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

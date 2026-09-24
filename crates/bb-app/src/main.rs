@@ -7,6 +7,7 @@ mod game;
 mod gui;
 mod headless;
 mod launcher;
+mod overlay;
 mod profile_link;
 #[cfg(test)]
 mod test_support;
