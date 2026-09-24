@@ -5,6 +5,9 @@ mod cli;
 mod game;
 mod gui;
 mod launcher;
+mod profile_link;
+#[cfg(test)]
+mod test_support;
 
 use std::process::ExitCode;
 

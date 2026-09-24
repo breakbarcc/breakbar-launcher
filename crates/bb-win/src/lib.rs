@@ -5,6 +5,7 @@
 
 pub mod console;
 pub mod dialog;
+pub mod junction;
 pub mod mutex;
 mod nt;
 pub mod process;

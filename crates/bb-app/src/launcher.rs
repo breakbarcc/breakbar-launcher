@@ -7,12 +7,16 @@ use std::process::{Child, Command, ExitStatus};
 
 use bb_core::{Account, LaunchOptions, game_args};
 
+use crate::profile_link::{self, ProfileLinkError};
+
 #[derive(Debug, thiserror::Error)]
 pub enum LaunchError {
     #[error("Guild Wars 2 is not configured yet.")]
     NoGamePath,
     #[error("could not prepare the account's profile folder: {0}")]
     Profile(#[from] bb_store::StoreError),
+    #[error("could not switch Guild Wars 2 to this account's profile: {0}")]
+    ProfileLink(#[from] ProfileLinkError),
     #[error("failed to start Guild Wars 2: {0}")]
     Spawn(#[source] io::Error),
 }
@@ -51,12 +55,20 @@ impl RunningClient {
 /// single-instance mutex, that mutex is closed first (see [`ensure_mutex_clear`]) so this
 /// client doesn't just get refused.
 ///
-/// The client's `APPDATA`/`TMP`/`TEMP` are redirected to the account's own profile folder (see
-/// [`bb_store::profile_dir`]), so each account keeps its own `Local.dat` and never fights
-/// another running account over the same one. `options.autologin` is overridden based on
+/// The real `%APPDATA%\Guild Wars 2` is pointed at the account's own profile folder first (see
+/// [`crate::profile_link::activate`] for why that, rather than redirecting the child's own
+/// `APPDATA`, is what's actually needed), so each account keeps its own `Local.dat` and never
+/// overwrites another account's. `TMP`/`TEMP` are additionally redirected to the account's
+/// profile, which the client's embedded browser component does respect, keeping concurrent
+/// clients from fighting over the same cache. `options.autologin` is overridden based on
 /// whether that profile already has a saved login — passing `-autologin` before one exists
 /// would do nothing but isn't harmful either, so this only matters for showing the right thing
 /// to the user, not for correctness.
+///
+/// Only one account's data can be linked in at a time, so launching two accounts that have
+/// *never* logged in before at the exact same moment can race (see the module-level caveat in
+/// [`crate::profile_link`]); accounts that already have a saved login are unaffected once
+/// running, since by then they've already read what they need.
 pub fn spawn(
     gw2_path: &Path,
     account: &Account,
@@ -68,6 +80,7 @@ pub fn spawn(
     let working_dir = gw2_path.parent().unwrap_or(gw2_path);
 
     ensure_mutex_clear(gw2_path);
+    profile_link::activate(account.id)?;
 
     let profile_dir = bb_store::ensure_profile_dir(account.id)?;
     let temp_dir = profile_dir.join("Temp");
@@ -77,7 +90,6 @@ pub fn spawn(
     let child = Command::new(gw2_path)
         .args(game_args(account, options))
         .current_dir(working_dir)
-        .env("APPDATA", &profile_dir)
         .env("TMP", &temp_dir)
         .env("TEMP", &temp_dir)
         .spawn()
@@ -131,11 +143,13 @@ fn ensure_mutex_clear(gw2_path: &Path) {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::test_support::with_isolated_appdata;
     use bb_core::AccountId;
     use std::path::PathBuf;
 
     #[test]
     fn missing_game_path_is_rejected() {
+        // No isolation needed: rejected before anything touches a profile.
         let account = Account::new(AccountId(1), "Main");
         let result = spawn(
             &PathBuf::from(r"C:\does\not\exist\Gw2-64.exe"),
@@ -151,34 +165,38 @@ mod tests {
     /// an error, which is all this test needs: a fast, deterministic exit.
     #[test]
     fn spawned_process_can_be_waited_on() {
-        let windir = std::env::var_os("SystemRoot").expect("SystemRoot is set");
-        let stand_in = PathBuf::from(&windir).join("System32").join("ping.exe");
-        let account = Account::new(AccountId(u32::MAX - 10), "Main");
+        with_isolated_appdata("spawn-wait", |_| {
+            let windir = std::env::var_os("SystemRoot").expect("SystemRoot is set");
+            let stand_in = PathBuf::from(&windir).join("System32").join("ping.exe");
+            let account = Account::new(AccountId(1), "Main");
 
-        let running = spawn(&stand_in, &account, LaunchOptions::default()).unwrap();
-        assert!(running.pid() > 0);
+            let running = spawn(&stand_in, &account, LaunchOptions::default()).unwrap();
+            assert!(running.pid() > 0);
 
-        running.wait_for_exit().unwrap();
-        cleanup_profile(account.id);
+            running.wait_for_exit().unwrap();
+        });
     }
 
     #[test]
-    fn spawn_gives_the_client_its_own_profile_folder() {
-        let windir = std::env::var_os("SystemRoot").expect("SystemRoot is set");
-        let stand_in = PathBuf::from(&windir).join("System32").join("ping.exe");
-        let account = Account::new(AccountId(u32::MAX - 11), "Main");
-        assert!(!bb_store::has_saved_login(account.id));
+    fn spawn_links_the_account_into_the_real_gw2_appdata_folder() {
+        with_isolated_appdata("spawn-profile", |root| {
+            let windir = std::env::var_os("SystemRoot").expect("SystemRoot is set");
+            let stand_in = PathBuf::from(&windir).join("System32").join("ping.exe");
+            let account = Account::new(AccountId(1), "Main");
+            assert!(!bb_store::has_saved_login(account.id));
 
-        let running = spawn(&stand_in, &account, LaunchOptions::default()).unwrap();
-        running.wait_for_exit().unwrap();
+            let running = spawn(&stand_in, &account, LaunchOptions::default()).unwrap();
+            running.wait_for_exit().unwrap();
 
-        assert!(bb_store::profile_dir(account.id).unwrap().is_dir());
-        cleanup_profile(account.id);
-    }
-
-    fn cleanup_profile(id: bb_core::AccountId) {
-        if let Ok(dir) = bb_store::profile_dir(id) {
-            let _ = std::fs::remove_dir_all(dir);
-        }
+            let real_gw2_dir = root.join("Roaming").join("Guild Wars 2");
+            let account_gw2_dir = bb_store::profile_dir(account.id)
+                .unwrap()
+                .join("Guild Wars 2");
+            assert_eq!(
+                std::fs::canonicalize(&real_gw2_dir).unwrap(),
+                std::fs::canonicalize(&account_gw2_dir).unwrap(),
+                "the real GW2 AppData folder should be linked to the account's profile",
+            );
+        });
     }
 }
