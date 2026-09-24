@@ -1,0 +1,46 @@
+[workspace]
+members = ["crates/*"]
+resolver = "3"
+
+[workspace.package]
+version = "0.1.0"
+edition = "2024"
+rust-version = "1.92"
+license = "MIT"
+authors = ["Patrick Schmidt"]
+
+[workspace.dependencies]
+bb-core = { path = "crates/bb-core" }
+bb-store = { path = "crates/bb-store" }
+bb-win = { path = "crates/bb-win" }
+
+embed-resource = "3.0.11"
+lexopt = "0.3.2"
+serde = { version = "1.0.229", features = ["derive"] }
+slint = { version = "1.18.1", default-features = false, features = [
+  "std",
+  "compat-1-2",
+  "backend-winit",
+  "renderer-software",
+  "software-renderer-systemfonts",
+  "software-renderer-path",
+  "accessibility",
+] }
+slint-build = "1.18.1"
+thiserror = "2.0.21"
+toml = "1.1.6"
+windows = "0.62.2"
+
+[workspace.lints.rust]
+unsafe_op_in_unsafe_fn = "deny"
+missing_debug_implementations = "warn"
+
+[workspace.lints.clippy]
+undocumented_unsafe_blocks = "warn"
+
+[profile.release]
+opt-level = 3
+lto = "fat"
+codegen-units = 1
+panic = "abort"
+strip = true

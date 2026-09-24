@@ -94,9 +94,12 @@ crates/
   bb-win/    unsafe Win32/NT wrappers (RAII handles, mutex kill, CreateProcess, win events)
   bb-core/   domain: Account, Profile, LaunchPlan, CompanionApp, ProcessMonitor
   bb-store/  config.toml (serde), atomic writes
-  bb-app/    main.rs, Slint UI, CLI (`breakbar --launch "Main,Alt1"`)
-assets/      icon, app.manifest (asInvoker, PerMonitorV2, longPathAware)
+  bb-app/    binary `breakbar`: main.rs, Slint UI (ui/), CLI (`breakbar --launch "Main,Alt1"`)
+    assets/  app.manifest (asInvoker, PerMonitorV2, longPathAware, UTF-8), resource script
 ```
+
+Slint runs with the winit backend and the **software renderer** (no GPU context → lowest RAM,
+smallest binary). Switch to femtovg/skia only if measurements show a need.
 
 Config: `%APPDATA%\Breakbar\config.toml` (atomic write via temp file + `ReplaceFileW`).
 

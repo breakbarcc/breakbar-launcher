@@ -1,0 +1,100 @@
+import { Button, ListView, VerticalBox, HorizontalBox, Palette } from "std-widgets.slint";
+
+export struct AccountRow {
+    id: int,
+    name: string,
+    provider: string,
+    status: string,
+}
+
+export component MainWindow inherits Window {
+    title: "Breakbar";
+    preferred-width: 420px;
+    preferred-height: 520px;
+    min-width: 320px;
+    min-height: 360px;
+
+    in property <[AccountRow]> accounts;
+    in property <string> gw2-path;
+
+    callback launch-account(int);
+    callback launch-all();
+    callback choose-gw2-path();
+
+    VerticalBox {
+        HorizontalBox {
+            padding: 0;
+            Text {
+                text: "Accounts";
+                font-size: 20px;
+                font-weight: 600;
+                vertical-alignment: center;
+                horizontal-stretch: 1;
+            }
+
+            Button {
+                text: "Launch all";
+                primary: true;
+                enabled: root.accounts.length > 0;
+                clicked => {
+                    root.launch-all();
+                }
+            }
+        }
+
+        if root.accounts.length == 0: Text {
+            text: "No accounts yet.";
+            color: Palette.foreground;
+            opacity: 0.6;
+            horizontal-alignment: center;
+            vertical-alignment: center;
+            vertical-stretch: 1;
+        }
+
+        if root.accounts.length > 0: ListView {
+            vertical-stretch: 1;
+            for account in root.accounts: HorizontalBox {
+                VerticalLayout {
+                    horizontal-stretch: 1;
+                    alignment: center;
+                    Text {
+                        text: account.name;
+                        font-weight: 600;
+                    }
+
+                    Text {
+                        text: account.provider + " · " + account.status;
+                        font-size: 12px;
+                        opacity: 0.6;
+                    }
+                }
+
+                Button {
+                    text: "Play";
+                    clicked => {
+                        root.launch-account(account.id);
+                    }
+                }
+            }
+        }
+
+        HorizontalBox {
+            padding: 0;
+            Text {
+                text: root.gw2-path == "" ? "Guild Wars 2 not configured" : root.gw2-path;
+                overflow: elide;
+                font-size: 12px;
+                opacity: 0.7;
+                vertical-alignment: center;
+                horizontal-stretch: 1;
+            }
+
+            Button {
+                text: "Browse…";
+                clicked => {
+                    root.choose-gw2-path();
+                }
+            }
+        }
+    }
+}

@@ -28,4 +28,8 @@ cargo build --release
 
 [MIT](LICENSE)
 
+The user interface is built with [Slint](https://slint.dev) under its royalty-free license.
+
+[![Made with Slint](https://raw.githubusercontent.com/slint-ui/slint/master/logo/MadeWithSlint-logo-light.svg)](https://slint.dev)
+
 Guild Wars 2 is a trademark of ArenaNet, LLC. This project is not affiliated with ArenaNet or NCSOFT.

@@ -1,0 +1,22 @@
+[package]
+name = "breakbar"
+description = "Fast, lightweight multi-launcher for Guild Wars 2"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+authors.workspace = true
+
+[dependencies]
+bb-core.workspace = true
+bb-store.workspace = true
+bb-win.workspace = true
+lexopt.workspace = true
+slint.workspace = true
+
+[build-dependencies]
+embed-resource.workspace = true
+slint-build.workspace = true
+
+[lints]
+workspace = true

@@ -1,0 +1,20 @@
+[package]
+name = "bb-win"
+description = "Thin, safe wrappers around the Win32/NT APIs used by Breakbar"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+authors.workspace = true
+
+[dependencies.windows]
+workspace = true
+features = [
+  "Win32_Foundation",
+  "Win32_Security",
+  "Win32_System_Console",
+  "Win32_System_Threading",
+]
+
+[lints]
+workspace = true
