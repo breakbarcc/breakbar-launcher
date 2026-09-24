@@ -1,4 +1,4 @@
-import { Button, LineEdit, ListView, VerticalBox, HorizontalBox, Palette } from "std-widgets.slint";
+import { Button, CheckBox, LineEdit, ListView, VerticalBox, HorizontalBox, Palette } from "std-widgets.slint";
 
 export struct AccountRow {
     id: int,
@@ -24,6 +24,8 @@ export component MainWindow inherits Window {
     in property <string> notice;
     /// Bound to the "add account" field so Rust can clear it after adding.
     in-out property <string> new-account-name;
+    /// Whether the account being added is Steam-linked.
+    in-out property <bool> new-account-steam;
 
     callback launch-account(int);
     /// Start the client without `-shareArchive` so a remembered login can be saved.
@@ -64,6 +66,11 @@ export component MainWindow inherits Window {
                 }
             }
 
+            CheckBox {
+                text: "Steam";
+                checked <=> root.new-account-steam;
+            }
+
             Button {
                 text: "Add";
                 enabled: root.new-account-name != "";
@@ -100,7 +107,7 @@ export component MainWindow inherits Window {
                     }
                 }
 
-                if !account.running: Button {
+                if !account.running && account.provider != "Steam": Button {
                     text: "Set up login";
                     clicked => {
                         root.set-up-login(account.id);

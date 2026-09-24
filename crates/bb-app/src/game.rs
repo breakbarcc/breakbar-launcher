@@ -65,6 +65,28 @@ pub fn detect() -> Option<PathBuf> {
     candidates().into_iter().find(|path| validate(path).is_ok())
 }
 
+/// Name of the Steam API library the client loads at runtime when started with `-provider Steam`.
+const STEAM_API_DLL: &str = "steam_api64.dll";
+
+/// Whether the client at `gw2_exe` can sign in through Steam.
+///
+/// `Gw2-64.exe` only loads `steam_api64.dll` at runtime, when started with `-provider Steam`, and
+/// that library ships only with the Steam installation of the game — not with the ArenaNet one.
+pub fn supports_steam(gw2_exe: &Path) -> bool {
+    gw2_exe.with_file_name(STEAM_API_DLL).is_file()
+}
+
+/// The client to start a Steam account with: `preferred` if it supports Steam, otherwise a valid
+/// Steam installation found in the Steam libraries.
+pub fn steam_client(preferred: &Path) -> Option<PathBuf> {
+    if supports_steam(preferred) {
+        return Some(preferred.to_owned());
+    }
+    steam_candidates()
+        .into_iter()
+        .find(|path| supports_steam(path) && validate(path).is_ok())
+}
+
 fn candidates() -> Vec<PathBuf> {
     let mut candidates = Vec::new();
 
@@ -161,6 +183,20 @@ mod tests {
         for candidate in candidates() {
             println!("{} -> {:?}", candidate.display(), validate(&candidate));
         }
+    }
+
+    #[test]
+    fn steam_support_needs_the_steam_api_next_to_the_client() {
+        let dir = std::env::temp_dir().join(format!("breakbar-steam-{}", std::process::id()));
+        std::fs::create_dir_all(&dir).unwrap();
+        let exe = dir.join(GW2_EXE);
+        assert!(!supports_steam(&exe));
+
+        std::fs::write(dir.join(STEAM_API_DLL), b"").unwrap();
+        assert!(supports_steam(&exe));
+        assert_eq!(steam_client(&exe), Some(exe.clone()));
+
+        std::fs::remove_dir_all(&dir).unwrap();
     }
 
     #[test]

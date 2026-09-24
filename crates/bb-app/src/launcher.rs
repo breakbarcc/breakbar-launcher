@@ -9,7 +9,7 @@ use std::process::{Child, Command, ExitStatus};
 use std::thread;
 use std::time::{Duration, Instant};
 
-use bb_core::{Account, LaunchOptions, game_args};
+use bb_core::{Account, LaunchOptions, Provider, game_args, steam};
 
 use crate::profile_link::{self, ProfileLinkError};
 
@@ -27,6 +27,15 @@ const ERROR_SHARING_VIOLATION: i32 = 32;
 pub enum LaunchError {
     #[error("Guild Wars 2 is not configured yet.")]
     NoGamePath,
+    #[error(
+        "{0} is a Steam account: start Steam and sign in with the Steam user it is linked to first."
+    )]
+    SteamNotRunning(String),
+    #[error(
+        "{0} is a Steam account, but no Guild Wars 2 installation with Steam support was found. \
+         Install Guild Wars 2 through Steam; that installation can be used for all accounts."
+    )]
+    SteamInstallMissing(String),
     #[error("Setting up the login of {0} needs all other Guild Wars 2 clients to be closed first.")]
     SetupNeedsExclusive(String),
     #[error("An account is currently being set up. Close that client before starting another one.")]
@@ -108,6 +117,15 @@ pub fn launch(
     if !gw2_path.is_file() {
         return Err(LaunchError::NoGamePath);
     }
+    let client_exe = match account.provider {
+        Provider::ArenaNet => gw2_path.to_owned(),
+        Provider::Steam => crate::game::steam_client(gw2_path)
+            .ok_or_else(|| LaunchError::SteamInstallMissing(account.name.clone()))?,
+    };
+    let gw2_path = client_exe.as_path();
+    if account.provider == Provider::Steam && !steam_running() {
+        return Err(LaunchError::SteamNotRunning(account.name.clone()));
+    }
 
     let setup = mode == LaunchMode::SetUpLogin || !bb_store::is_set_up(account.id);
     let others_running = !running_clients(gw2_path).is_empty();
@@ -160,13 +178,16 @@ fn start_and_wait(
     local_dat: &Path,
 ) -> Result<(RunningClient, Option<String>), LaunchError> {
     let working_dir = gw2_path.parent().unwrap_or(gw2_path);
-    let mut child = Command::new(gw2_path)
+    let mut command = Command::new(gw2_path);
+    command
         .args(game_args(account, options))
         .current_dir(working_dir)
         .env("TMP", temp_dir)
-        .env("TEMP", temp_dir)
-        .spawn()
-        .map_err(LaunchError::Spawn)?;
+        .env("TEMP", temp_dir);
+    for (key, value) in provider_env(account) {
+        command.env(key, value);
+    }
+    let mut child = command.spawn().map_err(LaunchError::Spawn)?;
 
     let warning = match wait_until_locked(&mut child, local_dat)? {
         true => None,
@@ -231,6 +252,25 @@ fn archive_held_exclusively(gw2_path: &Path) -> bool {
         Ok(_) => false,
         Err(error) => error.raw_os_error() == Some(ERROR_SHARING_VIOLATION),
     }
+}
+
+/// Extra environment for the client, depending on how the account authenticates.
+///
+/// A Steam account is started directly (not through `steam.exe -applaunch`, which asks for
+/// confirmation of custom arguments and only allows one instance). `SteamAppId` tells the
+/// client's Steam API which app it is, so it attaches to the running Steam client, which then
+/// signs the game in with its currently signed-in Steam user — the same approach gw2launcher uses.
+fn provider_env(account: &Account) -> Vec<(&'static str, String)> {
+    match account.provider {
+        Provider::ArenaNet => Vec::new(),
+        Provider::Steam => vec![("SteamAppId", steam::GW2_APP_ID.to_string())],
+    }
+}
+
+/// Whether the Steam client is running. If the process list can't be read, launching proceeds
+/// and GW2 reports the problem itself.
+fn steam_running() -> bool {
+    bb_win::process::find_processes_by_name("steam.exe").map_or(true, |pids| !pids.is_empty())
 }
 
 fn running_clients(gw2_path: &Path) -> Vec<u32> {
@@ -304,6 +344,19 @@ mod tests {
         drop(holder);
         assert!(!is_locked(&path));
         fs::remove_file(&path).unwrap();
+    }
+
+    #[test]
+    fn only_steam_accounts_get_the_steam_app_id() {
+        let arenanet = Account::new(AccountId(1), "Main");
+        assert!(provider_env(&arenanet).is_empty());
+
+        let mut steam_account = Account::new(AccountId(2), "Steam");
+        steam_account.provider = Provider::Steam;
+        assert_eq!(
+            provider_env(&steam_account),
+            [("SteamAppId", "1284210".to_owned())]
+        );
     }
 
     #[test]

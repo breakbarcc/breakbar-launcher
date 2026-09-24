@@ -71,9 +71,19 @@ account). Breakbar detects the build mismatch and guides the user instead of fai
 
 ## Steam accounts
 
-- Start `Gw2-64.exe` directly with `-provider Steam` and env `SteamAppId=1284210` (Steam client running).
-- **To verify (Spike S2):** Steam authenticates the account logged into the Steam client, so presumably
-  only **one Steam-linked account** can run at a time (plus any number of ArenaNet accounts).
+- Start `Gw2-64.exe` directly with `-provider Steam` and env `SteamAppId=1284210` (same as
+  gw2launcher). Launchbuddy's `steam://rungameid/1284210` route was rejected: it goes through Steam's
+  custom-arguments confirmation and then has to find the spawned process.
+- `Gw2-64.exe` loads `steam_api64.dll` only at runtime (not a static import), and that library ships
+  only with the **Steam installation** of the game. Steam accounts therefore use the configured client
+  if it has the DLL next to it, otherwise a Steam installation found in the Steam libraries;
+  otherwise the launch is refused with an explanation.
+- The Steam client must be running (checked before launch); it signs the game in with its currently
+  signed-in Steam user, so **only one Steam account runs at a time** (enforced in the UI), next to
+  any number of ArenaNet accounts.
+- Steam accounts need no remembered login, only their own `Local.dat` (created by the automatic
+  first start without `-shareArchive`).
+- **Not yet verified against a real Steam-linked account** (none available during development).
 
 ## Companion apps
 
@@ -126,7 +136,7 @@ Config: `%APPDATA%\Breakbar\config.toml` (atomic write via temp file + `ReplaceF
 | 3.2 | Single launch + process monitoring |
 | 3.3 | Multi-launch (mutex kill + `-shareArchive`), benchmarks with 2–5 clients |
 | 3.4 | ✅ Per-account `Local.dat` via a junction swapped only during launch, serialized launches, one-time setup launch |
-| 3.5 | Steam accounts (Spike S2) |
+| 3.5 | ✅ Steam accounts: direct start with `-provider Steam` + `SteamAppId`, Steam install auto-selected, one Steam account at a time (not yet tested with a real Steam account) |
 | 3.6 | Companion apps, Blish HUD preset |
 | 4 | UX: status per account, launch-all queue, tray, hotkeys, dark/light, shortcuts/CLI |
 | 5 | Patch detection + Local.dat refresh, window layout per account, priority/affinity, GFX per account |

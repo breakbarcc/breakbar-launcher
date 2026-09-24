@@ -215,6 +215,22 @@ fn start_account(
         return;
     };
 
+    // Steam signs the game in with whichever Steam user is currently signed in, so a second
+    // Steam account can't run next to the first one.
+    let steam = Provider::Steam.display_name();
+    if account.provider == Provider::Steam
+        && account_rows_snapshot(window)
+            .iter()
+            .any(|row| row.running && row.provider == steam && row.id != id.0 as i32)
+    {
+        window.set_notice(
+            "Only one Steam account can run at a time: Steam signs the game in with the \
+             Steam user that is currently signed in."
+                .into(),
+        );
+        return;
+    }
+
     update_row(window, id, |row| {
         row.running = true;
         row.handle = 0;
@@ -358,7 +374,12 @@ fn add_account(window: &MainWindow, app: &RefCell<App>, name: &str) {
             .unwrap_or(0)
             + 1,
     );
-    app_ref.config.accounts.push(Account::new(next_id, name));
+    let mut account = Account::new(next_id, name);
+    if window.get_new_account_steam() {
+        account.provider = Provider::Steam;
+    }
+    let provider = account.provider;
+    app_ref.config.accounts.push(account);
     let save_result = app_ref.save();
     drop(app_ref);
 
@@ -370,13 +391,14 @@ fn add_account(window: &MainWindow, app: &RefCell<App>, name: &str) {
     rows.push(AccountRow {
         id: next_id.0 as i32,
         name: name.into(),
-        provider: Provider::default().display_name().into(),
+        provider: provider.display_name().into(),
         status: idle_status_text(next_id),
         running: false,
         handle: 0,
     });
     set_rows(window, rows);
     window.set_new_account_name("".into());
+    window.set_new_account_steam(false);
 }
 
 fn choose_gw2_path(window: &MainWindow, app: &RefCell<App>) {
