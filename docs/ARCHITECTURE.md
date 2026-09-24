@@ -46,12 +46,11 @@ Every account owns a profile directory:
 **First launch of an account:** the client starts with an empty profile, the user logs in once with
 "remember email/password", GW2 writes `Local.dat` into the profile. All later launches use `-autologin`.
 
-How the profile reaches the client is decided by **Spike S1**:
-
-- **A (preferred):** redirect `APPDATA` (and `TMP`) in the child's environment block – no race, no admin,
-  all accounts can launch concurrently.
-- **B (fallback):** symlink `%APPDATA%\Guild Wars 2\Local.dat` → profile file before each launch
-  (needs Developer Mode/admin, launches must be serialized until the client has opened the file).
+**Spike S1 result:** Approach A (redirect `APPDATA`/`TMP`/`TEMP` in the child's environment block) —
+implemented in `bb-store::profile` and `bb-app::launcher::spawn`. No admin rights, no race, and
+verified against the real client: two accounts stay up concurrently, each with its own `Local.dat`
+and temp/cache files. Approach B (symlink-swapping one shared `Local.dat`, needing Developer
+Mode/admin and serialized launches) was not needed.
 
 **After a game patch** `Local.dat` files of an older build must be refreshed (one normal launch per
 account). Breakbar detects the build mismatch and guides the user instead of failing.
@@ -112,7 +111,7 @@ Config: `%APPDATA%\Breakbar\config.toml` (atomic write via temp file + `ReplaceF
 | 3.1 | GW2 path selection + validation (file dialog, registry/Steam auto-detect) |
 | 3.2 | Single launch + process monitoring |
 | 3.3 | Multi-launch (mutex kill + `-shareArchive`), benchmarks with 2–5 clients |
-| 3.4 | Spike S1 → account management with per-account profile/Local.dat |
+| 3.4 | ✅ Per-account profile folders (Spike S1: Approach A), `-autologin` gated on a saved login |
 | 3.5 | Steam accounts (Spike S2) |
 | 3.6 | Companion apps, Blish HUD preset |
 | 4 | UX: status per account, launch-all queue, tray, hotkeys, dark/light, shortcuts/CLI |

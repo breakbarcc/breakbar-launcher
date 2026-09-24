@@ -188,7 +188,7 @@ fn start_account(window: &MainWindow, app: &RefCell<App>, id: AccountId) {
     let running = match launcher::spawn(&gw2_path, &account, LaunchOptions::default()) {
         Ok(running) => running,
         Err(error) => {
-            update_row(window, id, |row| row.status = "Idle".into());
+            update_row(window, id, |row| row.status = idle_status_text(id));
             window.set_notice(error.to_string().into());
             return;
         }
@@ -213,16 +213,16 @@ fn start_account(window: &MainWindow, app: &RefCell<App>, id: AccountId) {
                 update_row(&window, id, |row| {
                     row.running = false;
                     row.handle = 0;
-                    row.status = exit_status_text(&result);
+                    row.status = exit_status_text(id, &result);
                 });
             }
         });
     });
 }
 
-fn exit_status_text(result: &io::Result<ExitStatus>) -> SharedString {
+fn exit_status_text(id: AccountId, result: &io::Result<ExitStatus>) -> SharedString {
     match result {
-        Ok(status) if status.success() => "Idle".into(),
+        Ok(status) if status.success() => idle_status_text(id),
         Ok(status) => {
             let code = status
                 .code()
@@ -230,6 +230,17 @@ fn exit_status_text(result: &io::Result<ExitStatus>) -> SharedString {
             format!("Exited (code {code})").into()
         }
         Err(error) => format!("Exited: {error}").into(),
+    }
+}
+
+/// "Idle" once the account has a saved login (its profile has a `Local.dat`), otherwise a hint
+/// that it still needs one — the account's very first launch always starts at the normal login
+/// screen no matter what, so this is purely informational.
+fn idle_status_text(id: AccountId) -> SharedString {
+    if bb_store::has_saved_login(id) {
+        "Idle".into()
+    } else {
+        "Needs login".into()
     }
 }
 
@@ -262,7 +273,7 @@ fn add_account(window: &MainWindow, app: &RefCell<App>, name: &str) {
         id: next_id.0 as i32,
         name: name.into(),
         provider: Provider::default().display_name().into(),
-        status: "Idle".into(),
+        status: idle_status_text(next_id),
         running: false,
         handle: 0,
     });
@@ -316,7 +327,7 @@ fn account_rows(config: &Config) -> Vec<AccountRow> {
             id: account.id.0 as i32,
             name: account.name.as_str().into(),
             provider: account.provider.display_name().into(),
-            status: "Idle".into(),
+            status: idle_status_text(account.id),
             running: false,
             handle: 0,
         })

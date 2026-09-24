@@ -2,6 +2,8 @@
 //!
 //! The config never contains credentials; logins live exclusively in per-account `Local.dat` files.
 
+mod profile;
+
 use std::fs;
 use std::io::{self, Write};
 use std::path::{Path, PathBuf};
@@ -9,12 +11,16 @@ use std::path::{Path, PathBuf};
 use bb_core::{Account, CompanionApp};
 use serde::{Deserialize, Serialize};
 
+pub use profile::{ensure_profile_dir, has_saved_login, local_dat_path, profile_dir};
+
 const CURRENT_VERSION: u32 = 1;
 
 #[derive(Debug, thiserror::Error)]
 pub enum StoreError {
     #[error("the APPDATA environment variable is not set")]
     NoAppData,
+    #[error("the LOCALAPPDATA environment variable is not set")]
+    NoLocalAppData,
     #[error("I/O error on {path}: {source}")]
     Io { path: PathBuf, source: io::Error },
     #[error("invalid config file {path}: {source}")]

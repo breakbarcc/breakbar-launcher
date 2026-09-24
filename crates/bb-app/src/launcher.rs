@@ -11,6 +11,8 @@ use bb_core::{Account, LaunchOptions, game_args};
 pub enum LaunchError {
     #[error("Guild Wars 2 is not configured yet.")]
     NoGamePath,
+    #[error("could not prepare the account's profile folder: {0}")]
+    Profile(#[from] bb_store::StoreError),
     #[error("failed to start Guild Wars 2: {0}")]
     Spawn(#[source] io::Error),
 }
@@ -48,10 +50,17 @@ impl RunningClient {
 /// starts it, so the client finds its side-by-side files. If another client already holds GW2's
 /// single-instance mutex, that mutex is closed first (see [`ensure_mutex_clear`]) so this
 /// client doesn't just get refused.
+///
+/// The client's `APPDATA`/`TMP`/`TEMP` are redirected to the account's own profile folder (see
+/// [`bb_store::profile_dir`]), so each account keeps its own `Local.dat` and never fights
+/// another running account over the same one. `options.autologin` is overridden based on
+/// whether that profile already has a saved login — passing `-autologin` before one exists
+/// would do nothing but isn't harmful either, so this only matters for showing the right thing
+/// to the user, not for correctness.
 pub fn spawn(
     gw2_path: &Path,
     account: &Account,
-    options: LaunchOptions,
+    mut options: LaunchOptions,
 ) -> Result<RunningClient, LaunchError> {
     if !gw2_path.is_file() {
         return Err(LaunchError::NoGamePath);
@@ -60,9 +69,17 @@ pub fn spawn(
 
     ensure_mutex_clear(gw2_path);
 
+    let profile_dir = bb_store::ensure_profile_dir(account.id)?;
+    let temp_dir = profile_dir.join("Temp");
+    std::fs::create_dir_all(&temp_dir).map_err(LaunchError::Spawn)?;
+    options.autologin = bb_store::has_saved_login(account.id);
+
     let child = Command::new(gw2_path)
         .args(game_args(account, options))
         .current_dir(working_dir)
+        .env("APPDATA", &profile_dir)
+        .env("TMP", &temp_dir)
+        .env("TEMP", &temp_dir)
         .spawn()
         .map_err(LaunchError::Spawn)?;
 
@@ -136,11 +153,32 @@ mod tests {
     fn spawned_process_can_be_waited_on() {
         let windir = std::env::var_os("SystemRoot").expect("SystemRoot is set");
         let stand_in = PathBuf::from(&windir).join("System32").join("ping.exe");
-        let account = Account::new(AccountId(1), "Main");
+        let account = Account::new(AccountId(u32::MAX - 10), "Main");
 
         let running = spawn(&stand_in, &account, LaunchOptions::default()).unwrap();
         assert!(running.pid() > 0);
 
         running.wait_for_exit().unwrap();
+        cleanup_profile(account.id);
+    }
+
+    #[test]
+    fn spawn_gives_the_client_its_own_profile_folder() {
+        let windir = std::env::var_os("SystemRoot").expect("SystemRoot is set");
+        let stand_in = PathBuf::from(&windir).join("System32").join("ping.exe");
+        let account = Account::new(AccountId(u32::MAX - 11), "Main");
+        assert!(!bb_store::has_saved_login(account.id));
+
+        let running = spawn(&stand_in, &account, LaunchOptions::default()).unwrap();
+        running.wait_for_exit().unwrap();
+
+        assert!(bb_store::profile_dir(account.id).unwrap().is_dir());
+        cleanup_profile(account.id);
+    }
+
+    fn cleanup_profile(id: bb_core::AccountId) {
+        if let Ok(dir) = bb_store::profile_dir(id) {
+            let _ = std::fs::remove_dir_all(dir);
+        }
     }
 }
