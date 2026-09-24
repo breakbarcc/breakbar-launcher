@@ -1,15 +1,20 @@
 import { Theme } from "theme.slint";
 import { Icons } from "icons.slint";
 import {
-    Icon, Button, ButtonKind, IconButton, SectionLabel, LinkButton, TextField, Segmented, SegmentBar,
-    Toast, ToastData, ToastKind,
+    Icon, Button, ButtonKind, IconButton, SectionLabel, LinkButton, SegmentBar, Toast, ToastData,
+    ToastKind, Elevated,
 } from "components.slint";
 import { AccountCard, AccountRow, AccountState } from "account-card.slint";
+import { AccountEditor, EditorData, CompanionToggle, LoginState } from "editor.slint";
+import { SetupPathPage, SetupAccountPage } from "setup.slint";
 import { Messages, LaunchFailure, PathProblem } from "messages.slint";
 
-export { Theme, AccountRow, AccountState, ToastData, ToastKind, Messages, LaunchFailure, PathProblem }
+export {
+    Theme, AccountRow, AccountState, ToastData, ToastKind, Messages, LaunchFailure, PathProblem,
+    EditorData, CompanionToggle, LoginState,
+}
 
-export enum Page { accounts, add-account }
+export enum Page { accounts, editor, setup-path, setup-account }
 
 /// Skeleton card of the empty state.
 component GhostCard inherits Rectangle {
@@ -85,116 +90,90 @@ component PathRow {
     }
 }
 
-/// Name and platform of a new account.
-component AddAccountPage inherits VerticalLayout {
-    callback submitted(string, bool);
-    callback cancelled;
-
-    function submit() {
-        if name-field.text != "" {
-            root.submitted(name-field.text, platform.selected == 1);
-        }
-    }
+/// Asks before an account and its login are deleted for good.
+component ConfirmDelete {
+    in property <string> name;
+    callback confirmed();
+    callback cancelled();
 
     init => {
-        name-field.focus();
+        cancel.focus();
     }
 
-    HorizontalLayout {
-        padding-left: 12px;
-        padding-right: 12px;
-        padding-top: 10px;
-        padding-bottom: 10px;
-        spacing: 8px;
-        IconButton {
-            y: (parent.height - self.height) / 2;
-            icon: Icons.back;
-            label: @tr("Back");
+    // Scrim: dims the window and swallows clicks.
+    Rectangle {
+        background: Theme.bg.with-alpha(0.72);
+        TouchArea {
             clicked => { root.cancelled(); }
         }
-        Text {
-            text: @tr("Add account");
-            font-family: Theme.font-ui;
-            font-size: Theme.fs-page-title;
-            font-weight: 600;
-            color: Theme.text;
-            vertical-alignment: center;
-        }
     }
-    Rectangle {
-        height: 1px;
-        background: Theme.line;
-    }
-    VerticalLayout {
-        vertical-stretch: 1;
-        padding: 16px;
-        spacing: 8px;
-        alignment: start;
-
-        SectionLabel {
-            text: @tr("// GENERAL");
+    FocusScope {
+        key-pressed(event) => {
+            if event.text == Key.Escape {
+                root.cancelled();
+                return accept;
+            }
+            reject
         }
-        Text {
-            text: @tr("Name");
-            font-size: Theme.fs-body;
-            font-weight: 600;
-            color: Theme.text;
-        }
-        name-field := TextField {
-            placeholder: @tr("e.g. Main");
-            accepted => { root.submit(); }
-        }
-        Rectangle {
-            height: 6px;
-        }
-        Text {
-            text: @tr("Platform");
-            font-size: Theme.fs-body;
-            font-weight: 600;
-            color: Theme.text;
-        }
-        platform := Segmented {
-            options: ["ArenaNet", "Steam"];
-        }
-        Text {
-            text: platform.selected == 1
-                ? @tr("Steam signs the game in with the Steam user that is currently signed in. Only one Steam account can run at a time.")
-                : @tr("On the first start the normal Guild Wars 2 login opens: log in once with „Remember email/password“ ticked. Breakbar stores no passwords.");
-            font-size: Theme.fs-help;
-            color: Theme.text-muted;
-            wrap: word-wrap;
-        }
-    }
-    Rectangle {
-        height: 1px;
-        background: Theme.line;
-    }
-    HorizontalLayout {
-        padding: 12px;
-        spacing: 8px;
-        Button {
-            kind: ButtonKind.ghost;
-            icon: Icons.back;
-            icon-color: Theme.text-muted;
-            text: @tr("Cancel");
-            clicked => { root.cancelled(); }
-        }
-        Rectangle {
-            horizontal-stretch: 1;
-        }
-        Button {
-            large: true;
-            kind: ButtonKind.primary;
-            icon: Icons.check;
-            enabled: name-field.text != "";
-            text: @tr("Add account");
-            clicked => { root.submit(); }
+        Elevated {
+            x: (root.width - self.width) / 2;
+            y: (root.height - self.height) / 2;
+            width: min(root.width - 32px, 340px);
+            height: dialog.preferred-height;
+            accessible-role: groupbox;
+            accessible-label: @tr("Delete „{}“?", root.name);
+            // Keeps clicks on the dialog from reaching the scrim.
+            TouchArea { }
+            dialog := VerticalLayout {
+                padding: 16px;
+                spacing: 12px;
+                HorizontalLayout {
+                    spacing: 10px;
+                    Icon {
+                        y: (parent.height - self.height) / 2;
+                        path: Icons.trash;
+                        color: Theme.error;
+                        size: 17px;
+                    }
+                    Text {
+                        horizontal-stretch: 1;
+                        text: @tr("Delete „{}“?", root.name);
+                        font-size: Theme.fs-page-title;
+                        font-weight: 600;
+                        color: Theme.text;
+                        wrap: word-wrap;
+                    }
+                }
+                Text {
+                    text: @tr("The account and its profile folder with the saved login are deleted for good. This cannot be undone.");
+                    font-size: 12.5px;
+                    color: Theme.text-muted;
+                    wrap: word-wrap;
+                }
+                HorizontalLayout {
+                    padding-top: 4px;
+                    spacing: 8px;
+                    alignment: end;
+                    cancel := Button {
+                        kind: ButtonKind.ghost;
+                        text: @tr("Cancel");
+                        clicked => { root.cancelled(); }
+                    }
+                    Button {
+                        kind: ButtonKind.danger;
+                        icon: Icons.trash;
+                        text: @tr("Delete");
+                        clicked => { root.confirmed(); }
+                    }
+                }
+            }
         }
     }
 }
 
 export component MainWindow inherits Window {
-    title: "Breakbar Launcher";
+    title: root.page == Page.setup-path || root.page == Page.setup-account
+        ? @tr("Breakbar Launcher – Setup") : "Breakbar Launcher";
     icon: @image-url("../assets/icon/breakbar-64.png");
     background: Theme.bg;
     default-font-family: Theme.font-ui;
@@ -214,6 +193,12 @@ export component MainWindow inherits Window {
     in property <string> blish-path;
     in property <[ToastData]> toasts;
     in-out property <Page> page: Page.accounts;
+    /// What the editor page shows; set by Rust before switching to it.
+    in property <EditorData> editor;
+    /// First-start setup: the client found automatically, and the one chosen by hand.
+    in property <string> setup-detected-path;
+    in property <string> setup-other-path;
+    in property <string> setup-other-error;
 
     /// Start the account if idle, stop it if running.
     callback launch-account(int);
@@ -225,10 +210,23 @@ export component MainWindow inherits Window {
     callback clear-selection();
     callback choose-gw2-path();
     callback choose-blish-path();
-    /// Start Blish HUD together with the account, or stop doing so.
-    callback set-blish(int, bool);
+    /// Open the editor for an account (0 = a new one).
+    callback edit-account(int);
+    /// Editor: switch a companion app for the account being edited.
+    callback editor-toggle-companion(int);
+    /// Editor: save. Name, whether it is a Steam account, extra launch arguments.
+    callback editor-save(string, bool, string);
+    callback duplicate-account(int);
+    callback create-shortcut(int);
+    callback open-profile-folder(int);
+    /// Delete the account and its profile folder (after the user confirmed).
+    callback delete-account(int);
+    /// Move account `id` to list position `index`.
+    callback move-account(int, int);
+    callback setup-browse();
+    callback setup-path-chosen(string);
     /// Name and whether it is a Steam account.
-    callback add-account(string, bool);
+    callback setup-create-account(string, bool);
     callback dismiss-toast(int);
     /// The theme switched between dark and light (the native title bar has to follow).
     callback theme-changed(bool);
@@ -239,15 +237,30 @@ export component MainWindow inherits Window {
     property <bool> compact: self.width < 360px;
     property <bool> dark: Theme.dark;
 
+    // Delete confirmation: account id (0 = no dialog) and name.
+    property <int> confirm-delete-id;
+    property <string> confirm-delete-name;
+
+    // Drag & drop: the dragged row (-1 = none), where the pointer grabbed it, and the pointer
+    // position, both relative to the top of the list.
+    property <int> drag-index: -1;
+    property <length> drag-grab;
+    property <length> drag-pointer;
+    /// Height of a row plus the gap to the next one.
+    property <length> row-pitch: Theme.row-height + 4px;
+    property <length> drag-top: root.drag-pointer - root.drag-grab;
+    property <int> drag-target: max(0, min(root.accounts.length - 1, round(root.drag-top / root.row-pitch)));
+
     changed dark => { root.theme-changed(self.dark); }
 
-    function open-add-account() {
-        root.page = Page.add-account;
+    function request-delete(id: int, name: string) {
+        root.confirm-delete-id = id;
+        root.confirm-delete-name = name;
     }
 
     // ── Accounts page ────────────────────────────────────────────────────────────────────────
     if root.page == Page.accounts: VerticalLayout {
-        // Header: launch button, running counter, add.
+        // Toolbar: launch button, running counter, add.
         HorizontalLayout {
             padding-left: 16px;
             padding-right: 12px;
@@ -317,7 +330,7 @@ export component MainWindow inherits Window {
                 y: (parent.height - self.height) / 2;
                 icon: Icons.plus;
                 label: @tr("Add account");
-                clicked => { root.open-add-account(); }
+                clicked => { root.edit-account(0); }
             }
         }
 
@@ -347,8 +360,7 @@ export component MainWindow inherits Window {
             }
             Text {
                 text: @tr("No accounts yet");
-                font-family: Theme.font-ui;
-                font-size: 17px;
+                font-size: 19px;
                 font-weight: 600;
                 color: Theme.text;
                 horizontal-alignment: center;
@@ -367,7 +379,8 @@ export component MainWindow inherits Window {
                     kind: ButtonKind.primary;
                     icon: Icons.plus;
                     text: @tr("Add account");
-                    clicked => { root.open-add-account(); }
+                    clicked => { root.edit-account(0); }
+                    init => { self.focus(); }
                 }
             }
         }
@@ -383,7 +396,12 @@ export component MainWindow inherits Window {
                 text: @tr("// ACCOUNTS · {}", root.accounts.length);
                 vertical-alignment: center;
             }
-            if root.selected-count > 0: HorizontalLayout {
+            if root.drag-index >= 0: SectionLabel {
+                text: @tr("POS {}/{}", root.drag-target + 1, root.accounts.length);
+                color: Theme.accent;
+                vertical-alignment: center;
+            }
+            if root.drag-index < 0 && root.selected-count > 0: HorizontalLayout {
                 spacing: 8px;
                 Text {
                     text: @tr("{} selected", root.selected-count);
@@ -397,26 +415,84 @@ export component MainWindow inherits Window {
                     clicked => { root.clear-selection(); }
                 }
             }
+            if root.drag-index < 0 && root.selected-count == 0 && root.accounts.length > 1 && !root.compact: Text {
+                text: @tr("Drag to sort");
+                font-size: Theme.fs-help;
+                color: Theme.text-dim;
+                vertical-alignment: center;
+            }
         }
 
         if root.accounts.length > 0: Flickable {
             vertical-stretch: 1;
-            content-height: list.preferred-height;
+            // Scrolling would fight the drag gesture.
+            interactive: root.drag-index < 0;
+            content-height: list.height;
 
-            list := VerticalLayout {
-                padding-left: 10px;
-                padding-right: 10px;
-                padding-bottom: 10px;
-                spacing: 4px;
-                alignment: start;
-                for account in root.accounts: AccountCard {
+            list := Rectangle {
+                height: root.accounts.length * root.row-pitch + 6px;
+
+                for account[index] in root.accounts: AccountCard {
+                    x: 10px;
+                    y: index * root.row-pitch;
+                    width: parent.width - 20px;
                     account: account;
                     compact: root.compact;
-                    blish-available: root.blish-path != "";
+                    placeholder: root.drag-index == index;
                     action => { root.launch-account(account.id); }
                     toggle-selected => { root.toggle-selected(account.id); }
-                    set-up-login => { root.set-up-login(account.id); }
-                    set-blish(enabled) => { root.set-blish(account.id, enabled); }
+                    edit => { root.edit-account(account.id); }
+                    duplicate => { root.duplicate-account(account.id); }
+                    create-shortcut => { root.create-shortcut(account.id); }
+                    open-folder => { root.open-profile-folder(account.id); }
+                    request-delete => { root.request-delete(account.id, account.name); }
+                    move-by(delta) => { root.move-account(account.id, index + delta); }
+                    drag-started(y) => {
+                        root.drag-index = index;
+                        root.drag-grab = y;
+                        root.drag-pointer = index * root.row-pitch + y;
+                    }
+                    drag-moved(y) => {
+                        root.drag-pointer = index * root.row-pitch + y;
+                    }
+                    drag-ended => {
+                        if root.drag-target != index {
+                            root.move-account(account.id, root.drag-target);
+                        }
+                        root.drag-index = -1;
+                    }
+                }
+
+                // Insertion line: 2 px accent with a ring at its start.
+                if root.drag-index >= 0 && root.drag-target != root.drag-index: Rectangle {
+                    x: 4px;
+                    y: root.drag-target < root.drag-index
+                        ? root.drag-target * root.row-pitch - 3px
+                        : root.drag-target * root.row-pitch + Theme.row-height + 1px;
+                    width: parent.width - 14px;
+                    height: 2px;
+                    background: Theme.accent;
+                    Rectangle {
+                        x: -2px;
+                        y: -3px;
+                        width: 8px;
+                        height: 8px;
+                        border-radius: 4px;
+                        border-width: 2px;
+                        border-color: Theme.accent;
+                        background: Theme.bg;
+                    }
+                }
+
+                // The dragged row follows the pointer, slightly turned.
+                if root.drag-index >= 0: AccountCard {
+                    x: 18px;
+                    y: max(-8px, min(parent.height - Theme.row-height, root.drag-top));
+                    width: parent.width - 28px;
+                    transform-rotation: -1deg;
+                    account: root.accounts[root.drag-index];
+                    compact: root.compact;
+                    dragging: true;
                 }
             }
         }
@@ -449,13 +525,30 @@ export component MainWindow inherits Window {
         }
     }
 
-    // ── Add account page ─────────────────────────────────────────────────────────────────────
-    if root.page == Page.add-account: AddAccountPage {
-        submitted(name, steam) => {
-            root.add-account(name, steam);
+    // ── Account editor ───────────────────────────────────────────────────────────────────────
+    if root.page == Page.editor: AccountEditor {
+        data: root.editor;
+        save(name, steam, args) => { root.editor-save(name, steam, args); }
+        cancel => { root.page = Page.accounts; }
+        request-delete => { root.request-delete(root.editor.id, root.editor.name); }
+        set-up-login => {
             root.page = Page.accounts;
+            root.set-up-login(root.editor.id);
         }
-        cancelled => { root.page = Page.accounts; }
+        toggle-companion(id) => { root.editor-toggle-companion(id); }
+    }
+
+    // ── First-start setup ────────────────────────────────────────────────────────────────────
+    if root.page == Page.setup-path: SetupPathPage {
+        detected-path: root.setup-detected-path;
+        other-path: root.setup-other-path;
+        other-error: root.setup-other-error;
+        browse => { root.setup-browse(); }
+        next(path) => { root.setup-path-chosen(path); }
+    }
+    if root.page == Page.setup-account: SetupAccountPage {
+        back => { root.page = Page.setup-path; }
+        create(name, steam) => { root.setup-create-account(name, steam); }
     }
 
     // ── Toasts ───────────────────────────────────────────────────────────────────────────────
@@ -479,5 +572,19 @@ export component MainWindow inherits Window {
                 }
             }
         }
+    }
+
+    // ── Delete confirmation ──────────────────────────────────────────────────────────────────
+    if root.confirm-delete-id != 0: ConfirmDelete {
+        x: 0;
+        y: 0;
+        width: root.width;
+        height: root.height;
+        name: root.confirm-delete-name;
+        confirmed => {
+            root.delete-account(root.confirm-delete-id);
+            root.confirm-delete-id = 0;
+        }
+        cancelled => { root.confirm-delete-id = 0; }
     }
 }

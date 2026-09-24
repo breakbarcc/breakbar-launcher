@@ -2,17 +2,17 @@
 
 use std::path::{Path, PathBuf};
 
-use windows::Win32::Foundation::{ERROR_CANCELLED, HWND, RPC_E_CHANGED_MODE};
-use windows::Win32::System::Com::{
-    CLSCTX_INPROC_SERVER, COINIT_APARTMENTTHREADED, COINIT_DISABLE_OLE1DDE, CoCreateInstance,
-    CoInitializeEx, CoTaskMemFree, CoUninitialize,
-};
+use windows::Win32::Foundation::{ERROR_CANCELLED, HWND};
+use windows::Win32::System::Com::{CLSCTX_INPROC_SERVER, CoCreateInstance, CoTaskMemFree};
 use windows::Win32::UI::Shell::Common::COMDLG_FILTERSPEC;
 use windows::Win32::UI::Shell::{
     FOS_FILEMUSTEXIST, FOS_FORCEFILESYSTEM, FileOpenDialog, IFileOpenDialog, IShellItem,
     SHCreateItemFromParsingName, SIGDN_FILESYSPATH,
 };
+use windows::Win32::UI::WindowsAndMessaging::{MB_ICONERROR, MB_OK, MB_SETFOREGROUND, MessageBoxW};
 use windows::core::{HRESULT, HSTRING, PCWSTR, Result};
+
+use crate::com::ComApartment;
 
 /// A file type filter: display name and pattern(s), e.g. `("Programs", "*.exe")`.
 pub type Filter<'a> = (&'a str, &'a str);
@@ -72,29 +72,16 @@ pub fn open_file(
     }
 }
 
-/// Initializes a single-threaded COM apartment for the current thread for the guard's lifetime.
-struct ComApartment {
-    initialized: bool,
-}
-
-impl ComApartment {
-    fn enter() -> Result<Self> {
-        // SAFETY: balanced by CoUninitialize in Drop when initialization succeeded.
-        let hr = unsafe { CoInitializeEx(None, COINIT_APARTMENTTHREADED | COINIT_DISABLE_OLE1DDE) };
-        if hr == RPC_E_CHANGED_MODE {
-            // The thread already runs a multithreaded apartment; the dialog still works there.
-            return Ok(Self { initialized: false });
-        }
-        hr.ok()?;
-        Ok(Self { initialized: true })
-    }
-}
-
-impl Drop for ComApartment {
-    fn drop(&mut self) {
-        if self.initialized {
-            // SAFETY: matches the successful CoInitializeEx in `enter`.
-            unsafe { CoUninitialize() };
-        }
+/// Shows a blocking error message box. Only for when Breakbar has no window of its own to show
+/// the error in (e.g. starting an account from a desktop shortcut).
+pub fn error_box(title: &str, text: &str) {
+    // SAFETY: both strings outlive the call; no owner window.
+    unsafe {
+        MessageBoxW(
+            None,
+            &HSTRING::from(text),
+            &HSTRING::from(title),
+            MB_OK | MB_ICONERROR | MB_SETFOREGROUND,
+        );
     }
 }

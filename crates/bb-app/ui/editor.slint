@@ -1,0 +1,355 @@
+// Account editor (design hand-off: screen 10). Also used to add an account.
+
+import { Theme } from "theme.slint";
+import { Icons } from "icons.slint";
+import {
+    Icon, Button, ButtonKind, IconButton, SectionLabel, TextField, Segmented, Toggle, Pill, PillKind,
+    HelpText, FieldLabel,
+} from "components.slint";
+
+/// A companion app that can be switched on for the account.
+export struct CompanionToggle {
+    id: int,
+    name: string,
+    /// One instance per game client (otherwise one for all).
+    per-client: bool,
+    /// Starts once the game window appears (otherwise with the game process).
+    after-game-start: bool,
+    enabled: bool,
+}
+
+export enum LoginState {
+    /// The account has its own `Local.dat`.
+    set-up,
+    /// No `Local.dat` yet: the next start sets up the login.
+    missing,
+    /// Steam signs the game in; nothing to set up.
+    steam,
+}
+
+export struct EditorData {
+    /// 0 for a new account.
+    id: int,
+    name: string,
+    steam: bool,
+    args: string,
+    login: LoginState,
+    /// The account's client is starting or running.
+    active: bool,
+    companions: [CompanionToggle],
+}
+
+/// One companion row with its switch.
+component CompanionRow {
+    in property <CompanionToggle> companion;
+    in property <bool> first;
+    callback toggled();
+    min-height: 48px;
+
+    if !root.first: Rectangle {
+        y: 0;
+        height: 1px;
+        background: Theme.line;
+    }
+    HorizontalLayout {
+        padding-left: 12px;
+        padding-right: 12px;
+        padding-top: 6px;
+        padding-bottom: 6px;
+        spacing: 10px;
+        Icon {
+            y: (parent.height - self.height) / 2;
+            path: Icons.layers;
+            color: root.companion.enabled ? Theme.accent : Theme.text-dim;
+        }
+        VerticalLayout {
+            horizontal-stretch: 1;
+            spacing: 2px;
+            alignment: center;
+            Text {
+                text: root.companion.name;
+                font-size: Theme.fs-body;
+                font-weight: 600;
+                color: Theme.text;
+                overflow: elide;
+            }
+            Text {
+                text: (root.companion.per-client ? @tr("Per game instance") : @tr("Once for all"))
+                    + " · " + (root.companion.after-game-start ? @tr("after game start") : @tr("with the game"));
+                font-size: Theme.fs-help;
+                color: Theme.text-dim;
+                overflow: elide;
+            }
+        }
+        Toggle {
+            y: (parent.height - self.height) / 2;
+            checked: root.companion.enabled;
+            label: @tr("Start {} with it", root.companion.name);
+            toggled => { root.toggled(); }
+        }
+    }
+}
+
+export component AccountEditor inherits VerticalLayout {
+    in property <EditorData> data;
+    callback save(string, bool, string);
+    callback cancel();
+    callback request-delete();
+    callback set-up-login();
+    callback toggle-companion(int);
+
+    property <bool> is-new: root.data.id == 0;
+    property <bool> advanced-open: root.data.args != "";
+
+    function submit() {
+        if name-field.text != "" {
+            root.save(name-field.text, platform.selected == 1, args-field.text);
+        }
+    }
+
+    init => {
+        name-field.text = root.data.name;
+        platform.selected = root.data.steam ? 1 : 0;
+        args-field.text = root.data.args;
+        name-field.focus();
+    }
+
+    // Header: back arrow, title, "NAME · PLATFORM".
+    HorizontalLayout {
+        padding-left: 8px;
+        padding-right: 12px;
+        padding-top: 8px;
+        padding-bottom: 8px;
+        spacing: 8px;
+        IconButton {
+            y: (parent.height - self.height) / 2;
+            icon: Icons.back;
+            label: @tr("Back");
+            clicked => { root.cancel(); }
+        }
+        VerticalLayout {
+            spacing: 1px;
+            alignment: center;
+            Text {
+                text: root.is-new ? @tr("Add account") : @tr("Edit account");
+                font-size: Theme.fs-page-title;
+                font-weight: 600;
+                color: Theme.text;
+            }
+            if !root.is-new: Text {
+                text: (root.data.name + " · " + (root.data.steam ? "Steam" : "ArenaNet")).to-uppercase();
+                font-family: Theme.font-mono;
+                font-size: 10.5px;
+                letter-spacing: 0.84px;
+                color: Theme.text-dim;
+                overflow: elide;
+            }
+        }
+    }
+    Rectangle {
+        height: 1px;
+        background: Theme.line;
+    }
+
+    Flickable {
+        vertical-stretch: 1;
+        content-height: content.preferred-height;
+
+        content := VerticalLayout {
+            padding-left: 16px;
+            padding-right: 16px;
+            padding-top: 18px;
+            padding-bottom: 20px;
+            spacing: 22px;
+            alignment: start;
+
+            // General
+            VerticalLayout {
+                spacing: 12px;
+                SectionLabel {
+                    text: @tr("// GENERAL");
+                }
+                VerticalLayout {
+                    spacing: 6px;
+                    FieldLabel {
+                        text: @tr("Name");
+                    }
+                    name-field := TextField {
+                        placeholder: @tr("e.g. Main");
+                        accepted => { root.submit(); }
+                    }
+                }
+                VerticalLayout {
+                    spacing: 6px;
+                    FieldLabel {
+                        text: @tr("Platform");
+                    }
+                    platform := Segmented {
+                        height: 32px;
+                        options: ["ArenaNet", "Steam"];
+                    }
+                    if platform.selected == 1: HelpText {
+                        text: @tr("Steam signs the game in with the Steam user that is currently signed in. Only one Steam account can run at a time.");
+                    }
+                }
+            }
+
+            // Login
+            if !root.is-new: VerticalLayout {
+                spacing: 12px;
+                SectionLabel {
+                    text: @tr("// LOGIN");
+                }
+                Rectangle {
+                    border-radius: Theme.radius-card;
+                    background: Theme.surface;
+                    border-width: 1px;
+                    border-color: Theme.line;
+                    VerticalLayout {
+                        padding: 12px;
+                        spacing: 10px;
+                        HorizontalLayout {
+                            spacing: 8px;
+                            Text {
+                                horizontal-stretch: 1;
+                                text: @tr("Login file");
+                                font-size: Theme.fs-body;
+                                font-weight: 600;
+                                color: Theme.text;
+                                vertical-alignment: center;
+                            }
+                            Pill {
+                                kind: root.data.login == LoginState.missing ? PillKind.warn : PillKind.ok;
+                                icon: root.data.login == LoginState.missing ? Icons.key : Icons.checkcircle;
+                                text: root.data.login == LoginState.set-up ? @tr("Set up")
+                                    : root.data.login == LoginState.missing ? @tr("Missing")
+                                    : @tr("Via Steam");
+                            }
+                        }
+                        Text {
+                            text: root.data.login == LoginState.steam
+                                ? @tr("Steam signs this account in. It only needs its own login file for its game settings, which the first start creates.")
+                                : root.data.login == LoginState.missing
+                                ? @tr("On the next start the normal Guild Wars 2 login opens: log in once with „Remember email/password“ ticked.")
+                                : @tr("The account logs in automatically. Set up the login again if the password changed or it asks for a login.");
+                            font-size: 12.5px;
+                            color: Theme.text-muted;
+                            wrap: word-wrap;
+                        }
+                        if root.data.login != LoginState.steam: HorizontalLayout {
+                            alignment: start;
+                            Button {
+                                icon: Icons.login;
+                                icon-color: Theme.warn;
+                                text: @tr("Set up login");
+                                enabled: !root.data.active;
+                                clicked => { root.set-up-login(); }
+                            }
+                        }
+                    }
+                }
+            }
+
+            // Companion apps
+            VerticalLayout {
+                spacing: 8px;
+                SectionLabel {
+                    text: @tr("// COMPANION APPS");
+                }
+                if root.data.companions.length > 0: Rectangle {
+                    border-radius: Theme.radius-card;
+                    background: Theme.surface;
+                    border-width: 1px;
+                    border-color: Theme.line;
+                    VerticalLayout {
+                        for companion[index] in root.data.companions: CompanionRow {
+                            companion: companion;
+                            first: index == 0;
+                            toggled => { root.toggle-companion(companion.id); }
+                        }
+                    }
+                }
+                if root.data.companions.length == 0: HelpText {
+                    text: @tr("No companion apps set up yet. Blish HUD can be chosen at the bottom of the main window.");
+                }
+            }
+
+            // Advanced (collapsible)
+            VerticalLayout {
+                spacing: 12px;
+                HorizontalLayout {
+                    alignment: start;
+                    spacing: 6px;
+                    accessible-role: button;
+                    accessible-label: @tr("Advanced");
+                    accessible-expandable: true;
+                    accessible-expanded: root.advanced-open;
+                    Icon {
+                        y: (parent.height - self.height) / 2;
+                        path: root.advanced-open ? Icons.chevdown : Icons.chevright;
+                        size: 14px;
+                        color: Theme.text-dim;
+                    }
+                    SectionLabel {
+                        text: @tr("// ADVANCED");
+                        TouchArea {
+                            mouse-cursor: pointer;
+                            clicked => { root.advanced-open = !root.advanced-open; }
+                        }
+                    }
+                }
+                VerticalLayout {
+                    spacing: 6px;
+                    visible: root.advanced-open;
+                    height: root.advanced-open ? self.preferred-height : 0px;
+                    FieldLabel {
+                        text: @tr("Additional launch arguments");
+                    }
+                    args-field := TextField {
+                        mono: true;
+                        placeholder: "-windowed";
+                        accepted => { root.submit(); }
+                    }
+                    HelpText {
+                        text: @tr("Appended to Gw2-64.exe when starting, separated by spaces.");
+                    }
+                }
+            }
+        }
+    }
+
+    // Footer: delete left, cancel and save right.
+    Rectangle {
+        height: 1px;
+        background: Theme.line;
+    }
+    HorizontalLayout {
+        padding-left: 16px;
+        padding-right: 16px;
+        padding-top: 12px;
+        padding-bottom: 12px;
+        spacing: 8px;
+        if !root.is-new: Button {
+            kind: ButtonKind.danger;
+            icon: Icons.trash;
+            text: @tr("Delete");
+            enabled: !root.data.active;
+            clicked => { root.request-delete(); }
+        }
+        Rectangle {
+            horizontal-stretch: 1;
+        }
+        Button {
+            kind: ButtonKind.ghost;
+            text: @tr("Cancel");
+            clicked => { root.cancel(); }
+        }
+        Button {
+            kind: ButtonKind.primary;
+            icon: root.is-new ? Icons.plus : Icons.check;
+            text: root.is-new ? @tr("Add account") : @tr("Save");
+            enabled: name-field.text != "";
+            clicked => { root.submit(); }
+        }
+    }
+}

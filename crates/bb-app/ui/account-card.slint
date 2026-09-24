@@ -1,8 +1,8 @@
-// One account in the list.
+// One account in the list (design hand-off: DESIGN.md, "Account-Eintrag").
 
 import { Theme } from "theme.slint";
 import { Icons } from "icons.slint";
-import { Icon, Spinner, Button, IconButton, CheckBox, Badge, MenuItem, Elevated } from "components.slint";
+import { Icon, Spinner, Button, IconButton, CheckBox, Badge, MenuItem, Elevated, FocusRing } from "components.slint";
 
 export enum AccountState {
     idle,
@@ -32,8 +32,8 @@ export struct AccountRow {
     /// The client's raw OS process handle while running (0 otherwise); only used by Rust to stop it.
     handle: int,
     selected: bool,
-    /// Blish HUD is started together with this account.
-    blish: bool,
+    /// Companion apps (such as Blish HUD) start together with this account.
+    has-companions: bool,
     /// A companion app is running for this account's client.
     addon-active: bool,
 }
@@ -100,41 +100,124 @@ component StatusLabel {
 
 export component AccountCard {
     in property <AccountRow> account;
-    /// Blish HUD's path is set, so it can be toggled per account.
-    in property <bool> blish-available;
     /// Narrow window: icon-only action button.
     in property <bool> compact;
+    /// Left behind while this account is being dragged (35 % opacity).
+    in property <bool> placeholder;
+    /// The copy that follows the pointer while dragging.
+    in property <bool> dragging;
+
     callback action();
     callback toggle-selected();
-    callback set-up-login();
-    callback set-blish(bool);
+    callback edit();
+    callback duplicate();
+    callback create-shortcut();
+    callback open-folder();
+    callback request-delete();
+    /// Keyboard reordering: -1 = up, +1 = down.
+    callback move-by(int);
+    /// Dragging by the grip; `y` is relative to the top of this card.
+    callback drag-started(length);
+    callback drag-moved(length);
+    callback drag-ended();
 
+    public function open-menu() {
+        menu.show();
+    }
+
+    property <bool> active: account.state == AccountState.starting || account.state == AccountState.running
+        || account.state == AccountState.stopping;
     property <bool> busy: account.state == AccountState.starting || account.state == AccountState.stopping;
-    property <bool> can-set-up-login: !account.steam && (account.state == AccountState.idle
-        || account.state == AccountState.needs-login || account.state == AccountState.error);
-    property <bool> has-menu: root.can-set-up-login || root.blish-available;
+    property <bool> show-grip: hover.has-hover || focus.has-focus || root.dragging;
 
-    height: 54px;
+    height: Theme.row-height;
+    opacity: root.placeholder ? 0.35 : 1;
+    forward-focus: focus;
     accessible-role: list-item;
     accessible-label: account.name;
 
-    card := Rectangle {
+    Rectangle {
         border-radius: Theme.radius-card;
         border-width: 1px;
-        background: account.selected ? Theme.accent-soft : hover.has-hover ? Theme.surface-2 : Theme.surface;
-        border-color: account.selected ? Theme.accent-line : hover.has-hover ? Theme.line-2 : Theme.line;
+        background: root.dragging ? Theme.elevated
+            : account.selected ? Theme.accent-soft
+            : hover.has-hover ? Theme.surface-2 : Theme.surface;
+        border-color: root.dragging ? Theme.line-3
+            : account.selected ? Theme.accent-line
+            : hover.has-hover ? Theme.line-2 : Theme.line;
+        drop-shadow-color: root.dragging ? Theme.shadow-color : transparent;
+        drop-shadow-blur: 40px;
+        drop-shadow-offset-y: 18px;
+    }
+    if focus.has-focus && !root.dragging: FocusRing {
+        radius: Theme.radius-card;
+        around-width: root.width;
+        around-height: root.height;
     }
 
     hover := TouchArea {
-        // Only tracks hover; clicks go to the controls on top.
+        clicked => { focus.focus(); }
+        pointer-event(event) => {
+            if event.button == PointerEventButton.right && event.kind == PointerEventKind.up {
+                focus.focus();
+                menu.show();
+            }
+        }
+    }
+
+    focus := FocusScope {
+        key-pressed(event) => {
+            if event.text == " " {
+                root.toggle-selected();
+                return accept;
+            }
+            if event.text == "\n" {
+                root.action();
+                return accept;
+            }
+            if event.text == Key.F2 {
+                root.edit();
+                return accept;
+            }
+            if event.text == Key.Delete && !root.active {
+                root.request-delete();
+                return accept;
+            }
+            if event.modifiers.control && (event.text == "d" || event.text == "D") {
+                root.duplicate();
+                return accept;
+            }
+            if event.modifiers.alt && event.text == Key.UpArrow {
+                root.move-by(-1);
+                return accept;
+            }
+            if event.modifiers.alt && event.text == Key.DownArrow {
+                root.move-by(1);
+                return accept;
+            }
+            if (event.modifiers.shift && event.text == Key.F10) || event.text == Key.Menu {
+                menu.show();
+                return accept;
+            }
+            reject
+        }
     }
 
     HorizontalLayout {
-        padding-left: 10px;
+        padding-left: 4px;
         padding-right: 8px;
         padding-top: 8px;
         padding-bottom: 8px;
         spacing: 10px;
+
+        // Grip: only visible on hover, focus or while dragging; the drag area is below.
+        Icon {
+            y: (parent.height - self.height) / 2;
+            path: Icons.grip;
+            size: 14px;
+            color: Theme.text-dim;
+            opacity: root.show-grip ? 1 : 0;
+        }
 
         CheckBox {
             y: (parent.height - self.height) / 2;
@@ -168,12 +251,12 @@ export component AccountCard {
             }
         }
 
-        if account.blish: Icon {
+        if account.has-companions: Icon {
             y: (parent.height - self.height) / 2;
             path: Icons.layers;
             color: account.addon-active ? Theme.accent : Theme.text-dim;
             accessible-role: image;
-            accessible-label: account.addon-active ? @tr("Blish HUD running") : @tr("Starts with: Blish HUD");
+            accessible-label: account.addon-active ? @tr("Companion app running") : @tr("Companion apps start with it");
         }
 
         Button {
@@ -200,8 +283,28 @@ export component AccountCard {
             size: 28px;
             icon: Icons.more;
             label: @tr("More actions for {}", account.name);
-            enabled: root.has-menu;
             clicked => { menu.show(); }
+        }
+    }
+
+    // Drag handle over the grip column (full height, so the pointer is easy to catch).
+    TouchArea {
+        x: 0;
+        width: 22px;
+        mouse-cursor: move;
+        pointer-event(event) => {
+            if event.button == PointerEventButton.left && event.kind == PointerEventKind.down {
+                focus.focus();
+                root.drag-started(self.mouse-y);
+            }
+            if event.button == PointerEventButton.left && event.kind == PointerEventKind.up {
+                root.drag-ended();
+            }
+        }
+        moved => {
+            if self.pressed {
+                root.drag-moved(self.mouse-y);
+            }
         }
     }
 
@@ -234,21 +337,56 @@ export component AccountCard {
         Elevated {
             VerticalLayout {
                 padding: 4px;
-                if root.can-set-up-login: MenuItem {
-                    text: @tr("Set up login");
-                    icon: Icons.login;
+                MenuItem {
+                    text: @tr("Edit");
+                    icon: Icons.pencil;
+                    shortcut: "F2";
                     activated => {
                         menu.close();
-                        root.set-up-login();
+                        root.edit();
                     }
                 }
-                if root.blish-available: MenuItem {
-                    text: @tr("Start Blish HUD with it");
-                    icon: Icons.layers;
-                    checked: account.blish;
+                MenuItem {
+                    text: @tr("Duplicate");
+                    icon: Icons.copy;
+                    shortcut: @tr("Ctrl+D");
                     activated => {
                         menu.close();
-                        root.set-blish(!account.blish);
+                        root.duplicate();
+                    }
+                }
+                MenuItem {
+                    text: @tr("Create desktop shortcut");
+                    icon: Icons.monitor;
+                    activated => {
+                        menu.close();
+                        root.create-shortcut();
+                    }
+                }
+                MenuItem {
+                    text: @tr("Open profile folder");
+                    icon: Icons.folder;
+                    activated => {
+                        menu.close();
+                        root.open-folder();
+                    }
+                }
+                Rectangle {
+                    height: 9px;
+                    Rectangle {
+                        height: 1px;
+                        background: Theme.line-2;
+                    }
+                }
+                MenuItem {
+                    text: @tr("Delete");
+                    icon: Icons.trash;
+                    shortcut: @tr("Del");
+                    danger: true;
+                    enabled: !root.active;
+                    activated => {
+                        menu.close();
+                        root.request-delete();
                     }
                 }
             }

@@ -7,6 +7,7 @@ export enum LaunchFailure {
     steam-install-missing,
     setup-needs-exclusive,
     setup-client-running,
+    already-running,
     profile,
     profile-link,
     spawn,
@@ -36,6 +37,9 @@ export global Messages {
         }
         if kind == LaunchFailure.setup-client-running {
             return @tr("An account is currently being set up. Close that client before starting another one.");
+        }
+        if kind == LaunchFailure.already-running {
+            return @tr("„{}“ is already running.", name);
         }
         if kind == LaunchFailure.profile {
             return @tr("„{}“: the profile folder could not be prepared: {}", name, detail);
@@ -132,6 +136,49 @@ export global Messages {
 
     public pure function path-unusable-title() -> string {
         @tr("Guild Wars 2 client not usable")
+    }
+
+    /// Name of a duplicated account.
+    public pure function copy-name(name: string) -> string {
+        @tr("{} (copy)", name)
+    }
+
+    public pure function shortcut-created-title() -> string {
+        @tr("Desktop shortcut created")
+    }
+
+    public pure function shortcut-created(file: string) -> string {
+        @tr("„{}“ starts the account without opening the launcher.", file)
+    }
+
+    public pure function shortcut-failed-title() -> string {
+        @tr("Shortcut could not be created")
+    }
+
+    /// Tooltip of a desktop shortcut.
+    public pure function shortcut-description(name: string) -> string {
+        @tr("Start „{}“ with Breakbar", name)
+    }
+
+    public pure function deleted-title(name: string) -> string {
+        @tr("„{}“ deleted", name)
+    }
+
+    public pure function delete-failed-title() -> string {
+        @tr("Profile folder could not be deleted")
+    }
+
+    public pure function delete-running(name: string) -> string {
+        @tr("„{}“ is running. Stop it before deleting it.", name)
+    }
+
+    public pure function folder-failed-title() -> string {
+        @tr("Profile folder could not be opened")
+    }
+
+    /// Starting from a shortcut or the command line: an account name or id that doesn't exist.
+    public pure function unknown-account(name: string) -> string {
+        @tr("There is no account „{}“.", name)
     }
 
     public pure function path-problem(kind: PathProblem, detail: string) -> string {

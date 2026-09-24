@@ -5,6 +5,7 @@ mod cli;
 mod companions;
 mod game;
 mod gui;
+mod headless;
 mod launcher;
 mod profile_link;
 #[cfg(test)]
@@ -35,11 +36,7 @@ fn main() -> ExitCode {
             println!("breakbar {}", env!("CARGO_PKG_VERSION"));
             ExitCode::SUCCESS
         }
-        Command::Launch(names) => {
-            bb_win::console::attach_parent_console();
-            eprintln!("launching from the command line is not implemented yet: {names:?}");
-            ExitCode::FAILURE
-        }
+        Command::Launch(targets) => headless::run(&targets),
         Command::Gui => match gui::run() {
             Ok(()) => ExitCode::SUCCESS,
             Err(error) => {

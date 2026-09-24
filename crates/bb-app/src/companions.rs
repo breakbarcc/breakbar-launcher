@@ -14,6 +14,8 @@ use std::time::{Duration, Instant};
 
 use bb_core::{Account, ArgContext, CompanionApp, CompanionId, Scope, Trigger};
 
+use crate::launcher::RunningClient;
+
 /// How long a companion gets to exit on its own after its client exited. Blish HUD, started with
 /// `--pid`, notices that itself and shuts down (unloading modules, saving settings); interfering
 /// with that is pointless at best.
@@ -178,6 +180,17 @@ impl Session {
 
         close_all(to_close);
     }
+}
+
+/// Starts the session's companions as their triggers come up: right away, then once `client`
+/// shows its game window (only waited for if a companion needs it). Returns the ones that
+/// failed. Blocks until then — call it on the client's monitor thread.
+pub fn start_for(session: &mut Session, client: &mut RunningClient) -> Vec<(String, io::Error)> {
+    let mut errors = session.start(Trigger::ProcessStarted);
+    if session.waits_for(Trigger::WindowShown) && client.wait_for_game_window() {
+        errors.extend(session.start(Trigger::WindowShown));
+    }
+    errors
 }
 
 /// Ends every process in `children`, as gently as possible:

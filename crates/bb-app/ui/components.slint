@@ -472,8 +472,11 @@ export component MenuItem {
     in property <string> shortcut;
     in property <bool> checked;
     in property <bool> danger;
+    in property <bool> enabled: true;
     callback activated;
     height: 32px;
+    opacity: root.enabled ? 1 : 0.42;
+    accessible-enabled: root.enabled;
     forward-focus: focus;
     accessible-role: button;
     accessible-label: root.text;
@@ -481,7 +484,7 @@ export component MenuItem {
 
     Rectangle {
         border-radius: 5px;
-        background: touch.has-hover || focus.has-focus ? Theme.surface-2 : transparent;
+        background: root.enabled && (touch.has-hover || focus.has-focus) ? Theme.surface-2 : transparent;
     }
     HorizontalLayout {
         padding-left: 10px;
@@ -517,10 +520,12 @@ export component MenuItem {
         }
     }
     touch := TouchArea {
+        enabled: root.enabled;
         mouse-cursor: pointer;
         clicked => { root.activated(); }
     }
     focus := Activation {
+        enabled: root.enabled;
         activated => { root.activated(); }
     }
 }
@@ -607,4 +612,119 @@ export component Toast inherits Elevated {
             }
         }
     }
+}
+
+/// On/off switch, 38 × 20: on = `primary` with an `on-primary` knob, off = `line-3` outline.
+export component Toggle {
+    in-out property <bool> checked;
+    in property <string> label;
+    in property <bool> enabled: true;
+    callback toggled(bool);
+
+    width: 38px;
+    height: 20px;
+    opacity: root.enabled ? 1 : 0.42;
+    forward-focus: focus;
+    accessible-role: switch;
+    accessible-label: root.label;
+    accessible-checkable: true;
+    accessible-checked: root.checked;
+    accessible-action-default => { root.flip(); }
+
+    function flip() {
+        if root.enabled {
+            root.checked = !root.checked;
+            root.toggled(root.checked);
+        }
+    }
+
+    Rectangle {
+        border-radius: 10px;
+        border-width: 1.5px;
+        border-color: root.checked ? Theme.primary : Theme.line-3;
+        background: root.checked ? Theme.primary : transparent;
+    }
+    if focus.has-focus: FocusRing {
+        radius: 10px;
+        around-width: root.width;
+        around-height: root.height;
+    }
+    Rectangle {
+        x: root.checked ? 22px : 4px;
+        width: 12px;
+        height: 12px;
+        border-radius: 6px;
+        background: root.checked ? Theme.on-primary : Theme.text-muted;
+        animate x { duration: 120ms; easing: ease-out; }
+    }
+    TouchArea {
+        enabled: root.enabled;
+        mouse-cursor: pointer;
+        clicked => {
+            focus.focus();
+            root.flip();
+        }
+    }
+    focus := Activation {
+        enabled: root.enabled;
+        activated => { root.flip(); }
+    }
+}
+
+export enum PillKind { ok, warn, update, error, info }
+
+/// Status badge in pill form (24 px): background and border from the matching `*-bg`/`*-line`.
+export component Pill inherits Rectangle {
+    in property <PillKind> kind;
+    in property <string> text;
+    in property <string> icon;
+    property <color> tone: root.kind == PillKind.ok ? Theme.ok
+        : root.kind == PillKind.warn ? Theme.warn
+        : root.kind == PillKind.update ? Theme.update
+        : root.kind == PillKind.error ? Theme.error : Theme.accent;
+    height: 24px;
+    horizontal-stretch: 0;
+    border-radius: 12px;
+    border-width: 1px;
+    background: root.kind == PillKind.ok ? Theme.ok-soft
+        : root.kind == PillKind.warn ? Theme.warn-bg
+        : root.kind == PillKind.update ? Theme.update-bg
+        : root.kind == PillKind.error ? Theme.error-bg : Theme.accent-soft;
+    border-color: root.kind == PillKind.ok ? Theme.ok.with-alpha(0.4)
+        : root.kind == PillKind.warn ? Theme.warn-line
+        : root.kind == PillKind.update ? Theme.update-line
+        : root.kind == PillKind.error ? Theme.error-line : Theme.accent-line;
+    HorizontalLayout {
+        padding-left: 9px;
+        padding-right: 9px;
+        spacing: 6px;
+        if root.icon != "": Icon {
+            y: (parent.height - self.height) / 2;
+            path: root.icon;
+            color: root.tone;
+            weight: 2;
+            size: 13px;
+        }
+        Text {
+            text: root.text;
+            color: root.tone;
+            font-size: Theme.fs-help;
+            font-weight: 600;
+            vertical-alignment: center;
+        }
+    }
+}
+
+/// Plain body text in `text-muted` that wraps.
+export component HelpText inherits Text {
+    font-size: Theme.fs-help;
+    color: Theme.text-dim;
+    wrap: word-wrap;
+}
+
+/// Label above a form field (12 px, semibold, `text-muted`).
+export component FieldLabel inherits Text {
+    font-size: Theme.fs-help;
+    font-weight: 600;
+    color: Theme.text-muted;
 }

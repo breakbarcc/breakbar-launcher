@@ -42,6 +42,18 @@ pub fn ensure_profile_dir(account_id: AccountId) -> Result<PathBuf, StoreError> 
     Ok(dir)
 }
 
+/// Permanently deletes the account's profile folder, including its `Local.dat` (the remembered
+/// login). A missing folder is not an error. Only ever touches `profiles\<id>`: the shared
+/// profile has a non-numeric name and can't be addressed through an [`AccountId`].
+pub fn delete_profile(account_id: AccountId) -> Result<(), StoreError> {
+    let dir = profile_dir(account_id)?;
+    match std::fs::remove_dir_all(&dir) {
+        Ok(()) => Ok(()),
+        Err(error) if error.kind() == std::io::ErrorKind::NotFound => Ok(()),
+        Err(source) => Err(StoreError::Io { path: dir, source }),
+    }
+}
+
 /// Path to the account's `Local.dat`, inside its profile, once GW2 has created it.
 pub fn local_dat_path(account_id: AccountId) -> Result<PathBuf, StoreError> {
     Ok(profile_dir(account_id)?
@@ -69,6 +81,20 @@ mod tests {
         let dir = profile_dir(AccountId(42)).unwrap();
         assert!(dir.starts_with(&local_app_data));
         assert!(dir.ends_with(r"Breakbar\profiles\42"));
+    }
+
+    #[test]
+    fn deleting_a_profile_removes_its_folder() {
+        // A never-used id, so no real profile is touched.
+        let id = AccountId(u32::MAX - 7);
+        let dir = ensure_profile_dir(id).unwrap();
+        std::fs::create_dir_all(dir.join("Guild Wars 2")).unwrap();
+        std::fs::write(dir.join("Guild Wars 2").join("Local.dat"), b"x").unwrap();
+
+        delete_profile(id).unwrap();
+        assert!(!dir.exists());
+        // Deleting again is fine.
+        delete_profile(id).unwrap();
     }
 
     #[test]

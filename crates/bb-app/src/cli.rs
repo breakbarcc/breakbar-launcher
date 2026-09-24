@@ -10,6 +10,8 @@ USAGE:
 
 OPTIONS:
     -l, --launch <NAMES>    Launch the given accounts (comma separated) without opening the window
+        --launch-id <ID>    Launch the account with this id without opening the window
+                            (what desktop shortcuts use; ids survive renaming)
     -h, --help              Print this help
     -V, --version           Print the version
 ";
@@ -19,7 +21,23 @@ pub enum Command {
     Gui,
     Help,
     Version,
-    Launch(Vec<String>),
+    Launch(Vec<LaunchTarget>),
+}
+
+/// An account to launch from the command line.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum LaunchTarget {
+    Name(String),
+    Id(u32),
+}
+
+impl std::fmt::Display for LaunchTarget {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            LaunchTarget::Name(name) => f.write_str(name),
+            LaunchTarget::Id(id) => write!(f, "#{id}"),
+        }
+    }
 }
 
 /// Parses the process arguments. The first item is the program name and is skipped.
@@ -34,16 +52,20 @@ pub fn parse(args: impl IntoIterator<Item = OsString>) -> Result<Command, lexopt
             Short('V') | Long("version") => return Ok(Command::Version),
             Short('l') | Long("launch") => {
                 let value = parser.value()?.string()?;
-                let names: Vec<String> = value
+                let names: Vec<LaunchTarget> = value
                     .split(',')
                     .map(str::trim)
                     .filter(|name| !name.is_empty())
-                    .map(str::to_owned)
+                    .map(|name| LaunchTarget::Name(name.to_owned()))
                     .collect();
                 if names.is_empty() {
                     return Err("--launch requires at least one account name".into());
                 }
                 command = Command::Launch(names);
+            }
+            Long("launch-id") => {
+                let id = parser.value()?.parse()?;
+                command = Command::Launch(vec![LaunchTarget::Id(id)]);
             }
             _ => return Err(arg.unexpected()),
         }
@@ -72,8 +94,20 @@ mod tests {
     fn launch_splits_and_trims_names() {
         assert_eq!(
             parse_args(&["--launch", "Main, Alt 1,,"]).unwrap(),
-            Command::Launch(vec!["Main".into(), "Alt 1".into()])
+            Command::Launch(vec![
+                LaunchTarget::Name("Main".into()),
+                LaunchTarget::Name("Alt 1".into())
+            ])
         );
+    }
+
+    #[test]
+    fn launch_id_is_parsed() {
+        assert_eq!(
+            parse_args(&["--launch-id", "3"]).unwrap(),
+            Command::Launch(vec![LaunchTarget::Id(3)])
+        );
+        assert!(parse_args(&["--launch-id", "x"]).is_err());
     }
 
     #[test]

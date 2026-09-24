@@ -1,7 +1,12 @@
 //! Named mutex queries.
 
-use windows::Win32::Foundation::{CloseHandle, ERROR_FILE_NOT_FOUND};
-use windows::Win32::System::Threading::{OpenMutexW, SYNCHRONIZATION_SYNCHRONIZE};
+use windows::Win32::Foundation::{
+    CloseHandle, ERROR_FILE_NOT_FOUND, HANDLE, WAIT_ABANDONED, WAIT_OBJECT_0,
+};
+use windows::Win32::System::Threading::{
+    CreateMutexW, INFINITE, OpenMutexW, ReleaseMutex, SYNCHRONIZATION_SYNCHRONIZE,
+    WaitForSingleObject,
+};
 use windows::core::{HSTRING, Result};
 
 /// Name of the mutex Guild Wars 2 holds to enforce a single running instance.
@@ -37,15 +42,73 @@ pub fn kill_gw2_mutex(pid: u32) -> Result<bool> {
     crate::nt::close_named_mutex_in_process(pid, GW2_MUTEX_NAME)
 }
 
+/// Ownership of a named mutex, released on drop. Tied to the thread that acquired it (a mutex
+/// can only be released by its owning thread), so it is neither `Send` nor `Sync`.
+#[derive(Debug)]
+pub struct OwnedMutex(HANDLE);
+
+impl OwnedMutex {
+    /// Creates or opens the named mutex and waits until this thread owns it. A mutex left behind
+    /// by a process that died while holding it is taken over.
+    pub fn acquire(name: &str) -> Result<Self> {
+        let name = HSTRING::from(name);
+        // SAFETY: `name` is a valid wide string for the call; the handle is owned by `Self`.
+        let handle = unsafe { CreateMutexW(None, false, &name) }?;
+        // SAFETY: `handle` is a valid mutex handle.
+        let wait = unsafe { WaitForSingleObject(handle, INFINITE) };
+        if wait == WAIT_OBJECT_0 || wait == WAIT_ABANDONED {
+            Ok(Self(handle))
+        } else {
+            let error = windows::core::Error::from_thread();
+            // SAFETY: `handle` is owned here and not used afterwards.
+            let _ = unsafe { CloseHandle(handle) };
+            Err(error)
+        }
+    }
+}
+
+impl Drop for OwnedMutex {
+    fn drop(&mut self) {
+        // SAFETY: this thread owns the mutex (see `acquire`) and the handle.
+        unsafe {
+            let _ = ReleaseMutex(self.0);
+            let _ = CloseHandle(self.0);
+        }
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
-    use windows::Win32::System::Threading::CreateMutexW;
 
     #[test]
     fn missing_mutex_is_reported_as_absent() {
         let name = format!("Breakbar-Test-Missing-{}", std::process::id());
         assert!(!mutex_exists(&name).unwrap());
+    }
+
+    #[test]
+    fn owned_mutex_is_exclusive_and_released_on_drop() {
+        let name = format!("Breakbar-Test-Owned-{}", std::process::id());
+        let first = OwnedMutex::acquire(&name).unwrap();
+        let (sender, receiver) = std::sync::mpsc::channel();
+        let waiter = std::thread::spawn({
+            let name = name.clone();
+            move || {
+                let _second = OwnedMutex::acquire(&name).unwrap();
+                sender.send(()).unwrap();
+            }
+        });
+        assert!(
+            receiver
+                .recv_timeout(std::time::Duration::from_millis(200))
+                .is_err()
+        );
+        drop(first);
+        receiver
+            .recv_timeout(std::time::Duration::from_secs(5))
+            .unwrap();
+        waiter.join().unwrap();
     }
 
     #[test]

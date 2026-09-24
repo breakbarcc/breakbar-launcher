@@ -1,0 +1,396 @@
+// First-start setup (design hand-off: screens 08 and 09): where Guild Wars 2 is, then the first
+// account.
+
+import { Theme } from "theme.slint";
+import { Icons } from "icons.slint";
+import {
+    Icon, Button, ButtonKind, SegmentBar, TextField, Segmented, FieldLabel, HelpText, FocusRing,
+} from "components.slint";
+
+/// "SETUP · STEP n / 2" with the two-segment stepper.
+component Stepper inherits VerticalLayout {
+    in property <int> step;
+    spacing: 8px;
+    Text {
+        text: @tr("SETUP · STEP {} / 2", root.step);
+        font-family: Theme.font-mono;
+        font-size: Theme.fs-label-mono;
+        letter-spacing: 0.88px;
+        color: Theme.accent;
+    }
+    HorizontalLayout {
+        alignment: start;
+        SegmentBar {
+            width: 120px;
+            total: 2;
+            full: root.step;
+        }
+    }
+}
+
+component Title inherits Text {
+    font-size: Theme.fs-title;
+    font-weight: 600;
+    color: Theme.text;
+    wrap: word-wrap;
+}
+
+/// Radio card: a selectable option in card form.
+component RadioCard {
+    in property <bool> selected;
+    in property <bool> enabled: true;
+    callback chosen();
+    forward-focus: focus;
+    accessible-role: radio-button;
+    accessible-checked: root.selected;
+    accessible-enabled: root.enabled;
+    opacity: root.enabled ? 1 : 0.6;
+
+    Rectangle {
+        border-radius: Theme.radius-card;
+        border-width: 1px;
+        background: root.selected ? Theme.accent-soft : Theme.surface;
+        border-color: root.selected ? Theme.accent-line : Theme.line;
+    }
+    if focus.has-focus: FocusRing {
+        radius: Theme.radius-card;
+        around-width: root.width;
+        around-height: root.height;
+    }
+    TouchArea {
+        enabled: root.enabled;
+        mouse-cursor: pointer;
+        clicked => {
+            focus.focus();
+            root.chosen();
+        }
+    }
+    focus := FocusScope {
+        enabled: root.enabled;
+        key-pressed(event) => {
+            if event.text == " " || event.text == "\n" {
+                root.chosen();
+                return accept;
+            }
+            reject
+        }
+    }
+    HorizontalLayout {
+        padding: 12px;
+        spacing: 10px;
+        // Radio dot.
+        VerticalLayout {
+            alignment: start;
+            padding-top: 1px;
+            Rectangle {
+                width: 16px;
+                height: 16px;
+                border-radius: 8px;
+                border-width: 1.5px;
+                border-color: root.selected ? Theme.accent : Theme.line-3;
+                if root.selected: Rectangle {
+                    width: 8px;
+                    height: 8px;
+                    border-radius: 4px;
+                    background: Theme.accent;
+                }
+            }
+        }
+        @children
+    }
+}
+
+export component SetupPathPage inherits VerticalLayout {
+    /// Found automatically; empty if nothing was found.
+    in property <string> detected-path;
+    /// Chosen through "Browse…"; empty until then.
+    in property <string> other-path;
+    /// Why `other-path` can't be used; empty if it can.
+    in property <string> other-error;
+    in-out property <bool> use-other: root.detected-path == "";
+    callback browse();
+    callback next(string);
+
+    property <string> chosen: root.use-other ? (root.other-error == "" ? root.other-path : "") : root.detected-path;
+
+    VerticalLayout {
+        vertical-stretch: 1;
+        padding-left: 20px;
+        padding-right: 20px;
+        padding-top: 22px;
+        padding-bottom: 22px;
+        spacing: 18px;
+        alignment: start;
+
+        Stepper {
+            step: 1;
+        }
+        VerticalLayout {
+            spacing: 6px;
+            Title {
+                text: @tr("Where is Guild Wars 2 installed?");
+            }
+            Text {
+                text: @tr("Choose the file Gw2-64.exe. You can change the path later in the settings.");
+                font-size: Theme.fs-body;
+                color: Theme.text-muted;
+                wrap: word-wrap;
+            }
+        }
+        VerticalLayout {
+            spacing: 8px;
+            RadioCard {
+                selected: !root.use-other;
+                enabled: root.detected-path != "";
+                accessible-label: @tr("Found automatically");
+                chosen => { root.use-other = false; }
+                VerticalLayout {
+                    horizontal-stretch: 1;
+                    spacing: 4px;
+                    HorizontalLayout {
+                        spacing: 6px;
+                        alignment: start;
+                        Text {
+                            text: root.detected-path != "" ? @tr("Found automatically") : @tr("Not found automatically");
+                            font-size: Theme.fs-body;
+                            font-weight: 600;
+                            color: Theme.text;
+                        }
+                        if root.detected-path != "": Icon {
+                            y: (parent.height - self.height) / 2;
+                            path: Icons.checkcircle;
+                            color: Theme.ok;
+                            size: 14px;
+                            weight: 2;
+                        }
+                    }
+                    if root.detected-path != "": Text {
+                        text: root.detected-path;
+                        font-family: Theme.font-mono;
+                        font-size: 11.5px;
+                        color: Theme.text-muted;
+                        wrap: char-wrap;
+                    }
+                }
+            }
+            RadioCard {
+                selected: root.use-other;
+                accessible-label: @tr("Other location");
+                chosen => { root.use-other = true; }
+                VerticalLayout {
+                    horizontal-stretch: 1;
+                    spacing: 4px;
+                    alignment: center;
+                    HorizontalLayout {
+                        spacing: 8px;
+                        Text {
+                            horizontal-stretch: 1;
+                            text: @tr("Other location");
+                            font-size: Theme.fs-body;
+                            color: Theme.text;
+                            vertical-alignment: center;
+                        }
+                        Button {
+                            icon: Icons.folder;
+                            icon-color: Theme.text-muted;
+                            text: @tr("Browse…");
+                            clicked => {
+                                root.use-other = true;
+                                root.browse();
+                            }
+                        }
+                    }
+                    if root.other-path != "": Text {
+                        text: root.other-path;
+                        font-family: Theme.font-mono;
+                        font-size: 11.5px;
+                        color: Theme.text-muted;
+                        wrap: char-wrap;
+                    }
+                    if root.other-error != "": HorizontalLayout {
+                        spacing: 6px;
+                        Icon {
+                            path: Icons.xcircle;
+                            color: Theme.error;
+                            size: 13px;
+                            weight: 2;
+                        }
+                        Text {
+                            horizontal-stretch: 1;
+                            text: root.other-error;
+                            font-size: Theme.fs-help;
+                            color: Theme.error;
+                            wrap: word-wrap;
+                        }
+                    }
+                }
+            }
+        }
+        HorizontalLayout {
+            spacing: 8px;
+            Icon {
+                path: Icons.info;
+                color: Theme.text-dim;
+                size: 14px;
+            }
+            HelpText {
+                horizontal-stretch: 1;
+                text: @tr("Searched in Program Files, the Steam libraries and the registry.");
+            }
+        }
+    }
+    Rectangle {
+        height: 1px;
+        background: Theme.line;
+    }
+    HorizontalLayout {
+        padding-left: 16px;
+        padding-right: 16px;
+        padding-top: 12px;
+        padding-bottom: 12px;
+        alignment: end;
+        Button {
+            kind: ButtonKind.primary;
+            large: true;
+            icon: Icons.arrowright;
+            text: @tr("Next");
+            enabled: root.chosen != "";
+            clicked => { root.next(root.chosen); }
+        }
+    }
+}
+
+export component SetupAccountPage inherits VerticalLayout {
+    callback back();
+    /// Name and whether it is a Steam account.
+    callback create(string, bool);
+
+    function submit() {
+        if name-field.text != "" {
+            root.create(name-field.text, platform.selected == 1);
+        }
+    }
+
+    init => {
+        name-field.focus();
+    }
+
+    VerticalLayout {
+        vertical-stretch: 1;
+        padding-left: 20px;
+        padding-right: 20px;
+        padding-top: 22px;
+        padding-bottom: 22px;
+        spacing: 16px;
+        alignment: start;
+
+        Stepper {
+            step: 2;
+        }
+        Title {
+            text: @tr("Create your first account");
+        }
+        VerticalLayout {
+            spacing: 6px;
+            FieldLabel {
+                text: @tr("Name");
+            }
+            name-field := TextField {
+                placeholder: @tr("e.g. Main");
+                accepted => { root.submit(); }
+            }
+        }
+        VerticalLayout {
+            spacing: 6px;
+            FieldLabel {
+                text: @tr("Platform");
+            }
+            platform := Segmented {
+                height: 32px;
+                options: ["ArenaNet", "Steam"];
+            }
+        }
+        Rectangle {
+            border-radius: Theme.radius-card;
+            background: Theme.surface;
+            border-width: 1px;
+            border-color: Theme.line;
+            HorizontalLayout {
+                padding: 12px;
+                spacing: 10px;
+                VerticalLayout {
+                    alignment: start;
+                    padding-top: 1px;
+                    Icon {
+                        path: Icons.shield;
+                        color: Theme.accent;
+                    }
+                }
+                VerticalLayout {
+                    horizontal-stretch: 1;
+                    spacing: 6px;
+                    Text {
+                        text: platform.selected == 1 ? @tr("How Steam accounts work") : @tr("How the login works");
+                        font-size: Theme.fs-body;
+                        font-weight: 600;
+                        color: Theme.text;
+                    }
+                    Text {
+                        text: platform.selected == 1
+                            ? @tr("Steam signs the game in with the Steam user that is currently signed in. Only one Steam account can run at a time.")
+                            : @tr("1. On the first start the normal Guild Wars 2 login opens.\n2. Log in once with „Remember email/password“ ticked.\n3. After that the account starts automatically.");
+                        font-size: 12.5px;
+                        color: Theme.text-muted;
+                        wrap: word-wrap;
+                    }
+                    HorizontalLayout {
+                        spacing: 6px;
+                        Icon {
+                            y: (parent.height - self.height) / 2;
+                            path: Icons.lock;
+                            color: Theme.text;
+                            size: 13px;
+                            weight: 2;
+                        }
+                        Text {
+                            horizontal-stretch: 1;
+                            text: @tr("Breakbar stores no passwords.");
+                            font-size: Theme.fs-help;
+                            font-weight: 600;
+                            color: Theme.text;
+                        }
+                    }
+                }
+            }
+        }
+    }
+    Rectangle {
+        height: 1px;
+        background: Theme.line;
+    }
+    HorizontalLayout {
+        padding-left: 16px;
+        padding-right: 16px;
+        padding-top: 12px;
+        padding-bottom: 12px;
+        spacing: 8px;
+        Button {
+            kind: ButtonKind.ghost;
+            large: true;
+            icon: Icons.back;
+            text: @tr("Back");
+            clicked => { root.back(); }
+        }
+        Rectangle {
+            horizontal-stretch: 1;
+        }
+        Button {
+            kind: ButtonKind.primary;
+            large: true;
+            icon: Icons.check;
+            text: @tr("Create account");
+            enabled: name-field.text != "";
+            clicked => { root.submit(); }
+        }
+    }
+}

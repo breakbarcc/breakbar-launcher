@@ -167,6 +167,27 @@ struct CompanionApp {
   the main states in both themes with the software renderer into `%TEMP%\breakbar-ui\*.bmp` —
   no window opens, so it is safe to run while playing.
 
+## Account management
+
+- **Editor page** (also for new accounts): name, platform, login state (set up / missing / via
+  Steam) with "Set up login", switches for the configured companion apps, extra launch arguments.
+  Companion switches live in a Rust-side draft until "Save"; the text fields stay in the UI.
+- **Order** is the order of `[[account]]` in the config: drag & drop at the grip, `Alt+↑/↓`.
+- **Duplicate** copies platform, companions and arguments — not the login (a copied `Local.dat`
+  would only start the same account twice).
+- **Delete** asks in an in-window dialog, then removes the account and deletes its profile folder
+  (`bb_store::delete_profile`, only ever `profiles\<numeric id>`). Refused while the client runs.
+- **Desktop shortcut:** `<name> (Breakbar).lnk` running `breakbar.exe --launch-id <id>` (ids
+  survive renaming). Such a start opens no window (`headless.rs`): it launches, starts and closes
+  companions exactly like the window, stays in the background until its clients exit, and shows
+  errors in a message box.
+- **Window and shortcut starts together:** a named mutex (`Breakbar-Launch`) serializes launches
+  across processes, because each one points `%APPDATA%\Guild Wars 2` at its account for a few
+  seconds. An account whose `Local.dat` is already locked (its client runs, e.g. from a shortcut)
+  is not started a second time. The window does not yet show clients started elsewhere as running.
+- **First start** (no config file yet): two setup steps, the Guild Wars 2 client (detected or
+  chosen) and the first account.
+
 ## Workspace layout
 
 ```
@@ -196,8 +217,8 @@ Config: `%APPDATA%\Breakbar\config.toml` (atomic write via temp file + `ReplaceF
 | 3.5 | ✅ Steam accounts: direct start with `-provider Steam` + `SteamAppId`, Steam install auto-selected, one Steam account at a time (not yet tested with a real Steam account) |
 | 3.6 | ✅ Companion apps (per-client / shared, start on process or game window, graceful close), Blish HUD preset (not yet tested with a real Blish HUD) |
 | 4.1 | ✅ Design: new UI in both themes (tokens, components, account rows with all states, selection, toasts, empty state, narrow layout), app icon, English + German |
-| 4.1b | Account management: edit page, duplicate, delete, desktop shortcut, profile folder, drag & drop order, companion editor, first-start wizard |
-| 4.2 | Settings page: paths |
+| 4.1b | ✅ Account management: edit page, duplicate, delete, desktop shortcut, profile folder, drag & drop order, first-start setup, shortcut starts without a window (companion editor moved to 4.2) |
+| 4.2 | Settings page: paths, companion app editor |
 | 4.3 | Start with Windows |
 | 4.4 | Close behavior and tray |
 | 4.5 | Instance switcher overlay |

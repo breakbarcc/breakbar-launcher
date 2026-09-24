@@ -7,13 +7,13 @@ use std::sync::{Arc, mpsc};
 use std::thread;
 use std::time::Duration;
 
-use bb_core::{Account, AccountId, BLISH_HUD, CompanionApp, CompanionId, Provider, Trigger};
+use bb_core::{Account, AccountId, BLISH_HUD, CompanionApp, CompanionId, Provider, Scope, Trigger};
 use bb_store::Config;
 use raw_window_handle::{HasWindowHandle, RawWindowHandle};
 use slint::{ComponentHandle, Model, SharedString};
 use ui::{
-    AccountRow, AccountState, LaunchFailure, MainWindow, Messages, PathProblem, Theme, ToastData,
-    ToastKind,
+    AccountRow, AccountState, CompanionToggle, EditorData, LaunchFailure, LoginState, MainWindow,
+    Messages, PathProblem, Theme, ToastData, ToastKind,
 };
 
 use crate::companions::{self, SharedInstances};
@@ -56,17 +56,33 @@ struct App {
     /// `None` if the config could not be loaded; saving is then disabled so a broken
     /// config file is never overwritten with defaults.
     config_path: Option<PathBuf>,
+    /// There was no config file yet: the first-start setup runs.
+    first_start: bool,
+    /// The account being edited on the editor page.
+    draft: Option<Draft>,
+}
+
+/// Editor state kept on the Rust side (the text fields live in the UI until saved).
+#[derive(Debug)]
+struct Draft {
+    /// `None` while adding a new account.
+    id: Option<AccountId>,
+    companions: Vec<CompanionId>,
 }
 
 impl App {
     fn load() -> (Self, Option<bb_store::StoreError>) {
-        let loaded = bb_store::default_config_path()
-            .and_then(|path| Config::load(&path).map(|config| (config, path)));
+        let loaded = bb_store::default_config_path().and_then(|path| {
+            let first_start = !path.exists();
+            Config::load(&path).map(|config| (config, path, first_start))
+        });
         match loaded {
-            Ok((config, path)) => (
+            Ok((config, path, first_start)) => (
                 Self {
                     config,
                     config_path: Some(path),
+                    first_start,
+                    draft: None,
                 },
                 None,
             ),
@@ -74,10 +90,35 @@ impl App {
                 Self {
                     config: Config::default(),
                     config_path: None,
+                    first_start: false,
+                    draft: None,
                 },
                 Some(error),
             ),
         }
+    }
+
+    fn account(&self, id: AccountId) -> Option<&Account> {
+        self.config.accounts.iter().find(|account| account.id == id)
+    }
+
+    fn account_index(&self, id: AccountId) -> Option<usize> {
+        self.config
+            .accounts
+            .iter()
+            .position(|account| account.id == id)
+    }
+
+    fn next_account_id(&self) -> AccountId {
+        AccountId(
+            self.config
+                .accounts
+                .iter()
+                .map(|account| account.id.0)
+                .max()
+                .unwrap_or(0)
+                + 1,
+        )
     }
 
     /// The Blish HUD preset, if its path has been set.
@@ -132,6 +173,11 @@ pub fn run() -> Result<(), slint::PlatformError> {
     }
 
     match &app.config.gw2_path {
+        // First start: the setup asks where Guild Wars 2 is, suggesting what detection finds.
+        None if app.first_start => {
+            window.set_setup_detected_path(display_path(game::detect().as_deref()).into());
+            window.set_page(ui::Page::SetupPath);
+        }
         Some(path) => {
             if let Err(error) = game::validate(path) {
                 let (kind, detail) = path_problem(&error);
@@ -216,12 +262,121 @@ pub fn run() -> Result<(), slint::PlatformError> {
         }
     });
 
-    window.on_add_account({
+    window.on_edit_account({
+        let app = Rc::clone(&app);
+        let weak = window.as_weak();
+        move |id| {
+            if let Some(window) = weak.upgrade() {
+                let id = (id != 0).then_some(AccountId(id as u32));
+                open_editor(&window, &app, id);
+            }
+        }
+    });
+
+    window.on_editor_toggle_companion({
+        let app = Rc::clone(&app);
+        let weak = window.as_weak();
+        move |companion| {
+            if let Some(window) = weak.upgrade() {
+                editor_toggle_companion(&window, &app, CompanionId(companion as u32));
+            }
+        }
+    });
+
+    window.on_editor_save({
+        let app = Rc::clone(&app);
+        let weak = window.as_weak();
+        move |name, steam, args| {
+            if let Some(window) = weak.upgrade() {
+                editor_save(&window, &app, name.trim(), steam, args.trim());
+            }
+        }
+    });
+
+    window.on_duplicate_account({
+        let app = Rc::clone(&app);
+        let weak = window.as_weak();
+        move |id| {
+            if let Some(window) = weak.upgrade() {
+                duplicate_account(&window, &app, AccountId(id as u32));
+            }
+        }
+    });
+
+    window.on_move_account({
+        let app = Rc::clone(&app);
+        let weak = window.as_weak();
+        move |id, index| {
+            if let Some(window) = weak.upgrade() {
+                move_account(&window, &app, AccountId(id as u32), index);
+            }
+        }
+    });
+
+    window.on_delete_account({
+        let app = Rc::clone(&app);
+        let weak = window.as_weak();
+        move |id| {
+            if let Some(window) = weak.upgrade() {
+                delete_account(&window, &app, AccountId(id as u32));
+            }
+        }
+    });
+
+    window.on_create_shortcut({
+        let app = Rc::clone(&app);
+        let weak = window.as_weak();
+        move |id| {
+            if let Some(window) = weak.upgrade() {
+                create_shortcut(&window, &app, AccountId(id as u32));
+            }
+        }
+    });
+
+    window.on_open_profile_folder({
+        let weak = window.as_weak();
+        move |id| {
+            if let Some(window) = weak.upgrade() {
+                open_profile_folder(&window, AccountId(id as u32));
+            }
+        }
+    });
+
+    window.on_setup_browse({
+        let weak = window.as_weak();
+        move || {
+            if let Some(window) = weak.upgrade() {
+                setup_browse(&window);
+            }
+        }
+    });
+
+    window.on_setup_path_chosen({
+        let app = Rc::clone(&app);
+        let weak = window.as_weak();
+        move |path| {
+            if let Some(window) = weak.upgrade() {
+                let path = PathBuf::from(path.as_str());
+                show_gw2_path(&window, Some(&path));
+                let mut app = app.borrow_mut();
+                app.config.gw2_path = Some(path);
+                app.save(&window);
+                window.set_page(ui::Page::SetupAccount);
+            }
+        }
+    });
+
+    window.on_setup_create_account({
         let app = Rc::clone(&app);
         let weak = window.as_weak();
         move |name, steam| {
             if let Some(window) = weak.upgrade() {
-                add_account(&window, &app, name.trim(), steam);
+                let mut account = Account::new(app.borrow().next_account_id(), name.trim());
+                if steam {
+                    account.provider = Provider::Steam;
+                }
+                insert_account(&window, &app, account, None);
+                window.set_page(ui::Page::Accounts);
             }
         }
     });
@@ -242,16 +397,6 @@ pub fn run() -> Result<(), slint::PlatformError> {
         move || {
             if let Some(window) = weak.upgrade() {
                 choose_blish_path(&window, &app);
-            }
-        }
-    });
-
-    window.on_set_blish({
-        let app = Rc::clone(&app);
-        let weak = window.as_weak();
-        move |id, enabled| {
-            if let Some(window) = weak.upgrade() {
-                set_blish(&window, &app, AccountId(id as u32), enabled);
             }
         }
     });
@@ -279,6 +424,56 @@ pub fn run() -> Result<(), slint::PlatformError> {
     apply_frame(&window, window.global::<Theme>().get_dark());
     slint::run_event_loop()?;
     window.hide()
+}
+
+/// Translated texts for starts without a window (desktop shortcuts, command line). Uses a window
+/// instance that is never shown, because that is where Slint keeps the translated texts.
+pub struct Texts(MainWindow);
+
+impl std::fmt::Debug for Texts {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str("Texts")
+    }
+}
+
+impl Texts {
+    pub fn new() -> Result<Self, slint::PlatformError> {
+        MainWindow::new().map(Self)
+    }
+
+    pub fn start_failed(&self) -> String {
+        self.0.global::<Messages>().invoke_start_failed().into()
+    }
+
+    pub fn launch_failure(&self, error: &LaunchError, name: &str) -> String {
+        let (kind, detail) = launch_failure(error);
+        self.0
+            .global::<Messages>()
+            .invoke_launch_failure(kind, name.into(), detail)
+            .into()
+    }
+
+    pub fn companion_failed(&self, app: &str, error: &std::io::Error) -> String {
+        let title = self
+            .0
+            .global::<Messages>()
+            .invoke_companion_failed_title(app.into());
+        format!("{title}: {error}")
+    }
+
+    pub fn unknown_account(&self, name: &str) -> String {
+        self.0
+            .global::<Messages>()
+            .invoke_unknown_account(name.into())
+            .into()
+    }
+
+    pub fn settings_load_failed(&self, detail: &str) -> String {
+        self.0
+            .global::<Messages>()
+            .invoke_settings_load_failed(detail.into())
+            .into()
+    }
 }
 
 /// Whether an account in `state` can be started.
@@ -510,10 +705,7 @@ fn run_launch(window: &slint::Weak<MainWindow>, shared: &Arc<SharedInstances>, j
     let mut session =
         companions::Session::new(Arc::clone(shared), job.companions, &job.account, pid);
     thread::spawn(move || {
-        let mut errors = session.start(Trigger::ProcessStarted);
-        if session.waits_for(Trigger::WindowShown) && client.wait_for_game_window() {
-            errors.extend(session.start(Trigger::WindowShown));
-        }
+        let errors = companions::start_for(&mut session, &mut client);
         let addon_active = session.has_started();
         let _ = window.upgrade_in_event_loop(move |window| {
             if addon_active {
@@ -581,6 +773,7 @@ fn launch_failure(error: &LaunchError) -> (LaunchFailure, SharedString) {
         LaunchError::SteamInstallMissing(_) => (LaunchFailure::SteamInstallMissing, String::new()),
         LaunchError::SetupNeedsExclusive(_) => (LaunchFailure::SetupNeedsExclusive, String::new()),
         LaunchError::SetupClientRunning => (LaunchFailure::SetupClientRunning, String::new()),
+        LaunchError::AlreadyRunning(_) => (LaunchFailure::AlreadyRunning, String::new()),
         LaunchError::Profile(error) => (LaunchFailure::Profile, error.to_string()),
         LaunchError::ProfileLink(error) => (LaunchFailure::ProfileLink, error.to_string()),
         LaunchError::Spawn(error) => (LaunchFailure::Spawn, error.to_string()),
@@ -615,35 +808,360 @@ fn idle_state(id: AccountId, steam: bool) -> AccountState {
     }
 }
 
-fn add_account(window: &MainWindow, app: &RefCell<App>, name: &str, steam: bool) {
-    if name.is_empty() {
-        return;
-    }
-
+/// Adds `account` to the config and the list, at `index` (the end if `None`).
+fn insert_account(window: &MainWindow, app: &RefCell<App>, account: Account, index: Option<usize>) {
     let mut app_ref = app.borrow_mut();
-    let next_id = AccountId(
-        app_ref
-            .config
-            .accounts
-            .iter()
-            .map(|a| a.id.0)
-            .max()
-            .unwrap_or(0)
-            + 1,
-    );
-    let mut account = Account::new(next_id, name);
-    if steam {
-        account.provider = Provider::Steam;
-    }
-    let row = account_row(&account, None);
-    app_ref.config.accounts.push(account);
+    let row = account_row(&account, &app_ref.config.companions);
+    let index = index
+        .unwrap_or(app_ref.config.accounts.len())
+        .min(app_ref.config.accounts.len());
+    app_ref.config.accounts.insert(index, account);
     app_ref.save(window);
     drop(app_ref);
 
     let mut rows = rows(window);
-    rows.push(row);
+    rows.insert(index.min(rows.len()), row);
     set_rows(window, rows);
     refresh(window);
+}
+
+/// Opens the editor for account `id`, or for a new account if `None`.
+fn open_editor(window: &MainWindow, app: &RefCell<App>, id: Option<AccountId>) {
+    let mut app_ref = app.borrow_mut();
+    let account = match id {
+        Some(id) => match app_ref.account(id) {
+            Some(account) => Some(account.clone()),
+            None => return,
+        },
+        None => None,
+    };
+    let draft = Draft {
+        id,
+        companions: account
+            .as_ref()
+            .map(|account| account.companions.clone())
+            .unwrap_or_default(),
+    };
+    let active = id
+        .and_then(|id| row(window, id))
+        .is_some_and(|row| is_active(row.state));
+    window.set_editor(editor_data(
+        &app_ref.config,
+        account.as_ref(),
+        &draft,
+        active,
+    ));
+    app_ref.draft = Some(draft);
+    window.set_page(ui::Page::Editor);
+}
+
+fn editor_data(
+    config: &Config,
+    account: Option<&Account>,
+    draft: &Draft,
+    active: bool,
+) -> EditorData {
+    let steam = account.is_some_and(|account| account.provider == Provider::Steam);
+    let login = match account {
+        _ if steam => LoginState::Steam,
+        Some(account) if bb_store::is_set_up(account.id) => LoginState::SetUp,
+        _ => LoginState::Missing,
+    };
+    let companions: Vec<CompanionToggle> = config
+        .companions
+        .iter()
+        .map(|app| CompanionToggle {
+            id: app.id.0 as i32,
+            name: app.name.as_str().into(),
+            per_client: app.scope == Scope::PerClient,
+            after_game_start: app.start_when == Trigger::WindowShown,
+            enabled: draft.companions.contains(&app.id),
+        })
+        .collect();
+    EditorData {
+        id: draft.id.map_or(0, |id| id.0 as i32),
+        name: account.map_or_else(SharedString::new, |account| account.name.as_str().into()),
+        steam,
+        args: account.map_or_else(SharedString::new, |account| {
+            account.extra_args.as_str().into()
+        }),
+        login,
+        active,
+        companions: Rc::new(slint::VecModel::from(companions)).into(),
+    }
+}
+
+fn editor_toggle_companion(window: &MainWindow, app: &RefCell<App>, companion: CompanionId) {
+    let mut app_ref = app.borrow_mut();
+    let Some(draft) = app_ref.draft.as_mut() else {
+        return;
+    };
+    if let Some(position) = draft.companions.iter().position(|&id| id == companion) {
+        draft.companions.remove(position);
+    } else {
+        draft.companions.push(companion);
+    }
+    let enabled = draft.companions.contains(&companion);
+
+    let editor = window.get_editor();
+    let toggles: Vec<CompanionToggle> = editor
+        .companions
+        .iter()
+        .map(|mut toggle| {
+            if toggle.id == companion.0 as i32 {
+                toggle.enabled = enabled;
+            }
+            toggle
+        })
+        .collect();
+    window.set_editor(EditorData {
+        companions: Rc::new(slint::VecModel::from(toggles)).into(),
+        ..editor
+    });
+}
+
+/// Saves the editor: creates the new account or updates the edited one.
+fn editor_save(window: &MainWindow, app: &RefCell<App>, name: &str, steam: bool, args: &str) {
+    if name.is_empty() {
+        return;
+    }
+    let Some(draft) = app.borrow_mut().draft.take() else {
+        return;
+    };
+    let provider = if steam {
+        Provider::Steam
+    } else {
+        Provider::ArenaNet
+    };
+
+    match draft.id {
+        None => {
+            let mut account = Account::new(app.borrow().next_account_id(), name);
+            account.provider = provider;
+            account.extra_args = args.to_owned();
+            account.companions = draft.companions;
+            insert_account(window, app, account, None);
+        }
+        Some(id) => {
+            let mut app_ref = app.borrow_mut();
+            let Some(index) = app_ref.account_index(id) else {
+                return;
+            };
+            let account = &mut app_ref.config.accounts[index];
+            account.name = name.to_owned();
+            account.provider = provider;
+            account.extra_args = args.to_owned();
+            account.companions = draft.companions;
+            let account = account.clone();
+            app_ref.save(window);
+            let companions = app_ref.config.companions.clone();
+            drop(app_ref);
+
+            update_row(window, id, |row| {
+                apply_account(row, &account, &companions);
+                // The platform decides whether a missing login matters.
+                if matches!(row.state, AccountState::Idle | AccountState::NeedsLogin) {
+                    row.state = idle_state(id, row.steam);
+                }
+            });
+        }
+    }
+    window.set_page(ui::Page::Accounts);
+}
+
+/// Copies an account's settings (not its login) into a new account right below it.
+fn duplicate_account(window: &MainWindow, app: &RefCell<App>, id: AccountId) {
+    let (copy, index) = {
+        let app_ref = app.borrow();
+        let (Some(source), Some(index)) = (app_ref.account(id), app_ref.account_index(id)) else {
+            return;
+        };
+        let name = window
+            .global::<Messages>()
+            .invoke_copy_name(source.name.as_str().into());
+        let mut copy = Account::new(app_ref.next_account_id(), name.as_str());
+        copy.provider = source.provider;
+        copy.extra_args = source.extra_args.clone();
+        copy.companions = source.companions.clone();
+        (copy, index + 1)
+    };
+    insert_account(window, app, copy, Some(index));
+}
+
+/// Moves account `id` to list position `index` (clamped to the list).
+fn move_account(window: &MainWindow, app: &RefCell<App>, id: AccountId, index: i32) {
+    let mut app_ref = app.borrow_mut();
+    let Some(from) = app_ref.account_index(id) else {
+        return;
+    };
+    let last = app_ref.config.accounts.len() - 1;
+    let to = (index.max(0) as usize).min(last);
+    if from == to {
+        return;
+    }
+    let account = app_ref.config.accounts.remove(from);
+    app_ref.config.accounts.insert(to, account);
+    app_ref.save(window);
+    drop(app_ref);
+
+    let mut rows = rows(window);
+    if let Some(from) = rows.iter().position(|row| row.id == id.0 as i32) {
+        let row = rows.remove(from);
+        rows.insert(to.min(rows.len()), row);
+        set_rows(window, rows);
+    }
+}
+
+/// Deletes the account and, for good, its profile folder with the saved login. The UI has asked
+/// the user first.
+fn delete_account(window: &MainWindow, app: &RefCell<App>, id: AccountId) {
+    let messages = window.global::<Messages>();
+    let Some(row) = row(window, id) else {
+        return;
+    };
+    if is_active(row.state) {
+        push_toast(
+            window,
+            ToastKind::Warning,
+            messages.invoke_delete_running(row.name),
+            SharedString::new(),
+        );
+        return;
+    }
+
+    let mut app_ref = app.borrow_mut();
+    let Some(index) = app_ref.account_index(id) else {
+        return;
+    };
+    app_ref.config.accounts.remove(index);
+    app_ref.save(window);
+    if app_ref
+        .draft
+        .as_ref()
+        .is_some_and(|draft| draft.id == Some(id))
+    {
+        app_ref.draft = None;
+        window.set_page(ui::Page::Accounts);
+    }
+    drop(app_ref);
+
+    let rows: Vec<AccountRow> = rows(window)
+        .into_iter()
+        .filter(|row| row.id != id.0 as i32)
+        .collect();
+    set_rows(window, rows);
+    refresh(window);
+
+    match bb_store::delete_profile(id) {
+        Ok(()) => push_toast(
+            window,
+            ToastKind::Success,
+            messages.invoke_deleted_title(row.name),
+            SharedString::new(),
+        ),
+        Err(error) => push_toast(
+            window,
+            ToastKind::Error,
+            messages.invoke_delete_failed_title(),
+            error.to_string().into(),
+        ),
+    }
+}
+
+/// Puts a shortcut on the desktop that starts the account without opening the launcher.
+fn create_shortcut(window: &MainWindow, app: &RefCell<App>, id: AccountId) {
+    let messages = window.global::<Messages>();
+    let Some(name) = app.borrow().account(id).map(|account| account.name.clone()) else {
+        return;
+    };
+    let result = (|| -> Result<String, String> {
+        let exe = std::env::current_exe().map_err(|error| error.to_string())?;
+        let desktop = bb_win::shortcut::desktop_dir().map_err(|error| error.to_string())?;
+        let file = format!("{} (Breakbar).lnk", file_name_safe(&name));
+        let description = messages.invoke_shortcut_description(name.as_str().into());
+        bb_win::shortcut::create(
+            &desktop.join(&file),
+            &bb_win::shortcut::Shortcut {
+                target: &exe,
+                arguments: &format!("--launch-id {}", id.0),
+                working_dir: exe.parent().unwrap_or(&desktop),
+                description: &description,
+                icon: &exe,
+            },
+        )
+        .map_err(|error| error.to_string())?;
+        Ok(file)
+    })();
+    match result {
+        Ok(file) => push_toast(
+            window,
+            ToastKind::Success,
+            messages.invoke_shortcut_created_title(),
+            messages.invoke_shortcut_created(file.into()),
+        ),
+        Err(error) => push_toast(
+            window,
+            ToastKind::Error,
+            messages.invoke_shortcut_failed_title(),
+            error.into(),
+        ),
+    }
+}
+
+/// Replaces characters Windows doesn't allow in file names.
+fn file_name_safe(name: &str) -> String {
+    name.chars()
+        .map(|c| match c {
+            '<' | '>' | ':' | '"' | '/' | '\\' | '|' | '?' | '*' => '_',
+            c if c.is_control() => '_',
+            c => c,
+        })
+        .collect::<String>()
+        .trim_end_matches(['.', ' '])
+        .to_owned()
+}
+
+fn open_profile_folder(window: &MainWindow, id: AccountId) {
+    let result = bb_store::ensure_profile_dir(id)
+        .map_err(|error| error.to_string())
+        .and_then(|dir| {
+            std::process::Command::new("explorer.exe")
+                .arg(dir)
+                .spawn()
+                .map(drop)
+                .map_err(|error| error.to_string())
+        });
+    if let Err(error) = result {
+        push_toast(
+            window,
+            ToastKind::Error,
+            window.global::<Messages>().invoke_folder_failed_title(),
+            error.into(),
+        );
+    }
+}
+
+/// First-start setup: choose the client by hand and check it.
+fn setup_browse(window: &MainWindow) {
+    let Some(path) = pick_exe(
+        window,
+        "Guild Wars 2",
+        ("Guild Wars 2", game::GW2_EXE),
+        None,
+    ) else {
+        return;
+    };
+    window.set_setup_other_path(display_path(Some(&path)).into());
+    let error = match game::validate(&path) {
+        Ok(()) => SharedString::new(),
+        Err(error) => {
+            let (kind, detail) = path_problem(&error);
+            window
+                .global::<Messages>()
+                .invoke_path_problem(kind, detail)
+        }
+    };
+    window.set_setup_other_error(error);
 }
 
 /// Shows the system file dialog for an `.exe`; `None` if cancelled or failed (then with a toast).
@@ -737,50 +1255,33 @@ fn choose_blish_path(window: &MainWindow, app: &RefCell<App>) {
     app.save(window);
 }
 
-/// Adds Blish HUD to `id`'s companions or removes it. Takes effect from the account's next
-/// launch; an instance already running with it is left alone.
-fn set_blish(window: &MainWindow, app: &RefCell<App>, id: AccountId, enabled: bool) {
-    let mut app_ref = app.borrow_mut();
-    let Some(blish) = app_ref.blish_hud().map(|blish| blish.id) else {
-        return;
-    };
-    let Some(account) = app_ref.config.accounts.iter_mut().find(|a| a.id == id) else {
-        return;
-    };
-    account.companions.retain(|&companion| companion != blish);
-    if enabled {
-        account.companions.push(blish);
-    }
-    app_ref.save(window);
-    drop(app_ref);
-
-    update_row(window, id, |row| row.blish = enabled);
-}
-
 fn account_rows(config: &Config) -> Vec<AccountRow> {
-    let blish = config
-        .companions
-        .iter()
-        .find(|app| app.name == BLISH_HUD)
-        .map(|app| app.id);
     config
         .accounts
         .iter()
-        .map(|account| account_row(account, blish))
+        .map(|account| account_row(account, &config.companions))
         .collect()
 }
 
-fn account_row(account: &Account, blish: Option<CompanionId>) -> AccountRow {
-    let steam = account.provider == Provider::Steam;
-    AccountRow {
+/// The row of an account that isn't running.
+fn account_row(account: &Account, companions: &[CompanionApp]) -> AccountRow {
+    let mut row = AccountRow {
         id: account.id.0 as i32,
-        name: account.name.as_str().into(),
-        provider: account.provider.display_name().into(),
-        steam,
-        state: idle_state(account.id, steam),
-        blish: blish.is_some_and(|blish| account.companions.contains(&blish)),
         ..AccountRow::default()
-    }
+    };
+    apply_account(&mut row, account, companions);
+    row.state = idle_state(account.id, row.steam);
+    row
+}
+
+/// Copies what the row shows of the account's settings into `row`.
+fn apply_account(row: &mut AccountRow, account: &Account, companions: &[CompanionApp]) {
+    row.name = account.name.as_str().into();
+    row.provider = account.provider.display_name().into();
+    row.steam = account.provider == Provider::Steam;
+    row.has_companions = companions
+        .iter()
+        .any(|app| account.companions.contains(&app.id));
 }
 
 /// Rows in every state, for the UI previews.
@@ -796,15 +1297,15 @@ fn demo_rows() -> Vec<AccountRow> {
     };
     vec![
         AccountRow {
-            blish: true,
+            has_companions: true,
             ..row(101, "Main", false, AccountState::Idle)
         },
         AccountRow {
-            blish: true,
+            has_companions: true,
             ..row(102, "Raid Chrono", false, AccountState::Starting)
         },
         AccountRow {
-            blish: true,
+            has_companions: true,
             addon_active: true,
             since: "14:02".into(),
             handle: 1,
@@ -982,7 +1483,7 @@ mod preview {
         name: &'static str,
         dark: bool,
         demo_rows: bool,
-        add_page: bool,
+        page: ui::Page,
         size: (u32, u32),
     }
 
@@ -1024,27 +1525,36 @@ mod preview {
         let dir = std::env::temp_dir().join("breakbar-ui");
         std::fs::create_dir_all(&dir).unwrap();
 
-        let variant = |name, dark, demo_rows, add_page, size| Variant {
+        let variant = |name, dark, demo_rows, page, size| Variant {
             name,
             dark,
             demo_rows,
-            add_page,
+            page,
             size,
         };
+        use ui::Page::{Accounts, Editor, SetupAccount, SetupPath};
         let variants = [
-            variant("accounts-dark", true, true, false, (420, 520)),
-            variant("accounts-light", false, true, false, (420, 520)),
-            variant("empty-dark", true, false, false, (420, 520)),
-            variant("empty-light", false, false, false, (420, 520)),
-            variant("add-dark", true, false, true, (420, 520)),
-            variant("add-light", false, false, true, (420, 520)),
-            variant("narrow-dark", true, true, false, (320, 360)),
+            variant("accounts-dark", true, true, Accounts, (420, 520)),
+            variant("accounts-light", false, true, Accounts, (420, 520)),
+            variant("empty-dark", true, false, Accounts, (420, 520)),
+            variant("empty-light", false, false, Accounts, (420, 520)),
+            variant("editor-dark", true, false, Editor, (420, 780)),
+            variant("editor-light", false, false, Editor, (420, 780)),
+            variant("setup-path-dark", true, false, SetupPath, (420, 520)),
+            variant(
+                "setup-account-light",
+                false,
+                false,
+                SetupAccount,
+                (420, 520),
+            ),
+            variant("narrow-dark", true, true, Accounts, (320, 360)),
         ];
         for Variant {
             name,
             dark,
             demo_rows: demo,
-            add_page: add,
+            page,
             size: (width, height),
         } in variants
         {
@@ -1053,6 +1563,7 @@ mod preview {
             ui.global::<Theme>().set_dark(dark);
             ui.set_gw2_path(r"C:\Program Files\Guild Wars 2\Gw2-64.exe".into());
             ui.set_gw2_path_ok(true);
+            ui.set_setup_detected_path(r"C:\Program Files\Guild Wars 2\Gw2-64.exe".into());
             if demo {
                 set_rows(&ui, demo_rows());
                 let messages = ui.global::<Messages>();
@@ -1064,9 +1575,23 @@ mod preview {
                 );
             }
             refresh(&ui);
-            if add {
-                ui.set_page(ui::Page::AddAccount);
-            }
+            ui.set_editor(EditorData {
+                id: 1,
+                name: "Main".into(),
+                steam: false,
+                args: "-windowed -mapLoadinfo".into(),
+                login: LoginState::SetUp,
+                active: false,
+                companions: Rc::new(slint::VecModel::from(vec![CompanionToggle {
+                    id: 1,
+                    name: "Blish HUD".into(),
+                    per_client: true,
+                    after_game_start: true,
+                    enabled: true,
+                }]))
+                .into(),
+            });
+            ui.set_page(page);
             ui.show().unwrap();
             slint::platform::update_timers_and_animations();
 
@@ -1079,5 +1604,18 @@ mod preview {
             write_bmp(&dir.join(format!("{name}.bmp")), w, h, &pixels);
             ui.hide().unwrap();
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn shortcut_file_names_drop_forbidden_characters() {
+        assert_eq!(file_name_safe("Main"), "Main");
+        assert_eq!(file_name_safe(r#"a<b>c:d"e/f\g|h?i*j"#), "a_b_c_d_e_f_g_h_i_j");
+        // Windows drops trailing dots and spaces from file names.
+        assert_eq!(file_name_safe("Alt. "), "Alt");
     }
 }

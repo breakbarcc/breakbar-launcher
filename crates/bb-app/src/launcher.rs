@@ -20,6 +20,9 @@ const POLL_INTERVAL: Duration = Duration::from_millis(100);
 const LOCK_STABLE_FOR: Duration = Duration::from_secs(3);
 /// Upper bound for startup; generous because a client may check for updates first.
 const STARTUP_TIMEOUT: Duration = Duration::from_secs(120);
+/// Named mutex serializing launches across Breakbar processes (the window and shortcut starts),
+/// because each launch points `%APPDATA%\Guild Wars 2` at its account for a few seconds.
+const LAUNCH_LOCK: &str = "Breakbar-Launch";
 /// `ERROR_SHARING_VIOLATION`.
 const ERROR_SHARING_VIOLATION: i32 = 32;
 
@@ -40,6 +43,8 @@ pub enum LaunchError {
     SetupNeedsExclusive(String),
     #[error("An account is currently being set up. Close that client before starting another one.")]
     SetupClientRunning,
+    #[error("{0} is already running.")]
+    AlreadyRunning(String),
     #[error("could not prepare the account's profile folder: {0}")]
     Profile(#[from] bb_store::StoreError),
     #[error("could not switch Guild Wars 2 to this account's profile: {0}")]
@@ -126,7 +131,7 @@ pub enum LaunchWarning {
     /// The client took unusually long to take its `Local.dat`; it may have picked up another
     /// account's login if the profile was switched meanwhile.
     SlowStart,
-    /// `%APPDATA%Guild Wars 2` could not be pointed back at the shared profile.
+    /// `%APPDATA%\Guild Wars 2` could not be pointed back at the shared profile.
     ProfileNotRestored(ProfileLinkError),
 }
 
@@ -157,6 +162,17 @@ pub fn launch(
     let gw2_path = client_exe.as_path();
     if account.provider == Provider::Steam && !steam_running() {
         return Err(LaunchError::SteamNotRunning(account.name.clone()));
+    }
+
+    // Waits while another Breakbar process launches; released when this launch returns.
+    let _lock = bb_win::mutex::OwnedMutex::acquire(LAUNCH_LOCK).inspect_err(|error| {
+        eprintln!("could not take the launch lock, launching anyway: {error}")
+    });
+
+    // A client of this account already runs (e.g. started from a shortcut): it holds the
+    // account's `Local.dat`, and a second one would log in with the same account.
+    if bb_store::local_dat_path(account.id).is_ok_and(|path| is_locked(&path)) {
+        return Err(LaunchError::AlreadyRunning(account.name.clone()));
     }
 
     let setup = mode == LaunchMode::SetUpLogin || !bb_store::is_set_up(account.id);
