@@ -486,7 +486,11 @@ pub fn run() -> Result<(), slint::PlatformError> {
     window.show()?;
     // The native frame exists once the window is shown.
     apply_frame(&window, window.global::<Theme>().get_dark());
-    slint::run_event_loop()?;
+    // `run_event_loop()` exits once the last *Slint* window is hidden - it doesn't know about the
+    // tray icon (a plain Win32 window of our own), so with that variant, closing to the tray would
+    // quit Breakbar right along with it. This variant only exits on an explicit
+    // `quit_event_loop()`, which is exactly what the tray menu's "Quit" calls.
+    slint::run_event_loop_until_quit()?;
     window.hide()
 }
 
