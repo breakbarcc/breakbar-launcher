@@ -203,6 +203,30 @@ export component AccountCard {
         }
     }
 
+    // Drag handle over the grip column (full height, so the pointer is easy to catch). Declared
+    // before the row's own controls so a real control (e.g. the checkbox, whose hit area is
+    // padded beyond its visible bounds and reaches slightly into this column) always wins over
+    // the drag catcher where the two overlap.
+    TouchArea {
+        x: 0;
+        width: 22px;
+        mouse-cursor: move;
+        pointer-event(event) => {
+            if event.button == PointerEventButton.left && event.kind == PointerEventKind.down {
+                focus.focus();
+                root.drag-started(self.mouse-y);
+            }
+            if event.button == PointerEventButton.left && event.kind == PointerEventKind.up {
+                root.drag-ended();
+            }
+        }
+        moved => {
+            if self.pressed {
+                root.drag-moved(self.mouse-y);
+            }
+        }
+    }
+
     HorizontalLayout {
         padding-left: 4px;
         padding-right: 8px;
@@ -210,7 +234,7 @@ export component AccountCard {
         padding-bottom: 8px;
         spacing: 10px;
 
-        // Grip: only visible on hover, focus or while dragging; the drag area is below.
+        // Grip: only visible on hover, focus or while dragging; the drag area is above.
         Icon {
             y: (parent.height - self.height) / 2;
             path: Icons.grip;
@@ -284,27 +308,6 @@ export component AccountCard {
             icon: Icons.more;
             label: @tr("More actions for {}", account.name);
             clicked => { menu.show(); }
-        }
-    }
-
-    // Drag handle over the grip column (full height, so the pointer is easy to catch).
-    TouchArea {
-        x: 0;
-        width: 22px;
-        mouse-cursor: move;
-        pointer-event(event) => {
-            if event.button == PointerEventButton.left && event.kind == PointerEventKind.down {
-                focus.focus();
-                root.drag-started(self.mouse-y);
-            }
-            if event.button == PointerEventButton.left && event.kind == PointerEventKind.up {
-                root.drag-ended();
-            }
-        }
-        moved => {
-            if self.pressed {
-                root.drag-moved(self.mouse-y);
-            }
         }
     }
 
