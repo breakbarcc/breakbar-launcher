@@ -166,6 +166,19 @@ struct CompanionApp {
 - **Previews without a window:** `cargo test -p breakbar -- --ignored render_ui_previews` renders
   the main states in both themes with the software renderer into `%TEMP%\breakbar-ui\*.bmp` —
   no window opens, so it is safe to run while playing.
+- **Settings page** (`ui/settings.slint`, reached via the gear icon next to "Add account"): so far
+  only the "// Paths" section (screen 11), showing the same Guild Wars 2 / Blish HUD paths that
+  used to sit in the main window's footer. The rest of that screen (companion app editor, startup
+  behavior, appearance, about) lands with the steps that need it.
+- **Pitfall: `TouchArea` + `FocusScope` pairs.** Every clickable component pairs a `TouchArea`
+  (the click) with a `FocusScope`-derived one (keyboard activation, e.g. our shared `Activation`
+  helper). `FocusScope`'s `focus-on-click` defaults to `true` and grabs the mouse-down itself to
+  gain focus — before a sibling `TouchArea` covering the same area ever sees that press. Left
+  alone, the *first* click on any such control only shows its focus ring and does nothing else;
+  only a second click (now already focused) reaches the `TouchArea`. Every `FocusScope`/
+  `Activation` in this codebase sets `focus-on-click: false` and instead relies on its sibling
+  `TouchArea` calling `.focus()` itself from `clicked`, which keeps the visual focus ring without
+  the race. Give any new interactive component the same treatment.
 
 ## Account management
 
@@ -218,7 +231,7 @@ Config: `%APPDATA%\Breakbar\config.toml` (atomic write via temp file + `ReplaceF
 | 3.6 | ✅ Companion apps (per-client / shared, start on process or game window, graceful close), Blish HUD preset (not yet tested with a real Blish HUD) |
 | 4.1 | ✅ Design: new UI in both themes (tokens, components, account rows with all states, selection, toasts, empty state, narrow layout), app icon, English + German |
 | 4.1b | ✅ Account management: edit page, duplicate, delete, desktop shortcut, profile folder, drag & drop order, first-start setup, shortcut starts without a window (companion editor moved to 4.2) |
-| 4.2 | Settings page: paths, companion app editor |
+| 4.2 | ✅ Settings page: paths (companion app editor still pending) |
 | 4.3 | Start with Windows |
 | 4.4 | Close behavior and tray |
 | 4.5 | Instance switcher overlay |

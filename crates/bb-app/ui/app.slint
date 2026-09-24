@@ -7,6 +7,7 @@ import {
 import { AccountCard, AccountRow, AccountState } from "account-card.slint";
 import { AccountEditor, EditorData, CompanionToggle, LoginState } from "editor.slint";
 import { SetupPathPage, SetupAccountPage } from "setup.slint";
+import { SettingsPage } from "settings.slint";
 import { Messages, LaunchFailure, PathProblem } from "messages.slint";
 
 export {
@@ -14,7 +15,7 @@ export {
     EditorData, CompanionToggle, LoginState,
 }
 
-export enum Page { accounts, editor, setup-path, setup-account }
+export enum Page { accounts, editor, setup-path, setup-account, settings }
 
 /// Skeleton card of the empty state.
 component GhostCard inherits Rectangle {
@@ -54,39 +55,6 @@ component GhostCard inherits Rectangle {
         height: 18px;
         border-radius: 4px;
         background: Theme.surface-2;
-    }
-}
-
-/// A configured path with its state, e.g. in the footer.
-component PathRow {
-    in property <string> path;
-    in property <string> missing-text;
-    in property <string> action-text;
-    in property <bool> ok;
-    callback change();
-    height: 22px;
-    HorizontalLayout {
-        spacing: 8px;
-        Icon {
-            y: (parent.height - self.height) / 2;
-            size: 14px;
-            weight: 2;
-            path: root.ok ? Icons.checkcircle : Icons.xcircle;
-            color: root.ok ? Theme.ok : Theme.text-dim;
-        }
-        Text {
-            horizontal-stretch: 1;
-            text: root.path == "" ? root.missing-text : root.path;
-            font-family: root.path == "" ? Theme.font-ui : Theme.font-mono;
-            font-size: root.path == "" ? Theme.fs-help : Theme.fs-label-mono;
-            color: Theme.text-muted;
-            vertical-alignment: center;
-            overflow: elide;
-        }
-        LinkButton {
-            text: root.action-text;
-            clicked => { root.change(); }
-        }
     }
 }
 
@@ -191,6 +159,7 @@ export component MainWindow inherits Window {
     in property <bool> gw2-path-ok;
     /// Path to `Blish HUD.exe`; empty if not configured.
     in property <string> blish-path;
+    in property <bool> blish-path-ok;
     in property <[ToastData]> toasts;
     in-out property <Page> page: Page.accounts;
     /// What the editor page shows; set by Rust before switching to it.
@@ -331,6 +300,13 @@ export component MainWindow inherits Window {
                 icon: Icons.plus;
                 label: @tr("Add account");
                 clicked => { root.edit-account(0); }
+            }
+
+            IconButton {
+                y: (parent.height - self.height) / 2;
+                icon: Icons.settings;
+                label: @tr("Settings");
+                clicked => { root.page = Page.settings; }
             }
         }
 
@@ -496,33 +472,6 @@ export component MainWindow inherits Window {
                 }
             }
         }
-
-        // Paths; they move into the settings page later.
-        Rectangle {
-            height: 1px;
-            background: Theme.line;
-        }
-        VerticalLayout {
-            padding-left: 16px;
-            padding-right: 16px;
-            padding-top: 8px;
-            padding-bottom: 8px;
-            spacing: 2px;
-            PathRow {
-                path: root.gw2-path;
-                ok: root.gw2-path-ok;
-                missing-text: @tr("Guild Wars 2 not found");
-                action-text: root.gw2-path == "" ? @tr("Choose") : @tr("Change");
-                change => { root.choose-gw2-path(); }
-            }
-            PathRow {
-                path: root.blish-path;
-                ok: root.blish-path != "";
-                missing-text: @tr("Blish HUD not set (optional)");
-                action-text: root.blish-path == "" ? @tr("Choose") : @tr("Change");
-                change => { root.choose-blish-path(); }
-            }
-        }
     }
 
     // ── Account editor ───────────────────────────────────────────────────────────────────────
@@ -549,6 +498,17 @@ export component MainWindow inherits Window {
     if root.page == Page.setup-account: SetupAccountPage {
         back => { root.page = Page.setup-path; }
         create(name, steam) => { root.setup-create-account(name, steam); }
+    }
+
+    // ── Settings ─────────────────────────────────────────────────────────────────────────────
+    if root.page == Page.settings: SettingsPage {
+        gw2-path: root.gw2-path;
+        gw2-path-ok: root.gw2-path-ok;
+        blish-path: root.blish-path;
+        blish-path-ok: root.blish-path-ok;
+        back => { root.page = Page.accounts; }
+        choose-gw2-path => { root.choose-gw2-path(); }
+        choose-blish-path => { root.choose-blish-path(); }
     }
 
     // ── Toasts ───────────────────────────────────────────────────────────────────────────────

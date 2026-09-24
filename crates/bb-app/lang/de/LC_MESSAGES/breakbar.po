@@ -58,6 +58,7 @@ msgid " · Steam running"
 msgstr " · Steam läuft"
 
 #: ui/account-card.slint:139 ui/account-card.slint:225
+#: ui/account-card.slint:139 ui/account-card.slint:225
 msgctxt "AccountCard"
 msgid "Select {}"
 msgstr "{} auswählen"
@@ -73,10 +74,12 @@ msgid "Starts with: Blish HUD"
 msgstr "Mitgestartet: Blish HUD"
 
 #: ui/account-card.slint:183 ui/account-card.slint:269
+#: ui/account-card.slint:183 ui/account-card.slint:269
 msgctxt "AccountCard"
 msgid "Retry"
 msgstr "Erneut"
 
+#: ui/account-card.slint:199 ui/account-card.slint:285
 #: ui/account-card.slint:199 ui/account-card.slint:285
 msgctxt "AccountCard"
 msgid "More actions for {}"
@@ -145,37 +148,38 @@ msgctxt "AddAccountPage"
 msgid "Cancel"
 msgstr "Abbrechen"
 
-#: ui/app.slint:257 ui/app.slint:278
+#: ui/app.slint:257 ui/app.slint:278 ui/app.slint:247
 msgctxt "MainWindow"
 msgid "Start · {}"
 msgstr "Starten · {}"
 
-#: ui/app.slint:257 ui/app.slint:278
+#: ui/app.slint:257 ui/app.slint:278 ui/app.slint:247
 msgctxt "MainWindow"
 msgid "Start selection · {}"
 msgstr "Auswahl starten · {}"
 
-#: ui/app.slint:258 ui/app.slint:279
+#: ui/app.slint:258 ui/app.slint:279 ui/app.slint:248
 msgctxt "MainWindow"
 msgid "All"
 msgstr "Alle"
 
-#: ui/app.slint:258 ui/app.slint:279
+#: ui/app.slint:258 ui/app.slint:279 ui/app.slint:248
 msgctxt "MainWindow"
 msgid "Launch all"
 msgstr "Launch all"
 
-#: ui/app.slint:267 ui/app.slint:288
+#: ui/app.slint:267 ui/app.slint:288 ui/app.slint:257
 msgctxt "MainWindow"
 msgid "{} of {} clients running"
 msgstr "{} von {} Clients laufen"
 
-#: ui/app.slint:286 ui/app.slint:310
+#: ui/app.slint:286 ui/app.slint:310 ui/app.slint:279
 msgctxt "MainWindow"
 msgid "RUNNING"
 msgstr "LAUFEN"
 
 #: ui/app.slint:308 ui/app.slint:358 ui/app.slint:332 ui/app.slint:381
+#: ui/app.slint:308 ui/app.slint:358 ui/app.slint:332 ui/app.slint:381 ui/app.slint:357
 msgctxt "MainWindow"
 msgid "Add account"
 msgstr "Account hinzufügen"
@@ -185,7 +189,7 @@ msgctxt "MainWindow"
 msgid "No accounts yet"
 msgstr "Noch keine Accounts"
 
-#: ui/app.slint:346 ui/app.slint:369
+#: ui/app.slint:346 ui/app.slint:369 ui/app.slint:345
 msgctxt "MainWindow"
 msgid ""
 "Add an account and start it with one click. Several accounts run side by "
@@ -199,12 +203,12 @@ msgctxt "MainWindow"
 msgid "// ACCOUNTS · {}"
 msgstr "// ACCOUNTS · {}"
 
-#: ui/app.slint:378 ui/app.slint:407
+#: ui/app.slint:378 ui/app.slint:407 ui/app.slint:383
 msgctxt "MainWindow"
 msgid "{} selected"
 msgstr "{} ausgewählt"
 
-#: ui/app.slint:385 ui/app.slint:414
+#: ui/app.slint:385 ui/app.slint:414 ui/app.slint:390
 msgctxt "MainWindow"
 msgid "Clear"
 msgstr "Aufheben"
@@ -229,13 +233,14 @@ msgctxt "MainWindow"
 msgid "Blish HUD not set (optional)"
 msgstr "Blish HUD nicht eingerichtet (optional)"
 
-#: ui/components.slint:511 ui/components.slint:608
+#: ui/components.slint:511 ui/components.slint:608 ui/components.slint:632
 msgctxt "Toast"
 msgid "Dismiss"
 msgstr "Hinweis schließen"
 
 #: ui/messages.slint:20 ui/messages.slint:66 ui/messages.slint:21
-#: ui/messages.slint:20 ui/messages.slint:66 ui/messages.slint:21
+#: ui/messages.slint:20 ui/messages.slint:66 ui/messages.slint:21 ui/messages.slint:66 ui/messages.slint:21
+#: ui/messages.slint:20 ui/messages.slint:66 ui/messages.slint:21 ui/messages.slint:66 ui/messages.slint:21
 msgctxt "Messages"
 msgid "Start failed"
 msgstr "Start fehlgeschlagen"
@@ -445,82 +450,86 @@ msgctxt "Messages"
 msgid "The file is not the Guild Wars 2 client."
 msgstr "Die Datei ist nicht der Guild-Wars-2-Client."
 
-#: ui/account-card.slint:259
+#: ui/account-card.slint:259 ui/account-card.slint:287
 msgctxt "AccountCard"
 msgid "Companion app running"
 msgstr "Mitgestartetes Programm läuft"
 
-#: ui/account-card.slint:259
+#: ui/account-card.slint:259 ui/account-card.slint:287
 msgctxt "AccountCard"
 msgid "Companion apps start with it"
 msgstr "Mit Programmen, die mitstarten"
 
-#: ui/account-card.slint:341
+#: ui/account-card.slint:341 ui/account-card.slint:348
 msgctxt "AccountCard"
 msgid "Edit"
 msgstr "Bearbeiten"
 
-#: ui/account-card.slint:350
+#: ui/account-card.slint:350 ui/account-card.slint:357
 msgctxt "AccountCard"
 msgid "Duplicate"
 msgstr "Duplizieren"
 
-#: ui/account-card.slint:352
+#: ui/account-card.slint:352 ui/account-card.slint:359
 msgctxt "AccountCard"
 msgid "Ctrl+D"
 msgstr "Strg+D"
 
-#: ui/account-card.slint:359
+#: ui/account-card.slint:359 ui/account-card.slint:366
 msgctxt "AccountCard"
 msgid "Create desktop shortcut"
 msgstr "Desktop-Verknüpfung erstellen"
 
-#: ui/account-card.slint:367
+#: ui/account-card.slint:367 ui/account-card.slint:374
 msgctxt "AccountCard"
 msgid "Open profile folder"
 msgstr "Profilordner öffnen"
 
-#: ui/account-card.slint:382
+#: ui/account-card.slint:382 ui/account-card.slint:389
 msgctxt "AccountCard"
 msgid "Delete"
 msgstr "Löschen"
 
-#: ui/account-card.slint:384
+#: ui/account-card.slint:384 ui/account-card.slint:391
 msgctxt "AccountCard"
 msgid "Del"
 msgstr "Entf"
 
-#: ui/app.slint:124 ui/app.slint:140
+#: ui/app.slint:124 ui/app.slint:140 ui/app.slint:92 ui/app.slint:108
 msgctxt "ConfirmDelete"
 msgid "Delete „{}“?"
 msgstr "„{}“ löschen?"
 
-#: ui/app.slint:148
+#: ui/app.slint:148 ui/app.slint:116
 msgctxt "ConfirmDelete"
-msgid "The account and its profile folder with the saved login are deleted for good. This cannot be undone."
-msgstr "Der Account und sein Profilordner mit dem gespeicherten Login werden endgültig gelöscht. Das lässt sich nicht rückgängig machen."
+msgid ""
+"The account and its profile folder with the saved login are deleted for "
+"good. This cannot be undone."
+msgstr ""
+"Der Account und sein Profilordner mit dem gespeicherten Login werden "
+"endgültig gelöscht. Das lässt sich nicht rückgängig machen."
 
-#: ui/app.slint:159
+#: ui/app.slint:159 ui/app.slint:127
 msgctxt "ConfirmDelete"
 msgid "Cancel"
 msgstr "Abbrechen"
 
-#: ui/app.slint:165
+#: ui/app.slint:165 ui/app.slint:133
 msgctxt "ConfirmDelete"
 msgid "Delete"
 msgstr "Löschen"
 
-#: ui/app.slint:176
+#: ui/app.slint:176 ui/app.slint:144
 msgctxt "MainWindow"
 msgid "Breakbar Launcher – Setup"
 msgstr "Breakbar Launcher – Einrichtung"
 
-#: ui/app.slint:400
+#: ui/app.slint:400 ui/app.slint:376
 msgctxt "MainWindow"
 msgid "POS {}/{}"
 msgstr "POS {}/{}"
 
-#: ui/app.slint:419
+#: ui/app.slint:419 ui/app.slint:395
 msgctxt "MainWindow"
 msgid "Drag to sort"
 msgstr "Ziehen zum Sortieren"
@@ -587,8 +596,12 @@ msgstr "Plattform"
 
 #: ui/editor.slint:192
 msgctxt "AccountEditor"
-msgid "Steam signs the game in with the Steam user that is currently signed in. Only one Steam account can run at a time."
-msgstr "Steam meldet das Spiel mit dem gerade angemeldeten Steam-Nutzer an. Es kann immer nur ein Steam-Account gleichzeitig laufen."
+msgid ""
+"Steam signs the game in with the Steam user that is currently signed in. "
+"Only one Steam account can run at a time."
+msgstr ""
+"Steam meldet das Spiel mit dem gerade angemeldeten Steam-Nutzer an. Es kann "
+"immer nur ein Steam-Account gleichzeitig laufen."
 
 #: ui/editor.slint:201
 msgctxt "AccountEditor"
@@ -617,18 +630,30 @@ msgstr "Über Steam"
 
 #: ui/editor.slint:231
 msgctxt "AccountEditor"
-msgid "Steam signs this account in. It only needs its own login file for its game settings, which the first start creates."
-msgstr "Steam meldet diesen Account an. Er braucht nur eine eigene Login-Datei für seine Spieleinstellungen, die der erste Start anlegt."
+msgid ""
+"Steam signs this account in. It only needs its own login file for its game "
+"settings, which the first start creates."
+msgstr ""
+"Steam meldet diesen Account an. Er braucht nur eine eigene Login-Datei für "
+"seine Spieleinstellungen, die der erste Start anlegt."
 
 #: ui/editor.slint:233
 msgctxt "AccountEditor"
-msgid "On the next start the normal Guild Wars 2 login opens: log in once with „Remember email/password“ ticked."
-msgstr "Beim nächsten Start öffnet sich das normale GW2-Login: einmal mit „Zugangsdaten merken“ einloggen."
+msgid ""
+"On the next start the normal Guild Wars 2 login opens: log in once with "
+"„Remember email/password“ ticked."
+msgstr ""
+"Beim nächsten Start öffnet sich das normale GW2-Login: einmal mit "
+"„Zugangsdaten merken“ einloggen."
 
 #: ui/editor.slint:234
 msgctxt "AccountEditor"
-msgid "The account logs in automatically. Set up the login again if the password changed or it asks for a login."
-msgstr "Der Account meldet sich automatisch an. Richte den Login neu ein, wenn sich das Passwort geändert hat oder er nach dem Login fragt."
+msgid ""
+"The account logs in automatically. Set up the login again if the password "
+"changed or it asks for a login."
+msgstr ""
+"Der Account meldet sich automatisch an. Richte den Login neu ein, wenn sich "
+"das Passwort geändert hat oder er nach dem Login fragt."
 
 #: ui/editor.slint:244
 msgctxt "AccountEditor"
@@ -642,8 +667,12 @@ msgstr "// MITGESTARTETE PROGRAMME"
 
 #: ui/editor.slint:273
 msgctxt "AccountEditor"
-msgid "No companion apps set up yet. Blish HUD can be chosen at the bottom of the main window."
-msgstr "Noch keine Programme eingerichtet. Blish HUD kannst du unten im Hauptfenster auswählen."
+msgid ""
+"No companion apps set up yet. Blish HUD can be chosen at the bottom of the "
+"main window."
+msgstr ""
+"Noch keine Programme eingerichtet. Blish HUD kannst du unten im Hauptfenster "
+"auswählen."
 
 #: ui/editor.slint:284
 msgctxt "AccountEditor"
@@ -740,98 +769,151 @@ msgctxt "Stepper"
 msgid "SETUP · STEP {} / 2"
 msgstr "EINRICHTUNG · SCHRITT {} / 2"
 
-#: ui/setup.slint:131
+#: ui/setup.slint:131 ui/setup.slint:135
 msgctxt "SetupPathPage"
 msgid "Where is Guild Wars 2 installed?"
 msgstr "Wo ist Guild Wars 2 installiert?"
 
-#: ui/setup.slint:134
+#: ui/setup.slint:134 ui/setup.slint:138
 msgctxt "SetupPathPage"
-msgid "Choose the file Gw2-64.exe. You can change the path later in the settings."
-msgstr "Wähle die Datei Gw2-64.exe. Du kannst den Pfad später in den Einstellungen ändern."
+msgid ""
+"Choose the file Gw2-64.exe. You can change the path later in the settings."
+msgstr ""
+"Wähle die Datei Gw2-64.exe. Du kannst den Pfad später in den Einstellungen "
+"ändern."
 
-#: ui/setup.slint:145 ui/setup.slint:154
+#: ui/setup.slint:145 ui/setup.slint:154 ui/setup.slint:149 ui/setup.slint:158
 msgctxt "SetupPathPage"
 msgid "Found automatically"
 msgstr "Automatisch gefunden"
 
-#: ui/setup.slint:154
+#: ui/setup.slint:154 ui/setup.slint:158
 msgctxt "SetupPathPage"
 msgid "Not found automatically"
 msgstr "Nicht automatisch gefunden"
 
-#: ui/setup.slint:178 ui/setup.slint:188
+#: ui/setup.slint:178 ui/setup.slint:188 ui/setup.slint:182 ui/setup.slint:192
 msgctxt "SetupPathPage"
 msgid "Other location"
 msgstr "Anderer Ort"
 
-#: ui/setup.slint:196
+#: ui/setup.slint:196 ui/setup.slint:200
 msgctxt "SetupPathPage"
 msgid "Browse…"
 msgstr "Durchsuchen…"
 
-#: ui/setup.slint:238
+#: ui/setup.slint:238 ui/setup.slint:242
 msgctxt "SetupPathPage"
 msgid "Searched in Program Files, the Steam libraries and the registry."
 msgstr "Gesucht in Programme, Steam-Bibliotheken und der Registry."
 
-#: ui/setup.slint:256
+#: ui/setup.slint:256 ui/setup.slint:260
 msgctxt "SetupPathPage"
 msgid "Next"
 msgstr "Weiter"
 
-#: ui/setup.slint:291
+#: ui/setup.slint:291 ui/setup.slint:295
 msgctxt "SetupAccountPage"
 msgid "Create your first account"
 msgstr "Ersten Account anlegen"
 
-#: ui/setup.slint:296
+#: ui/setup.slint:296 ui/setup.slint:300
 msgctxt "SetupAccountPage"
 msgid "Name"
 msgstr "Name"
 
-#: ui/setup.slint:299
+#: ui/setup.slint:299 ui/setup.slint:303
 msgctxt "SetupAccountPage"
 msgid "e.g. Main"
 msgstr "z. B. Main"
 
-#: ui/setup.slint:306
+#: ui/setup.slint:306 ui/setup.slint:310
 msgctxt "SetupAccountPage"
 msgid "Platform"
 msgstr "Plattform"
 
-#: ui/setup.slint:333
+#: ui/setup.slint:333 ui/setup.slint:337
 msgctxt "SetupAccountPage"
 msgid "How Steam accounts work"
 msgstr "So funktionieren Steam-Accounts"
 
-#: ui/setup.slint:333
+#: ui/setup.slint:333 ui/setup.slint:337
 msgctxt "SetupAccountPage"
 msgid "How the login works"
 msgstr "So funktioniert der Login"
 
-#: ui/setup.slint:340
+#: ui/setup.slint:340 ui/setup.slint:344
 msgctxt "SetupAccountPage"
-msgid "Steam signs the game in with the Steam user that is currently signed in. Only one Steam account can run at a time."
-msgstr "Steam meldet das Spiel mit dem gerade angemeldeten Steam-Nutzer an. Es kann immer nur ein Steam-Account gleichzeitig laufen."
+msgid ""
+"Steam signs the game in with the Steam user that is currently signed in. "
+"Only one Steam account can run at a time."
+msgstr ""
+"Steam meldet das Spiel mit dem gerade angemeldeten Steam-Nutzer an. Es kann "
+"immer nur ein Steam-Account gleichzeitig laufen."
 
-#: ui/setup.slint:341
+#: ui/setup.slint:341 ui/setup.slint:345
 msgctxt "SetupAccountPage"
-msgid "1. On the first start the normal Guild Wars 2 login opens.\n2. Log in once with „Remember email/password“ ticked.\n3. After that the account starts automatically."
-msgstr "1. Beim ersten Start öffnet sich das normale GW2-Login.\n2. Einmal mit „Zugangsdaten merken“ einloggen.\n3. Danach startet der Account automatisch."
+msgid ""
+"1. On the first start the normal Guild Wars 2 login opens.\n2. Log in once "
+"with „Remember email/password“ ticked.\n3. After that the account starts "
+"automatically."
+msgstr ""
+"1. Beim ersten Start öffnet sich das normale GW2-Login.\n2. Einmal mit "
+"„Zugangsdaten merken“ einloggen.\n3. Danach startet der Account "
+"automatisch."
 
-#: ui/setup.slint:357
+#: ui/setup.slint:357 ui/setup.slint:361
 msgctxt "SetupAccountPage"
 msgid "Breakbar stores no passwords."
 msgstr "Breakbar speichert keine Passwörter."
 
-#: ui/setup.slint:381
+#: ui/setup.slint:381 ui/setup.slint:385
 msgctxt "SetupAccountPage"
 msgid "Back"
 msgstr "Zurück"
 
-#: ui/setup.slint:391
-
+#: ui/setup.slint:391 ui/setup.slint:395
 msgctxt "SetupAccountPage"
 msgid "Create account"
 msgstr "Account anlegen"
+
+#: ui/app.slint:308
+msgctxt "MainWindow"
+msgid "Settings"
+msgstr "Einstellungen"
+
+#: ui/settings.slint:51
+msgctxt "PathField"
+msgid "Browse…"
+msgstr "Durchsuchen…"
+
+#: ui/settings.slint:94
+msgctxt "SettingsPage"
+msgid "Back"
+msgstr "Zurück"
+
+#: ui/settings.slint:98
+msgctxt "SettingsPage"
+msgid "Settings"
+msgstr "Einstellungen"
+
+#: ui/settings.slint:120
+msgctxt "SettingsPage"
+msgid "// PATHS"
+msgstr "// PFADE"
+
+#: ui/settings.slint:126
+msgctxt "SettingsPage"
+msgid "Gw2-64.exe found"
+msgstr "Gw2-64.exe gefunden"
+
+#: ui/settings.slint:127 ui/settings.slint:135
+msgctxt "SettingsPage"
+msgid "File not found. Check the path."
+msgstr "Datei nicht gefunden. Prüfe den Pfad."
+
+#: ui/settings.slint:134
+
+msgctxt "SettingsPage"
+msgid "Blish HUD.exe found"
+msgstr "Blish HUD.exe gefunden"

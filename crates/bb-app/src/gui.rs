@@ -199,7 +199,7 @@ pub fn run() -> Result<(), slint::PlatformError> {
 
     set_rows(&window, account_rows(&app.config));
     show_gw2_path(&window, app.config.gw2_path.as_deref());
-    window.set_blish_path(display_path(app.blish_hud().map(|app| app.exe.as_path())).into());
+    show_blish_path(&window, app.blish_hud().map(|app| app.exe.as_path()));
     refresh(&window);
 
     let app = Rc::new(RefCell::new(app));
@@ -1251,7 +1251,7 @@ fn choose_blish_path(window: &MainWindow, app: &RefCell<App>) {
             companions.push(CompanionApp::blish_hud(id, path.clone()));
         }
     }
-    window.set_blish_path(display_path(Some(&path)).into());
+    show_blish_path(window, Some(&path));
     app.save(window);
 }
 
@@ -1452,6 +1452,13 @@ fn show_gw2_path(window: &MainWindow, path: Option<&Path>) {
     window.set_gw2_path_ok(path.is_some_and(|path| game::validate(path).is_ok()));
 }
 
+/// Blish HUD isn't validated the way the game client is (no `validate` for arbitrary programs);
+/// the settings page just shows whether the configured file still exists.
+fn show_blish_path(window: &MainWindow, path: Option<&Path>) {
+    window.set_blish_path(display_path(path).into());
+    window.set_blish_path_ok(path.is_some_and(Path::is_file));
+}
+
 fn display_path(path: Option<&Path>) -> String {
     path.map(|path| path.display().to_string())
         .unwrap_or_default()
@@ -1532,7 +1539,7 @@ mod preview {
             page,
             size,
         };
-        use ui::Page::{Accounts, Editor, SetupAccount, SetupPath};
+        use ui::Page::{Accounts, Editor, Settings, SetupAccount, SetupPath};
         let variants = [
             variant("accounts-dark", true, true, Accounts, (420, 520)),
             variant("accounts-light", false, true, Accounts, (420, 520)),
@@ -1549,6 +1556,8 @@ mod preview {
                 (420, 520),
             ),
             variant("narrow-dark", true, true, Accounts, (320, 360)),
+            variant("settings-dark", true, false, Settings, (420, 520)),
+            variant("settings-light", false, false, Settings, (420, 520)),
         ];
         for Variant {
             name,
@@ -1563,6 +1572,8 @@ mod preview {
             ui.global::<Theme>().set_dark(dark);
             ui.set_gw2_path(r"C:\Program Files\Guild Wars 2\Gw2-64.exe".into());
             ui.set_gw2_path_ok(true);
+            ui.set_blish_path(r"D:\Tools\Blish HUD\Blish HUD.exe".into());
+            ui.set_blish_path_ok(name != "settings-dark");
             ui.set_setup_detected_path(r"C:\Program Files\Guild Wars 2\Gw2-64.exe".into());
             if demo {
                 set_rows(&ui, demo_rows());
