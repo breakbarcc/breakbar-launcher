@@ -12,7 +12,9 @@ bb-core.workspace = true
 bb-store.workspace = true
 bb-win.workspace = true
 lexopt.workspace = true
+raw-window-handle.workspace = true
 slint.workspace = true
+thiserror.workspace = true
 
 [build-dependencies]
 embed-resource.workspace = true

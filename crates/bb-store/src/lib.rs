@@ -33,9 +33,9 @@ pub struct Config {
     /// Path to `Gw2-64.exe`.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub gw2_path: Option<PathBuf>,
-    #[serde(default, rename = "account")]
+    #[serde(default, rename = "account", skip_serializing_if = "Vec::is_empty")]
     pub accounts: Vec<Account>,
-    #[serde(default, rename = "companion")]
+    #[serde(default, rename = "companion", skip_serializing_if = "Vec::is_empty")]
     pub companions: Vec<CompanionApp>,
 }
 

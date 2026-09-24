@@ -4,4 +4,7 @@
 //! workspace can stay safe Rust.
 
 pub mod console;
+pub mod dialog;
 pub mod mutex;
+pub mod registry;
+pub mod version;

@@ -16,6 +16,7 @@ bb-win = { path = "crates/bb-win" }
 
 embed-resource = "3.0.11"
 lexopt = "0.3.2"
+raw-window-handle = "0.6.2"
 serde = { version = "1.0.229", features = ["derive"] }
 slint = { version = "1.18.1", default-features = false, features = [
   "std",
@@ -25,6 +26,7 @@ slint = { version = "1.18.1", default-features = false, features = [
   "software-renderer-systemfonts",
   "software-renderer-path",
   "accessibility",
+  "raw-window-handle-06",
 ] }
 slint-build = "1.18.1"
 thiserror = "2.0.21"

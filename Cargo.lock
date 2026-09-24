@@ -576,8 +576,10 @@ dependencies = [
  "bb-win",
  "embed-resource",
  "lexopt",
+ "raw-window-handle",
  "slint",
  "slint-build",
+ "thiserror 2.0.21",
 ]
 
 [[package]]
@@ -3934,6 +3936,7 @@ dependencies = [
  "num-traits",
  "once_cell",
  "pin-weak",
+ "raw-window-handle",
  "slint-macros",
  "unicode-segmentation",
  "vtable",

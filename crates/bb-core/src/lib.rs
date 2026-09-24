@@ -5,6 +5,8 @@
 pub mod account;
 pub mod companion;
 pub mod launch;
+pub mod pe;
+pub mod steam;
 
 pub use account::{Account, AccountId, Provider};
 pub use companion::{ArgContext, CompanionApp, CompanionId, Scope, Trigger};
