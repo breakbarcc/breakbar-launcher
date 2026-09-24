@@ -168,13 +168,26 @@ struct CompanionApp {
   no window opens, so it is safe to run while playing.
 - **Settings page** (`ui/settings.slint`, reached via the gear icon next to "Add account"): so far
   the "// Paths" section (screen 11), showing the same Guild Wars 2 / Blish HUD paths that used to
-  sit in the main window's footer, and a "// Behavior" section with the "Start with Windows"
-  toggle. The rest of that screen (companion app editor, the after-start radio group, appearance,
-  about) lands with the steps that need it.
+  sit in the main window's footer, and a "// Behavior" section with the "After starting an
+  account" radio group and the "Start with Windows" toggle. The rest of that screen (companion app
+  editor, appearance, about) lands with the steps that need it.
 - **Start with Windows** (`bb_win::autostart`) writes/removes a `HKCU\...\Run` entry pointing at
   the current `breakbar.exe`, no admin rights needed. The registry is the source of truth — like
   the path fields' found/not-found checks — rather than a flag in `config.toml`, so the toggle
   always reflects reality even if the install was moved without opening Breakbar in between.
+- **Tray icon** (`bb_win::tray`): a hidden window with its own window class and `WNDPROC`, entirely
+  separate from the main (winit-owned) one — Windows dispatches a message to whichever window
+  class owns its target `HWND`, regardless of which library's loop is pumping the thread, so this
+  needs no message loop of its own and just rides winit's. Left click/double-click shows the main
+  window; right click asks `gui::tray_menu` to build a fresh native popup menu (accounts plus
+  status, "Launch all", "Open window", "Quit") so it always reflects current state. The close
+  button never quits — `Window::on_close_requested` returns `HideWindow` — quitting only happens
+  from the tray menu's "Quit" (`slint::quit_event_loop()`). A second Breakbar process detects the
+  first one via a named mutex (`Breakbar-Instance`) and asks it to show itself
+  (`bb_win::tray::request_show`, found by the tray window's class name with `FindWindowW`) instead
+  of opening a second window over the same accounts. "After starting an account" (`AfterStart` in
+  `config.toml`, mirrored as a Slint enum in `settings.slint`) then decides what a `Play` launch
+  (not setup, not a manual stop) does to the window afterwards: nothing, hide to the tray, or quit.
 - **Pitfall: `TouchArea` + `FocusScope` pairs.** Every clickable component pairs a `TouchArea`
   (the click) with a `FocusScope`-derived one (keyboard activation, e.g. our shared `Activation`
   helper). `FocusScope`'s `focus-on-click` defaults to `true` and grabs the mouse-down itself to
@@ -238,7 +251,7 @@ Config: `%APPDATA%\Breakbar\config.toml` (atomic write via temp file + `ReplaceF
 | 4.1b | ✅ Account management: edit page, duplicate, delete, desktop shortcut, profile folder, drag & drop order, first-start setup, shortcut starts without a window (companion editor moved to 4.2) |
 | 4.2 | ✅ Settings page: paths (companion app editor still pending) |
 | 4.3 | ✅ Start with Windows (`HKCU\...\Run`, toggle in Settings) |
-| 4.4 | Close behavior and tray |
+| 4.4 | ✅ Close behavior and tray (hide-to-tray close, tray menu, single instance, after-start setting) |
 | 4.5 | Instance switcher overlay |
 | 4.6 | Login set-up flow |
 | 5 | Patch detection + Local.dat refresh, window layout per account, priority/affinity, GFX per account |

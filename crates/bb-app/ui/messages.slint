@@ -1,6 +1,8 @@
 // Texts the Rust side shows (toasts, card details). They live here so that all user-visible
 // text is translated in one place, through Slint's `@tr`.
 
+import { AccountState } from "account-card.slint";
+
 export enum LaunchFailure {
     no-game-path,
     steam-not-running,
@@ -128,6 +130,46 @@ export global Messages {
 
     public pure function autostart-failed(detail: string) -> string {
         @tr("{}", detail)
+    }
+
+    /// Tray menu: "Launch all" with a counter of accounts it would start.
+    public pure function tray-launch-all(count: int) -> string {
+        @tr("Launch all ({})", count)
+    }
+
+    /// Tray menu: one entry per account, name plus a short status word.
+    public pure function tray-account(name: string, state: AccountState) -> string {
+        if state == AccountState.needs-login {
+            return @tr("{} · Login required", name);
+        }
+        if state == AccountState.starting {
+            return @tr("{} · Starting…", name);
+        }
+        if state == AccountState.running {
+            return @tr("{} · Running", name);
+        }
+        if state == AccountState.stopping {
+            return @tr("{} · Stopping…", name);
+        }
+        if state == AccountState.locked {
+            return @tr("{} · Locked", name);
+        }
+        if state == AccountState.error {
+            return @tr("{} · Error", name);
+        }
+        @tr("{} · Ready", name)
+    }
+
+    public pure function tray-open-window() -> string {
+        @tr("Open window")
+    }
+
+    public pure function tray-quit() -> string {
+        @tr("Quit")
+    }
+
+    public pure function tray-failed-title() -> string {
+        @tr("Tray icon could not be created")
     }
 
     public pure function dialog-failed(detail: string) -> string {

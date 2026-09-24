@@ -14,5 +14,6 @@ pub mod process;
 pub mod registry;
 pub mod shortcut;
 pub mod time;
+pub mod tray;
 pub mod version;
 pub mod window;

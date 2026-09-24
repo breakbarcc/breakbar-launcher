@@ -1,9 +1,68 @@
-// Settings page (design hand-off: screen 11). Only the "// Pfade" section for now; the other
-// sections (companion apps, behavior, appearance, about) come with later steps.
+// Settings page (design hand-off: screen 11). Paths and behavior so far; the other sections
+// (companion apps, appearance, about) come with later steps.
 
 import { Theme } from "theme.slint";
 import { Icons } from "icons.slint";
-import { Icon, Button, IconButton, SectionLabel, FieldLabel, Toggle } from "components.slint";
+import { Activation, Icon, Button, FocusRing, IconButton, SectionLabel, FieldLabel, Toggle } from "components.slint";
+
+/// What happens to the main window right after starting an account (not on setup or a manual
+/// stop). Mirrors `bb_store::AfterStart`.
+export enum AfterStart { keep-open, minimize-to-tray, close }
+
+/// One row of the "Nach dem Start" radio group: a plain radio dot plus a label, no card chrome.
+component RadioOption {
+    in property <string> text;
+    in property <bool> checked;
+    callback selected();
+
+    height: 34px;
+    forward-focus: focus;
+    accessible-role: radio-button;
+    accessible-label: root.text;
+    accessible-checked: root.checked;
+
+    HorizontalLayout {
+        spacing: 10px;
+        alignment: start;
+        Rectangle {
+            y: (parent.height - self.height) / 2;
+            width: 16px;
+            height: 16px;
+            border-radius: 8px;
+            border-width: 1.5px;
+            border-color: root.checked ? Theme.primary : Theme.line-3;
+            if root.checked: Rectangle {
+                x: (parent.width - self.width) / 2;
+                y: (parent.height - self.height) / 2;
+                width: 8px;
+                height: 8px;
+                border-radius: 4px;
+                background: Theme.primary;
+            }
+        }
+        Text {
+            vertical-alignment: center;
+            text: root.text;
+            font-size: Theme.fs-body;
+            color: Theme.text;
+        }
+    }
+    if focus.has-focus: FocusRing {
+        radius: 6px;
+        around-width: root.width;
+        around-height: root.height;
+    }
+    TouchArea {
+        mouse-cursor: pointer;
+        clicked => {
+            focus.focus();
+            root.selected();
+        }
+    }
+    focus := Activation {
+        activated => { root.selected(); }
+    }
+}
 
 /// A configured executable path: a mono display field, a "Browse…" button, and a status line
 /// once a path is set.
@@ -78,10 +137,12 @@ export component SettingsPage inherits VerticalLayout {
     in property <string> blish-path;
     in property <bool> blish-path-ok;
     in property <bool> autostart;
+    in property <AfterStart> after-start;
     callback back();
     callback choose-gw2-path();
     callback choose-blish-path();
     callback toggle-autostart();
+    callback set-after-start(AfterStart);
 
     // Header: back arrow, title (matches the account editor's).
     HorizontalLayout {
@@ -140,6 +201,34 @@ export component SettingsPage inherits VerticalLayout {
 
             SectionLabel {
                 text: @tr("// BEHAVIOR");
+            }
+            VerticalLayout {
+                spacing: 2px;
+                Text {
+                    text: @tr("After starting an account");
+                    font-size: Theme.fs-help;
+                    font-weight: 600;
+                    color: Theme.text-muted;
+                }
+                RadioOption {
+                    text: @tr("Keep the window open");
+                    checked: root.after-start == AfterStart.keep-open;
+                    selected => { root.set-after-start(AfterStart.keep-open); }
+                }
+                RadioOption {
+                    text: @tr("Minimize to the tray");
+                    checked: root.after-start == AfterStart.minimize-to-tray;
+                    selected => { root.set-after-start(AfterStart.minimize-to-tray); }
+                }
+                RadioOption {
+                    text: @tr("Close the launcher");
+                    checked: root.after-start == AfterStart.close;
+                    selected => { root.set-after-start(AfterStart.close); }
+                }
+            }
+            Rectangle {
+                height: 1px;
+                background: Theme.line;
             }
             HorizontalLayout {
                 spacing: 12px;

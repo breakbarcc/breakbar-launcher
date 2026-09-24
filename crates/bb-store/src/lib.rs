@@ -17,6 +17,20 @@ pub use profile::{
 
 const CURRENT_VERSION: u32 = 1;
 
+/// What happens to the main window right after starting an account (not on setup or a manual
+/// stop).
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default, Serialize, Deserialize)]
+#[serde(rename_all = "kebab-case")]
+pub enum AfterStart {
+    /// Leaves the window as it is.
+    KeepOpen,
+    /// Hides it to the tray icon, like the close button does.
+    #[default]
+    MinimizeToTray,
+    /// Exits Breakbar entirely.
+    Close,
+}
+
 #[derive(Debug, thiserror::Error)]
 pub enum StoreError {
     #[error("the APPDATA environment variable is not set")]
@@ -45,6 +59,8 @@ pub struct Config {
     pub accounts: Vec<Account>,
     #[serde(default, rename = "companion", skip_serializing_if = "Vec::is_empty")]
     pub companions: Vec<CompanionApp>,
+    #[serde(default)]
+    pub after_start: AfterStart,
 }
 
 impl Default for Config {
@@ -54,6 +70,7 @@ impl Default for Config {
             gw2_path: None,
             accounts: Vec::new(),
             companions: Vec::new(),
+            after_start: AfterStart::default(),
         }
     }
 }

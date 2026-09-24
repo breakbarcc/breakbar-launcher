@@ -81,7 +81,7 @@ export component FocusRing inherits Rectangle {
 /// wants the press) reaches the `TouchArea`. Each user of `Activation` calls `.focus()` itself
 /// from its `TouchArea`'s `clicked` handler instead, so the focus ring still appears, just
 /// without racing the click that earns it.
-component Activation inherits FocusScope {
+export component Activation inherits FocusScope {
     focus-on-click: false;
     callback activated;
     key-pressed(event) => {

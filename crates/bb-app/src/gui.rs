@@ -12,8 +12,8 @@ use bb_store::Config;
 use raw_window_handle::{HasWindowHandle, RawWindowHandle};
 use slint::{ComponentHandle, Model, SharedString};
 use ui::{
-    AccountRow, AccountState, CompanionToggle, EditorData, LaunchFailure, LoginState, MainWindow,
-    Messages, PathProblem, Theme, ToastData, ToastKind,
+    AccountRow, AccountState, AfterStart, CompanionToggle, EditorData, LaunchFailure, LoginState,
+    MainWindow, Messages, PathProblem, Theme, ToastData, ToastKind,
 };
 
 use crate::companions::{self, SharedInstances};
@@ -46,8 +46,11 @@ const MAX_TOASTS: usize = 3;
 /// Toasts disappear after this long, unless the pointer is on them.
 const TOAST_LIFETIME: Duration = Duration::from_secs(6);
 
-/// `Run` key entry name for starting Breakbar with Windows.
-const AUTOSTART_NAME: &str = "Breakbar Launcher";
+/// Shown in the tray icon's tooltip and used as the `Run` key entry name for starting Breakbar
+/// with Windows.
+const APP_NAME: &str = "Breakbar Launcher";
+/// Named mutex marking a Breakbar GUI as already running (see [`run`]).
+const INSTANCE_MUTEX_NAME: &str = "Breakbar-Instance";
 
 /// Application state shared between UI callbacks.
 ///
@@ -162,6 +165,17 @@ impl App {
 }
 
 pub fn run() -> Result<(), slint::PlatformError> {
+    // A second Breakbar process (autostart plus a manual start, a desktop shortcut while it's
+    // already running in the tray, ...) asks the first one to show itself instead of opening a
+    // second window managing the same accounts.
+    if bb_win::mutex::mutex_exists(INSTANCE_MUTEX_NAME).unwrap_or(false) {
+        let _ = bb_win::tray::request_show();
+        return Ok(());
+    }
+    // Held for the rest of the process so later starts see the mutex above as existing; a failure
+    // here (never observed, but not worth failing over) just means this check stops working.
+    let _instance_lock = bb_win::mutex::OwnedMutex::acquire(INSTANCE_MUTEX_NAME).ok();
+
     let (mut app, load_error) = App::load();
     let window = MainWindow::new()?;
     let messages = window.global::<Messages>();
@@ -203,7 +217,8 @@ pub fn run() -> Result<(), slint::PlatformError> {
     set_rows(&window, account_rows(&app.config));
     show_gw2_path(&window, app.config.gw2_path.as_deref());
     show_blish_path(&window, app.blish_hud().map(|app| app.exe.as_path()));
-    window.set_autostart(bb_win::autostart::is_enabled(AUTOSTART_NAME));
+    window.set_autostart(bb_win::autostart::is_enabled(APP_NAME));
+    window.set_after_start(to_ui_after_start(app.config.after_start));
     refresh(&window);
 
     let app = Rc::new(RefCell::new(app));
@@ -414,6 +429,19 @@ pub fn run() -> Result<(), slint::PlatformError> {
         }
     });
 
+    window.on_set_after_start({
+        let app = Rc::clone(&app);
+        let weak = window.as_weak();
+        move |value| {
+            if let Some(window) = weak.upgrade() {
+                window.set_after_start(value);
+                let mut app = app.borrow_mut();
+                app.config.after_start = from_ui_after_start(value);
+                app.save(&window);
+            }
+        }
+    });
+
     window.on_dismiss_toast({
         let weak = window.as_weak();
         move |id| {
@@ -432,11 +460,154 @@ pub fn run() -> Result<(), slint::PlatformError> {
         }
     });
 
+    // Closing the window never quits Breakbar (it would stop monitoring running clients); it
+    // always minimizes to the tray instead. Quitting is only reachable from the tray menu.
+    window
+        .window()
+        .on_close_requested(|| slint::CloseRequestResponse::HideWindow);
+
+    let _tray = match bb_win::tray::Tray::new(
+        APP_NAME,
+        tray_activate(&window),
+        tray_menu(&app, &queue, &window),
+    ) {
+        Ok(tray) => Some(tray),
+        Err(error) => {
+            push_toast(
+                &window,
+                ToastKind::Error,
+                messages.invoke_tray_failed_title(),
+                error.to_string().into(),
+            );
+            None
+        }
+    };
+
     window.show()?;
     // The native frame exists once the window is shown.
     apply_frame(&window, window.global::<Theme>().get_dark());
     slint::run_event_loop()?;
     window.hide()
+}
+
+/// Left click / double-click on the tray icon: show and focus the main window.
+fn tray_activate(window: &MainWindow) -> impl FnMut() + 'static {
+    let weak = window.as_weak();
+    move || {
+        if let Some(window) = weak.upgrade() {
+            let _ = window.show();
+        }
+    }
+}
+
+/// Builds the tray's right-click menu fresh on every open, so it reflects current account state
+/// (design hand-off screen 05): "Launch all" with a counter, one entry per account (locked ones
+/// disabled), then "Open window" and "Quit".
+fn tray_menu(
+    app: &Rc<RefCell<App>>,
+    queue: &Rc<LaunchQueue>,
+    window: &MainWindow,
+) -> impl FnMut() -> Vec<bb_win::tray::MenuItem> + 'static {
+    let app = Rc::clone(app);
+    let queue = Rc::clone(queue);
+    let weak = window.as_weak();
+    move || {
+        let Some(window) = weak.upgrade() else {
+            return Vec::new();
+        };
+        let messages = window.global::<Messages>();
+        let all_rows = rows(&window);
+        let startable = all_rows
+            .iter()
+            .filter(|row| is_startable(row.state))
+            .count();
+
+        let mut items = vec![bb_win::tray::MenuItem::entry(
+            messages.invoke_tray_launch_all(startable as i32),
+            startable > 0,
+            {
+                let app = Rc::clone(&app);
+                let queue = Rc::clone(&queue);
+                let weak = weak.clone();
+                move || {
+                    if let Some(window) = weak.upgrade() {
+                        launch_all(&window, &app, &queue);
+                    }
+                }
+            },
+        )];
+
+        if !all_rows.is_empty() {
+            items.push(bb_win::tray::MenuItem::separator());
+            for row in all_rows {
+                let id = AccountId(row.id as u32);
+                let label = messages.invoke_tray_account(row.name.clone(), row.state);
+                let locked = row.state == AccountState::Locked;
+                items.push(bb_win::tray::MenuItem::entry(label, !locked, {
+                    let app = Rc::clone(&app);
+                    let queue = Rc::clone(&queue);
+                    let weak = weak.clone();
+                    move || {
+                        if let Some(window) = weak.upgrade() {
+                            toggle_account(&window, &app, &queue, id);
+                        }
+                    }
+                }));
+            }
+        }
+
+        items.push(bb_win::tray::MenuItem::separator());
+        items.push(bb_win::tray::MenuItem::entry(
+            messages.invoke_tray_open_window(),
+            true,
+            {
+                let weak = weak.clone();
+                move || {
+                    if let Some(window) = weak.upgrade() {
+                        let _ = window.show();
+                    }
+                }
+            },
+        ));
+        items.push(bb_win::tray::MenuItem::entry(
+            messages.invoke_tray_quit(),
+            true,
+            || {
+                let _ = slint::quit_event_loop();
+            },
+        ));
+        items
+    }
+}
+
+fn to_ui_after_start(value: bb_store::AfterStart) -> AfterStart {
+    match value {
+        bb_store::AfterStart::KeepOpen => AfterStart::KeepOpen,
+        bb_store::AfterStart::MinimizeToTray => AfterStart::MinimizeToTray,
+        bb_store::AfterStart::Close => AfterStart::Close,
+    }
+}
+
+fn from_ui_after_start(value: AfterStart) -> bb_store::AfterStart {
+    match value {
+        AfterStart::KeepOpen => bb_store::AfterStart::KeepOpen,
+        AfterStart::MinimizeToTray => bb_store::AfterStart::MinimizeToTray,
+        AfterStart::Close => bb_store::AfterStart::Close,
+    }
+}
+
+/// Applies the "after starting an account" setting once a `Play` launch has been queued (not for
+/// setup launches, and not for a manual stop).
+fn apply_after_start(window: &MainWindow) {
+    match window.get_after_start() {
+        AfterStart::KeepOpen => {}
+        AfterStart::MinimizeToTray => {
+            let _ = window.hide();
+        }
+        AfterStart::Close => {
+            let _ = slint::quit_event_loop();
+        }
+    }
 }
 
 /// Translated texts for starts without a window (desktop shortcuts, command line). Uses a window
@@ -605,6 +776,10 @@ fn start_account(
         mode,
         companions,
     });
+
+    if mode == LaunchMode::Play {
+        apply_after_start(window);
+    }
 }
 
 #[derive(Debug)]
@@ -1274,14 +1449,14 @@ fn choose_blish_path(window: &MainWindow, app: &RefCell<App>) {
 fn toggle_autostart(window: &MainWindow) {
     let enable = !window.get_autostart();
     let result = if enable {
-        std::env::current_exe().and_then(|exe| bb_win::autostart::enable(AUTOSTART_NAME, &exe))
+        std::env::current_exe().and_then(|exe| bb_win::autostart::enable(APP_NAME, &exe))
     } else {
-        bb_win::autostart::disable(AUTOSTART_NAME)
+        bb_win::autostart::disable(APP_NAME)
     };
     match result {
         Ok(()) => window.set_autostart(enable),
         Err(error) => {
-            window.set_autostart(bb_win::autostart::is_enabled(AUTOSTART_NAME));
+            window.set_autostart(bb_win::autostart::is_enabled(APP_NAME));
             let messages = window.global::<Messages>();
             push_toast(
                 window,
@@ -1594,8 +1769,8 @@ mod preview {
                 (420, 520),
             ),
             variant("narrow-dark", true, true, Accounts, (320, 360)),
-            variant("settings-dark", true, false, Settings, (420, 520)),
-            variant("settings-light", false, false, Settings, (420, 520)),
+            variant("settings-dark", true, false, Settings, (420, 700)),
+            variant("settings-light", false, false, Settings, (420, 700)),
         ];
         for Variant {
             name,
@@ -1613,6 +1788,7 @@ mod preview {
             ui.set_blish_path(r"D:\Tools\Blish HUD\Blish HUD.exe".into());
             ui.set_blish_path_ok(name != "settings-dark");
             ui.set_autostart(name == "settings-dark");
+            ui.set_after_start(AfterStart::MinimizeToTray);
             ui.set_setup_detected_path(r"C:\Program Files\Guild Wars 2\Gw2-64.exe".into());
             if demo {
                 set_rows(&ui, demo_rows());
