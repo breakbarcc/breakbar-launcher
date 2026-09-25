@@ -92,8 +92,8 @@ export component OverlaySwitcher inherits Window {
     hover := TouchArea { }
 
     bar := Rectangle {
-        width: content.preferred-width + 4px;
-        height: content.preferred-height + 4px;
+        width: content.preferred-width;
+        height: content.preferred-height;
         border-radius: Theme.radius-overlay;
         background: hover.has-hover ? Theme.overlay-hover : Theme.overlay-idle;
         border-width: 1px;
@@ -103,12 +103,11 @@ export component OverlaySwitcher inherits Window {
         drop-shadow-offset-y: 12px;
 
         content := HorizontalLayout {
-            padding: 2px;
-            spacing: 1px;
-            // Drag handle: only this strip moves the window, so a click anywhere else is a click.
+            spacing: 0px;
+            // Drag handle: the full height of the bar and wide enough to grab. Only this strip
+            // moves the window, so a click anywhere else is a click.
             Rectangle {
-                width: 12px;
-                height: 24px;
+                width: 16px;
                 Icon {
                     x: (parent.width - self.width) / 2;
                     y: (parent.height - self.height) / 2;
@@ -118,11 +117,18 @@ export component OverlaySwitcher inherits Window {
                 }
                 WindowMoveArea { }
             }
-            for entry[index] in root.entries: Chip {
-                entry: entry;
-                number: index + 1;
-                clicked => { root.chip-clicked(entry.id); }
-                context-menu => { root.context-menu(entry.id); }
+            // Equal padding above, below and to the right of the chips.
+            HorizontalLayout {
+                padding-top: 3px;
+                padding-bottom: 3px;
+                padding-right: 3px;
+                spacing: 1px;
+                for entry[index] in root.entries: Chip {
+                    entry: entry;
+                    number: index + 1;
+                    clicked => { root.chip-clicked(entry.id); }
+                    context-menu => { root.context-menu(entry.id); }
+                }
             }
         }
     }

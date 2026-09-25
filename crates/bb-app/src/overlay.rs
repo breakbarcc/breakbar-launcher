@@ -10,7 +10,7 @@ use std::time::Duration;
 use bb_core::AccountId;
 use bb_store::OverlayPosition;
 use bb_win::menu::MenuItem;
-use slint::{ComponentHandle, ModelRc, PhysicalPosition, Timer, TimerMode, VecModel};
+use slint::{ComponentHandle, Model, ModelRc, PhysicalPosition, Timer, TimerMode, VecModel};
 
 use crate::gui::ui::{AccountState, MainWindow, Messages, OverlaySwitcher, SwitcherEntry};
 use crate::gui::{App, LaunchQueue, is_active, native_handle, rows, start_account, stop_account};
@@ -204,11 +204,21 @@ fn poll(overlay: &OverlaySwitcher, main_window: &MainWindow) {
 
     // Only shown while something runs: an all-idle bar would just be clutter over the desktop.
     if !all_rows.iter().any(|row| is_active(row.state)) {
-        let _ = overlay.hide();
+        if overlay.window().is_visible() {
+            let _ = overlay.hide();
+        }
         return;
     }
-    overlay.set_entries(ModelRc::new(VecModel::from(entries)));
-    let _ = overlay.show();
+    // Touch the window only when something actually changed: re-showing it or replacing the
+    // chips on every tick would interrupt a drag in progress (the OS move loop keeps timers
+    // running).
+    let current: Vec<SwitcherEntry> = overlay.get_entries().iter().collect();
+    if current != entries {
+        overlay.set_entries(ModelRc::new(VecModel::from(entries)));
+    }
+    if !overlay.window().is_visible() {
+        let _ = overlay.show();
+    }
 }
 
 /// Persists the overlay's position once it settles somewhere new (dragged via its
