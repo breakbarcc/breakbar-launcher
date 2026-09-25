@@ -6,6 +6,13 @@ All notable changes to Breakbar Launcher. The format follows
 
 Everything before 0.2.0 is in the git history and in [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
 
+## [0.6.2] - 2026-09-25
+
+### Changed
+
+- The instance switcher's position is only written to `config.toml` once the drag is over (the
+  position stays the same for two updates in a row) instead of on every change while it is dragged.
+
 ## [0.6.1] - 2026-09-25
 
 ### Fixed

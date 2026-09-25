@@ -444,14 +444,14 @@ checksum = "ac07cdecf99051d9a5238b80f35af32cdeba5b336e55d957b318b50137e18da5"
 
 [[package]]
 name = "bb-core"
-version = "0.6.1"
+version = "0.6.2"
 dependencies = [
  "serde",
 ]
 
 [[package]]
 name = "bb-store"
-version = "0.6.1"
+version = "0.6.2"
 dependencies = [
  "bb-core",
  "serde",
@@ -461,7 +461,7 @@ dependencies = [
 
 [[package]]
 name = "bb-win"
-version = "0.6.1"
+version = "0.6.2"
 dependencies = [
  "windows",
 ]
@@ -569,7 +569,7 @@ dependencies = [
 
 [[package]]
 name = "breakbar-launcher"
-version = "0.6.1"
+version = "0.6.2"
 dependencies = [
  "bb-core",
  "bb-store",

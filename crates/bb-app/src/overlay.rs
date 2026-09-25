@@ -90,7 +90,7 @@ impl Overlay {
             }
         });
 
-        let last_position = Cell::new(app.borrow().config.overlay_position);
+        let mut position_saver = PositionSaver::new(app.borrow().config.overlay_position);
         let last_active = Cell::new(None);
         let poll_timer = Timer::default();
         poll_timer.start(TimerMode::Repeated, POLL_INTERVAL, {
@@ -105,7 +105,9 @@ impl Overlay {
                 };
                 let settings = app.borrow().config.overlay;
                 poll(&overlay, &main_window, &last_active, settings);
-                save_position_if_moved(&overlay, &app, &last_position);
+                if let Some(position) = position_saver.observe(current_position(&overlay)) {
+                    app.borrow_mut().save_overlay_position(position);
+                }
             }
         });
 
@@ -268,29 +270,97 @@ fn on_screen(x: i32, y: i32) -> bool {
     x + 20 >= left && x <= left + width - 20 && y + 10 >= top && y <= top + height - 20
 }
 
-/// Persists the overlay's position once it settles somewhere new (dragged via its
-/// `WindowMoveArea`). Best-effort, like the other background saves in this app: a failure here
-/// isn't worth a toast over something this minor.
-fn save_position_if_moved(
-    overlay: &OverlaySwitcher,
-    app: &RefCell<App>,
-    last_position: &Cell<Option<OverlayPosition>>,
-) {
-    // A hidden window reports a parked position (-32000, -32000) that must never be saved.
+/// Where the overlay is now, `None` while it is hidden (a hidden window reports a parked position
+/// that must never be saved) or not on any monitor.
+fn current_position(overlay: &OverlaySwitcher) -> Option<OverlayPosition> {
     if !overlay.window().is_visible() {
-        return;
+        return None;
     }
-    let current = overlay.window().position();
-    if !on_screen(current.x, current.y) {
-        return;
+    let position = overlay.window().position();
+    on_screen(position.x, position.y).then_some(OverlayPosition {
+        x: position.x,
+        y: position.y,
+    })
+}
+
+/// Decides when the dragged-to position is worth saving: once it has stayed the same for two updates
+/// in a row (the drag is over) and differs from the saved one. Saving on every change would rewrite
+/// the config twice a second for as long as the bar is being dragged: `WindowMoveArea` hands the
+/// drag to Windows and Slint reports neither its start nor its end.
+#[derive(Debug)]
+struct PositionSaver {
+    saved: Option<OverlayPosition>,
+    pending: Option<OverlayPosition>,
+}
+
+impl PositionSaver {
+    fn new(saved: Option<OverlayPosition>) -> Self {
+        Self {
+            saved,
+            pending: None,
+        }
     }
-    let current = OverlayPosition {
-        x: current.x,
-        y: current.y,
-    };
-    if last_position.get() == Some(current) {
-        return;
+
+    /// Looks at where the window is (`None`: not to be saved) and returns the position to save now,
+    /// if any. Best-effort like the other background saves in this app: a failure to write it isn't
+    /// worth a toast over something this minor.
+    fn observe(&mut self, current: Option<OverlayPosition>) -> Option<OverlayPosition> {
+        let Some(current) = current else {
+            self.pending = None;
+            return None;
+        };
+        if self.saved == Some(current) {
+            self.pending = None;
+            return None;
+        }
+        if self.pending == Some(current) {
+            self.pending = None;
+            self.saved = Some(current);
+            return Some(current);
+        }
+        self.pending = Some(current);
+        None
     }
-    last_position.set(Some(current));
-    app.borrow_mut().save_overlay_position(current);
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn at(x: i32, y: i32) -> Option<OverlayPosition> {
+        Some(OverlayPosition { x, y })
+    }
+
+    #[test]
+    fn saves_only_once_the_position_has_settled() {
+        let mut saver = PositionSaver::new(at(10, 10));
+        // Unchanged: nothing to save.
+        assert_eq!(saver.observe(at(10, 10)), None);
+        // Being dragged: every update is somewhere else.
+        assert_eq!(saver.observe(at(20, 10)), None);
+        assert_eq!(saver.observe(at(30, 10)), None);
+        assert_eq!(saver.observe(at(40, 10)), None);
+        // Let go: the same place twice in a row.
+        assert_eq!(saver.observe(at(40, 10)), at(40, 10));
+        // And not again while it stays there.
+        assert_eq!(saver.observe(at(40, 10)), None);
+    }
+
+    #[test]
+    fn a_hidden_or_off_screen_window_resets_the_wait() {
+        let mut saver = PositionSaver::new(None);
+        assert_eq!(saver.observe(at(5, 5)), None);
+        assert_eq!(saver.observe(None), None);
+        // The first sighting after the gap only starts the wait again.
+        assert_eq!(saver.observe(at(5, 5)), None);
+        assert_eq!(saver.observe(at(5, 5)), at(5, 5));
+    }
+
+    #[test]
+    fn moving_back_to_the_saved_position_saves_nothing() {
+        let mut saver = PositionSaver::new(at(1, 1));
+        assert_eq!(saver.observe(at(9, 9)), None);
+        assert_eq!(saver.observe(at(1, 1)), None);
+        assert_eq!(saver.observe(at(1, 1)), None);
+    }
 }

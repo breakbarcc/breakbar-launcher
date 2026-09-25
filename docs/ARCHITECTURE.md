@@ -252,7 +252,10 @@ struct CompanionApp {
   window is only as big as the bar.
   `overlay::Overlay` owns it plus a 500 ms `slint::Timer` that rebuilds the chips from the main
   window's rows, highlights the chip whose client owns the foreground window (matched by PID) and
-  saves the dragged-to position (`bb_store::OverlayPosition`). Its settings (`[overlay]` in
+  saves the dragged-to position (`bb_store::OverlayPosition`) once it has stayed the same for two
+  updates in a row (`WindowMoveArea` hands the drag to Windows; Slint reports neither its start nor
+  its end), never while the window is hidden (Windows reports a parked -32000/-32000 then) or off
+  every monitor, and ignores such a saved position at startup. Its settings (`[overlay]` in
   `config.toml`, `bb_store::OverlaySettings`, section "// Switcher" of the settings page) are read
   on every update, so they apply within half a second: show it at all, only while a client runs
   (default; otherwise it stays while Breakbar runs, as long as there is an account), lock the
