@@ -39,6 +39,32 @@ newest one:
 - `breakbar-launcher.exe.sha256`, its SHA-256 checksum
 - `latest.json`, the update manifest: `version`, `url`, `sha256`, `signed`, `released`, `notes`
 
+### Repository settings
+
+The rules that protect the branches and the version tags are kept as ruleset files in
+[`.github/rulesets`](.github/rulesets), so that they can be applied again or reviewed:
+
+- `release-branch.json`: `release` cannot be deleted or force-pushed, and only repository admins can
+  push to it (publishing a release is a push to this branch, so it is limited to them).
+- `main-branch.json`: `main` cannot be deleted or force-pushed and needs the `build` job of the CI
+  workflow to pass; repository admins can bypass it.
+- `release-tags.json`: version tags (`v*`) can be neither moved nor deleted, by anyone. Creating them
+  stays possible, which the release workflow needs.
+
+Apply them under Settings, Rules, Rulesets, "New ruleset", "Import a ruleset", or with the GitHub CLI
+(`gh auth login` first):
+
+```bash
+gh api --method POST repos/breakbarcc/breakbar-launcher/rulesets --input .github/rulesets/release-branch.json
+gh api --method POST repos/breakbarcc/breakbar-launcher/rulesets --input .github/rulesets/main-branch.json
+gh api --method POST repos/breakbarcc/breakbar-launcher/rulesets --input .github/rulesets/release-tags.json
+```
+
+To let another person publish releases, give them the admin role or add their role to the
+`bypass_actors` of `release-branch.json`. Not covered by rulesets, set in Settings: a `release`
+environment (deployment branch `release` only) that holds the SignPath secrets, and the default
+workflow permission "Read repository contents" under Actions, General.
+
 ### Code signing (SignPath)
 
 Releases are unsigned until the project is approved by the
