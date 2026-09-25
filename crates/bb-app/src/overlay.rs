@@ -53,7 +53,14 @@ impl Overlay {
     ) -> Result<Self, slint::PlatformError> {
         let window = OverlaySwitcher::new()?;
 
-        if let Some(position) = app.borrow().config.overlay_position {
+        // A position that is not on any monitor any more (a monitor was unplugged, or Windows
+        // parked a hidden window at -32000) would leave the bar unreachable.
+        if let Some(position) = app
+            .borrow()
+            .config
+            .overlay_position
+            .filter(|position| on_screen(position.x, position.y))
+        {
             window
                 .window()
                 .set_position(PhysicalPosition::new(position.x, position.y));
@@ -255,6 +262,12 @@ fn poll(
     }
 }
 
+/// Whether a window at `(x, y)` is at least partly on one of the monitors.
+fn on_screen(x: i32, y: i32) -> bool {
+    let (left, top, width, height) = bb_win::window::virtual_screen();
+    x + 20 >= left && x <= left + width - 20 && y + 10 >= top && y <= top + height - 20
+}
+
 /// Persists the overlay's position once it settles somewhere new (dragged via its
 /// `WindowMoveArea`). Best-effort, like the other background saves in this app: a failure here
 /// isn't worth a toast over something this minor.
@@ -263,7 +276,14 @@ fn save_position_if_moved(
     app: &RefCell<App>,
     last_position: &Cell<Option<OverlayPosition>>,
 ) {
+    // A hidden window reports a parked position (-32000, -32000) that must never be saved.
+    if !overlay.window().is_visible() {
+        return;
+    }
     let current = overlay.window().position();
+    if !on_screen(current.x, current.y) {
+        return;
+    }
     let current = OverlayPosition {
         x: current.x,
         y: current.y,

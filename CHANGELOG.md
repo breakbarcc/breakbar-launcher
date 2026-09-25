@@ -6,6 +6,14 @@ All notable changes to Breakbar Launcher. The format follows
 
 Everything before 0.2.0 is in the git history and in [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
 
+## [0.6.1] - 2026-09-25
+
+### Fixed
+
+- The instance switcher could be unreachable after a restart: its position was saved while it was
+  hidden, as the parked position (-32000, -32000) that Windows reports for a hidden window. Such a
+  position is no longer saved, and a saved position that is not on any monitor is ignored.
+
 ## [0.6.0] - 2026-09-25
 
 ### Added

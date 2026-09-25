@@ -7,8 +7,9 @@ use windows::Win32::Graphics::Dwm::{
 };
 use windows::Win32::System::Threading::GetProcessId;
 use windows::Win32::UI::WindowsAndMessaging::{
-    EnumWindows, GetClassNameW, GetForegroundWindow, GetWindowThreadProcessId, IsIconic,
-    IsWindowVisible, PostMessageW, SW_RESTORE, SetForegroundWindow, ShowWindow, WM_CLOSE,
+    EnumWindows, GetClassNameW, GetForegroundWindow, GetSystemMetrics, GetWindowThreadProcessId,
+    IsIconic, IsWindowVisible, PostMessageW, SM_CXVIRTUALSCREEN, SM_CYVIRTUALSCREEN,
+    SM_XVIRTUALSCREEN, SM_YVIRTUALSCREEN, SW_RESTORE, SetForegroundWindow, ShowWindow, WM_CLOSE,
 };
 use windows::core::{BOOL, Result};
 
@@ -103,6 +104,20 @@ pub struct FrameColors {
     pub caption: u32,
     pub text: u32,
     pub border: u32,
+}
+
+/// The virtual screen, the bounding box of all monitors, as `(left, top, width, height)` in physical
+/// pixels. Left and top are negative for a monitor left of or above the primary one.
+pub fn virtual_screen() -> (i32, i32, i32, i32) {
+    // SAFETY: `GetSystemMetrics` has no preconditions.
+    unsafe {
+        (
+            GetSystemMetrics(SM_XVIRTUALSCREEN),
+            GetSystemMetrics(SM_YVIRTUALSCREEN),
+            GetSystemMetrics(SM_CXVIRTUALSCREEN),
+            GetSystemMetrics(SM_CYVIRTUALSCREEN),
+        )
+    }
 }
 
 /// Colors the native title bar and border of window `hwnd` to match the UI, in dark or light
