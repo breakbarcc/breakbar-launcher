@@ -43,7 +43,11 @@ jobs:
           VERSION: ${{ steps.version.outputs.version }}
         run: |
           gh release view "v$env:VERSION" *> $null
-          if ($LASTEXITCODE -eq 0) { throw "v$env:VERSION is already released. Raise the version in Cargo.toml (see CONTRIBUTING.md)." }
+          $released = ($LASTEXITCODE -eq 0)
+          # `gh` exits with 1 when there is no such release, which is what we want here. The step
+          # would end with that exit code, so reset it.
+          $global:LASTEXITCODE = 0
+          if ($released) { throw "v$env:VERSION is already released. Raise the version in Cargo.toml (see CONTRIBUTING.md)." }
           if (-not (Select-String -Path CHANGELOG.md -Pattern "^## \[$([regex]::Escape($env:VERSION))\]" -Quiet)) {
             throw "CHANGELOG.md has no entry for $env:VERSION."
           }
