@@ -118,13 +118,16 @@ fn candidates() -> Vec<PathBuf> {
     candidates
 }
 
+/// The Steam client's folder, if Steam is installed.
+pub fn steam_dir() -> Option<PathBuf> {
+    registry::read_string(Root::CurrentUser, r"Software\Valve\Steam", "SteamPath")
+        .map(PathBuf::from)
+}
+
 fn steam_candidates() -> Vec<PathBuf> {
-    let Some(steam_dir) =
-        registry::read_string(Root::CurrentUser, r"Software\Valve\Steam", "SteamPath")
-    else {
+    let Some(steam_dir) = steam_dir() else {
         return Vec::new();
     };
-    let steam_dir = PathBuf::from(steam_dir);
 
     let mut libraries = std::fs::read_to_string(steam_dir.join(r"steamapps\libraryfolders.vdf"))
         .map(|vdf| steam::library_folders(&vdf))

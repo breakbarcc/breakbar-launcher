@@ -9,6 +9,7 @@ mod headless;
 mod launcher;
 mod overlay;
 mod profile_link;
+mod steam_setup;
 #[cfg(test)]
 mod test_support;
 

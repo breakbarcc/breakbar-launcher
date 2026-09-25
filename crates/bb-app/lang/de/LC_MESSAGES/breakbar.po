@@ -175,7 +175,7 @@ msgctxt "MainWindow"
 msgid "RUNNING"
 msgstr "LAUFEN"
 
-#: ui/app.slint:308 ui/app.slint:358 ui/app.slint:332 ui/app.slint:381 ui/app.slint:361 ui/app.slint:307 ui/app.slint:362
+#: ui/app.slint:308 ui/app.slint:358 ui/app.slint:332 ui/app.slint:381 ui/app.slint:307 ui/app.slint:362 ui/app.slint:436
 msgctxt "MainWindow"
 msgid "Add account"
 msgstr "Account hinzufügen"
@@ -234,7 +234,7 @@ msgctxt "Toast"
 msgid "Dismiss"
 msgstr "Hinweis schließen"
 
-#: ui/messages.slint:20 ui/messages.slint:66 ui/messages.slint:21 ui/messages.slint:23
+#: ui/messages.slint:20 ui/messages.slint:66 ui/messages.slint:21 ui/messages.slint:72
 msgctxt "Messages"
 msgid "Start failed"
 msgstr "Start fehlgeschlagen"
@@ -399,47 +399,47 @@ msgctxt "Messages"
 msgid "Settings"
 msgstr "Einstellungen"
 
-#: ui/messages.slint:122 ui/messages.slint:126 ui/messages.slint:134 ui/messages.slint:188
+#: ui/messages.slint:122 ui/messages.slint:126 ui/messages.slint:134 ui/messages.slint:204
 msgctxt "Messages"
 msgid "The file dialog could not be opened: {}"
 msgstr "Der Dateidialog konnte nicht geöffnet werden: {}"
 
-#: ui/messages.slint:126 ui/messages.slint:130 ui/messages.slint:138 ui/messages.slint:192
+#: ui/messages.slint:126 ui/messages.slint:130 ui/messages.slint:138 ui/messages.slint:208
 msgctxt "Messages"
 msgid "Choose the Guild Wars 2 client first."
 msgstr "Wähle zuerst den Guild-Wars-2-Client."
 
-#: ui/messages.slint:130 ui/messages.slint:134 ui/messages.slint:142 ui/messages.slint:196
+#: ui/messages.slint:130 ui/messages.slint:134 ui/messages.slint:142 ui/messages.slint:212
 msgctxt "Messages"
 msgid "Not the Guild Wars 2 client"
 msgstr "Nicht der Guild-Wars-2-Client"
 
-#: ui/messages.slint:134 ui/messages.slint:138 ui/messages.slint:146 ui/messages.slint:200
+#: ui/messages.slint:134 ui/messages.slint:138 ui/messages.slint:146 ui/messages.slint:216
 msgctxt "Messages"
 msgid "Guild Wars 2 client not usable"
 msgstr "Guild-Wars-2-Client nicht nutzbar"
 
-#: ui/messages.slint:139 ui/messages.slint:186 ui/messages.slint:194 ui/messages.slint:248
+#: ui/messages.slint:139 ui/messages.slint:186 ui/messages.slint:194 ui/messages.slint:264
 msgctxt "Messages"
 msgid "The file does not exist."
 msgstr "Die Datei existiert nicht."
 
-#: ui/messages.slint:142 ui/messages.slint:189 ui/messages.slint:197 ui/messages.slint:251
+#: ui/messages.slint:142 ui/messages.slint:189 ui/messages.slint:197 ui/messages.slint:267
 msgctxt "Messages"
 msgid "The file could not be read: {}"
 msgstr "Die Datei konnte nicht gelesen werden: {}"
 
-#: ui/messages.slint:145 ui/messages.slint:192 ui/messages.slint:200 ui/messages.slint:254
+#: ui/messages.slint:145 ui/messages.slint:192 ui/messages.slint:200 ui/messages.slint:270
 msgctxt "Messages"
 msgid "The file is not a Windows program."
 msgstr "Die Datei ist kein Windows-Programm."
 
-#: ui/messages.slint:148 ui/messages.slint:195 ui/messages.slint:203 ui/messages.slint:257
+#: ui/messages.slint:148 ui/messages.slint:195 ui/messages.slint:203 ui/messages.slint:273
 msgctxt "Messages"
 msgid "Only the 64-bit client (Gw2-64.exe) is supported."
 msgstr "Nur der 64-Bit-Client (Gw2-64.exe) wird unterstützt."
 
-#: ui/messages.slint:150 ui/messages.slint:197 ui/messages.slint:205 ui/messages.slint:259
+#: ui/messages.slint:150 ui/messages.slint:197 ui/messages.slint:205 ui/messages.slint:275
 msgctxt "Messages"
 msgid "The file is not the Guild Wars 2 client."
 msgstr "Die Datei ist nicht der Guild-Wars-2-Client."
@@ -489,7 +489,7 @@ msgctxt "AccountCard"
 msgid "Del"
 msgstr "Entf"
 
-#: ui/app.slint:124 ui/app.slint:140 ui/app.slint:92 ui/app.slint:108 ui/app.slint:109
+#: ui/app.slint:124 ui/app.slint:140 ui/app.slint:92 ui/app.slint:108 ui/app.slint:96 ui/app.slint:112
 msgctxt "ConfirmDelete"
 msgid "Delete „{}“?"
 msgstr "„{}“ löschen?"
@@ -901,7 +901,7 @@ msgctxt "SettingsPage"
 msgid "Gw2-64.exe found"
 msgstr "Gw2-64.exe gefunden"
 
-#: ui/settings.slint:127 ui/settings.slint:135 ui/settings.slint:129 ui/settings.slint:198
+#: ui/settings.slint:127 ui/settings.slint:135 ui/settings.slint:129 ui/settings.slint:190
 msgctxt "SettingsPage"
 msgid "File not found. Check the path."
 msgstr "Datei nicht gefunden. Prüfe den Pfad."
@@ -1035,3 +1035,83 @@ msgstr "Launcher öffnen"
 msgctxt "Messages"
 msgid "Start"
 msgstr "Starten"
+
+#: ui/app.slint:160
+msgctxt "SteamSetupDialog"
+msgid "Steam needs a copy of Guild Wars 2"
+msgstr "Steam braucht eine Kopie von Guild Wars 2"
+
+#: ui/app.slint:161
+msgctxt "SteamSetupDialog"
+msgid "Finish the installation in Steam"
+msgstr "Installation in Steam abschließen"
+
+#: ui/app.slint:206
+msgctxt "SteamSetupDialog"
+msgid ""
+"„{}“ is a Steam account, and Steam only signs in a Guild Wars 2 that it "
+"has installed itself. Breakbar can link your existing installation into "
+"Steam, so nothing has to be downloaded again."
+msgstr "„{}“ ist ein Steam-Account, und Steam meldet nur ein Guild Wars 2 an, das es selbst installiert hat. Breakbar kann deine bestehende Installation mit Steam verknüpfen, sodass nichts erneut heruntergeladen werden muss."
+
+#: ui/app.slint:212
+msgctxt "SteamSetupDialog"
+msgid "A link will be created:"
+msgstr "Es wird eine Verknüpfung angelegt:"
+
+#: ui/app.slint:225
+msgctxt "SteamSetupDialog"
+msgid ""
+"The link to your Guild Wars 2 folder is in place. Open Steam, select Guild "
+"Wars 2 in your library and click Install. Steam finds the existing files and "
+"downloads only a few megabytes. Confirm here when it has finished."
+msgstr "Die Verknüpfung zu deinem Guild-Wars-2-Ordner ist angelegt. Öffne Steam, wähle Guild Wars 2 in deiner Bibliothek und klicke auf Installieren. Steam findet die vorhandenen Dateien und lädt nur wenige Megabyte herunter. Bestätige hier, sobald es fertig ist."
+
+#: ui/app.slint:231
+msgctxt "SteamSetupDialog"
+msgid ""
+"Steam's installation was not found yet. Wait until Steam has finished and "
+"try again."
+msgstr "Die Steam-Installation wurde noch nicht gefunden. Warte, bis Steam fertig ist, und versuche es erneut."
+
+#: ui/app.slint:242
+msgctxt "SteamSetupDialog"
+msgid "Cancel"
+msgstr "Abbrechen"
+
+#: ui/app.slint:242
+msgctxt "SteamSetupDialog"
+msgid "Later"
+msgstr "Später"
+
+#: ui/app.slint:248
+msgctxt "SteamSetupDialog"
+msgid "Create link"
+msgstr "Verknüpfung erstellen"
+
+#: ui/app.slint:254
+msgctxt "SteamSetupDialog"
+msgid "Download finished"
+msgstr "Download fertig"
+
+#: ui/messages.slint:188
+msgctxt "Messages"
+msgid "Steam is ready"
+msgstr "Steam ist bereit"
+
+#: ui/messages.slint:192
+msgctxt "Messages"
+msgid "You can start „{}“ now."
+msgstr "„{}“ kann jetzt gestartet werden."
+
+#: ui/messages.slint:196
+msgctxt "Messages"
+msgid "The link to Steam could not be created"
+msgstr "Die Verknüpfung zu Steam konnte nicht erstellt werden"
+
+#: ui/messages.slint:200
+msgctxt "Messages"
+msgid ""
+"„{}“ already exists and does not point to your Guild Wars 2 "
+"installation. Remove or rename it, or install Guild Wars 2 through Steam."
+msgstr "„{}“ existiert bereits und zeigt nicht auf deine Guild-Wars-2-Installation. Entferne oder benenne den Ordner um, oder installiere Guild Wars 2 über Steam."

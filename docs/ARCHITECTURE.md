@@ -85,7 +85,16 @@ account). Breakbar detects the build mismatch and guides the user instead of fai
   any number of ArenaNet accounts.
 - Steam accounts need no remembered login, only their own `Local.dat` (created by the automatic
   first start without `-shareArchive`).
-- **Not yet verified against a real Steam-linked account** (none available during development).
+- **Guided setup** (`steam_setup.rs`): starting a Steam account while no Steam-capable client exists
+  opens a dialog instead of failing. If the Steam folder has no Guild Wars 2 yet, it offers to create
+  the junction `<Steam>steamappscommonGuild Wars 2` -> the configured installation (`mklink /J`,
+  no admin rights); once it exists (or already did) it asks the user to click Install in Steam and
+  confirm; the confirmation re-checks and reports success, or asks to wait. A foreign folder in
+  Steam's place is never touched (error toast). Steam not installed falls through to the normal
+  launch error. The junction is only ever created in Steam's main library folder.
+- Verified with a real Steam-linked account: Steam adopts the junctioned files (~15 MB download), and
+  both ArenaNet and Steam accounts start. Steam briefly swaps in its own `Gw2-64.exe`, which the
+  game's updater replaces with the normal one on the first start.
 
 ## Companion apps
 
@@ -262,7 +271,7 @@ Config: `%APPDATA%\Breakbar\config.toml` (atomic write via temp file + `ReplaceF
 | 3.2 | Single launch + process monitoring |
 | 3.3 | Multi-launch (mutex kill + `-shareArchive`), benchmarks with 2–5 clients |
 | 3.4 | ✅ Per-account `Local.dat` via a junction swapped only during launch, serialized launches, one-time setup launch |
-| 3.5 | ✅ Steam accounts: direct start with `-provider Steam` + `SteamAppId`, Steam install auto-selected, one Steam account at a time (not yet tested with a real Steam account) |
+| 3.5 | ✅ Steam accounts: direct start with `-provider Steam` + `SteamAppId`, Steam install auto-selected, one Steam account at a time (verified with a real Steam account; guided setup links an ArenaNet install into Steam) |
 | 3.6 | ✅ Companion apps (per-client / shared, start on process or game window, graceful close), Blish HUD preset (not yet tested with a real Blish HUD) |
 | 4.1 | ✅ Design: new UI in both themes (tokens, components, account rows with all states, selection, toasts, empty state, narrow layout), app icon, English + German |
 | 4.1b | ✅ Account management: edit page, duplicate, delete, desktop shortcut, profile folder, drag & drop order, first-start setup, shortcut starts without a window (companion editor moved to 4.2) |

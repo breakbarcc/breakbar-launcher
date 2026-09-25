@@ -184,6 +184,22 @@ export global Messages {
         @tr("Switcher overlay could not be created")
     }
 
+    public pure function steam-setup-ready-title() -> string {
+        @tr("Steam is ready")
+    }
+
+    public pure function steam-setup-ready(name: string) -> string {
+        @tr("You can start „{}“ now.", name)
+    }
+
+    public pure function steam-setup-failed-title() -> string {
+        @tr("The link to Steam could not be created")
+    }
+
+    public pure function steam-setup-blocked(path: string) -> string {
+        @tr("„{}“ already exists and does not point to your Guild Wars 2 installation. Remove or rename it, or install Guild Wars 2 through Steam.", path)
+    }
+
     public pure function dialog-failed(detail: string) -> string {
         @tr("The file dialog could not be opened: {}", detail)
     }

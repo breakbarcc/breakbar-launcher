@@ -16,6 +16,9 @@ export {
     EditorData, CompanionToggle, LoginState, AfterStart, OverlaySwitcher, SwitcherEntry,
 }
 
+/// Which step of linking the ArenaNet installation into Steam is shown (hidden = no dialog).
+export enum SteamSetupStep { hidden, link, install }
+
 export enum Page { accounts, editor, setup-path, setup-account, settings }
 
 /// Skeleton card of the empty state.
@@ -140,6 +143,123 @@ component ConfirmDelete {
     }
 }
 
+/// Steam accounts need Steam's own copy of the game: offers to link the existing installation into
+/// Steam (step `link`), then waits for the user to click Install in Steam (step `install`).
+component SteamSetupDialog {
+    in property <SteamSetupStep> step;
+    in property <string> account;
+    in property <string> link;
+    in property <string> target;
+    /// The user said Steam had finished, but its installation was not found.
+    in property <bool> retry;
+    callback create-link();
+    callback done();
+    callback cancelled();
+
+    property <string> title: root.step == SteamSetupStep.link
+        ? @tr("Steam needs a copy of Guild Wars 2")
+        : @tr("Finish the installation in Steam");
+
+    // Scrim: dims the window and swallows clicks.
+    Rectangle {
+        background: Theme.bg.with-alpha(0.72);
+        TouchArea { }
+    }
+    FocusScope {
+        key-pressed(event) => {
+            if event.text == Key.Escape {
+                root.cancelled();
+                return accept;
+            }
+            reject
+        }
+        Elevated {
+            x: (root.width - self.width) / 2;
+            y: (root.height - self.height) / 2;
+            width: min(root.width - 32px, 380px);
+            height: dialog.preferred-height;
+            accessible-role: groupbox;
+            accessible-label: root.title;
+            // Keeps clicks on the dialog from reaching the scrim.
+            TouchArea { }
+            dialog := VerticalLayout {
+                padding: 16px;
+                spacing: 12px;
+                HorizontalLayout {
+                    spacing: 10px;
+                    Icon {
+                        y: (parent.height - self.height) / 2;
+                        path: Icons.info;
+                        color: Theme.accent;
+                        size: 17px;
+                    }
+                    Text {
+                        horizontal-stretch: 1;
+                        text: root.title;
+                        font-size: Theme.fs-page-title;
+                        font-weight: 600;
+                        color: Theme.text;
+                        wrap: word-wrap;
+                    }
+                }
+                if root.step == SteamSetupStep.link: Text {
+                    text: @tr("„{}“ is a Steam account, and Steam only signs in a Guild Wars 2 that it has installed itself. Breakbar can link your existing installation into Steam, so nothing has to be downloaded again.", root.account);
+                    font-size: 12.5px;
+                    color: Theme.text-muted;
+                    wrap: word-wrap;
+                }
+                if root.step == SteamSetupStep.link: Text {
+                    text: @tr("A link will be created:");
+                    font-size: 12.5px;
+                    color: Theme.text-muted;
+                    wrap: word-wrap;
+                }
+                if root.step == SteamSetupStep.link: Text {
+                    text: root.link + "\n→ " + root.target;
+                    font-family: Theme.font-mono;
+                    font-size: 11px;
+                    color: Theme.text-dim;
+                    wrap: word-wrap;
+                }
+                if root.step == SteamSetupStep.install: Text {
+                    text: @tr("The link to your Guild Wars 2 folder is in place. Open Steam, select Guild Wars 2 in your library and click Install. Steam finds the existing files and downloads only a few megabytes. Confirm here when it has finished.");
+                    font-size: 12.5px;
+                    color: Theme.text-muted;
+                    wrap: word-wrap;
+                }
+                if root.step == SteamSetupStep.install && root.retry: Text {
+                    text: @tr("Steam's installation was not found yet. Wait until Steam has finished and try again.");
+                    font-size: 12.5px;
+                    color: Theme.warn;
+                    wrap: word-wrap;
+                }
+                HorizontalLayout {
+                    padding-top: 4px;
+                    spacing: 8px;
+                    alignment: end;
+                    Button {
+                        kind: ButtonKind.ghost;
+                        text: root.step == SteamSetupStep.link ? @tr("Cancel") : @tr("Later");
+                        clicked => { root.cancelled(); }
+                    }
+                    if root.step == SteamSetupStep.link: Button {
+                        kind: ButtonKind.primary;
+                        icon: Icons.check;
+                        text: @tr("Create link");
+                        clicked => { root.create-link(); }
+                    }
+                    if root.step == SteamSetupStep.install: Button {
+                        kind: ButtonKind.primary;
+                        icon: Icons.check;
+                        text: @tr("Download finished");
+                        clicked => { root.done(); }
+                    }
+                }
+            }
+        }
+    }
+}
+
 export component MainWindow inherits Window {
     title: root.page == Page.setup-path || root.page == Page.setup-account
         ? @tr("Breakbar Launcher – Setup") : "Breakbar Launcher";
@@ -167,6 +287,12 @@ export component MainWindow inherits Window {
     in-out property <Page> page: Page.accounts;
     /// What the editor page shows; set by Rust before switching to it.
     in property <EditorData> editor;
+    /// Steam setup dialog (see `SteamSetupDialog`): step, triggering account, link and target.
+    in property <SteamSetupStep> steam-setup: SteamSetupStep.hidden;
+    in property <string> steam-setup-account;
+    in property <string> steam-setup-link;
+    in property <string> steam-setup-target;
+    in property <bool> steam-setup-retry;
     /// First-start setup: the client found automatically, and the one chosen by hand.
     in property <string> setup-detected-path;
     in property <string> setup-other-path;
@@ -201,6 +327,10 @@ export component MainWindow inherits Window {
     callback setup-path-chosen(string);
     /// Name and whether it is a Steam account.
     callback setup-create-account(string, bool);
+    /// Steam setup dialog: create the link / the user says Steam has finished / dialog dismissed.
+    callback steam-setup-create-link();
+    callback steam-setup-done();
+    callback steam-setup-cancel();
     callback dismiss-toast(int);
     /// The theme switched between dark and light (the native title bar has to follow).
     callback theme-changed(bool);
@@ -555,5 +685,21 @@ export component MainWindow inherits Window {
             root.confirm-delete-id = 0;
         }
         cancelled => { root.confirm-delete-id = 0; }
+    }
+
+    // ── Steam setup ──────────────────────────────────────────────────────────────────────────
+    if root.steam-setup != SteamSetupStep.hidden: SteamSetupDialog {
+        x: 0;
+        y: 0;
+        width: root.width;
+        height: root.height;
+        step: root.steam-setup;
+        account: root.steam-setup-account;
+        link: root.steam-setup-link;
+        target: root.steam-setup-target;
+        retry: root.steam-setup-retry;
+        create-link => { root.steam-setup-create-link(); }
+        done => { root.steam-setup-done(); }
+        cancelled => { root.steam-setup-cancel(); }
     }
 }

@@ -13,12 +13,12 @@ use raw_window_handle::{HasWindowHandle, RawWindowHandle};
 use slint::{ComponentHandle, Model, SharedString};
 use ui::{
     AccountRow, AccountState, AfterStart, CompanionToggle, EditorData, LaunchFailure, LoginState,
-    MainWindow, Messages, PathProblem, Theme, ToastData, ToastKind,
+    MainWindow, Messages, PathProblem, SteamSetupStep, Theme, ToastData, ToastKind,
 };
 
 use crate::companions::{self, SharedInstances};
 use crate::launcher::{LaunchError, LaunchMode, LaunchWarning};
-use crate::{game, launcher};
+use crate::{game, launcher, steam_setup};
 
 /// Code generated from `ui/app.slint`.
 ///
@@ -66,6 +66,16 @@ pub(crate) struct App {
     first_start: bool,
     /// The account being edited on the editor page.
     draft: Option<Draft>,
+    /// The Steam setup dialog is open for this link.
+    steam_setup: Option<PendingSteamSetup>,
+}
+
+/// State behind the Steam setup dialog (see [`steam_setup`]).
+#[derive(Debug)]
+struct PendingSteamSetup {
+    link: steam_setup::Link,
+    /// The Steam account whose start opened the dialog.
+    account: String,
 }
 
 /// Editor state kept on the Rust side (the text fields live in the UI until saved).
@@ -89,6 +99,7 @@ impl App {
                     config_path: Some(path),
                     first_start,
                     draft: None,
+                    steam_setup: None,
                 },
                 None,
             ),
@@ -98,6 +109,7 @@ impl App {
                     config_path: None,
                     first_start: false,
                     draft: None,
+                    steam_setup: None,
                 },
                 Some(error),
             ),
@@ -279,6 +291,36 @@ pub fn run() -> Result<(), slint::PlatformError> {
             let id = AccountId(id as u32);
             if row(&window, id).is_some_and(|row| is_startable(row.state)) {
                 start_account(&window, &app, &queue, id, LaunchMode::SetUpLogin);
+            }
+        }
+    });
+
+    window.on_steam_setup_create_link({
+        let app = Rc::clone(&app);
+        let weak = window.as_weak();
+        move || {
+            if let Some(window) = weak.upgrade() {
+                steam_setup_create_link(&window, &app);
+            }
+        }
+    });
+
+    window.on_steam_setup_done({
+        let app = Rc::clone(&app);
+        let weak = window.as_weak();
+        move || {
+            if let Some(window) = weak.upgrade() {
+                steam_setup_done(&window, &app);
+            }
+        }
+    });
+
+    window.on_steam_setup_cancel({
+        let app = Rc::clone(&app);
+        let weak = window.as_weak();
+        move || {
+            if let Some(window) = weak.upgrade() {
+                close_steam_setup(&window, &app);
             }
         }
     });
@@ -801,6 +843,10 @@ pub(crate) fn start_account(
         return;
     }
 
+    if account.provider == Provider::Steam && !steam_ready(window, app, &gw2_path, &account.name) {
+        return;
+    }
+
     update_row(window, id, |row| {
         row.state = AccountState::Starting;
         row.handle = 0;
@@ -816,6 +862,104 @@ pub(crate) fn start_account(
     if mode == LaunchMode::Play {
         apply_after_start(window);
     }
+}
+
+/// Whether a Steam account can be started now. If Steam has no copy of the game yet, opens the
+/// setup dialog that links the ArenaNet installation into Steam and returns `false`. Cases the
+/// dialog can't help with (no Steam at all) pass, so the launch reports them itself.
+fn steam_ready(
+    window: &MainWindow,
+    app: &RefCell<App>,
+    gw2_path: &Path,
+    account_name: &str,
+) -> bool {
+    let (step, link) = match steam_setup::plan(gw2_path) {
+        None | Some(steam_setup::Plan::NoSteam) => return true,
+        Some(steam_setup::Plan::Blocked(path)) => {
+            let messages = window.global::<Messages>();
+            push_toast(
+                window,
+                ToastKind::Error,
+                messages.invoke_steam_setup_failed_title(),
+                messages.invoke_steam_setup_blocked(display_path(Some(&path)).into()),
+            );
+            return false;
+        }
+        Some(steam_setup::Plan::CreateLink(link)) => (SteamSetupStep::Link, link),
+        Some(steam_setup::Plan::AwaitInstall(link)) => (SteamSetupStep::Install, link),
+    };
+    window.set_steam_setup_account(account_name.into());
+    window.set_steam_setup_link(display_path(Some(&link.link)).into());
+    window.set_steam_setup_target(display_path(Some(&link.target)).into());
+    window.set_steam_setup_retry(false);
+    window.set_steam_setup(step);
+    app.borrow_mut().steam_setup = Some(PendingSteamSetup {
+        link,
+        account: account_name.to_owned(),
+    });
+    // A start from the tray or the overlay may find the window hidden.
+    let _ = window.show();
+    false
+}
+
+/// The user agreed to create the link: creates it and asks them to install in Steam.
+fn steam_setup_create_link(window: &MainWindow, app: &RefCell<App>) {
+    let Some(link) = app
+        .borrow()
+        .steam_setup
+        .as_ref()
+        .map(|pending| pending.link.clone())
+    else {
+        return;
+    };
+    match steam_setup::create_link(&link) {
+        Ok(()) => window.set_steam_setup(SteamSetupStep::Install),
+        Err(error) => {
+            close_steam_setup(window, app);
+            let messages = window.global::<Messages>();
+            push_toast(
+                window,
+                ToastKind::Error,
+                messages.invoke_steam_setup_failed_title(),
+                error.to_string().into(),
+            );
+        }
+    }
+}
+
+/// The user says Steam has finished installing: checks it and reports.
+fn steam_setup_done(window: &MainWindow, app: &RefCell<App>) {
+    let ready = {
+        let app = app.borrow();
+        app.config
+            .gw2_path
+            .as_deref()
+            .is_some_and(|path| game::steam_client(path).is_some())
+    };
+    if !ready {
+        window.set_steam_setup_retry(true);
+        return;
+    }
+    let account = app
+        .borrow()
+        .steam_setup
+        .as_ref()
+        .map(|pending| pending.account.clone())
+        .unwrap_or_default();
+    close_steam_setup(window, app);
+    let messages = window.global::<Messages>();
+    push_toast(
+        window,
+        ToastKind::Success,
+        messages.invoke_steam_setup_ready_title(),
+        messages.invoke_steam_setup_ready(account.into()),
+    );
+}
+
+fn close_steam_setup(window: &MainWindow, app: &RefCell<App>) {
+    app.borrow_mut().steam_setup = None;
+    window.set_steam_setup(SteamSetupStep::Hidden);
+    window.set_steam_setup_retry(false);
 }
 
 #[derive(Debug)]
@@ -1807,6 +1951,8 @@ mod preview {
             variant("narrow-dark", true, true, Accounts, (320, 360)),
             variant("settings-dark", true, false, Settings, (420, 700)),
             variant("settings-light", false, false, Settings, (420, 700)),
+            variant("steam-link-dark", true, true, Accounts, (420, 520)),
+            variant("steam-install-light", false, true, Accounts, (420, 520)),
         ];
         for Variant {
             name,
@@ -1854,6 +2000,19 @@ mod preview {
                 .into(),
             });
             ui.set_page(page);
+            if name.starts_with("steam-") {
+                ui.set_steam_setup_account("Steam Acc".into());
+                ui.set_steam_setup_link(
+                    r"C:\Program Files (x86)\Steam\steamapps\common\Guild Wars 2".into(),
+                );
+                ui.set_steam_setup_target(r"C:\Games\Guild Wars\Guild Wars 2".into());
+                ui.set_steam_setup_retry(name == "steam-install-light");
+                ui.set_steam_setup(if name == "steam-link-dark" {
+                    SteamSetupStep::Link
+                } else {
+                    SteamSetupStep::Install
+                });
+            }
             ui.show().unwrap();
             slint::platform::update_timers_and_animations();
 
