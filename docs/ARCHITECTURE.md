@@ -74,10 +74,12 @@ account). Breakbar detects the build mismatch and guides the user instead of fai
 - Start `Gw2-64.exe` directly with `-provider Steam` and env `SteamAppId=1284210` (same as
   gw2launcher). Launchbuddy's `steam://rungameid/1284210` route was rejected: it goes through Steam's
   custom-arguments confirmation and then has to find the spawned process.
-- `Gw2-64.exe` loads `steam_api64.dll` only at runtime (not a static import), and that library ships
-  only with the **Steam installation** of the game. Steam accounts therefore use the configured client
-  if it has the DLL next to it, otherwise a Steam installation found in the Steam libraries;
-  otherwise the launch is refused with an explanation.
+- The Steam installation of the game does not ship `steam_api64.dll` (checked), so a client counts
+  as Steam-capable when Steam's `install_script.vdf` sits next to it. That also holds for an
+  ArenaNet folder linked into a Steam library with a directory junction (`mklink /J`, then
+  "Install" in Steam downloads only ~15 MB). Steam accounts use the configured client if it has the
+  marker, otherwise a Steam installation found in the Steam libraries; otherwise the launch is
+  refused with an explanation.
 - The Steam client must be running (checked before launch); it signs the game in with its currently
   signed-in Steam user, so **only one Steam account runs at a time** (enforced in the UI), next to
   any number of ArenaNet accounts.

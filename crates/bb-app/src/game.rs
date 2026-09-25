@@ -65,15 +65,18 @@ pub fn detect() -> Option<PathBuf> {
     candidates().into_iter().find(|path| validate(path).is_ok())
 }
 
-/// Name of the Steam API library the client loads at runtime when started with `-provider Steam`.
-const STEAM_API_DLL: &str = "steam_api64.dll";
+/// Marker file the Steam client writes into the game folder when it installs Guild Wars 2 (its
+/// uninstall hook, which itself runs `Gw2-64.exe -provider Steam`).
+const STEAM_INSTALL_SCRIPT: &str = "install_script.vdf";
 
 /// Whether the client at `gw2_exe` can sign in through Steam.
 ///
-/// `Gw2-64.exe` only loads `steam_api64.dll` at runtime, when started with `-provider Steam`, and
-/// that library ships only with the Steam installation of the game — not with the ArenaNet one.
+/// Steam does not ship `steam_api64.dll` with the game (checked against a real installation), so
+/// that cannot be used to tell the installations apart. The Steam client only leaves its
+/// `install_script.vdf` in a folder it installed the game into, which includes an ArenaNet folder
+/// that was linked into a Steam library with a directory junction.
 pub fn supports_steam(gw2_exe: &Path) -> bool {
-    gw2_exe.with_file_name(STEAM_API_DLL).is_file()
+    gw2_exe.with_file_name(STEAM_INSTALL_SCRIPT).is_file()
 }
 
 /// The client to start a Steam account with: `preferred` if it supports Steam, otherwise a valid
@@ -186,13 +189,13 @@ mod tests {
     }
 
     #[test]
-    fn steam_support_needs_the_steam_api_next_to_the_client() {
+    fn steam_support_needs_the_steam_install_script_next_to_the_client() {
         let dir = std::env::temp_dir().join(format!("breakbar-steam-{}", std::process::id()));
         std::fs::create_dir_all(&dir).unwrap();
         let exe = dir.join(GW2_EXE);
         assert!(!supports_steam(&exe));
 
-        std::fs::write(dir.join(STEAM_API_DLL), b"").unwrap();
+        std::fs::write(dir.join(STEAM_INSTALL_SCRIPT), b"").unwrap();
         assert!(supports_steam(&exe));
         assert_eq!(steam_client(&exe), Some(exe.clone()));
 
