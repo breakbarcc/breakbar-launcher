@@ -175,7 +175,7 @@ msgctxt "MainWindow"
 msgid "RUNNING"
 msgstr "LAUFEN"
 
-#: ui/app.slint:308 ui/app.slint:358 ui/app.slint:332 ui/app.slint:381 ui/app.slint:601 ui/app.slint:604 ui/app.slint:606
+#: ui/app.slint:308 ui/app.slint:358 ui/app.slint:332 ui/app.slint:381 ui/app.slint:604 ui/app.slint:606 ui/app.slint:614
 msgctxt "MainWindow"
 msgid "Add account"
 msgstr "Account hinzufügen"
@@ -234,7 +234,7 @@ msgctxt "Toast"
 msgid "Dismiss"
 msgstr "Hinweis schließen"
 
-#: ui/messages.slint:20 ui/messages.slint:66 ui/messages.slint:21 ui/messages.slint:72
+#: ui/messages.slint:20 ui/messages.slint:66 ui/messages.slint:21 ui/messages.slint:23
 msgctxt "Messages"
 msgid "Start failed"
 msgstr "Start fehlgeschlagen"
@@ -474,7 +474,7 @@ msgctxt "AccountCard"
 msgid "Del"
 msgstr "Entf"
 
-#: ui/app.slint:124 ui/app.slint:140 ui/app.slint:92 ui/app.slint:108 ui/app.slint:113
+#: ui/app.slint:124 ui/app.slint:140 ui/app.slint:92 ui/app.slint:108 ui/app.slint:97
 msgctxt "ConfirmDelete"
 msgid "Delete „{}“?"
 msgstr "„{}“ löschen?"
@@ -877,7 +877,7 @@ msgctxt "SettingsPage"
 msgid "Gw2-64.exe found"
 msgstr "Gw2-64.exe gefunden"
 
-#: ui/settings.slint:127 ui/settings.slint:135 ui/settings.slint:129 ui/settings.slint:200 ui/settings.slint:205
+#: ui/settings.slint:127 ui/settings.slint:135 ui/settings.slint:129 ui/settings.slint:205 ui/settings.slint:249
 msgctxt "SettingsPage"
 msgid "File not found. Check the path."
 msgstr "Datei nicht gefunden. Prüfe den Pfad."
@@ -902,7 +902,7 @@ msgctxt "SettingsPage"
 msgid "// BEHAVIOR"
 msgstr "// VERHALTEN"
 
-#: ui/settings.slint:150 ui/settings.slint:164 ui/settings.slint:239 ui/settings.slint:275 ui/settings.slint:280
+#: ui/settings.slint:150 ui/settings.slint:164 ui/settings.slint:239 ui/settings.slint:280 ui/settings.slint:324
 msgctxt "SettingsPage"
 msgid "Start with Windows"
 msgstr "Mit Windows starten"
@@ -1266,7 +1266,7 @@ msgctxt "SettingsPage"
 msgid "Theme"
 msgstr "Farbschema"
 
-#: ui/settings.slint:302 ui/settings.slint:306 ui/settings.slint:311
+#: ui/settings.slint:302 ui/settings.slint:306 ui/settings.slint:311 ui/settings.slint:435
 #. The language names are shown in their own language on purpose.
 msgctxt "SettingsPage"
 msgid "System"
@@ -1287,22 +1287,22 @@ msgctxt "SettingsPage"
 msgid "System follows the Windows app theme."
 msgstr "System folgt dem Windows-App-Design."
 
-#: ui/settings.slint:321 ui/settings.slint:349
+#: ui/settings.slint:321 ui/settings.slint:349 ui/settings.slint:450
 msgctxt "SettingsPage"
 msgid "// ABOUT"
 msgstr "// ÜBER"
 
-#: ui/settings.slint:350 ui/settings.slint:378
+#: ui/settings.slint:350 ui/settings.slint:378 ui/settings.slint:479
 msgctxt "SettingsPage"
 msgid "Version {} · breakbar.cc"
 msgstr "Version {} · breakbar.cc"
 
-#: ui/settings.slint:365 ui/settings.slint:393
+#: ui/settings.slint:365 ui/settings.slint:393 ui/settings.slint:494
 msgctxt "SettingsPage"
 msgid "License"
 msgstr "Lizenz"
 
-#: ui/settings.slint:396 ui/settings.slint:424
+#: ui/settings.slint:396 ui/settings.slint:424 ui/settings.slint:525
 msgctxt "SettingsPage"
 msgid ""
 "Not an official Guild Wars 2 product. A fan project by breakbar.cc. Guild "
@@ -1311,12 +1311,59 @@ msgstr ""
 "Kein offizielles Guild-Wars-2-Angebot. Ein Fanprojekt von breakbar.cc. Guild "
 "Wars 2 ist eine Marke von ArenaNet."
 
-#: ui/settings.slint:327
+#: ui/settings.slint:327 ui/settings.slint:428
 msgctxt "SettingsPage"
 msgid "Language"
 msgstr "Sprache"
 
-#: ui/settings.slint:341
+#: ui/settings.slint:341 ui/settings.slint:442
 msgctxt "SettingsPage"
 msgid "System follows the Windows display language."
 msgstr "System folgt der Anzeigesprache von Windows."
+
+#: ui/settings.slint:344
+msgctxt "SettingsPage"
+msgid "// SWITCHER"
+msgstr "// SWITCHER"
+
+#: ui/settings.slint:347
+msgctxt "SettingsPage"
+msgid "Show the switcher"
+msgstr "Switcher anzeigen"
+
+#: ui/settings.slint:348
+msgctxt "SettingsPage"
+msgid "A small bar over the game to jump between clients."
+msgstr "Eine kleine Leiste über dem Spiel, um zwischen Clients zu wechseln."
+
+#: ui/settings.slint:353
+msgctxt "SettingsPage"
+msgid "Only while a client is running"
+msgstr "Nur wenn ein Client läuft"
+
+#: ui/settings.slint:354
+msgctxt "SettingsPage"
+msgid "Otherwise it stays on screen as long as Breakbar runs."
+msgstr "Sonst bleibt sie sichtbar, solange Breakbar läuft."
+
+#: ui/settings.slint:360
+msgctxt "SettingsPage"
+msgid "Lock the position"
+msgstr "Position sperren"
+
+#: ui/settings.slint:361
+msgctxt "SettingsPage"
+msgid "The bar can no longer be dragged."
+msgstr "Die Leiste lässt sich nicht mehr verschieben."
+
+#: ui/settings.slint:372 ui/settings.slint:386
+msgctxt "SettingsPage"
+msgid "Opacity at rest"
+msgstr "Deckkraft im Ruhezustand"
+
+#: ui/settings.slint:393
+msgctxt "SettingsPage"
+msgid ""
+"Under the pointer the bar is always fully opaque. It is visible over windows "
+"and borderless fullscreen, not over exclusive fullscreen."
+msgstr "Unter dem Mauszeiger ist die Leiste immer voll sichtbar. Sie erscheint über Fenstern und randlosem Vollbild, nicht über exklusivem Vollbild."

@@ -3,7 +3,7 @@
 
 import { Theme, ThemeChoice } from "theme.slint";
 import { Icons } from "icons.slint";
-import { Activation, Icon, Button, FocusRing, IconButton, SectionLabel, FieldLabel, Toggle, Segmented, LinkButton } from "components.slint";
+import { Activation, Icon, Button, FocusRing, IconButton, SectionLabel, FieldLabel, Toggle, Segmented, LinkButton, Slider } from "components.slint";
 
 /// What happens to the main window right after starting an account (not on setup or a manual
 /// stop). Mirrors `bb_store::AfterStart`.
@@ -137,6 +137,41 @@ component PathField {
     }
 }
 
+/// A setting with a switch: title and a help line on the left.
+component ToggleRow {
+    in property <string> text;
+    in property <string> help;
+    in property <bool> checked;
+    in property <bool> enabled: true;
+    callback toggled(bool);
+    HorizontalLayout {
+        spacing: 12px;
+        opacity: root.enabled ? 1 : 0.42;
+        VerticalLayout {
+            horizontal-stretch: 1;
+            spacing: 2px;
+            Text {
+                text: root.text;
+                font-size: Theme.fs-body;
+                color: Theme.text;
+            }
+            Text {
+                text: root.help;
+                font-size: Theme.fs-help;
+                color: Theme.text-dim;
+                wrap: word-wrap;
+            }
+        }
+        Toggle {
+            y: (parent.height - self.height) / 2;
+            checked: root.checked;
+            enabled: root.enabled;
+            label: root.text;
+            toggled(value) => { root.toggled(value); }
+        }
+    }
+}
+
 export component SettingsPage inherits VerticalLayout {
     in property <string> gw2-path;
     in property <bool> gw2-path-ok;
@@ -146,6 +181,11 @@ export component SettingsPage inherits VerticalLayout {
     in property <AfterStart> after-start;
     in property <FpsLimit> fps-limit;
     in property <LanguageChoice> language;
+    in property <bool> overlay-enabled;
+    in property <bool> overlay-only-running;
+    in property <bool> overlay-locked;
+    /// Opacity of the switcher at rest, in percent (30 to 100).
+    in property <int> overlay-opacity;
     /// Version of Breakbar, shown in the About section.
     in property <string> version;
     callback back();
@@ -156,6 +196,10 @@ export component SettingsPage inherits VerticalLayout {
     callback set-fps-limit(FpsLimit);
     callback set-theme(ThemeChoice);
     callback set-language(LanguageChoice);
+    callback set-overlay-enabled(bool);
+    callback set-overlay-only-running(bool);
+    callback set-overlay-locked(bool);
+    callback set-overlay-opacity(int);
     callback open-website();
     callback open-license();
 
@@ -293,6 +337,63 @@ export component SettingsPage inherits VerticalLayout {
                     checked: root.autostart;
                     label: @tr("Start with Windows");
                     toggled => { root.toggle-autostart(); }
+                }
+            }
+
+            SectionLabel {
+                text: @tr("// SWITCHER");
+            }
+            ToggleRow {
+                text: @tr("Show the switcher");
+                help: @tr("A small bar over the game to jump between clients.");
+                checked: root.overlay-enabled;
+                toggled(value) => { root.set-overlay-enabled(value); }
+            }
+            ToggleRow {
+                text: @tr("Only while a client is running");
+                help: @tr("Otherwise it stays on screen as long as Breakbar runs.");
+                enabled: root.overlay-enabled;
+                checked: root.overlay-only-running;
+                toggled(value) => { root.set-overlay-only-running(value); }
+            }
+            ToggleRow {
+                text: @tr("Lock the position");
+                help: @tr("The bar can no longer be dragged.");
+                enabled: root.overlay-enabled;
+                checked: root.overlay-locked;
+                toggled(value) => { root.set-overlay-locked(value); }
+            }
+            VerticalLayout {
+                spacing: 6px;
+                opacity: root.overlay-enabled ? 1 : 0.42;
+                HorizontalLayout {
+                    Text {
+                        horizontal-stretch: 1;
+                        text: @tr("Opacity at rest");
+                        font-size: Theme.fs-help;
+                        font-weight: 600;
+                        color: Theme.text-muted;
+                    }
+                    Text {
+                        text: root.overlay-opacity + " %";
+                        font-family: Theme.font-mono;
+                        font-size: Theme.fs-help;
+                        color: Theme.text-muted;
+                    }
+                }
+                Slider {
+                    enabled: root.overlay-enabled;
+                    label: @tr("Opacity at rest");
+                    minimum: 30;
+                    maximum: 100;
+                    value: root.overlay-opacity;
+                    changed(value) => { root.set-overlay-opacity(value); }
+                }
+                Text {
+                    text: @tr("Under the pointer the bar is always fully opaque. It is visible over windows and borderless fullscreen, not over exclusive fullscreen.");
+                    font-size: Theme.fs-help;
+                    color: Theme.text-dim;
+                    wrap: word-wrap;
                 }
             }
 

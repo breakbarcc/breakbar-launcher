@@ -6,6 +6,13 @@ All notable changes to Breakbar Launcher. The format follows
 
 Everything before 0.2.0 is in the git history and in [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
 
+## [0.6.0] - 2026-09-25
+
+### Added
+
+- Settings for the instance switcher: show it or not, only while a client is running, lock its
+  position and its opacity at rest (30 to 100 percent, fully opaque under the pointer).
+
 ## [0.5.0] - 2026-09-25
 
 ### Added

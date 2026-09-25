@@ -437,6 +437,10 @@ export component MainWindow inherits Window {
     in property <AfterStart> after-start;
     in property <FpsLimit> fps-limit;
     in property <LanguageChoice> language;
+    in property <bool> overlay-enabled;
+    in property <bool> overlay-only-running;
+    in property <bool> overlay-locked;
+    in property <int> overlay-opacity;
     in property <string> app-version;
     in property <[ToastData]> toasts;
     in-out property <Page> page: Page.accounts;
@@ -475,6 +479,10 @@ export component MainWindow inherits Window {
     callback set-fps-limit(FpsLimit);
     callback set-theme(ThemeChoice);
     callback set-language(LanguageChoice);
+    callback set-overlay-enabled(bool);
+    callback set-overlay-only-running(bool);
+    callback set-overlay-locked(bool);
+    callback set-overlay-opacity(int);
     callback open-website();
     callback open-license();
     /// Open the editor for an account (0 = a new one).
@@ -825,6 +833,10 @@ export component MainWindow inherits Window {
         after-start: root.after-start;
         fps-limit: root.fps-limit;
         language: root.language;
+        overlay-enabled: root.overlay-enabled;
+        overlay-only-running: root.overlay-only-running;
+        overlay-locked: root.overlay-locked;
+        overlay-opacity: root.overlay-opacity;
         version: root.app-version;
         back => { root.page = Page.accounts; }
         choose-gw2-path => { root.choose-gw2-path(); }
@@ -834,6 +846,10 @@ export component MainWindow inherits Window {
         set-fps-limit(value) => { root.set-fps-limit(value); }
         set-theme(value) => { root.set-theme(value); }
         set-language(value) => { root.set-language(value); }
+        set-overlay-enabled(value) => { root.set-overlay-enabled(value); }
+        set-overlay-only-running(value) => { root.set-overlay-only-running(value); }
+        set-overlay-locked(value) => { root.set-overlay-locked(value); }
+        set-overlay-opacity(value) => { root.set-overlay-opacity(value); }
         open-website => { root.open-website(); }
         open-license => { root.open-license(); }
     }

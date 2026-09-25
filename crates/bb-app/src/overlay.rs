@@ -8,7 +8,7 @@ use std::rc::Rc;
 use std::time::Duration;
 
 use bb_core::AccountId;
-use bb_store::OverlayPosition;
+use bb_store::{OverlayPosition, OverlaySettings};
 use bb_win::menu::MenuItem;
 use slint::{ComponentHandle, Model, ModelRc, PhysicalPosition, Timer, TimerMode, VecModel};
 
@@ -96,7 +96,8 @@ impl Overlay {
                 else {
                     return;
                 };
-                poll(&overlay, &main_window, &last_active);
+                let settings = app.borrow().config.overlay;
+                poll(&overlay, &main_window, &last_active, settings);
                 save_position_if_moved(&overlay, &app, &last_position);
             }
         });
@@ -194,7 +195,15 @@ fn chip_clicked(
 /// The highlighted chip is the last client that was in the foreground: it only moves when another
 /// client takes focus, not when focus goes to something else (including this overlay), since the
 /// user is still "in the game" then.
-fn poll(overlay: &OverlaySwitcher, main_window: &MainWindow, last_active: &Cell<Option<i32>>) {
+fn poll(
+    overlay: &OverlaySwitcher,
+    main_window: &MainWindow,
+    last_active: &Cell<Option<i32>>,
+    settings: OverlaySettings,
+) {
+    overlay.set_locked(settings.lock_position);
+    overlay.set_idle_opacity(f32::from(settings.opacity_percent()) / 100.0);
+
     let foreground = bb_win::window::foreground_pid();
 
     let all_rows = rows(main_window);
@@ -223,8 +232,12 @@ fn poll(overlay: &OverlaySwitcher, main_window: &MainWindow, last_active: &Cell<
         })
         .collect();
 
-    // Only shown while something runs: an all-idle bar would just be clutter over the desktop.
-    if !all_rows.iter().any(|row| is_active(row.state)) {
+    // Shown when enabled and there is something to switch between; by default only while a client
+    // runs, since an all-idle bar would just be clutter over the desktop.
+    let any_active = all_rows.iter().any(|row| is_active(row.state));
+    let wanted =
+        settings.enabled && !entries.is_empty() && (any_active || !settings.only_when_running);
+    if !wanted {
         if overlay.window().is_visible() {
             let _ = overlay.hide();
         }

@@ -250,6 +250,7 @@ pub fn run() -> Result<(), slint::PlatformError> {
     window.set_fps_limit(to_ui_fps_limit(app.config.fps_limit));
     window.set_app_version(env!("CARGO_PKG_VERSION").into());
     window.set_language(to_ui_language(app.config.language));
+    show_overlay_settings(&window, app.config.overlay);
     window
         .global::<Theme>()
         .set_choice(to_ui_theme(app.config.theme));
@@ -556,6 +557,31 @@ pub fn run() -> Result<(), slint::PlatformError> {
     window.on_open_website(|| open_url(WEBSITE_URL));
     window.on_open_license(|| open_url(LICENSE_URL));
 
+    window.on_set_overlay_enabled(overlay_setting(&app, &window, |settings, value| {
+        settings.enabled = value;
+    }));
+    window.on_set_overlay_only_running(overlay_setting(&app, &window, |settings, value| {
+        settings.only_when_running = value;
+    }));
+    window.on_set_overlay_locked(overlay_setting(&app, &window, |settings, value| {
+        settings.lock_position = value;
+    }));
+    window.on_set_overlay_opacity({
+        let app = Rc::clone(&app);
+        let weak = window.as_weak();
+        move |percent| {
+            if let Some(window) = weak.upgrade() {
+                let mut app = app.borrow_mut();
+                app.config.overlay.idle_opacity = percent.clamp(
+                    i32::from(bb_store::OverlaySettings::MIN_OPACITY),
+                    i32::from(bb_store::OverlaySettings::MAX_OPACITY),
+                ) as u8;
+                show_overlay_settings(&window, app.config.overlay);
+                app.save(&window);
+            }
+        }
+    });
+
     window.on_set_language({
         let app = Rc::clone(&app);
         let weak = window.as_weak();
@@ -748,6 +774,33 @@ fn to_ui_after_start(value: bb_store::AfterStart) -> AfterStart {
         bb_store::AfterStart::KeepOpen => AfterStart::KeepOpen,
         bb_store::AfterStart::MinimizeToTray => AfterStart::MinimizeToTray,
         bb_store::AfterStart::Close => AfterStart::Close,
+    }
+}
+
+/// Shows the overlay settings on the settings page. The overlay window itself picks them up from
+/// the config on its next update (twice a second).
+fn show_overlay_settings(window: &MainWindow, settings: bb_store::OverlaySettings) {
+    window.set_overlay_enabled(settings.enabled);
+    window.set_overlay_only_running(settings.only_when_running);
+    window.set_overlay_locked(settings.lock_position);
+    window.set_overlay_opacity(i32::from(settings.opacity_percent()));
+}
+
+/// A callback that changes one of the on/off overlay settings and saves the config.
+fn overlay_setting(
+    app: &Rc<RefCell<App>>,
+    window: &MainWindow,
+    change: impl Fn(&mut bb_store::OverlaySettings, bool) + 'static,
+) -> impl FnMut(bool) + 'static {
+    let app = Rc::clone(app);
+    let weak = window.as_weak();
+    move |value| {
+        if let Some(window) = weak.upgrade() {
+            let mut app = app.borrow_mut();
+            change(&mut app.config.overlay, value);
+            show_overlay_settings(&window, app.config.overlay);
+            app.save(&window);
+        }
     }
 }
 
@@ -2180,8 +2233,8 @@ mod preview {
                 (420, 520),
             ),
             variant("narrow-dark", true, true, Accounts, (320, 360)),
-            variant("settings-dark", true, false, Settings, (420, 1060)),
-            variant("settings-light", false, false, Settings, (420, 1060)),
+            variant("settings-dark", true, false, Settings, (420, 1160)),
+            variant("settings-light", false, false, Settings, (420, 1160)),
             variant("settings-top-light", false, false, Settings, (420, 600)),
             variant("editor-steam-dark", true, false, Editor, (420, 780)),
             variant("login-offer-dark", true, true, Accounts, (420, 520)),
@@ -2222,6 +2275,10 @@ mod preview {
             ui.set_autostart(name == "settings-dark");
             ui.set_after_start(AfterStart::MinimizeToTray);
             ui.set_app_version(env!("CARGO_PKG_VERSION").into());
+            ui.set_overlay_enabled(true);
+            ui.set_overlay_only_running(true);
+            ui.set_overlay_locked(false);
+            ui.set_overlay_opacity(58);
             ui.set_setup_detected_path(r"C:\Program Files\Guild Wars 2\Gw2-64.exe".into());
             if demo {
                 set_rows(&ui, demo_rows());
@@ -2306,6 +2363,8 @@ mod preview {
             } else {
                 ThemeChoice::Light
             });
+            // Shown as under the pointer; at rest it is dimmed (58 % by default).
+            overlay.set_idle_opacity(1.0);
             overlay.set_entries(
                 Rc::new(slint::VecModel::from(vec![
                     ui::SwitcherEntry {

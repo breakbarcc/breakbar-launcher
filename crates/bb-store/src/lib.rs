@@ -111,10 +111,49 @@ pub struct Config {
     pub theme: ThemeChoice,
     #[serde(default)]
     pub language: LanguageChoice,
+    #[serde(default)]
+    pub overlay: OverlaySettings,
     /// Last dragged-to position of the instance-switcher overlay. `None` before it's ever been
     /// moved, so it starts at a fixed default position.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub overlay_position: Option<OverlayPosition>,
+}
+
+/// How the instance-switcher overlay behaves.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(default)]
+pub struct OverlaySettings {
+    /// The overlay may be shown at all.
+    pub enabled: bool,
+    /// It is only shown while a client runs (otherwise whenever Breakbar runs).
+    pub only_when_running: bool,
+    /// The overlay cannot be dragged.
+    pub lock_position: bool,
+    /// Opacity in percent while the pointer is not on it (30 to 100); it is fully opaque under the
+    /// pointer.
+    pub idle_opacity: u8,
+}
+
+impl OverlaySettings {
+    pub const MIN_OPACITY: u8 = 30;
+    pub const MAX_OPACITY: u8 = 100;
+
+    /// `idle_opacity` limited to the allowed range (a hand-edited config may hold anything).
+    pub fn opacity_percent(self) -> u8 {
+        self.idle_opacity
+            .clamp(Self::MIN_OPACITY, Self::MAX_OPACITY)
+    }
+}
+
+impl Default for OverlaySettings {
+    fn default() -> Self {
+        Self {
+            enabled: true,
+            only_when_running: true,
+            lock_position: false,
+            idle_opacity: 58,
+        }
+    }
 }
 
 /// A saved screen position, in physical pixels.
@@ -135,6 +174,7 @@ impl Default for Config {
             fps_limit: FpsLimit::default(),
             theme: ThemeChoice::default(),
             language: LanguageChoice::default(),
+            overlay: OverlaySettings::default(),
             overlay_position: None,
         }
     }
@@ -222,5 +262,35 @@ mod tests {
         assert_eq!(Config::load(&path).unwrap(), config);
 
         fs::remove_dir_all(path.parent().unwrap()).unwrap();
+    }
+
+    #[test]
+    fn overlay_settings_default_when_missing_or_partial() {
+        let path = temp_path("overlay-defaults");
+        fs::create_dir_all(path.parent().unwrap()).unwrap();
+        fs::write(&path, "version = 1\n").unwrap();
+        assert_eq!(
+            Config::load(&path).unwrap().overlay,
+            OverlaySettings::default()
+        );
+
+        fs::write(&path, "version = 1\n[overlay]\nlock_position = true\n").unwrap();
+        let overlay = Config::load(&path).unwrap().overlay;
+        assert!(overlay.lock_position);
+        assert!(overlay.enabled && overlay.only_when_running);
+        assert_eq!(overlay.idle_opacity, 58);
+
+        fs::remove_dir_all(path.parent().unwrap()).unwrap();
+    }
+
+    #[test]
+    fn overlay_opacity_stays_in_range() {
+        let opacity = |idle_opacity| OverlaySettings {
+            idle_opacity,
+            ..OverlaySettings::default()
+        };
+        assert_eq!(opacity(0).opacity_percent(), 30);
+        assert_eq!(opacity(58).opacity_percent(), 58);
+        assert_eq!(opacity(250).opacity_percent(), 100);
     }
 }

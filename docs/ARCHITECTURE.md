@@ -249,11 +249,16 @@ struct CompanionApp {
   "Start"; right click on a running one opens "Stop". Each menu starts with the account's name.
   The menus are native Win32 popups (`bb_win::menu`, shared with the tray), not Slint
   `PopupWindow`s: on this backend an embedded popup is clipped to its owning window, and this
-  window is only as big as the bar. The bar only shows while some account is active.
+  window is only as big as the bar.
   `overlay::Overlay` owns it plus a 500 ms `slint::Timer` that rebuilds the chips from the main
   window's rows, highlights the chip whose client owns the foreground window (matched by PID) and
-  saves the dragged-to position (`bb_store::OverlayPosition`). **First pass only:** no global
-  hotkeys, other sizes, vertical orientation, opacity control or settings section (screen 15).
+  saves the dragged-to position (`bb_store::OverlayPosition`). Its settings (`[overlay]` in
+  `config.toml`, `bb_store::OverlaySettings`, section "// Switcher" of the settings page) are read
+  on every update, so they apply within half a second: show it at all, only while a client runs
+  (default; otherwise it stays while Breakbar runs, as long as there is an account), lock the
+  position (the grip stops being a `WindowMoveArea`) and the opacity at rest (30-100 %, default 58;
+  the whole bar is fully opaque under the pointer). **Not done yet:** global hotkeys, other sizes,
+  vertical orientation.
 - **Pitfall: `TouchArea` + `FocusScope` pairs.** Every clickable component pairs a `TouchArea`
   (the click) with a `FocusScope`-derived one (keyboard activation, e.g. our shared `Activation`
   helper). `FocusScope`'s `focus-on-click` defaults to `true` and grabs the mouse-down itself to
@@ -318,7 +323,7 @@ Config: `%APPDATA%\Breakbar\config.toml` (atomic write via temp file + `ReplaceF
 | 4.2 | ✅ Settings page: paths, game (FPS limit), appearance (theme), about (companion app editor still pending) |
 | 4.3 | ✅ Start with Windows (`HKCU\...\Run`, toggle in Settings) |
 | 4.4 | ✅ Close behavior and tray (hide-to-tray close, tray menu, single instance, after-start setting) |
-| 4.5 | ✅ Instance switcher overlay: core (grip, numbered chips, click/context menus, position); hotkeys/sizes/settings pending |
+| 4.5 | ✅ Instance switcher overlay: core (grip, numbered chips, click/context menus, position) and settings (show, only while running, lock position, opacity); hotkeys, other sizes and vertical orientation pending |
 | 4.6 | ✅ Login set-up flow: offer after creating an account, banner while the setup client runs, result check of `Local.dat` (patch detection and "set up one after another" belong to phase 5) |
 | 5 | Patch detection + Local.dat refresh, window layout per account, priority/affinity, GFX per account |
 | 6 | Code signing (SignPath/Azure Trusted Signing), releases, winget |
