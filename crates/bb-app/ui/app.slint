@@ -485,6 +485,7 @@ export component MainWindow inherits Window {
     callback set-overlay-opacity(int);
     callback open-website();
     callback open-license();
+    callback open-slint();
     /// Open the editor for an account (0 = a new one).
     callback edit-account(int);
     /// Editor: switch a companion app for the account being edited.
@@ -852,6 +853,7 @@ export component MainWindow inherits Window {
         set-overlay-opacity(value) => { root.set-overlay-opacity(value); }
         open-website => { root.open-website(); }
         open-license => { root.open-license(); }
+        open-slint => { root.open-slint(); }
     }
 
     // ── Toasts ───────────────────────────────────────────────────────────────────────────────

@@ -55,6 +55,8 @@ const INSTANCE_MUTEX_NAME: &str = "Breakbar-Instance";
 
 /// Breakbar's website, opened from the About section.
 const WEBSITE_URL: &str = "https://www.breakbar.cc/";
+/// Slint's website, opened from the "Made with Slint" badge.
+const SLINT_URL: &str = "https://slint.dev/";
 /// The license text in the repository (`repository` of the workspace manifest).
 const LICENSE_URL: &str = concat!(env!("CARGO_PKG_REPOSITORY"), "/blob/main/LICENSE");
 
@@ -556,6 +558,7 @@ pub fn run() -> Result<(), slint::PlatformError> {
 
     window.on_open_website(|| open_url(WEBSITE_URL));
     window.on_open_license(|| open_url(LICENSE_URL));
+    window.on_open_slint(|| open_url(SLINT_URL));
 
     window.on_set_overlay_enabled(overlay_setting(&app, &window, |settings, value| {
         settings.enabled = value;
@@ -2233,8 +2236,8 @@ mod preview {
                 (420, 520),
             ),
             variant("narrow-dark", true, true, Accounts, (320, 360)),
-            variant("settings-dark", true, false, Settings, (420, 1160)),
-            variant("settings-light", false, false, Settings, (420, 1160)),
+            variant("settings-dark", true, false, Settings, (420, 1400)),
+            variant("settings-light", false, false, Settings, (420, 1400)),
             variant("settings-top-light", false, false, Settings, (420, 600)),
             variant("editor-steam-dark", true, false, Editor, (420, 780)),
             variant("login-offer-dark", true, true, Accounts, (420, 520)),

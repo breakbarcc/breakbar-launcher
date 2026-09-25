@@ -202,6 +202,7 @@ export component SettingsPage inherits VerticalLayout {
     callback set-overlay-opacity(int);
     callback open-website();
     callback open-license();
+    callback open-slint();
 
     // Header: back arrow, title (matches the account editor's).
     HorizontalLayout {
@@ -495,29 +496,24 @@ export component SettingsPage inherits VerticalLayout {
                             clicked => { root.open-license(); }
                         }
                     }
-                    Rectangle {
-                        border-radius: 6px;
-                        border-width: 1px;
-                        border-color: Theme.line-2;
-                        background: Theme.bg;
-                        HorizontalLayout {
-                            padding-left: 12px;
-                            padding-right: 12px;
-                            padding-top: 10px;
-                            padding-bottom: 10px;
-                            spacing: 10px;
-                            Icon {
-                                y: (parent.height - self.height) / 2;
-                                path: Icons.code;
-                                color: Theme.text-muted;
-                                size: 16px;
-                            }
-                            Text {
-                                horizontal-stretch: 1;
-                                text: "Made with Slint";
-                                font-size: 12.5px;
-                                color: Theme.text;
-                                vertical-alignment: center;
+                    // The official "Made with Slint" badge (Slint's license asks for it), in the variant
+                    // that stands out from the card: a white pill on the dark theme, a dark one on the
+                    // light theme. A click opens slint.dev.
+                    HorizontalLayout {
+                        alignment: start;
+                        Image {
+                            source: Theme.dark
+                                ? @image-url("../assets/badge/MadeWithSlint-logo-dark.svg")
+                                : @image-url("../assets/badge/MadeWithSlint-logo-light.svg");
+                            width: 87px;
+                            height: 40px;
+                            image-fit: contain;
+                            accessible-role: button;
+                            accessible-label: "Made with Slint";
+                            accessible-action-default => { root.open-slint(); }
+                            TouchArea {
+                                mouse-cursor: pointer;
+                                clicked => { root.open-slint(); }
                             }
                         }
                     }

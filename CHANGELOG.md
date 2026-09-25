@@ -6,6 +6,13 @@ All notable changes to Breakbar Launcher. The format follows
 
 Everything before 0.2.0 is in the git history and in [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
 
+## [0.7.0] - 2026-09-25
+
+### Added
+
+- The official "Made with Slint" badge in the About section (replacing the text placeholder), in a
+  variant for each theme; a click opens slint.dev.
+
 ## [0.6.5] - 2026-09-25
 
 ### Fixed

@@ -216,7 +216,7 @@ struct CompanionApp {
   sit in the main window's footer, and a "// Behavior" section with the "After starting an
   account" radio group and the "Start with Windows" toggle, a "// Game" section with the loading
   screen frame rate limit and an "// Appearance" section with the theme (System / Light / Dark).
-  and an "// About" section (icon, version, website and license links, "Made with Slint", trademark
+  and an "// About" section (icon, version, website and license links, the official "Made with Slint" badge as an SVG in `assets/badge` (a variant per theme; the winit backend brings SVG support along), trademark
   notice). The companion app editor is the only part of that screen still missing.
 - **Theme.** `config.toml` stores `theme = "system" | "light" | "dark"`. The `Theme` global has a
   `choice` property set from Rust, and `dark` is computed from it (System follows the Windows app
