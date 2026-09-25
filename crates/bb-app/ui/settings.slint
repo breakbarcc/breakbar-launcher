@@ -3,7 +3,7 @@
 
 import { Theme, ThemeChoice } from "theme.slint";
 import { Icons } from "icons.slint";
-import { Activation, Icon, Button, FocusRing, IconButton, SectionLabel, FieldLabel, Toggle, Segmented } from "components.slint";
+import { Activation, Icon, Button, FocusRing, IconButton, SectionLabel, FieldLabel, Toggle, Segmented, LinkButton } from "components.slint";
 
 /// What happens to the main window right after starting an account (not on setup or a manual
 /// stop). Mirrors `bb_store::AfterStart`.
@@ -142,6 +142,8 @@ export component SettingsPage inherits VerticalLayout {
     in property <bool> autostart;
     in property <AfterStart> after-start;
     in property <FpsLimit> fps-limit;
+    /// Version of Breakbar, shown in the About section.
+    in property <string> version;
     callback back();
     callback choose-gw2-path();
     callback choose-blish-path();
@@ -149,6 +151,8 @@ export component SettingsPage inherits VerticalLayout {
     callback set-after-start(AfterStart);
     callback set-fps-limit(FpsLimit);
     callback set-theme(ThemeChoice);
+    callback open-website();
+    callback open-license();
 
     // Header: back arrow, title (matches the account editor's).
     HorizontalLayout {
@@ -310,6 +314,90 @@ export component SettingsPage inherits VerticalLayout {
                     font-size: Theme.fs-help;
                     color: Theme.text-dim;
                     wrap: word-wrap;
+                }
+            }
+
+            SectionLabel {
+                text: @tr("// ABOUT");
+            }
+            Rectangle {
+                border-radius: Theme.radius-card;
+                background: Theme.surface;
+                border-width: 1px;
+                border-color: Theme.line;
+                VerticalLayout {
+                    padding: 16px;
+                    spacing: 14px;
+                    HorizontalLayout {
+                        spacing: 14px;
+                        Image {
+                            source: @image-url("../assets/icon/breakbar-48.png");
+                            width: 48px;
+                            height: 48px;
+                            accessible-role: none;
+                        }
+                        VerticalLayout {
+                            horizontal-stretch: 1;
+                            alignment: center;
+                            spacing: 3px;
+                            Text {
+                                text: "Breakbar Launcher";
+                                font-size: 17px;
+                                font-weight: 700;
+                                color: Theme.text;
+                            }
+                            Text {
+                                text: @tr("Version {} · breakbar.cc", root.version);
+                                font-family: Theme.font-mono;
+                                font-size: 11.5px;
+                                color: Theme.text-dim;
+                            }
+                        }
+                    }
+                    HorizontalLayout {
+                        spacing: 14px;
+                        alignment: start;
+                        LinkButton {
+                            text: "breakbar.cc";
+                            clicked => { root.open-website(); }
+                        }
+                        LinkButton {
+                            text: @tr("License");
+                            clicked => { root.open-license(); }
+                        }
+                    }
+                    Rectangle {
+                        border-radius: 6px;
+                        border-width: 1px;
+                        border-color: Theme.line-2;
+                        background: Theme.bg;
+                        HorizontalLayout {
+                            padding-left: 12px;
+                            padding-right: 12px;
+                            padding-top: 10px;
+                            padding-bottom: 10px;
+                            spacing: 10px;
+                            Icon {
+                                y: (parent.height - self.height) / 2;
+                                path: Icons.code;
+                                color: Theme.text-muted;
+                                size: 16px;
+                            }
+                            Text {
+                                horizontal-stretch: 1;
+                                text: "Made with Slint";
+                                font-size: 12.5px;
+                                color: Theme.text;
+                                vertical-alignment: center;
+                            }
+                        }
+                    }
+                    Text {
+                        text: @tr("Not an official Guild Wars 2 product. A fan project by breakbar.cc. Guild Wars 2 is a trademark of ArenaNet.");
+                        font-size: Theme.fs-help;
+                        color: Theme.text-dim;
+                        wrap: word-wrap;
+                    }
                 }
             }
         }

@@ -53,6 +53,11 @@ const APP_NAME: &str = "Breakbar Launcher";
 /// Named mutex marking a Breakbar GUI as already running (see [`run`]).
 const INSTANCE_MUTEX_NAME: &str = "Breakbar-Instance";
 
+/// Breakbar's website, opened from the About section.
+const WEBSITE_URL: &str = "https://www.breakbar.cc/";
+/// The license text in the repository (`repository` of the workspace manifest).
+const LICENSE_URL: &str = concat!(env!("CARGO_PKG_REPOSITORY"), "/blob/main/LICENSE");
+
 /// Application state shared between UI callbacks.
 ///
 /// Only ever touched on the UI thread: Slint callbacks run there, and so does the
@@ -242,6 +247,7 @@ pub fn run() -> Result<(), slint::PlatformError> {
     window.set_autostart(bb_win::autostart::is_enabled(APP_NAME));
     window.set_after_start(to_ui_after_start(app.config.after_start));
     window.set_fps_limit(to_ui_fps_limit(app.config.fps_limit));
+    window.set_app_version(env!("CARGO_PKG_VERSION").into());
     window
         .global::<Theme>()
         .set_choice(to_ui_theme(app.config.theme));
@@ -544,6 +550,9 @@ pub fn run() -> Result<(), slint::PlatformError> {
             }
         }
     });
+
+    window.on_open_website(|| open_url(WEBSITE_URL));
+    window.on_open_license(|| open_url(LICENSE_URL));
 
     window.on_set_theme({
         let app = Rc::clone(&app);
@@ -2014,6 +2023,11 @@ fn display_path(path: Option<&Path>) -> String {
         .unwrap_or_default()
 }
 
+/// Opens `url` in the default browser. Best-effort: a failure has nothing useful to tell the user.
+fn open_url(url: &str) {
+    let _ = std::process::Command::new("explorer.exe").arg(url).spawn();
+}
+
 /// Returns the window's HWND so native dialogs can be made modal to it.
 pub(crate) fn native_handle(window: &slint::Window) -> Option<isize> {
     let slint_window = window.window_handle();
@@ -2106,8 +2120,8 @@ mod preview {
                 (420, 520),
             ),
             variant("narrow-dark", true, true, Accounts, (320, 360)),
-            variant("settings-dark", true, false, Settings, (420, 820)),
-            variant("settings-light", false, false, Settings, (420, 820)),
+            variant("settings-dark", true, false, Settings, (420, 1000)),
+            variant("settings-light", false, false, Settings, (420, 1000)),
             variant("editor-steam-dark", true, false, Editor, (420, 780)),
             variant("login-offer-dark", true, true, Accounts, (420, 520)),
             variant("login-offer-steam-light", false, true, Accounts, (420, 520)),
@@ -2143,6 +2157,7 @@ mod preview {
             ui.set_blish_path_ok(name != "settings-dark");
             ui.set_autostart(name == "settings-dark");
             ui.set_after_start(AfterStart::MinimizeToTray);
+            ui.set_app_version(env!("CARGO_PKG_VERSION").into());
             ui.set_setup_detected_path(r"C:\Program Files\Guild Wars 2\Gw2-64.exe".into());
             if demo {
                 set_rows(&ui, demo_rows());

@@ -207,7 +207,8 @@ struct CompanionApp {
   sit in the main window's footer, and a "// Behavior" section with the "After starting an
   account" radio group and the "Start with Windows" toggle, a "// Game" section with the loading
   screen frame rate limit and an "// Appearance" section with the theme (System / Light / Dark).
-  The rest of that screen (companion app editor, about) lands with the steps that need it.
+  and an "// About" section (icon, version, website and license links, "Made with Slint", trademark
+  notice). The companion app editor is the only part of that screen still missing.
 - **Theme.** `config.toml` stores `theme = "system" | "light" | "dark"`. The `Theme` global has a
   `choice` property set from Rust, and `dark` is computed from it (System follows the Windows app
   theme through Slint's `Palette.color-scheme`), so choosing System again works without a restart.
@@ -305,7 +306,7 @@ Config: `%APPDATA%\Breakbar\config.toml` (atomic write via temp file + `ReplaceF
 | 3.6 | ✅ Companion apps (per-client / shared, start on process or game window, graceful close), Blish HUD preset (not yet tested with a real Blish HUD) |
 | 4.1 | ✅ Design: new UI in both themes (tokens, components, account rows with all states, selection, toasts, empty state, narrow layout), app icon, English + German |
 | 4.1b | ✅ Account management: edit page, duplicate, delete, desktop shortcut, profile folder, drag & drop order, first-start setup, shortcut starts without a window (companion editor moved to 4.2) |
-| 4.2 | ✅ Settings page: paths, game (FPS limit), appearance (theme) (companion app editor and about still pending) |
+| 4.2 | ✅ Settings page: paths, game (FPS limit), appearance (theme), about (companion app editor still pending) |
 | 4.3 | ✅ Start with Windows (`HKCU\...\Run`, toggle in Settings) |
 | 4.4 | ✅ Close behavior and tray (hide-to-tray close, tray menu, single instance, after-start setting) |
 | 4.5 | ✅ Instance switcher overlay: core (grip, numbered chips, click/context menus, position); hotkeys/sizes/settings pending |
