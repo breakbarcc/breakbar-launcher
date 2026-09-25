@@ -2095,6 +2095,18 @@ mod preview {
         slint::platform::set_platform(Box::new(Offscreen(window.clone()))).unwrap();
         let dir = std::env::temp_dir().join("breakbar-ui");
         std::fs::create_dir_all(&dir).unwrap();
+        // For the README screenshots: `BREAKBAR_PREVIEW_LANG=en` renders the source language, and
+        // `BREAKBAR_PREVIEW_SCALE=2` renders at twice the resolution, and
+        // `BREAKBAR_PREVIEW_NO_TOAST=1` leaves out the demo toast.
+        let language = std::env::var("BREAKBAR_PREVIEW_LANG").ok();
+        let scale: f32 = std::env::var("BREAKBAR_PREVIEW_SCALE")
+            .ok()
+            .and_then(|scale| scale.parse().ok())
+            .unwrap_or(1.0);
+        let physical = |logical: u32| (logical as f32 * scale).round() as u32;
+        window.dispatch_event(slint::platform::WindowEvent::ScaleFactorChanged {
+            scale_factor: scale,
+        });
 
         let variant = |name, dark, demo_rows, page, size| Variant {
             name,
@@ -2120,8 +2132,8 @@ mod preview {
                 (420, 520),
             ),
             variant("narrow-dark", true, true, Accounts, (320, 360)),
-            variant("settings-dark", true, false, Settings, (420, 1000)),
-            variant("settings-light", false, false, Settings, (420, 1000)),
+            variant("settings-dark", true, false, Settings, (420, 1060)),
+            variant("settings-light", false, false, Settings, (420, 1060)),
             variant("editor-steam-dark", true, false, Editor, (420, 780)),
             variant("login-offer-dark", true, true, Accounts, (420, 520)),
             variant("login-offer-steam-light", false, true, Accounts, (420, 520)),
@@ -2144,8 +2156,11 @@ mod preview {
             size: (width, height),
         } in variants
         {
-            window.set_size(PhysicalSize::new(width, height));
+            window.set_size(PhysicalSize::new(physical(width), physical(height)));
             let ui = MainWindow::new().unwrap();
+            if let Some(language) = &language {
+                slint::select_bundled_translation(language).unwrap();
+            }
             ui.global::<Theme>().set_choice(if dark {
                 ThemeChoice::Dark
             } else {
@@ -2161,13 +2176,15 @@ mod preview {
             ui.set_setup_detected_path(r"C:\Program Files\Guild Wars 2\Gw2-64.exe".into());
             if demo {
                 set_rows(&ui, demo_rows());
-                let messages = ui.global::<Messages>();
-                push_toast(
-                    &ui,
-                    ToastKind::Warning,
-                    messages.invoke_steam_busy_title(),
-                    messages.invoke_steam_busy("Steam Zweit".into(), "Steam".into()),
-                );
+                if std::env::var_os("BREAKBAR_PREVIEW_NO_TOAST").is_none() {
+                    let messages = ui.global::<Messages>();
+                    push_toast(
+                        &ui,
+                        ToastKind::Warning,
+                        messages.invoke_steam_busy_title(),
+                        messages.invoke_steam_busy("Steam Zweit".into(), "Steam".into()),
+                    );
+                }
             }
             refresh(&ui);
             ui.set_editor(EditorData {
@@ -2216,7 +2233,7 @@ mod preview {
             ui.show().unwrap();
             slint::platform::update_timers_and_animations();
 
-            let (w, h) = (width as usize, height as usize);
+            let (w, h) = (physical(width) as usize, physical(height) as usize);
             let mut pixels = vec![Rgb8Pixel::default(); w * h];
             window.request_redraw();
             window.draw_if_needed(|renderer| {
@@ -2230,8 +2247,11 @@ mod preview {
         // same way but outside the `MainWindow` loop above.
         for (name, dark) in [("overlay-dark", true), ("overlay-light", false)] {
             let (width, height) = (260, 32);
-            window.set_size(PhysicalSize::new(width, height));
+            window.set_size(PhysicalSize::new(physical(width), physical(height)));
             let overlay = ui::OverlaySwitcher::new().unwrap();
+            if let Some(language) = &language {
+                slint::select_bundled_translation(language).unwrap();
+            }
             overlay.global::<Theme>().set_choice(if dark {
                 ThemeChoice::Dark
             } else {
@@ -2273,7 +2293,7 @@ mod preview {
             overlay.show().unwrap();
             slint::platform::update_timers_and_animations();
 
-            let (w, h) = (width as usize, height as usize);
+            let (w, h) = (physical(width) as usize, physical(height) as usize);
             let mut pixels = vec![Rgb8Pixel::default(); w * h];
             window.request_redraw();
             window.draw_if_needed(|renderer| {

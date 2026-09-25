@@ -23,6 +23,22 @@ uses almost no CPU while idle.
 > the [changelog](CHANGELOG.md). There are no releases yet: you build it yourself (see
 > [Building](#building)).
 
+<details>
+<summary>More screenshots: settings and instance switcher</summary>
+
+<p align="center">
+  <img src="docs/images/settings-light.png" alt="Settings: paths, frame rate limit, behavior, theme and about" width="380">
+</p>
+
+The instance switcher, a small bar over the game with one chip per account (the first one is the
+client in front, the spinner is a client that is starting):
+
+<p align="center">
+  <img src="docs/images/overlay.png" alt="Instance switcher with four numbered chips" width="260">
+</p>
+
+</details>
+
 ## Features
 
 - **Multi-launch:** start as many clients as you like, one click for all or a selection of them.

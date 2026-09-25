@@ -199,6 +199,10 @@ struct CompanionApp {
   compile time; the language follows Windows. After changing texts:
   `slint-tr-extractor -j -o lang/de/LC_MESSAGES/breakbar-launcher.po ui/*.slint` (from `crates/bb-app`),
   then translate the new entries.
+- **Screenshots for the README** (`docs/images`): the same test renders them in English at twice the
+  size with `BREAKBAR_PREVIEW_LANG=en BREAKBAR_PREVIEW_SCALE=2 BREAKBAR_PREVIEW_NO_TOAST=1`. The
+  PNGs are reduced to a 256 color palette before they are committed (an image is roughly 50-80 KB
+  instead of 110-190 KB), so the git history stays small.
 - **Previews without a window:** `cargo test -p breakbar-launcher -- --ignored render_ui_previews` renders
   the main states in both themes with the software renderer into `%TEMP%\breakbar-ui\*.bmp` —
   no window opens, so it is safe to run while playing.
