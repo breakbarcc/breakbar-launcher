@@ -325,6 +325,31 @@ pub fn run() -> Result<(), slint::PlatformError> {
         }
     });
 
+    window.on_login_offer_accept({
+        let app = Rc::clone(&app);
+        let queue = Rc::clone(&queue);
+        let weak = window.as_weak();
+        move |id| {
+            let Some(window) = weak.upgrade() else {
+                return;
+            };
+            window.set_login_offer_id(0);
+            let id = AccountId(id as u32);
+            if row(&window, id).is_some_and(|row| is_startable(row.state)) {
+                start_account(&window, &app, &queue, id, LaunchMode::SetUpLogin);
+            }
+        }
+    });
+
+    window.on_login_offer_dismiss({
+        let weak = window.as_weak();
+        move || {
+            if let Some(window) = weak.upgrade() {
+                window.set_login_offer_id(0);
+            }
+        }
+    });
+
     window.on_toggle_selected({
         let weak = window.as_weak();
         move |id| {
@@ -458,8 +483,10 @@ pub fn run() -> Result<(), slint::PlatformError> {
                 if steam {
                     account.provider = Provider::Steam;
                 }
+                let (id, name) = (account.id, account.name.clone());
                 insert_account(&window, &app, account, None);
                 window.set_page(ui::Page::Accounts);
+                offer_login_setup(&window, id, &name, steam);
             }
         }
     });
@@ -1003,6 +1030,7 @@ impl LaunchQueue {
 fn run_launch(window: &slint::Weak<MainWindow>, shared: &Arc<SharedInstances>, job: LaunchJob) {
     let id = job.account.id;
     let name = job.account.name.clone();
+    let login_before = login_file_stamp(id);
 
     let launched = match launcher::launch(&job.gw2_path, &job.account, job.mode) {
         Ok(launched) => launched,
@@ -1044,16 +1072,8 @@ fn run_launch(window: &slint::Weak<MainWindow>, shared: &Arc<SharedInstances>, j
                 row.since = since.into();
             });
             if setup {
-                push_toast(
-                    &window,
-                    ToastKind::Info,
-                    messages.invoke_setting_up_title(name.as_str().into()),
-                    if steam {
-                        messages.invoke_setting_up_steam()
-                    } else {
-                        messages.invoke_setting_up()
-                    },
-                );
+                window.set_login_setup_name(name.as_str().into());
+                window.set_login_setup_steam(steam);
             }
             match warning {
                 Some(LaunchWarning::SlowStart) => push_toast(
@@ -1126,6 +1146,12 @@ fn run_launch(window: &slint::Weak<MainWindow>, shared: &Arc<SharedInstances>, j
                     }
                 }
             });
+            if setup {
+                window.set_login_setup_name(SharedString::new());
+                if !stopped && failure.is_none() {
+                    report_login_setup(&window, id, &name, steam, login_before);
+                }
+            }
             if let Some(code) = failure {
                 push_toast(
                     &window,
@@ -1136,6 +1162,48 @@ fn run_launch(window: &slint::Weak<MainWindow>, shared: &Arc<SharedInstances>, j
             }
         });
     });
+}
+
+/// Size and modification time of the account's `Local.dat`, `None` if it has none.
+fn login_file_stamp(id: AccountId) -> Option<(u64, std::time::SystemTime)> {
+    let metadata = std::fs::metadata(bb_store::local_dat_path(id).ok()?).ok()?;
+    Some((metadata.len(), metadata.modified().ok()?))
+}
+
+/// Tells the user how a login setup ended. The client saves the login into `Local.dat` when it
+/// is closed normally, so a file that didn't change means nothing was saved. That can't show
+/// whether the password was stored, only that the client wrote its file.
+fn report_login_setup(
+    window: &MainWindow,
+    id: AccountId,
+    name: &str,
+    steam: bool,
+    before: Option<(u64, std::time::SystemTime)>,
+) {
+    let messages = window.global::<Messages>();
+    let after = login_file_stamp(id);
+    if after.is_some() && after != before {
+        push_toast(
+            window,
+            ToastKind::Success,
+            messages.invoke_login_setup_done_title(),
+            messages.invoke_login_setup_done(name.into()),
+        );
+    } else {
+        push_toast(
+            window,
+            ToastKind::Warning,
+            messages.invoke_login_setup_unchanged_title(),
+            messages.invoke_login_setup_unchanged(name.into(), steam),
+        );
+    }
+}
+
+/// Offers to set up the login of a just created account.
+fn offer_login_setup(window: &MainWindow, id: AccountId, name: &str, steam: bool) {
+    window.set_login_offer_name(name.into());
+    window.set_login_offer_steam(steam);
+    window.set_login_offer_id(id.0 as i32);
 }
 
 /// Maps a launch error to its message and the technical detail filled into it.
@@ -1313,7 +1381,9 @@ fn editor_save(window: &MainWindow, app: &RefCell<App>, name: &str, steam: bool,
             account.provider = provider;
             account.extra_args = args.to_owned();
             account.companions = draft.companions;
+            let (id, name) = (account.id, account.name.clone());
             insert_account(window, app, account, None);
+            offer_login_setup(window, id, &name, steam);
         }
         Some(id) => {
             let mut app_ref = app.borrow_mut();
@@ -1957,6 +2027,16 @@ mod preview {
             variant("settings-dark", true, false, Settings, (420, 700)),
             variant("settings-light", false, false, Settings, (420, 700)),
             variant("editor-steam-dark", true, false, Editor, (420, 780)),
+            variant("login-offer-dark", true, true, Accounts, (420, 520)),
+            variant("login-offer-steam-light", false, true, Accounts, (420, 520)),
+            variant("login-banner-dark", true, true, Accounts, (420, 520)),
+            variant(
+                "login-banner-steam-light",
+                false,
+                true,
+                Accounts,
+                (420, 520),
+            ),
             variant("steam-link-dark", true, true, Accounts, (420, 520)),
             variant("steam-install-light", false, true, Accounts, (420, 520)),
         ];
@@ -2010,6 +2090,15 @@ mod preview {
                 .into(),
             });
             ui.set_page(page);
+            if name.starts_with("login-offer") {
+                ui.set_login_offer_id(1);
+                ui.set_login_offer_name("Main".into());
+                ui.set_login_offer_steam(name.contains("steam"));
+            }
+            if name.starts_with("login-banner") {
+                ui.set_login_setup_name("Main".into());
+                ui.set_login_setup_steam(name.contains("steam"));
+            }
             if name.starts_with("steam-") {
                 ui.set_steam_setup_account("Steam Acc".into());
                 ui.set_steam_setup_link(

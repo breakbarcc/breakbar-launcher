@@ -63,6 +63,12 @@ no sleep/retry loops.
   that no other client runs (such a client locks `Gw2.dat` exclusively). Accounts without a
   `Local.dat` get this automatically on their first start; whether an existing `Local.dat` holds
   credentials can't be told from outside, so the action is also available on demand.
+- **Guided setup.** A new account (first-start setup or the editor) gets an offer dialog "Set up the
+  login now?" (Later / Set up now; it shows the steps and "Breakbar stores no passwords"). While a
+  setup client runs, a banner above the list repeats the steps (an interrupted toast used to). When
+  the client exits normally, Breakbar compares `Local.dat` (size and write time) with its state before
+  the launch: changed = "Login set up" toast, unchanged = warning that nothing was saved. That only
+  shows that the client wrote its file, not that the password was stored.
 - Graphics settings are written by path during play and so live in `shared` for all accounts
   (as with Launchbuddy); per-account graphics settings are a possible later extension.
 
@@ -290,6 +296,6 @@ Config: `%APPDATA%\Breakbar\config.toml` (atomic write via temp file + `ReplaceF
 | 4.3 | ✅ Start with Windows (`HKCU\...\Run`, toggle in Settings) |
 | 4.4 | ✅ Close behavior and tray (hide-to-tray close, tray menu, single instance, after-start setting) |
 | 4.5 | ✅ Instance switcher overlay: core (grip, numbered chips, click/context menus, position); hotkeys/sizes/settings pending |
-| 4.6 | Login set-up flow |
+| 4.6 | ✅ Login set-up flow: offer after creating an account, banner while the setup client runs, result check of `Local.dat` (patch detection and "set up one after another" belong to phase 5) |
 | 5 | Patch detection + Local.dat refresh, window layout per account, priority/affinity, GFX per account |
 | 6 | Code signing (SignPath/Azure Trusted Signing), releases, winget |

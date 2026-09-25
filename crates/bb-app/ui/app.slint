@@ -143,6 +143,157 @@ component ConfirmDelete {
     }
 }
 
+/// Asks whether to set up an account's login right after it was created.
+component LoginOfferDialog {
+    in property <string> name;
+    in property <bool> steam;
+    callback accepted();
+    callback dismissed();
+
+    property <string> title: @tr("Set up the login of „{}“?", root.name);
+
+    init => {
+        later.focus();
+    }
+
+    // Scrim: dims the window and swallows clicks.
+    Rectangle {
+        background: Theme.bg.with-alpha(0.72);
+        TouchArea {
+            clicked => { root.dismissed(); }
+        }
+    }
+    FocusScope {
+        key-pressed(event) => {
+            if event.text == Key.Escape {
+                root.dismissed();
+                return accept;
+            }
+            reject
+        }
+        Elevated {
+            x: (root.width - self.width) / 2;
+            y: (root.height - self.height) / 2;
+            width: min(root.width - 32px, 380px);
+            height: dialog.preferred-height;
+            accessible-role: groupbox;
+            accessible-label: root.title;
+            // Keeps clicks on the dialog from reaching the scrim.
+            TouchArea { }
+            dialog := VerticalLayout {
+                padding: 16px;
+                spacing: 12px;
+                HorizontalLayout {
+                    spacing: 10px;
+                    Icon {
+                        y: (parent.height - self.height) / 2;
+                        path: Icons.key;
+                        color: Theme.warn;
+                        size: 17px;
+                    }
+                    Text {
+                        horizontal-stretch: 1;
+                        text: root.title;
+                        font-size: Theme.fs-page-title;
+                        font-weight: 600;
+                        color: Theme.text;
+                        wrap: word-wrap;
+                    }
+                }
+                Text {
+                    text: root.steam
+                        ? @tr("The client starts once so it can create the account's login file. Let it finish loading, then close it normally.")
+                        : @tr("1. The normal Guild Wars 2 login opens.\n2. Log in once with „Remember email/password“ ticked.\n3. Close the client normally so the login is saved. After that the account starts automatically.");
+                    font-size: 12.5px;
+                    color: Theme.text-muted;
+                    wrap: word-wrap;
+                }
+                if !root.steam: HorizontalLayout {
+                    spacing: 6px;
+                    Icon {
+                        y: (parent.height - self.height) / 2;
+                        path: Icons.lock;
+                        color: Theme.text;
+                        size: 13px;
+                        weight: 2;
+                    }
+                    Text {
+                        horizontal-stretch: 1;
+                        text: @tr("Breakbar stores no passwords.");
+                        font-size: Theme.fs-help;
+                        font-weight: 600;
+                        color: Theme.text;
+                    }
+                }
+                HorizontalLayout {
+                    padding-top: 4px;
+                    spacing: 8px;
+                    alignment: end;
+                    later := Button {
+                        kind: ButtonKind.ghost;
+                        text: @tr("Later");
+                        clicked => { root.dismissed(); }
+                    }
+                    Button {
+                        kind: ButtonKind.primary;
+                        icon: Icons.login;
+                        text: @tr("Set up now");
+                        clicked => { root.accepted(); }
+                    }
+                }
+            }
+        }
+    }
+}
+
+/// Shown above the account list while a client runs for setting up an account's login.
+component LoginSetupBanner {
+    in property <string> name;
+    in property <bool> steam;
+
+    height: content.preferred-height;
+    accessible-role: text;
+    accessible-label: @tr("Setting up „{}“", root.name);
+
+    Rectangle {
+        border-radius: Theme.radius-card;
+        background: Theme.accent-soft;
+        border-width: 1px;
+        border-color: Theme.accent-line;
+    }
+    content := HorizontalLayout {
+        padding: 12px;
+        spacing: 10px;
+        VerticalLayout {
+            alignment: start;
+            padding-top: 1px;
+            Icon {
+                path: Icons.key;
+                color: Theme.accent;
+            }
+        }
+        VerticalLayout {
+            horizontal-stretch: 1;
+            spacing: 4px;
+            Text {
+                text: @tr("Setting up „{}“", root.name);
+                font-size: Theme.fs-body;
+                font-weight: 600;
+                color: Theme.text;
+                wrap: word-wrap;
+            }
+            Text {
+                text: root.steam
+                    ? @tr("Let the client finish loading, then close it normally so its login file is complete. Other accounts can be started afterwards.")
+                    : @tr("Log in with „Remember email/password“ ticked, then close the client normally so the login is saved. Other accounts can be started afterwards.");
+                font-size: 12.5px;
+                color: Theme.text-muted;
+                wrap: word-wrap;
+            }
+        }
+    }
+}
+
 /// Steam accounts need Steam's own copy of the game: offers to link the existing installation into
 /// Steam (step `link`), then waits for the user to click Install in Steam (step `install`).
 component SteamSetupDialog {
@@ -293,6 +444,13 @@ export component MainWindow inherits Window {
     in property <string> steam-setup-link;
     in property <string> steam-setup-target;
     in property <bool> steam-setup-retry;
+    /// Name of the account whose login is being set up (empty = none) and whether it is a Steam account.
+    in property <string> login-setup-name;
+    in property <bool> login-setup-steam;
+    /// Account whose login setup is offered after creating it (0 = no dialog), its name and platform.
+    in property <int> login-offer-id;
+    in property <string> login-offer-name;
+    in property <bool> login-offer-steam;
     /// First-start setup: the client found automatically, and the one chosen by hand.
     in property <string> setup-detected-path;
     in property <string> setup-other-path;
@@ -331,6 +489,9 @@ export component MainWindow inherits Window {
     callback steam-setup-create-link();
     callback steam-setup-done();
     callback steam-setup-cancel();
+    /// Login offer dialog: set it up now (account id) / later.
+    callback login-offer-accept(int);
+    callback login-offer-dismiss();
     callback dismiss-toast(int);
     /// The theme switched between dark and light (the native title bar has to follow).
     callback theme-changed(bool);
@@ -442,6 +603,16 @@ export component MainWindow inherits Window {
                 icon: Icons.settings;
                 label: @tr("Settings");
                 clicked => { root.page = Page.settings; }
+            }
+        }
+
+        if root.login-setup-name != "": HorizontalLayout {
+            padding-left: 12px;
+            padding-right: 12px;
+            padding-bottom: 8px;
+            LoginSetupBanner {
+                name: root.login-setup-name;
+                steam: root.login-setup-steam;
             }
         }
 
@@ -685,6 +856,18 @@ export component MainWindow inherits Window {
             root.confirm-delete-id = 0;
         }
         cancelled => { root.confirm-delete-id = 0; }
+    }
+
+    // ── Login offer ──────────────────────────────────────────────────────────────────────────
+    if root.login-offer-id != 0 && root.steam-setup == SteamSetupStep.hidden: LoginOfferDialog {
+        x: 0;
+        y: 0;
+        width: root.width;
+        height: root.height;
+        name: root.login-offer-name;
+        steam: root.login-offer-steam;
+        accepted => { root.login-offer-accept(root.login-offer-id); }
+        dismissed => { root.login-offer-dismiss(); }
     }
 
     // ── Steam setup ──────────────────────────────────────────────────────────────────────────

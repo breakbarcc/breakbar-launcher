@@ -72,17 +72,24 @@ export global Messages {
         @tr("Start failed")
     }
 
-    public pure function setting-up-title(name: string) -> string {
-        @tr("Setting up „{}“", name)
+    public pure function login-setup-done-title() -> string {
+        @tr("Login set up")
     }
 
-    public pure function setting-up() -> string {
-        @tr("Log in with „Remember email/password“ ticked, then close the client normally so the login is saved. Other accounts can be started afterwards.")
+    public pure function login-setup-done(name: string) -> string {
+        @tr("„{}“ is ready to start.", name)
     }
 
-    /// Steam accounts have no login to remember; the setup start only fills their login file.
-    public pure function setting-up-steam() -> string {
-        @tr("Let the client finish loading, then close it normally so its login file is complete. Other accounts can be started afterwards.")
+    public pure function login-setup-unchanged-title() -> string {
+        @tr("Login not saved")
+    }
+
+    /// The setup client closed without changing the account's login file.
+    public pure function login-setup-unchanged(name: string, steam: bool) -> string {
+        if steam {
+            return @tr("The login file of „{}“ did not change. Let the client finish loading before closing it, then try again.", name);
+        }
+        @tr("The login file of „{}“ did not change. Log in with „Remember email/password“ ticked and close the client normally, then try again.", name)
     }
 
     public pure function slow-start-title() -> string {
