@@ -60,15 +60,19 @@ component StatusLabel {
 
     HorizontalLayout {
         spacing: 5px;
-        // Inside layouts `y` has no effect, so the icons sit in their own centering layout.
+        // Inside layouts `y` has no effect, so the icons sit in their own centering layout. The text
+        // line box has room for descenders, which puts the letters about a pixel below its middle:
+        // the 2 px of padding move the icon down half of that to sit level with them.
         if account.state == AccountState.starting || account.state == AccountState.stopping: VerticalLayout {
             alignment: center;
+            padding-top: 2px;
             Spinner {
                 color: root.tone;
             }
         }
         if account.state != AccountState.starting && account.state != AccountState.stopping: VerticalLayout {
             alignment: center;
+            padding-top: 2px;
             Icon {
             size: 13px;
             weight: 2;

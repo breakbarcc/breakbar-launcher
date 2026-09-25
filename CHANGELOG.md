@@ -6,6 +6,13 @@ All notable changes to Breakbar Launcher. The format follows
 
 Everything before 0.2.0 is in the git history and in [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
 
+## [0.6.5] - 2026-09-25
+
+### Fixed
+
+- The status icon in the account rows sat about a pixel above the letters of its label (the text
+  line has room for descenders below the letters); it is moved down to be level with them.
+
 ## [0.6.4] - 2026-09-25
 
 ### Fixed
