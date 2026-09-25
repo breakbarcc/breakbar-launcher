@@ -6,6 +6,19 @@ All notable changes to Breakbar Launcher. The format follows
 
 Everything before 0.2.0 is in the git history and in [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
 
+## [0.6.4] - 2026-09-25
+
+### Fixed
+
+- In the account list the grip, the checkbox, the companion icon and the status icon (ring, dot,
+  key, ...) sat at the top of their row instead of being centered; the status icon is now level with
+  the text behind it.
+
+### Changed
+
+- The companion apps are marked with the Blish HUD icon (dimmed, with an accent dot while they are
+  running) instead of the generic layers icon.
+
 ## [0.6.3] - 2026-09-25
 
 ### Fixed

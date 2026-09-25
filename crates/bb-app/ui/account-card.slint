@@ -60,12 +60,16 @@ component StatusLabel {
 
     HorizontalLayout {
         spacing: 5px;
-        if account.state == AccountState.starting || account.state == AccountState.stopping: Spinner {
-            y: (parent.height - self.height) / 2;
-            color: root.tone;
+        // Inside layouts `y` has no effect, so the icons sit in their own centering layout.
+        if account.state == AccountState.starting || account.state == AccountState.stopping: VerticalLayout {
+            alignment: center;
+            Spinner {
+                color: root.tone;
+            }
         }
-        if account.state != AccountState.starting && account.state != AccountState.stopping: Icon {
-            y: (parent.height - self.height) / 2;
+        if account.state != AccountState.starting && account.state != AccountState.stopping: VerticalLayout {
+            alignment: center;
+            Icon {
             size: 13px;
             weight: 2;
             color: root.tone;
@@ -75,6 +79,7 @@ component StatusLabel {
                 : account.state == AccountState.locked ? Icons.lock
                 : Icons.ring;
             fill-path: account.state == AccountState.running ? Icons.dot-fill : "";
+            }
         }
         HorizontalLayout {
             horizontal-stretch: 1;
@@ -239,19 +244,23 @@ export component AccountCard {
         spacing: 10px;
 
         // Grip: only visible on hover, focus or while dragging; the drag area is above.
-        Icon {
-            y: (parent.height - self.height) / 2;
-            path: Icons.grip;
-            size: 14px;
-            color: Theme.text-dim;
-            opacity: root.show-grip ? 1 : 0;
+        VerticalLayout {
+            alignment: center;
+            Icon {
+                path: Icons.grip;
+                size: 14px;
+                color: Theme.text-dim;
+                opacity: root.show-grip ? 1 : 0;
+            }
         }
 
-        CheckBox {
-            y: (parent.height - self.height) / 2;
-            checked: account.selected;
-            label: @tr("Select {}", account.name);
-            toggled => { root.toggle-selected(); }
+        VerticalLayout {
+            alignment: center;
+            CheckBox {
+                checked: account.selected;
+                label: @tr("Select {}", account.name);
+                toggled => { root.toggle-selected(); }
+            }
         }
 
         VerticalLayout {
@@ -279,12 +288,33 @@ export component AccountCard {
             }
         }
 
-        if account.has-companions: Icon {
-            y: (parent.height - self.height) / 2;
-            path: Icons.layers;
-            color: account.addon-active ? Theme.accent : Theme.text-dim;
-            accessible-role: image;
-            accessible-label: account.addon-active ? @tr("Companion app running") : @tr("Companion apps start with it");
+        // Blish HUD's icon stands for the companion apps: dimmed while they are not running, with a
+        // dot in the accent color while they are.
+        if account.has-companions: VerticalLayout {
+            alignment: center;
+            Rectangle {
+                width: 22px;
+                height: 22px;
+                accessible-role: image;
+                accessible-label: account.addon-active ? @tr("Companion app running") : @tr("Companion apps start with it");
+                Image {
+                    source: @image-url("../assets/icon/blish-hud.png");
+                    width: parent.width;
+                    height: parent.height;
+                    image-fit: contain;
+                    opacity: account.addon-active ? 1.0 : 0.55;
+                }
+                if account.addon-active: Rectangle {
+                    x: parent.width - self.width + 2px;
+                    y: parent.height - self.height + 2px;
+                    width: 8px;
+                    height: 8px;
+                    border-radius: 4px;
+                    background: Theme.accent;
+                    border-width: 1.5px;
+                    border-color: Theme.surface;
+                }
+            }
         }
 
         Button {
