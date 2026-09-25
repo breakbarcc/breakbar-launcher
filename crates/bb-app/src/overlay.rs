@@ -79,6 +79,7 @@ impl Overlay {
         });
 
         let last_position = Cell::new(app.borrow().config.overlay_position);
+        let last_active = Cell::new(None);
         let poll_timer = Timer::default();
         poll_timer.start(TimerMode::Repeated, POLL_INTERVAL, {
             let app = Rc::clone(app);
@@ -90,7 +91,7 @@ impl Overlay {
                 else {
                     return;
                 };
-                poll(&overlay, &main_window);
+                poll(&overlay, &main_window, &last_active);
                 save_position_if_moved(&overlay, &app, &last_position);
             }
         });
@@ -184,10 +185,27 @@ fn chip_clicked(
 
 /// Rebuilds the overlay's chips from `main_window`'s current rows, and shows or hides it
 /// depending on whether anything is active.
-fn poll(overlay: &OverlaySwitcher, main_window: &MainWindow) {
+///
+/// The highlighted chip is the last client that was in the foreground: it only moves when another
+/// client takes focus, not when focus goes to something else (including this overlay), since the
+/// user is still "in the game" then.
+fn poll(overlay: &OverlaySwitcher, main_window: &MainWindow, last_active: &Cell<Option<i32>>) {
     let foreground = bb_win::window::foreground_pid();
 
     let all_rows = rows(main_window);
+    let focused = all_rows.iter().find(|row| {
+        row.handle != 0
+            && is_active(row.state)
+            && bb_win::window::pid_of(row.handle as isize) == foreground
+    });
+    if let Some(row) = focused {
+        last_active.set(Some(row.id));
+    } else if !all_rows
+        .iter()
+        .any(|row| Some(row.id) == last_active.get() && is_active(row.state))
+    {
+        last_active.set(None);
+    }
     let entries: Vec<SwitcherEntry> = all_rows
         .iter()
         .take(MAX_CHIPS)
@@ -195,9 +213,7 @@ fn poll(overlay: &OverlaySwitcher, main_window: &MainWindow) {
             id: row.id,
             name: row.name.clone(),
             running: is_active(row.state),
-            active: row.handle != 0
-                && is_active(row.state)
-                && bb_win::window::pid_of(row.handle as isize) == foreground,
+            active: Some(row.id) == last_active.get() && is_active(row.state),
             starting: row.state == AccountState::Starting,
         })
         .collect();
