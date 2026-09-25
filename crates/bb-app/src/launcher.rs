@@ -24,7 +24,7 @@ const LOCK_STABLE_FOR: Duration = Duration::from_secs(3);
 const STARTUP_TIMEOUT: Duration = Duration::from_secs(120);
 /// How long a client that exited successfully during startup gets to show up again as a new
 /// process (see [`restarted_client`]).
-const RESTART_GRACE: Duration = Duration::from_secs(5);
+const RESTART_GRACE: Duration = Duration::from_secs(15);
 /// Named mutex serializing launches across Breakbar processes (the window and shortcut starts),
 /// because each launch points `%APPDATA%\Guild Wars 2` at its account for a few seconds.
 const LAUNCH_LOCK: &str = "Breakbar-Launch";
@@ -242,14 +242,15 @@ fn start_and_wait(
     for (key, value) in provider_env(account) {
         command.env(key, value);
     }
-    let child = command.spawn().map_err(LaunchError::Spawn)?;
-    let process = Process::from(OwnedHandle::from(child));
-
     let exe_name = gw2_path
         .file_name()
         .and_then(|name| name.to_str())
         .unwrap_or(crate::game::GW2_EXE);
-    let (process, locked) = wait_until_locked(process, exe_name, local_dat)?;
+    let already_running = running_clients(gw2_path);
+    let child = command.spawn().map_err(LaunchError::Spawn)?;
+    let process = Process::from(OwnedHandle::from(child));
+
+    let (process, locked) = wait_until_locked(process, exe_name, &already_running, local_dat)?;
     let warning = (!locked).then_some(LaunchWarning::SlowStart);
 
     Ok((
@@ -268,6 +269,7 @@ fn start_and_wait(
 fn wait_until_locked(
     mut process: Process,
     exe_name: &str,
+    already_running: &[u32],
     path: &Path,
 ) -> Result<(Process, bool), LaunchError> {
     let started = Instant::now();
@@ -278,7 +280,7 @@ fn wait_until_locked(
             .map_err(io::Error::from)
             .map_err(LaunchError::Spawn)?
         {
-            process = restarted_client(process.pid(), code, exe_name)?;
+            process = restarted_client(process.pid(), code, exe_name, already_running)?;
             locked_since = None;
             continue;
         }
@@ -302,23 +304,39 @@ fn wait_until_locked(
 /// A client whose executable is out of date replaces it with the current one and starts it (with
 /// the same arguments), then exits successfully itself. That happens when Steam has just
 /// (re)installed its own older `Gw2-64.exe`, and can happen with any game patch. The new process is
-/// the client; the old one's exit is not a failed start. The new process is found through its
-/// parent id, which Windows keeps after the parent has exited.
+/// the client; the old one's exit is not a failed start.
+///
+/// The new process is looked for by its parent id (Windows keeps it after the parent has exited),
+/// and failing that as any still running process of the same executable that was not running
+/// before this launch (`already_running`): the client may start it through a helper process.
 ///
 /// Any other exit during startup is an error, and so is a successful exit that no new client
 /// follows within [`RESTART_GRACE`] (the user closed the launcher window, say).
-fn restarted_client(pid: u32, code: u32, exe_name: &str) -> Result<Process, LaunchError> {
+fn restarted_client(
+    pid: u32,
+    code: u32,
+    exe_name: &str,
+    already_running: &[u32],
+) -> Result<Process, LaunchError> {
     let exited = || LaunchError::ExitedDuringStartup(ExitStatus::from_raw(code));
     if code != 0 {
         return Err(exited());
     }
     let started = Instant::now();
     loop {
-        let successors = bb_win::process::find_child_processes(pid, exe_name).unwrap_or_default();
-        if let Some(successor) = successors
+        let mut candidates =
+            bb_win::process::find_child_processes(pid, exe_name).unwrap_or_default();
+        candidates.extend(
+            bb_win::process::find_processes_by_name(exe_name)
+                .unwrap_or_default()
+                .into_iter()
+                .filter(|other| *other != pid && !already_running.contains(other)),
+        );
+        let successor = candidates
             .into_iter()
-            .find_map(|pid| Process::open(pid).ok())
-        {
+            .filter_map(|candidate| Process::open(candidate).ok())
+            .find(|candidate| matches!(candidate.try_wait(), Ok(None)));
+        if let Some(successor) = successor {
             return Ok(successor);
         }
         if started.elapsed() >= RESTART_GRACE {
@@ -476,8 +494,8 @@ mod tests {
             .spawn()
             .unwrap();
 
-        let adopted = restarted_client(std::process::id(), 0, &name).unwrap();
-        let failed = restarted_client(std::process::id(), 1, &name);
+        let adopted = restarted_client(std::process::id(), 0, &name, &[]).unwrap();
+        let failed = restarted_client(std::process::id(), 1, &name, &[]);
 
         let pid = adopted.pid();
         bb_win::process::terminate(adopted.raw_handle()).unwrap();
@@ -485,6 +503,34 @@ mod tests {
         let _ = fs::remove_file(&exe);
         assert_eq!(pid, successor.id());
         assert!(matches!(failed, Err(LaunchError::ExitedDuringStartup(_))));
+    }
+
+    /// The successor is also found when it was not started by the exited client itself (a helper
+    /// process in between), as any new process of the executable.
+    #[test]
+    fn a_restarted_client_is_found_without_its_parent() {
+        let windir = std::env::var_os("SystemRoot").expect("SystemRoot is set");
+        let name = format!("breakbar-helper-{}.exe", std::process::id());
+        let exe = std::env::temp_dir().join(&name);
+        fs::copy(
+            PathBuf::from(windir).join("System32").join("ping.exe"),
+            &exe,
+        )
+        .unwrap();
+        let mut successor = Command::new(&exe)
+            .args(["-n", "30", "127.0.0.1"])
+            .stdout(std::process::Stdio::null())
+            .spawn()
+            .unwrap();
+
+        let unrelated_parent = u32::MAX - 1;
+        let adopted = restarted_client(unrelated_parent, 0, &name, &[]).unwrap();
+
+        let pid = adopted.pid();
+        bb_win::process::terminate(adopted.raw_handle()).unwrap();
+        let _ = successor.wait();
+        let _ = fs::remove_file(&exe);
+        assert_eq!(pid, successor.id());
     }
 
     #[test]
