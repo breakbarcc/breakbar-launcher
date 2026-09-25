@@ -9,9 +9,9 @@ pub struct LaunchOptions {
     pub share_archive: bool,
     /// Log in automatically with the credentials remembered in `Local.dat`.
     pub autologin: bool,
-    /// Frame rate limit (`-fps:N`), which also applies on the character selection screen (the
-    /// in-game setting does not). `None` leaves the client unlimited. Skipped if the account's own
-    /// extra arguments set `-fps` themselves.
+    /// Frame rate limit (`-fps:N`). The game only applies it during loading screens; inside the
+    /// game world the Frame Limiter of the graphics options counts. `None` leaves the client
+    /// unlimited. Skipped if the account's own extra arguments set `-fps` themselves.
     pub fps_limit: Option<u32>,
 }
 

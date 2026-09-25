@@ -1227,8 +1227,8 @@ msgstr "// SPIEL"
 
 #: ui/settings.slint:213
 msgctxt "SettingsPage"
-msgid "Frame rate limit"
-msgstr "Bildratenbegrenzung"
+msgid "Frame rate limit for loading screens"
+msgstr "Bildratenbegrenzung für Ladebildschirme"
 
 #: ui/settings.slint:219
 msgctxt "SettingsPage"
@@ -1248,6 +1248,8 @@ msgstr "Unbegrenzt"
 #: ui/settings.slint:226
 msgctxt "SettingsPage"
 msgid ""
-"Also applies on the character selection screen, where the in-game setting "
-"does not. Useful with several clients, since one is often waiting there."
-msgstr "Gilt auch im Charakterauswahl-Bildschirm, wo die Einstellung im Spiel nicht greift. Sinnvoll bei mehreren Clients, weil oft einer dort wartet."
+"Only affects loading screens. It has nothing to do with the Frame Limiter in "
+"the game's graphics options, which applies inside the game world."
+msgstr ""
+"Wirkt nur in Ladebildschirmen. Es hat nichts mit dem Framelimiter in den "
+"Grafikoptionen des Spiels zu tun, der im Spiel selbst gilt."

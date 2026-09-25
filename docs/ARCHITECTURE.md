@@ -30,9 +30,11 @@ launch(account):
   4. CreateProcessW(Gw2-64.exe, "-shareArchive -autologin -mumble Breakbar_<id> -fps:60 [...]")
 ```
 
-`-fps:N` is the frame rate limit from the settings (60 by default, 30 or unlimited); unlike the
-in-game setting it also applies on the character selection screen, where one client of a multibox
-setup usually waits. It is left out if the account's own extra arguments contain an `-fps` switch.
+`-fps:N` is the frame rate limit from the settings (60 by default, 30 or unlimited). The game only
+applies it during loading screens (documented as a bug on the wiki); inside the game world the
+Frame Limiter of the graphics options counts, and it did not limit the character selection screen
+in a test either (the client showed the in-game 120 FPS). It is left out if the account's own extra
+arguments contain an `-fps` switch.
 `-autologin` alone is unreliable in the game (the login screen may stay open with the remembered
 credentials filled in), a known issue of the flag, not of the launch.
 

@@ -31,8 +31,8 @@ pub enum AfterStart {
     Close,
 }
 
-/// Frame rate limit passed to the game as `-fps:N`. Unlike the in-game setting it also applies
-/// on the character selection screen, where multiboxing keeps one client waiting most of the time.
+/// Frame rate limit passed to the game as `-fps:N`. The game only applies it during loading
+/// screens (a known bug on the wiki); it is independent of the in-game Frame Limiter.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default, Serialize, Deserialize)]
 #[serde(rename_all = "kebab-case")]
 pub enum FpsLimit {

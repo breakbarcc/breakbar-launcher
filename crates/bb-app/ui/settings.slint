@@ -210,7 +210,7 @@ export component SettingsPage inherits VerticalLayout {
             VerticalLayout {
                 spacing: 6px;
                 Text {
-                    text: @tr("Frame rate limit");
+                    text: @tr("Frame rate limit for loading screens");
                     font-size: Theme.fs-help;
                     font-weight: 600;
                     color: Theme.text-muted;
@@ -223,7 +223,7 @@ export component SettingsPage inherits VerticalLayout {
                     }
                 }
                 Text {
-                    text: @tr("Also applies on the character selection screen, where the in-game setting does not. Useful with several clients, since one is often waiting there.");
+                    text: @tr("Only affects loading screens. It has nothing to do with the Frame Limiter in the game's graphics options, which applies inside the game world.");
                     font-size: Theme.fs-help;
                     color: Theme.text-dim;
                     wrap: word-wrap;
