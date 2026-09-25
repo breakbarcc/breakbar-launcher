@@ -9,8 +9,8 @@
 ![Platform: Windows 10/11 x64](https://img.shields.io/badge/platform-Windows%2010%2F11%20x64-lightgrey)
 ![Status: early development](https://img.shields.io/badge/status-early%20development-orange)
 
-<img src="docs/images/main-window-dark.png" alt="Breakbar Launcher, dark theme: several accounts running, two selected" width="380">
-<img src="docs/images/main-window-light.png" alt="Breakbar Launcher, light theme: several accounts running, two selected" width="380">
+<img src="docs/images/main-window-dark.png" alt="Breakbar Launcher, dark theme: the account list with accounts in different states" width="380">
+<img src="docs/images/settings-light.png" alt="Breakbar Launcher settings, light theme: paths, frame rate limit and behavior" width="380">
 
 </div>
 
@@ -24,10 +24,10 @@ uses almost no CPU while idle.
 > [Building](#building)).
 
 <details>
-<summary>More screenshots: settings and instance switcher</summary>
+<summary>More screenshots: light theme and instance switcher</summary>
 
 <p align="center">
-  <img src="docs/images/settings-light.png" alt="Settings: paths, frame rate limit, behavior, theme and about" width="380">
+  <img src="docs/images/main-window-light.png" alt="Breakbar Launcher, light theme: the account list" width="380">
 </p>
 
 The instance switcher, a small bar over the game with one chip per account (the first one is the

@@ -2117,8 +2117,8 @@ mod preview {
         };
         use ui::Page::{Accounts, Editor, Settings, SetupAccount, SetupPath};
         let variants = [
-            variant("accounts-dark", true, true, Accounts, (420, 520)),
-            variant("accounts-light", false, true, Accounts, (420, 520)),
+            variant("accounts-dark", true, true, Accounts, (420, 600)),
+            variant("accounts-light", false, true, Accounts, (420, 600)),
             variant("empty-dark", true, false, Accounts, (420, 520)),
             variant("empty-light", false, false, Accounts, (420, 520)),
             variant("editor-dark", true, false, Editor, (420, 780)),
@@ -2134,6 +2134,7 @@ mod preview {
             variant("narrow-dark", true, true, Accounts, (320, 360)),
             variant("settings-dark", true, false, Settings, (420, 1060)),
             variant("settings-light", false, false, Settings, (420, 1060)),
+            variant("settings-top-light", false, false, Settings, (420, 600)),
             variant("editor-steam-dark", true, false, Editor, (420, 780)),
             variant("login-offer-dark", true, true, Accounts, (420, 520)),
             variant("login-offer-steam-light", false, true, Accounts, (420, 520)),
