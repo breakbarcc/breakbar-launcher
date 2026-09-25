@@ -47,9 +47,9 @@ BEGIN
             VALUE "CompanyName", "breakbar.cc"
             VALUE "FileDescription", "Breakbar Launcher"
             VALUE "FileVersion", "{version}"
-            VALUE "InternalName", "breakbar"
+            VALUE "InternalName", "breakbar-launcher"
             VALUE "LegalCopyright", "Copyright (c) Patrick Schmidt. MIT License."
-            VALUE "OriginalFilename", "breakbar.exe"
+            VALUE "OriginalFilename", "breakbar-launcher.exe"
             VALUE "ProductName", "Breakbar Launcher"
             VALUE "ProductVersion", "{version}"
         END

@@ -1,4 +1,4 @@
-//! Starting accounts without the window: desktop shortcuts and `breakbar --launch`.
+//! Starting accounts without the window: desktop shortcuts and `breakbar-launcher --launch`.
 //!
 //! The process stays in the background until the clients it started have exited, so their
 //! companion apps (Blish HUD) are started and closed with them, exactly as from the window.

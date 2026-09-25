@@ -6,6 +6,15 @@ All notable changes to Breakbar Launcher. The format follows
 
 Everything before 0.2.0 is in the git history and in [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
 
+## [0.4.0] - 2026-09-25
+
+### Changed
+
+- The application is called "Breakbar Launcher" everywhere: the program is now
+  `breakbar-launcher.exe` (was `breakbar.exe`) and the crate `breakbar-launcher`, the file properties
+  and the command line help use the full name. "breakbar" stays the name of the organization.
+  Autostart entries and desktop shortcuts that point to `breakbar.exe` have to be created again.
+
 ## [0.3.0] - 2026-09-25
 
 ### Added

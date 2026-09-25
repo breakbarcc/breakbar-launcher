@@ -3,10 +3,10 @@
 use std::ffi::OsString;
 
 pub const HELP: &str = "\
-Breakbar - Guild Wars 2 multi-launcher
+Breakbar Launcher - Guild Wars 2 multi-launcher
 
 USAGE:
-    breakbar [OPTIONS]
+    breakbar-launcher [OPTIONS]
 
 OPTIONS:
     -l, --launch <NAMES>    Launch the given accounts (comma separated) without opening the window
@@ -79,7 +79,7 @@ mod tests {
 
     fn parse_args(args: &[&str]) -> Result<Command, lexopt::Error> {
         parse(
-            std::iter::once("breakbar")
+            std::iter::once("breakbar-launcher")
                 .chain(args.iter().copied())
                 .map(OsString::from),
         )

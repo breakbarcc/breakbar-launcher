@@ -182,7 +182,7 @@ mod tests {
         );
     }
 
-    /// Diagnostic aid: `cargo test -p breakbar -- --ignored --nocapture print_candidates`
+    /// Diagnostic aid: `cargo test -p breakbar-launcher -- --ignored --nocapture print_candidates`
     #[test]
     #[ignore = "depends on the local installation"]
     fn print_candidates() {

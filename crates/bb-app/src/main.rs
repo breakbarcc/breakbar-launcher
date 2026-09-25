@@ -35,7 +35,7 @@ fn main() -> ExitCode {
         }
         Command::Version => {
             bb_win::console::attach_parent_console();
-            println!("breakbar {}", env!("CARGO_PKG_VERSION"));
+            println!("breakbar-launcher {}", env!("CARGO_PKG_VERSION"));
             ExitCode::SUCCESS
         }
         Command::Launch(targets) => headless::run(&targets),

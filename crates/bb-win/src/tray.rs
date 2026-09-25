@@ -134,7 +134,7 @@ fn create_hidden_window() -> io::Result<HWND> {
 
 /// Asks an already-running Breakbar instance (found by its tray window's class) to show its main
 /// window, for a second process launched while the first is already running (autostart, another
-/// desktop shortcut, `breakbar.exe` started by hand again). Returns an error if no instance is
+/// desktop shortcut, `breakbar-launcher.exe` started by hand again). Returns an error if no instance is
 /// found running.
 pub fn request_show() -> io::Result<()> {
     let class_name = HSTRING::from(CLASS_NAME);

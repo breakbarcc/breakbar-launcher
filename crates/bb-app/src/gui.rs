@@ -2039,7 +2039,7 @@ pub(crate) fn native_handle(window: &slint::Window) -> Option<isize> {
 }
 
 /// Renders the UI into image files without opening a window, to check the design:
-/// `cargo test -p breakbar -- --ignored render_ui_previews`, output in `%TEMP%\breakbar-ui`.
+/// `cargo test -p breakbar-launcher -- --ignored render_ui_previews`, output in `%TEMP%\breakbar-ui`.
 #[cfg(test)]
 mod preview {
     use super::*;

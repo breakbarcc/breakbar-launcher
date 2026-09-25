@@ -195,11 +195,11 @@ struct CompanionApp {
   embedded as the exe icon; `breakbar-64.png` is the window icon.
 - **Translations:** all user-visible text goes through Slint's `@tr` — texts the Rust side shows
   (toasts, error details) are functions of the `Messages` global in `ui/messages.slint`. English
-  is the source language; German lives in `lang/de/LC_MESSAGES/breakbar.po` and is bundled at
+  is the source language; German lives in `lang/de/LC_MESSAGES/breakbar-launcher.po` and is bundled at
   compile time; the language follows Windows. After changing texts:
-  `slint-tr-extractor -j -o lang/de/LC_MESSAGES/breakbar.po ui/*.slint` (from `crates/bb-app`),
+  `slint-tr-extractor -j -o lang/de/LC_MESSAGES/breakbar-launcher.po ui/*.slint` (from `crates/bb-app`),
   then translate the new entries.
-- **Previews without a window:** `cargo test -p breakbar -- --ignored render_ui_previews` renders
+- **Previews without a window:** `cargo test -p breakbar-launcher -- --ignored render_ui_previews` renders
   the main states in both themes with the software renderer into `%TEMP%\breakbar-ui\*.bmp` —
   no window opens, so it is safe to run while playing.
 - **Settings page** (`ui/settings.slint`, reached via the gear icon next to "Add account"): so far
@@ -214,7 +214,7 @@ struct CompanionApp {
   theme through Slint's `Palette.color-scheme`), so choosing System again works without a restart.
   The choice is applied to the main window and the overlay, which have separate `Theme` globals.
 - **Start with Windows** (`bb_win::autostart`) writes/removes a `HKCU\...\Run` entry pointing at
-  the current `breakbar.exe`, no admin rights needed. The registry is the source of truth — like
+  the current `breakbar-launcher.exe`, no admin rights needed. The registry is the source of truth — like
   the path fields' found/not-found checks — rather than a flag in `config.toml`, so the toggle
   always reflects reality even if the install was moved without opening Breakbar in between.
 - **Tray icon** (`bb_win::tray`): a hidden window with its own window class and `WNDPROC`, entirely
@@ -265,7 +265,7 @@ struct CompanionApp {
   would only start the same account twice).
 - **Delete** asks in an in-window dialog, then removes the account and deletes its profile folder
   (`bb_store::delete_profile`, only ever `profiles\<numeric id>`). Refused while the client runs.
-- **Desktop shortcut:** `<name> (Breakbar).lnk` running `breakbar.exe --launch-id <id>` (ids
+- **Desktop shortcut:** `<name> (Breakbar).lnk` running `breakbar-launcher.exe --launch-id <id>` (ids
   survive renaming). Such a start opens no window (`headless.rs`): it launches, starts and closes
   companions exactly like the window, stays in the background until its clients exit, and shows
   errors in a message box.
@@ -283,7 +283,7 @@ crates/
   bb-win/    unsafe Win32/NT wrappers (RAII handles, mutex kill, CreateProcess, win events)
   bb-core/   domain: Account, Profile, LaunchPlan, CompanionApp, ProcessMonitor
   bb-store/  config.toml (serde), atomic writes
-  bb-app/    binary `breakbar`: main.rs, Slint UI (ui/), CLI (`breakbar --launch "Main,Alt1"`)
+  bb-app/    binary `breakbar-launcher`: main.rs, Slint UI (ui/), CLI (`breakbar-launcher --launch "Main,Alt1"`)
     assets/  app.manifest (asInvoker, PerMonitorV2, longPathAware, UTF-8), resource script
 ```
 
