@@ -6,6 +6,14 @@ All notable changes to Breakbar Launcher. The format follows
 
 Everything before 0.2.0 is in the git history and in [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
 
+## [0.6.3] - 2026-09-25
+
+### Fixed
+
+- The instance switcher was still see-through at 100 % opacity: its background was translucent by
+  itself, on top of the opacity setting. The background is now opaque, so the setting alone decides
+  (100 % is solid, the default of 58 % looks as designed).
+
 ## [0.6.2] - 2026-09-25
 
 ### Changed
