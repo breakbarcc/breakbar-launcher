@@ -6,6 +6,13 @@ All notable changes to Breakbar Launcher. The format follows
 
 Everything before 0.2.0 is in the git history and in [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
 
+## [0.3.0] - 2026-09-25
+
+### Added
+
+- Version information in `breakbar.exe` (file properties, task manager): file and product version,
+  description, company and copyright.
+
 ## [0.2.0] - 2026-09-25
 
 ### Added
