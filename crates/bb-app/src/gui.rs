@@ -1,6 +1,7 @@
 //! The main window and its state.
 
 use std::cell::{Cell, RefCell};
+use std::collections::VecDeque;
 use std::path::{Path, PathBuf};
 use std::rc::Rc;
 use std::sync::{Arc, mpsc};
@@ -44,6 +45,8 @@ const LIGHT_FRAME: bb_win::window::FrameColors = bb_win::window::FrameColors {
 
 /// At most this many toasts are shown at once; older ones make room.
 const MAX_TOASTS: usize = 3;
+/// How often the logins are checked against the game's build (see `sync_login_states`).
+const LOGIN_CHECK_INTERVAL: Duration = Duration::from_secs(5);
 /// Toasts disappear after this long, unless the pointer is on them.
 const TOAST_LIFETIME: Duration = Duration::from_secs(6);
 
@@ -76,6 +79,8 @@ pub(crate) struct App {
     draft: Option<Draft>,
     /// The Steam setup dialog is open for this link.
     steam_setup: Option<PendingSteamSetup>,
+    /// Accounts still to go through "Set up one after another" after a game update.
+    refresh_queue: VecDeque<AccountId>,
 }
 
 /// State behind the Steam setup dialog (see [`steam_setup`]).
@@ -108,6 +113,7 @@ impl App {
                     first_start,
                     draft: None,
                     steam_setup: None,
+                    refresh_queue: VecDeque::new(),
                 },
                 None,
             ),
@@ -118,6 +124,7 @@ impl App {
                     first_start: false,
                     draft: None,
                     steam_setup: None,
+                    refresh_queue: VecDeque::new(),
                 },
                 Some(error),
             ),
@@ -259,6 +266,19 @@ pub fn run() -> Result<(), slint::PlatformError> {
     refresh(&window);
 
     let app = Rc::new(RefCell::new(app));
+    sync_login_states(&window, &app);
+    // A game update can happen while Breakbar runs (through the game's own launcher or Steam), so
+    // the logins are looked at again now and then: a few file times, nothing else.
+    let _login_check = slint::Timer::default();
+    _login_check.start(slint::TimerMode::Repeated, LOGIN_CHECK_INTERVAL, {
+        let app = Rc::clone(&app);
+        let weak = window.as_weak();
+        move || {
+            if let Some(window) = weak.upgrade() {
+                sync_login_states(&window, &app);
+            }
+        }
+    });
     let queue = Rc::new(LaunchQueue::start(window.as_weak()));
 
     let _overlay = match crate::overlay::Overlay::new(&window, &app, &queue) {
@@ -344,6 +364,35 @@ pub fn run() -> Result<(), slint::PlatformError> {
         move || {
             if let Some(window) = weak.upgrade() {
                 close_steam_setup(&window, &app);
+            }
+        }
+    });
+
+    window.on_refresh_logins({
+        let app = Rc::clone(&app);
+        let queue = Rc::clone(&queue);
+        let weak = window.as_weak();
+        move || {
+            let Some(window) = weak.upgrade() else {
+                return;
+            };
+            let ids = outdated_accounts(&window, &app);
+            app.borrow_mut().refresh_queue = ids.into();
+            continue_refresh(&window, &app, &queue, true);
+        }
+    });
+
+    window.on_client_exited({
+        let app = Rc::clone(&app);
+        let queue = Rc::clone(&queue);
+        let weak = window.as_weak();
+        move |setup_finished| {
+            let Some(window) = weak.upgrade() else {
+                return;
+            };
+            sync_login_states(&window, &app);
+            if setup_finished {
+                continue_refresh(&window, &app, &queue, false);
             }
         }
     });
@@ -1226,6 +1275,7 @@ fn run_launch(window: &slint::Weak<MainWindow>, shared: &Arc<SharedInstances>, j
     let id = job.account.id;
     let name = job.account.name.clone();
     let login_before = login_file_stamp(id);
+    let gw2_path = job.gw2_path.clone();
 
     let launched = match launcher::launch(&job.gw2_path, &job.account, job.mode, job.fps_limit) {
         Ok(launched) => launched,
@@ -1341,11 +1391,17 @@ fn run_launch(window: &slint::Weak<MainWindow>, shared: &Arc<SharedInstances>, j
                     }
                 }
             });
+            let finished = setup && !stopped && failure.is_none();
             if setup {
                 window.set_login_setup_name(SharedString::new());
-                if !stopped && failure.is_none() {
-                    report_login_setup(&window, id, &name, steam, login_before);
+            }
+            if finished {
+                // The client is through with this build: the login counts as current for it even
+                // if the client had nothing to change in its file.
+                if let Some(build) = game::game_build(&gw2_path) {
+                    let _ = bb_store::mark_build_verified(id, build);
                 }
+                report_login_setup(&window, id, &name, steam, login_before);
             }
             if let Some(code) = failure {
                 push_toast(
@@ -1355,6 +1411,7 @@ fn run_launch(window: &slint::Weak<MainWindow>, shared: &Arc<SharedInstances>, j
                     messages.invoke_exited(name.as_str().into(), code.into()),
                 );
             }
+            window.invoke_client_exited(finished);
         });
     });
 }
@@ -1431,6 +1488,81 @@ fn path_problem(error: &game::Gw2PathError) -> (PathProblem, SharedString) {
         E::NotExecutable => (PathProblem::NotExecutable, SharedString::new()),
         E::Not64Bit => (PathProblem::Not64Bit, SharedString::new()),
         E::NotGw2 => (PathProblem::NotGw2, SharedString::new()),
+    }
+}
+
+/// The accounts (in list order) that don't run and whose login is older than the game.
+fn outdated_accounts(window: &MainWindow, app: &RefCell<App>) -> Vec<AccountId> {
+    let Some(gw2_path) = app.borrow().config.gw2_path.clone() else {
+        return Vec::new();
+    };
+    rows(window)
+        .into_iter()
+        .filter(|row| !is_active(row.state))
+        .map(|row| AccountId(row.id as u32))
+        .filter(|id| game::login_outdated(&gw2_path, *id))
+        .collect()
+}
+
+/// Puts every account that isn't running in the state its login calls for (no or an outdated
+/// login: "login needed"; otherwise ready) and shows which accounts have to refresh their login
+/// after a game update. A game update makes every `Local.dat` older than `Gw2.dat`, see
+/// [`game::login_outdated`].
+fn sync_login_states(window: &MainWindow, app: &RefCell<App>) {
+    let gw2_path = app.borrow().config.gw2_path.clone();
+    let mut outdated_names = Vec::new();
+    for row in rows(window) {
+        let id = AccountId(row.id as u32);
+        let outdated = gw2_path
+            .as_deref()
+            .is_some_and(|path| game::login_outdated(path, id));
+        if matches!(row.state, AccountState::Idle | AccountState::NeedsLogin) {
+            let wanted = if outdated || (!row.steam && !bb_store::is_set_up(id)) {
+                AccountState::NeedsLogin
+            } else {
+                AccountState::Idle
+            };
+            if wanted != row.state {
+                update_row(window, id, |row| row.state = wanted);
+            }
+        }
+        if outdated && !is_active(row.state) {
+            outdated_names.push(row.name.to_string());
+        }
+    }
+    let names: SharedString = outdated_names.join(", ").into();
+    if window.get_refresh_names() != names {
+        window.set_refresh_names(names);
+    }
+    refresh(window);
+}
+
+/// Goes on with "Set up one after another": takes the next account of the queue that still needs
+/// its login refreshed. The first one is started at once (the user just asked for it); each
+/// further one is offered in the login dialog after the previous one finished.
+fn continue_refresh(window: &MainWindow, app: &RefCell<App>, queue: &LaunchQueue, start_now: bool) {
+    loop {
+        let Some(id) = app.borrow_mut().refresh_queue.pop_front() else {
+            return;
+        };
+        let outdated = app
+            .borrow()
+            .config
+            .gw2_path
+            .as_deref()
+            .is_some_and(|path| game::login_outdated(path, id));
+        let Some(row) = row(window, id) else {
+            continue;
+        };
+        if !outdated || !is_startable(row.state) {
+            continue;
+        }
+        if start_now {
+            start_account(window, app, queue, id, LaunchMode::SetUpLogin);
+        } else {
+            offer_login_setup(window, id, row.name.as_str(), row.steam);
+        }
+        return;
     }
 }
 
@@ -2240,6 +2372,8 @@ mod preview {
             variant("settings-light", false, false, Settings, (420, 1400)),
             variant("settings-top-light", false, false, Settings, (420, 600)),
             variant("editor-steam-dark", true, false, Editor, (420, 780)),
+            variant("login-refresh-dark", true, true, Accounts, (420, 600)),
+            variant("login-refresh-light", false, true, Accounts, (420, 600)),
             variant("login-offer-dark", true, true, Accounts, (420, 520)),
             variant("login-offer-steam-light", false, true, Accounts, (420, 520)),
             variant("login-banner-dark", true, true, Accounts, (420, 520)),
@@ -2278,6 +2412,9 @@ mod preview {
             ui.set_autostart(name == "settings-dark");
             ui.set_after_start(AfterStart::MinimizeToTray);
             ui.set_app_version(env!("CARGO_PKG_VERSION").into());
+            if name.starts_with("login-refresh") {
+                ui.set_refresh_names("Main, 2nd, Steam Acc".into());
+            }
             ui.set_overlay_enabled(true);
             ui.set_overlay_only_running(true);
             ui.set_overlay_locked(false);

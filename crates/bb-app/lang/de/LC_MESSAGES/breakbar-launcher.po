@@ -175,7 +175,7 @@ msgctxt "MainWindow"
 msgid "RUNNING"
 msgstr "LAUFEN"
 
-#: ui/app.slint:308 ui/app.slint:358 ui/app.slint:332 ui/app.slint:381 ui/app.slint:604 ui/app.slint:606 ui/app.slint:614
+#: ui/app.slint:308 ui/app.slint:358 ui/app.slint:332 ui/app.slint:381 ui/app.slint:606 ui/app.slint:614 ui/app.slint:686
 msgctxt "MainWindow"
 msgid "Add account"
 msgstr "Account hinzufügen"
@@ -234,7 +234,7 @@ msgctxt "Toast"
 msgid "Dismiss"
 msgstr "Hinweis schließen"
 
-#: ui/messages.slint:20 ui/messages.slint:66 ui/messages.slint:21 ui/messages.slint:23
+#: ui/messages.slint:20 ui/messages.slint:66 ui/messages.slint:21 ui/messages.slint:72
 msgctxt "Messages"
 msgid "Start failed"
 msgstr "Start fehlgeschlagen"
@@ -474,7 +474,7 @@ msgctxt "AccountCard"
 msgid "Del"
 msgstr "Entf"
 
-#: ui/app.slint:124 ui/app.slint:140 ui/app.slint:92 ui/app.slint:108 ui/app.slint:97
+#: ui/app.slint:124 ui/app.slint:140 ui/app.slint:92 ui/app.slint:108 ui/app.slint:113
 msgctxt "ConfirmDelete"
 msgid "Delete „{}“?"
 msgstr "„{}“ löschen?"
@@ -877,7 +877,7 @@ msgctxt "SettingsPage"
 msgid "Gw2-64.exe found"
 msgstr "Gw2-64.exe gefunden"
 
-#: ui/settings.slint:127 ui/settings.slint:135 ui/settings.slint:129 ui/settings.slint:205 ui/settings.slint:249
+#: ui/settings.slint:127 ui/settings.slint:135 ui/settings.slint:129 ui/settings.slint:249 ui/settings.slint:250
 msgctxt "SettingsPage"
 msgid "File not found. Check the path."
 msgstr "Datei nicht gefunden. Prüfe den Pfad."
@@ -902,7 +902,7 @@ msgctxt "SettingsPage"
 msgid "// BEHAVIOR"
 msgstr "// VERHALTEN"
 
-#: ui/settings.slint:150 ui/settings.slint:164 ui/settings.slint:239 ui/settings.slint:280 ui/settings.slint:324
+#: ui/settings.slint:150 ui/settings.slint:164 ui/settings.slint:239 ui/settings.slint:324 ui/settings.slint:325
 msgctxt "SettingsPage"
 msgid "Start with Windows"
 msgstr "Mit Windows starten"
@@ -1012,17 +1012,17 @@ msgctxt "Messages"
 msgid "Start"
 msgstr "Starten"
 
-#: ui/app.slint:160 ui/app.slint:311 ui/app.slint:312
+#: ui/app.slint:160 ui/app.slint:311 ui/app.slint:312 ui/app.slint:377
 msgctxt "SteamSetupDialog"
 msgid "Steam needs a copy of Guild Wars 2"
 msgstr "Steam braucht eine Kopie von Guild Wars 2"
 
-#: ui/app.slint:161 ui/app.slint:312 ui/app.slint:313
+#: ui/app.slint:161 ui/app.slint:312 ui/app.slint:313 ui/app.slint:378
 msgctxt "SteamSetupDialog"
 msgid "Finish the installation in Steam"
 msgstr "Installation in Steam abschließen"
 
-#: ui/app.slint:206 ui/app.slint:357 ui/app.slint:358
+#: ui/app.slint:206 ui/app.slint:357 ui/app.slint:358 ui/app.slint:423
 msgctxt "SteamSetupDialog"
 msgid ""
 "„{}“ is a Steam account, and Steam only signs in a Guild Wars 2 that it "
@@ -1033,12 +1033,12 @@ msgstr ""
 "das es selbst installiert hat. Breakbar kann deine bestehende Installation "
 "mit Steam verknüpfen, sodass nichts erneut heruntergeladen werden muss."
 
-#: ui/app.slint:212 ui/app.slint:363 ui/app.slint:364
+#: ui/app.slint:212 ui/app.slint:363 ui/app.slint:364 ui/app.slint:429
 msgctxt "SteamSetupDialog"
 msgid "A link will be created:"
 msgstr "Es wird eine Verknüpfung angelegt:"
 
-#: ui/app.slint:225 ui/app.slint:376 ui/app.slint:377
+#: ui/app.slint:225 ui/app.slint:376 ui/app.slint:377 ui/app.slint:442
 msgctxt "SteamSetupDialog"
 msgid ""
 "The link to your Guild Wars 2 folder is in place. Open Steam, select Guild "
@@ -1050,7 +1050,7 @@ msgstr ""
 "findet die vorhandenen Dateien und lädt nur wenige Megabyte herunter. "
 "Bestätige hier, sobald es fertig ist."
 
-#: ui/app.slint:231 ui/app.slint:382 ui/app.slint:383
+#: ui/app.slint:231 ui/app.slint:382 ui/app.slint:383 ui/app.slint:448
 msgctxt "SteamSetupDialog"
 msgid ""
 "Steam's installation was not found yet. Wait until Steam has finished and "
@@ -1059,22 +1059,22 @@ msgstr ""
 "Die Steam-Installation wurde noch nicht gefunden. Warte, bis Steam fertig "
 "ist, und versuche es erneut."
 
-#: ui/app.slint:242 ui/app.slint:393 ui/app.slint:394
+#: ui/app.slint:242 ui/app.slint:393 ui/app.slint:394 ui/app.slint:459
 msgctxt "SteamSetupDialog"
 msgid "Cancel"
 msgstr "Abbrechen"
 
-#: ui/app.slint:242 ui/app.slint:393 ui/app.slint:394
+#: ui/app.slint:242 ui/app.slint:393 ui/app.slint:394 ui/app.slint:459
 msgctxt "SteamSetupDialog"
 msgid "Later"
 msgstr "Später"
 
-#: ui/app.slint:248 ui/app.slint:399 ui/app.slint:400
+#: ui/app.slint:248 ui/app.slint:399 ui/app.slint:400 ui/app.slint:465
 msgctxt "SteamSetupDialog"
 msgid "Create link"
 msgstr "Verknüpfung erstellen"
 
-#: ui/app.slint:254 ui/app.slint:405 ui/app.slint:406
+#: ui/app.slint:254 ui/app.slint:405 ui/app.slint:406 ui/app.slint:471
 msgctxt "SteamSetupDialog"
 msgid "Download finished"
 msgstr "Download fertig"
@@ -1266,7 +1266,7 @@ msgctxt "SettingsPage"
 msgid "Theme"
 msgstr "Farbschema"
 
-#: ui/settings.slint:302 ui/settings.slint:306 ui/settings.slint:311 ui/settings.slint:435
+#: ui/settings.slint:302 ui/settings.slint:306 ui/settings.slint:311 ui/settings.slint:413 ui/settings.slint:436
 #. The language names are shown in their own language on purpose.
 msgctxt "SettingsPage"
 msgid "System"
@@ -1311,59 +1311,77 @@ msgstr ""
 "Kein offizielles Guild-Wars-2-Angebot. Ein Fanprojekt von breakbar.cc. Guild "
 "Wars 2 ist eine Marke von ArenaNet."
 
-#: ui/settings.slint:327 ui/settings.slint:428
+#: ui/settings.slint:327 ui/settings.slint:428 ui/settings.slint:429
 msgctxt "SettingsPage"
 msgid "Language"
 msgstr "Sprache"
 
-#: ui/settings.slint:341 ui/settings.slint:442
+#: ui/settings.slint:341 ui/settings.slint:442 ui/settings.slint:443
 msgctxt "SettingsPage"
 msgid "System follows the Windows display language."
 msgstr "System folgt der Anzeigesprache von Windows."
 
-#: ui/settings.slint:344
+#: ui/settings.slint:344 ui/settings.slint:345
 msgctxt "SettingsPage"
 msgid "// SWITCHER"
 msgstr "// SWITCHER"
 
-#: ui/settings.slint:347
+#: ui/settings.slint:347 ui/settings.slint:348
 msgctxt "SettingsPage"
 msgid "Show the switcher"
 msgstr "Switcher anzeigen"
 
-#: ui/settings.slint:348
+#: ui/settings.slint:348 ui/settings.slint:349
 msgctxt "SettingsPage"
 msgid "A small bar over the game to jump between clients."
 msgstr "Eine kleine Leiste über dem Spiel, um zwischen Clients zu wechseln."
 
-#: ui/settings.slint:353
+#: ui/settings.slint:353 ui/settings.slint:354
 msgctxt "SettingsPage"
 msgid "Only while a client is running"
 msgstr "Nur wenn ein Client läuft"
 
-#: ui/settings.slint:354
+#: ui/settings.slint:354 ui/settings.slint:355
 msgctxt "SettingsPage"
 msgid "Otherwise it stays on screen as long as Breakbar runs."
 msgstr "Sonst bleibt sie sichtbar, solange Breakbar läuft."
 
-#: ui/settings.slint:360
+#: ui/settings.slint:360 ui/settings.slint:361
 msgctxt "SettingsPage"
 msgid "Lock the position"
 msgstr "Position sperren"
 
-#: ui/settings.slint:361
+#: ui/settings.slint:361 ui/settings.slint:362
 msgctxt "SettingsPage"
 msgid "The bar can no longer be dragged."
 msgstr "Die Leiste lässt sich nicht mehr verschieben."
 
-#: ui/settings.slint:372 ui/settings.slint:386
+#: ui/settings.slint:372 ui/settings.slint:386 ui/settings.slint:373
 msgctxt "SettingsPage"
 msgid "Opacity at rest"
 msgstr "Deckkraft im Ruhezustand"
 
-#: ui/settings.slint:393
+#: ui/settings.slint:393 ui/settings.slint:394
 msgctxt "SettingsPage"
 msgid ""
 "Under the pointer the bar is always fully opaque. It is visible over windows "
 "and borderless fullscreen, not over exclusive fullscreen."
-msgstr "Unter dem Mauszeiger ist die Leiste immer voll sichtbar. Sie erscheint über Fenstern und randlosem Vollbild, nicht über exklusivem Vollbild."
+msgstr ""
+"Unter dem Mauszeiger ist die Leiste immer voll sichtbar. Sie erscheint über "
+"Fenstern und randlosem Vollbild, nicht über exklusivem Vollbild."
+
+#: ui/app.slint:329
+msgctxt "RefreshBanner"
+msgid "The game was updated"
+msgstr "Das Spiel wurde aktualisiert"
+
+#: ui/app.slint:336
+msgctxt "RefreshBanner"
+msgid ""
+"These accounts have to refresh their login once, which needs one start each:"
+msgstr "Diese Accounts müssen ihren Login einmal auffrischen, dafür ist je ein Start nötig:"
+
+#: ui/app.slint:355
+msgctxt "RefreshBanner"
+msgid "Set up one after another"
+msgstr "Nacheinander einrichten"

@@ -185,7 +185,11 @@ pub fn launch(
         return Err(LaunchError::AlreadyRunning(account.name.clone()));
     }
 
-    let setup = mode == LaunchMode::SetUpLogin || !bb_store::is_set_up(account.id);
+    // A `Local.dat` from before the last game update has to be refreshed by a launch that can
+    // write it, just like a missing one.
+    let setup = mode == LaunchMode::SetUpLogin
+        || !bb_store::is_set_up(account.id)
+        || crate::game::login_outdated(gw2_path, account.id);
     let others_running = !running_clients(gw2_path).is_empty();
     if setup && others_running {
         return Err(LaunchError::SetupNeedsExclusive(account.name.clone()));

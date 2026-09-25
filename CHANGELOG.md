@@ -6,6 +6,17 @@ All notable changes to Breakbar Launcher. The format follows
 
 Everything before 0.2.0 is in the git history and in [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
 
+## [0.8.0] - 2026-09-25
+
+### Added
+
+- Game update detection: an account whose `Local.dat` is older than the installed game (its
+  `Gw2.dat`) shows "Login required", and its start is a setup launch, which refreshes the login
+  (a start with `-shareArchive` can't). A banner above the list, "The game was updated", names the
+  affected accounts, and "Set up one after another" refreshes them one by one: the first starts at
+  once, each further one is offered after the previous finished. The check runs locally every
+  5 seconds, no network.
+
 ## [0.7.1] - 2026-09-25
 
 ### Fixed

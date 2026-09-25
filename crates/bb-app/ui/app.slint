@@ -295,6 +295,71 @@ component LoginSetupBanner {
     }
 }
 
+/// Shown above the list after a game update: the accounts that have to refresh their login once.
+component RefreshBanner {
+    in property <string> names;
+    in property <bool> enabled: true;
+    callback refresh();
+
+    height: content.preferred-height;
+
+    Rectangle {
+        border-radius: Theme.radius-card;
+        background: Theme.ok-soft;
+        border-width: 1px;
+        border-color: Theme.ok.with-alpha(0.4);
+    }
+    content := VerticalLayout {
+        padding: 12px;
+        spacing: 10px;
+        HorizontalLayout {
+            spacing: 10px;
+            VerticalLayout {
+                alignment: start;
+                padding-top: 1px;
+                Icon {
+                    path: Icons.checkcircle;
+                    color: Theme.ok;
+                }
+            }
+            VerticalLayout {
+                horizontal-stretch: 1;
+                spacing: 4px;
+                Text {
+                    text: @tr("The game was updated");
+                    font-size: Theme.fs-body;
+                    font-weight: 600;
+                    color: Theme.text;
+                    wrap: word-wrap;
+                }
+                Text {
+                    text: @tr("These accounts have to refresh their login once, which needs one start each:");
+                    font-size: 12.5px;
+                    color: Theme.text-muted;
+                    wrap: word-wrap;
+                }
+                Text {
+                    text: root.names;
+                    font-family: Theme.font-mono;
+                    font-size: 12px;
+                    color: Theme.text;
+                    wrap: word-wrap;
+                }
+            }
+        }
+        HorizontalLayout {
+            alignment: start;
+            Button {
+                kind: ButtonKind.primary;
+                icon: Icons.login;
+                text: @tr("Set up one after another");
+                enabled: root.enabled;
+                clicked => { root.refresh(); }
+            }
+        }
+    }
+}
+
 /// Steam accounts need Steam's own copy of the game: offers to link the existing installation into
 /// Steam (step `link`), then waits for the user to click Install in Steam (step `install`).
 component SteamSetupDialog {
@@ -454,6 +519,8 @@ export component MainWindow inherits Window {
     in property <bool> steam-setup-retry;
     /// Name of the account whose login is being set up (empty = none) and whether it is a Steam account.
     in property <string> login-setup-name;
+    /// Names (joined) of the accounts whose login is older than the game; empty = none.
+    in property <string> refresh-names;
     in property <bool> login-setup-steam;
     /// Account whose login setup is offered after creating it (0 = no dialog), its name and platform.
     in property <int> login-offer-id;
@@ -510,6 +577,10 @@ export component MainWindow inherits Window {
     /// Login offer dialog: set it up now (account id) / later.
     callback login-offer-accept(int);
     callback login-offer-dismiss();
+    /// Refresh the logins of the accounts in `refresh-names`, one after another.
+    callback refresh-logins();
+    /// A client exited (Rust calls this; true if it was a setup launch that finished properly).
+    callback client-exited(bool);
     callback dismiss-toast(int);
     /// The theme switched between dark and light (the native title bar has to follow).
     callback theme-changed(bool);
@@ -631,6 +702,17 @@ export component MainWindow inherits Window {
             LoginSetupBanner {
                 name: root.login-setup-name;
                 steam: root.login-setup-steam;
+            }
+        }
+
+        if root.refresh-names != "": HorizontalLayout {
+            padding-left: 12px;
+            padding-right: 12px;
+            padding-bottom: 8px;
+            RefreshBanner {
+                names: root.refresh-names;
+                enabled: root.login-setup-name == "";
+                refresh => { root.refresh-logins(); }
             }
         }
 

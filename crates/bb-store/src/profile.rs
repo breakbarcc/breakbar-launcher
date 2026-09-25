@@ -71,6 +71,30 @@ pub fn is_set_up(account_id: AccountId) -> bool {
     local_dat_path(account_id).is_ok_and(|path| path.is_file())
 }
 
+/// The file that records the game build a setup launch of this account last finished against.
+fn verified_build_path(account_id: AccountId) -> Result<PathBuf, StoreError> {
+    Ok(profile_dir(account_id)?.join("build-verified.txt"))
+}
+
+/// The game build (see `game_build` in the app) the account's `Local.dat` was last brought up to
+/// date against by a setup launch, if it has been. A `Local.dat` that is older than the game but
+/// was verified for this very build is not out of date: the client only rewrites it when it has
+/// something to change.
+pub fn verified_build(account_id: AccountId) -> Option<u64> {
+    std::fs::read_to_string(verified_build_path(account_id).ok()?)
+        .ok()?
+        .trim()
+        .parse()
+        .ok()
+}
+
+/// Records that a setup launch of the account finished against game build `build`.
+pub fn mark_build_verified(account_id: AccountId, build: u64) -> Result<(), StoreError> {
+    ensure_profile_dir(account_id)?;
+    let path = verified_build_path(account_id)?;
+    std::fs::write(&path, build.to_string()).map_err(|source| StoreError::Io { path, source })
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
