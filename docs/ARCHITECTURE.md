@@ -188,21 +188,21 @@ struct CompanionApp {
   of opening a second window over the same accounts. "After starting an account" (`AfterStart` in
   `config.toml`, mirrored as a Slint enum in `settings.slint`) then decides what a `Play` launch
   (not setup, not a manual stop) does to the window afterwards: nothing, hide to the tray, or quit.
-- **Instance-switcher overlay** (, ; design hand-off section 6):
-  a second top-level  component (, exported through  next to
-   so  generates bindings for it too). , ,
-  transparent window background (the visible pill is a child ). A grip strip on the left
-  is the only , then one fixed-size numbered chip for each of the first four
-  accounts, running or not — never names, which made the bar reflow while switching. Left click on a
-  running chip switches to its game window; on an idle one it opens a menu with "Start"; right
-  click on a running one opens "Stop". Each menu starts with the account's name. The menus are
-  native Win32 popups (, shared with the tray), not Slint s: on this
-  backend an embedded popup is clipped to its owning window, and this window is only as big as the
-  bar. The bar only shows while some account is active.  owns it and a 500 ms
-   that rebuilds the chips from the main window's rows, highlights the chip whose
-  client owns the foreground window (matched by PID) and saves the dragged-to position
-  (). **First pass only:** no global hotkeys, other sizes, vertical
-  orientation, opacity control or settings section (screen 15) yet.
+- **Instance-switcher overlay** (`ui/overlay.slint`, `overlay.rs`; design hand-off section 6):
+  a second top-level `Window` component (`OverlaySwitcher`, exported through `app.slint` next to
+  `MainWindow` so `slint_build` generates bindings for it too): `no-frame`, `always-on-top`,
+  transparent window background (the visible pill is a child `Rectangle`). A grip strip on the
+  left is the only `WindowMoveArea`, followed by one fixed-size numbered chip for each of the
+  first four accounts, running or not — never names, which made the bar reflow while switching.
+  Left click on a running chip switches to its game window; on an idle one it opens a menu with
+  "Start"; right click on a running one opens "Stop". Each menu starts with the account's name.
+  The menus are native Win32 popups (`bb_win::menu`, shared with the tray), not Slint
+  `PopupWindow`s: on this backend an embedded popup is clipped to its owning window, and this
+  window is only as big as the bar. The bar only shows while some account is active.
+  `overlay::Overlay` owns it plus a 500 ms `slint::Timer` that rebuilds the chips from the main
+  window's rows, highlights the chip whose client owns the foreground window (matched by PID) and
+  saves the dragged-to position (`bb_store::OverlayPosition`). **First pass only:** no global
+  hotkeys, other sizes, vertical orientation, opacity control or settings section (screen 15).
 - **Pitfall: `TouchArea` + `FocusScope` pairs.** Every clickable component pairs a `TouchArea`
   (the click) with a `FocusScope`-derived one (keyboard activation, e.g. our shared `Activation`
   helper). `FocusScope`'s `focus-on-click` defaults to `true` and grabs the mouse-down itself to
