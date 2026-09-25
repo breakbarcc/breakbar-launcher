@@ -175,7 +175,7 @@ msgctxt "MainWindow"
 msgid "RUNNING"
 msgstr "LAUFEN"
 
-#: ui/app.slint:308 ui/app.slint:358 ui/app.slint:332 ui/app.slint:381 ui/app.slint:436 ui/app.slint:492 ui/app.slint:597
+#: ui/app.slint:308 ui/app.slint:358 ui/app.slint:332 ui/app.slint:381 ui/app.slint:492 ui/app.slint:597 ui/app.slint:600
 msgctxt "MainWindow"
 msgid "Add account"
 msgstr "Account hinzufügen"
@@ -234,7 +234,7 @@ msgctxt "Toast"
 msgid "Dismiss"
 msgstr "Hinweis schließen"
 
-#: ui/messages.slint:20 ui/messages.slint:66 ui/messages.slint:21 ui/messages.slint:72
+#: ui/messages.slint:20 ui/messages.slint:66 ui/messages.slint:21 ui/messages.slint:23
 msgctxt "Messages"
 msgid "Start failed"
 msgstr "Start fehlgeschlagen"
@@ -384,47 +384,47 @@ msgctxt "Messages"
 msgid "Settings"
 msgstr "Einstellungen"
 
-#: ui/messages.slint:122 ui/messages.slint:126 ui/messages.slint:134 ui/messages.slint:216
+#: ui/messages.slint:122 ui/messages.slint:126 ui/messages.slint:134
 msgctxt "Messages"
 msgid "The file dialog could not be opened: {}"
 msgstr "Der Dateidialog konnte nicht geöffnet werden: {}"
 
-#: ui/messages.slint:126 ui/messages.slint:130 ui/messages.slint:138 ui/messages.slint:220
+#: ui/messages.slint:126 ui/messages.slint:130 ui/messages.slint:138
 msgctxt "Messages"
 msgid "Choose the Guild Wars 2 client first."
 msgstr "Wähle zuerst den Guild-Wars-2-Client."
 
-#: ui/messages.slint:130 ui/messages.slint:134 ui/messages.slint:142 ui/messages.slint:224
+#: ui/messages.slint:130 ui/messages.slint:134 ui/messages.slint:142
 msgctxt "Messages"
 msgid "Not the Guild Wars 2 client"
 msgstr "Nicht der Guild-Wars-2-Client"
 
-#: ui/messages.slint:134 ui/messages.slint:138 ui/messages.slint:146 ui/messages.slint:228
+#: ui/messages.slint:134 ui/messages.slint:138 ui/messages.slint:146
 msgctxt "Messages"
 msgid "Guild Wars 2 client not usable"
 msgstr "Guild-Wars-2-Client nicht nutzbar"
 
-#: ui/messages.slint:139 ui/messages.slint:186 ui/messages.slint:194 ui/messages.slint:276
+#: ui/messages.slint:139 ui/messages.slint:186 ui/messages.slint:194
 msgctxt "Messages"
 msgid "The file does not exist."
 msgstr "Die Datei existiert nicht."
 
-#: ui/messages.slint:142 ui/messages.slint:189 ui/messages.slint:197 ui/messages.slint:279
+#: ui/messages.slint:142 ui/messages.slint:189 ui/messages.slint:197
 msgctxt "Messages"
 msgid "The file could not be read: {}"
 msgstr "Die Datei konnte nicht gelesen werden: {}"
 
-#: ui/messages.slint:145 ui/messages.slint:192 ui/messages.slint:200 ui/messages.slint:282
+#: ui/messages.slint:145 ui/messages.slint:192 ui/messages.slint:200
 msgctxt "Messages"
 msgid "The file is not a Windows program."
 msgstr "Die Datei ist kein Windows-Programm."
 
-#: ui/messages.slint:148 ui/messages.slint:195 ui/messages.slint:203 ui/messages.slint:285
+#: ui/messages.slint:148 ui/messages.slint:195 ui/messages.slint:203
 msgctxt "Messages"
 msgid "Only the 64-bit client (Gw2-64.exe) is supported."
 msgstr "Nur der 64-Bit-Client (Gw2-64.exe) wird unterstützt."
 
-#: ui/messages.slint:150 ui/messages.slint:197 ui/messages.slint:205 ui/messages.slint:287
+#: ui/messages.slint:150 ui/messages.slint:197 ui/messages.slint:205
 msgctxt "Messages"
 msgid "The file is not the Guild Wars 2 client."
 msgstr "Die Datei ist nicht der Guild-Wars-2-Client."
@@ -474,7 +474,7 @@ msgctxt "AccountCard"
 msgid "Del"
 msgstr "Entf"
 
-#: ui/app.slint:124 ui/app.slint:140 ui/app.slint:92 ui/app.slint:108 ui/app.slint:96
+#: ui/app.slint:124 ui/app.slint:140 ui/app.slint:92 ui/app.slint:108 ui/app.slint:97 ui/app.slint:113
 msgctxt "ConfirmDelete"
 msgid "Delete „{}“?"
 msgstr "„{}“ löschen?"
@@ -852,7 +852,7 @@ msgctxt "MainWindow"
 msgid "Settings"
 msgstr "Einstellungen"
 
-#: ui/settings.slint:51 ui/settings.slint:110
+#: ui/settings.slint:51 ui/settings.slint:110 ui/settings.slint:113
 msgctxt "PathField"
 msgid "Browse…"
 msgstr "Durchsuchen…"
@@ -877,7 +877,7 @@ msgctxt "SettingsPage"
 msgid "Gw2-64.exe found"
 msgstr "Gw2-64.exe gefunden"
 
-#: ui/settings.slint:127 ui/settings.slint:135 ui/settings.slint:129 ui/settings.slint:190
+#: ui/settings.slint:127 ui/settings.slint:135 ui/settings.slint:129 ui/settings.slint:195 ui/settings.slint:203
 msgctxt "SettingsPage"
 msgid "File not found. Check the path."
 msgstr "Datei nicht gefunden. Prüfe den Pfad."
@@ -897,17 +897,17 @@ msgctxt "Messages"
 msgid "{}"
 msgstr "{}"
 
-#: ui/settings.slint:142 ui/settings.slint:203
+#: ui/settings.slint:142 ui/settings.slint:203 ui/settings.slint:234
 msgctxt "SettingsPage"
 msgid "// BEHAVIOR"
 msgstr "// VERHALTEN"
 
-#: ui/settings.slint:150 ui/settings.slint:164 ui/settings.slint:239
+#: ui/settings.slint:150 ui/settings.slint:164 ui/settings.slint:239 ui/settings.slint:284
 msgctxt "SettingsPage"
 msgid "Start with Windows"
 msgstr "Mit Windows starten"
 
-#: ui/settings.slint:155 ui/settings.slint:244
+#: ui/settings.slint:155 ui/settings.slint:244 ui/settings.slint:275
 msgctxt "SettingsPage"
 msgid "Opens the launcher when you sign in."
 msgstr "Öffnet den Launcher bei der Anmeldung."
@@ -967,22 +967,22 @@ msgctxt "Messages"
 msgid "Tray icon could not be created"
 msgstr "Tray-Symbol konnte nicht erstellt werden"
 
-#: ui/settings.slint:208
+#: ui/settings.slint:208 ui/settings.slint:239
 msgctxt "SettingsPage"
 msgid "After starting an account"
 msgstr "Nach dem Start"
 
-#: ui/settings.slint:214
+#: ui/settings.slint:214 ui/settings.slint:245
 msgctxt "SettingsPage"
 msgid "Keep the window open"
 msgstr "Fenster geöffnet lassen"
 
-#: ui/settings.slint:219
+#: ui/settings.slint:219 ui/settings.slint:250
 msgctxt "SettingsPage"
 msgid "Minimize to the tray"
 msgstr "In den Tray minimieren"
 
-#: ui/settings.slint:224
+#: ui/settings.slint:224 ui/settings.slint:255
 msgctxt "SettingsPage"
 msgid "Close the launcher"
 msgstr "Launcher schließen"
@@ -1012,17 +1012,17 @@ msgctxt "Messages"
 msgid "Start"
 msgstr "Starten"
 
-#: ui/app.slint:160 ui/app.slint:311
+#: ui/app.slint:160 ui/app.slint:311 ui/app.slint:312
 msgctxt "SteamSetupDialog"
 msgid "Steam needs a copy of Guild Wars 2"
 msgstr "Steam braucht eine Kopie von Guild Wars 2"
 
-#: ui/app.slint:161 ui/app.slint:312
+#: ui/app.slint:161 ui/app.slint:312 ui/app.slint:313
 msgctxt "SteamSetupDialog"
 msgid "Finish the installation in Steam"
 msgstr "Installation in Steam abschließen"
 
-#: ui/app.slint:206 ui/app.slint:357
+#: ui/app.slint:206 ui/app.slint:357 ui/app.slint:358
 msgctxt "SteamSetupDialog"
 msgid ""
 "„{}“ is a Steam account, and Steam only signs in a Guild Wars 2 that it "
@@ -1033,12 +1033,12 @@ msgstr ""
 "das es selbst installiert hat. Breakbar kann deine bestehende Installation "
 "mit Steam verknüpfen, sodass nichts erneut heruntergeladen werden muss."
 
-#: ui/app.slint:212 ui/app.slint:363
+#: ui/app.slint:212 ui/app.slint:363 ui/app.slint:364
 msgctxt "SteamSetupDialog"
 msgid "A link will be created:"
 msgstr "Es wird eine Verknüpfung angelegt:"
 
-#: ui/app.slint:225 ui/app.slint:376
+#: ui/app.slint:225 ui/app.slint:376 ui/app.slint:377
 msgctxt "SteamSetupDialog"
 msgid ""
 "The link to your Guild Wars 2 folder is in place. Open Steam, select Guild "
@@ -1050,7 +1050,7 @@ msgstr ""
 "findet die vorhandenen Dateien und lädt nur wenige Megabyte herunter. "
 "Bestätige hier, sobald es fertig ist."
 
-#: ui/app.slint:231 ui/app.slint:382
+#: ui/app.slint:231 ui/app.slint:382 ui/app.slint:383
 msgctxt "SteamSetupDialog"
 msgid ""
 "Steam's installation was not found yet. Wait until Steam has finished and "
@@ -1059,22 +1059,22 @@ msgstr ""
 "Die Steam-Installation wurde noch nicht gefunden. Warte, bis Steam fertig "
 "ist, und versuche es erneut."
 
-#: ui/app.slint:242 ui/app.slint:393
+#: ui/app.slint:242 ui/app.slint:393 ui/app.slint:394
 msgctxt "SteamSetupDialog"
 msgid "Cancel"
 msgstr "Abbrechen"
 
-#: ui/app.slint:242 ui/app.slint:393
+#: ui/app.slint:242 ui/app.slint:393 ui/app.slint:394
 msgctxt "SteamSetupDialog"
 msgid "Later"
 msgstr "Später"
 
-#: ui/app.slint:248 ui/app.slint:399
+#: ui/app.slint:248 ui/app.slint:399 ui/app.slint:400
 msgctxt "SteamSetupDialog"
 msgid "Create link"
 msgstr "Verknüpfung erstellen"
 
-#: ui/app.slint:254 ui/app.slint:405
+#: ui/app.slint:254 ui/app.slint:405 ui/app.slint:406
 msgctxt "SteamSetupDialog"
 msgid "Download finished"
 msgstr "Download fertig"
@@ -1121,62 +1121,70 @@ msgctxt "AccountEditor"
 msgid "Repair login file"
 msgstr "Login-Datei reparieren"
 
-#: ui/app.slint:153
+#: ui/app.slint:153 ui/app.slint:154
 msgctxt "LoginOfferDialog"
 msgid "Set up the login of „{}“?"
 msgstr "Login von „{}“ einrichten?"
 
-#: ui/app.slint:205
+#: ui/app.slint:205 ui/app.slint:206
 msgctxt "LoginOfferDialog"
 msgid ""
 "The client starts once so it can create the account's login file. Let it "
 "finish loading, then close it normally."
-msgstr "Der Client startet einmal, damit er die Login-Datei des Accounts anlegen kann. Lass ihn fertig laden und schließe ihn dann normal."
+msgstr ""
+"Der Client startet einmal, damit er die Login-Datei des Accounts anlegen "
+"kann. Lass ihn fertig laden und schließe ihn dann normal."
 
-#: ui/app.slint:206
+#: ui/app.slint:206 ui/app.slint:207
 msgctxt "LoginOfferDialog"
 msgid ""
 "1. The normal Guild Wars 2 login opens.\n2. Log in once with „Remember email/"
 "password“ ticked.\n3. Close the client normally so the login is saved. "
 "After that the account starts automatically."
 msgstr ""
-"1. Der normale Guild-Wars-2-Login öffnet sich.\n2. Melde dich einmal an, mit "
-"gesetztem „E-Mail/Passwort merken“.\n3. Schließe den Client normal, damit "
-"der Login gespeichert wird. Danach startet der Account automatisch."
+"1. Der normale Guild-Wars-2-Login öffnet sich.\n2. Melde dich einmal an, "
+"mit gesetztem „E-Mail/Passwort merken“.\n3. Schließe den Client normal, "
+"damit der Login gespeichert wird. Danach startet der Account automatisch."
 
-#: ui/app.slint:222
+#: ui/app.slint:222 ui/app.slint:223
 msgctxt "LoginOfferDialog"
 msgid "Breakbar stores no passwords."
 msgstr "Breakbar speichert keine Passwörter."
 
-#: ui/app.slint:234
+#: ui/app.slint:234 ui/app.slint:235
 msgctxt "LoginOfferDialog"
 msgid "Later"
 msgstr "Später"
 
-#: ui/app.slint:240
+#: ui/app.slint:240 ui/app.slint:241
 msgctxt "LoginOfferDialog"
 msgid "Set up now"
 msgstr "Jetzt einrichten"
 
-#: ui/app.slint:256 ui/app.slint:279
+#: ui/app.slint:256 ui/app.slint:279 ui/app.slint:257 ui/app.slint:280
 msgctxt "LoginSetupBanner"
 msgid "Setting up „{}“"
 msgstr "„{}“ wird eingerichtet"
 
-#: ui/app.slint:287
+#: ui/app.slint:287 ui/app.slint:288
 msgctxt "LoginSetupBanner"
 msgid ""
 "Let the client finish loading, then close it normally so its login file is "
 "complete. Other accounts can be started afterwards."
-msgstr "Lass den Client fertig laden und schließe ihn dann normal, damit seine Login-Datei vollständig ist. Danach können andere Accounts gestartet werden."
+msgstr ""
+"Lass den Client fertig laden und schließe ihn dann normal, damit seine "
+"Login-Datei vollständig ist. Danach können andere Accounts gestartet "
+"werden."
 
-#: ui/app.slint:288
+#: ui/app.slint:288 ui/app.slint:289
 msgctxt "LoginSetupBanner"
 msgid ""
 "Log in with „Remember email/password“ ticked, then close the client "
 "normally so the login is saved. Other accounts can be started afterwards."
-msgstr "Melde dich mit gesetztem „E-Mail/Passwort merken“ an und schließe den Client dann normal, damit der Login gespeichert wird. Danach können andere Accounts gestartet werden."
+msgstr ""
+"Melde dich mit gesetztem „E-Mail/Passwort merken“ an und schließe den "
+"Client dann normal, damit der Login gespeichert wird. Danach können andere "
+"Accounts gestartet werden."
 
 #: ui/messages.slint:76
 msgctxt "Messages"
@@ -1198,11 +1206,48 @@ msgctxt "Messages"
 msgid ""
 "The login file of „{}“ did not change. Let the client finish loading "
 "before closing it, then try again."
-msgstr "Die Login-Datei von „{}“ hat sich nicht geändert. Lass den Client fertig laden, bevor du ihn schließt, und versuche es erneut."
+msgstr ""
+"Die Login-Datei von „{}“ hat sich nicht geändert. Lass den Client "
+"fertig laden, bevor du ihn schließt, und versuche es erneut."
 
 #: ui/messages.slint:92
 msgctxt "Messages"
 msgid ""
 "The login file of „{}“ did not change. Log in with „Remember email/"
 "password“ ticked and close the client normally, then try again."
-msgstr "Die Login-Datei von „{}“ hat sich nicht geändert. Melde dich mit gesetztem „E-Mail/Passwort merken“ an, schließe den Client normal und versuche es erneut."
+msgstr ""
+"Die Login-Datei von „{}“ hat sich nicht geändert. Melde dich mit "
+"gesetztem „E-Mail/Passwort merken“ an, schließe den Client normal und "
+"versuche es erneut."
+
+#: ui/settings.slint:208
+msgctxt "SettingsPage"
+msgid "// GAME"
+msgstr "// SPIEL"
+
+#: ui/settings.slint:213
+msgctxt "SettingsPage"
+msgid "Frame rate limit"
+msgstr "Bildratenbegrenzung"
+
+#: ui/settings.slint:219
+msgctxt "SettingsPage"
+msgid "60 FPS"
+msgstr "60 FPS"
+
+#: ui/settings.slint:219
+msgctxt "SettingsPage"
+msgid "30 FPS"
+msgstr "30 FPS"
+
+#: ui/settings.slint:219
+msgctxt "SettingsPage"
+msgid "Unlimited"
+msgstr "Unbegrenzt"
+
+#: ui/settings.slint:226
+msgctxt "SettingsPage"
+msgid ""
+"Also applies on the character selection screen, where the in-game setting "
+"does not. Useful with several clients, since one is often waiting there."
+msgstr "Gilt auch im Charakterauswahl-Bildschirm, wo die Einstellung im Spiel nicht greift. Sinnvoll bei mehreren Clients, weil oft einer dort wartet."

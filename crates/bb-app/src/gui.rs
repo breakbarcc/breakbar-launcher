@@ -12,8 +12,8 @@ use bb_store::Config;
 use raw_window_handle::{HasWindowHandle, RawWindowHandle};
 use slint::{ComponentHandle, Model, SharedString};
 use ui::{
-    AccountRow, AccountState, AfterStart, CompanionToggle, EditorData, LaunchFailure, LoginState,
-    MainWindow, Messages, PathProblem, SteamSetupStep, Theme, ToastData, ToastKind,
+    AccountRow, AccountState, AfterStart, CompanionToggle, EditorData, FpsLimit, LaunchFailure,
+    LoginState, MainWindow, Messages, PathProblem, SteamSetupStep, Theme, ToastData, ToastKind,
 };
 
 use crate::companions::{self, SharedInstances};
@@ -240,6 +240,7 @@ pub fn run() -> Result<(), slint::PlatformError> {
     show_blish_path(&window, app.blish_hud().map(|app| app.exe.as_path()));
     window.set_autostart(bb_win::autostart::is_enabled(APP_NAME));
     window.set_after_start(to_ui_after_start(app.config.after_start));
+    window.set_fps_limit(to_ui_fps_limit(app.config.fps_limit));
     refresh(&window);
 
     let app = Rc::new(RefCell::new(app));
@@ -533,6 +534,19 @@ pub fn run() -> Result<(), slint::PlatformError> {
         }
     });
 
+    window.on_set_fps_limit({
+        let app = Rc::clone(&app);
+        let weak = window.as_weak();
+        move |value| {
+            if let Some(window) = weak.upgrade() {
+                window.set_fps_limit(value);
+                let mut app = app.borrow_mut();
+                app.config.fps_limit = from_ui_fps_limit(value);
+                app.save(&window);
+            }
+        }
+    });
+
     window.on_dismiss_toast({
         let weak = window.as_weak();
         move |id| {
@@ -680,6 +694,22 @@ fn to_ui_after_start(value: bb_store::AfterStart) -> AfterStart {
         bb_store::AfterStart::KeepOpen => AfterStart::KeepOpen,
         bb_store::AfterStart::MinimizeToTray => AfterStart::MinimizeToTray,
         bb_store::AfterStart::Close => AfterStart::Close,
+    }
+}
+
+fn to_ui_fps_limit(value: bb_store::FpsLimit) -> FpsLimit {
+    match value {
+        bb_store::FpsLimit::Fps60 => FpsLimit::Fps60,
+        bb_store::FpsLimit::Fps30 => FpsLimit::Fps30,
+        bb_store::FpsLimit::Unlimited => FpsLimit::Unlimited,
+    }
+}
+
+fn from_ui_fps_limit(value: FpsLimit) -> bb_store::FpsLimit {
+    match value {
+        FpsLimit::Fps60 => bb_store::FpsLimit::Fps60,
+        FpsLimit::Fps30 => bb_store::FpsLimit::Fps30,
+        FpsLimit::Unlimited => bb_store::FpsLimit::Unlimited,
     }
 }
 
@@ -832,14 +862,19 @@ pub(crate) fn start_account(
     mode: LaunchMode,
 ) {
     let messages = window.global::<Messages>();
-    let (gw2_path, account, companions) = {
+    let (gw2_path, account, companions, fps_limit) = {
         let app = app.borrow();
         let account = app.config.accounts.iter().find(|a| a.id == id).cloned();
         let companions = account
             .as_ref()
             .map(|account| app.companions_of(account))
             .unwrap_or_default();
-        (app.config.gw2_path.clone(), account, companions)
+        (
+            app.config.gw2_path.clone(),
+            account,
+            companions,
+            app.config.fps_limit.frames_per_second(),
+        )
     };
     let Some(gw2_path) = gw2_path else {
         push_toast(
@@ -883,6 +918,7 @@ pub(crate) fn start_account(
         gw2_path,
         account,
         mode,
+        fps_limit,
         companions,
     });
 
@@ -994,6 +1030,8 @@ struct LaunchJob {
     gw2_path: PathBuf,
     account: Account,
     mode: LaunchMode,
+    /// Frame rate limit for the client (`-fps:N`), `None` for unlimited.
+    fps_limit: Option<u32>,
     /// Started together with the client, closed after it exits.
     companions: Vec<CompanionApp>,
 }
@@ -1032,7 +1070,7 @@ fn run_launch(window: &slint::Weak<MainWindow>, shared: &Arc<SharedInstances>, j
     let name = job.account.name.clone();
     let login_before = login_file_stamp(id);
 
-    let launched = match launcher::launch(&job.gw2_path, &job.account, job.mode) {
+    let launched = match launcher::launch(&job.gw2_path, &job.account, job.mode, job.fps_limit) {
         Ok(launched) => launched,
         Err(error) => {
             let _ = window.upgrade_in_event_loop(move |window| {

@@ -3,11 +3,14 @@
 
 import { Theme } from "theme.slint";
 import { Icons } from "icons.slint";
-import { Activation, Icon, Button, FocusRing, IconButton, SectionLabel, FieldLabel, Toggle } from "components.slint";
+import { Activation, Icon, Button, FocusRing, IconButton, SectionLabel, FieldLabel, Toggle, Segmented } from "components.slint";
 
 /// What happens to the main window right after starting an account (not on setup or a manual
 /// stop). Mirrors `bb_store::AfterStart`.
 export enum AfterStart { keep-open, minimize-to-tray, close }
+
+/// Frame rate limit passed to the game (`-fps:N`). Mirrors `bb_store::FpsLimit`.
+export enum FpsLimit { fps60, fps30, unlimited }
 
 /// One row of the "Nach dem Start" radio group: a plain radio dot plus a label, no card chrome.
 component RadioOption {
@@ -138,11 +141,13 @@ export component SettingsPage inherits VerticalLayout {
     in property <bool> blish-path-ok;
     in property <bool> autostart;
     in property <AfterStart> after-start;
+    in property <FpsLimit> fps-limit;
     callback back();
     callback choose-gw2-path();
     callback choose-blish-path();
     callback toggle-autostart();
     callback set-after-start(AfterStart);
+    callback set-fps-limit(FpsLimit);
 
     // Header: back arrow, title (matches the account editor's).
     HorizontalLayout {
@@ -197,6 +202,32 @@ export component SettingsPage inherits VerticalLayout {
                 ok-text: @tr("Blish HUD.exe found");
                 error-text: @tr("File not found. Check the path.");
                 browse => { root.choose-blish-path(); }
+            }
+
+            SectionLabel {
+                text: @tr("// GAME");
+            }
+            VerticalLayout {
+                spacing: 6px;
+                Text {
+                    text: @tr("Frame rate limit");
+                    font-size: Theme.fs-help;
+                    font-weight: 600;
+                    color: Theme.text-muted;
+                }
+                Segmented {
+                    options: [@tr("60 FPS"), @tr("30 FPS"), @tr("Unlimited")];
+                    selected: root.fps-limit == FpsLimit.fps60 ? 0 : root.fps-limit == FpsLimit.fps30 ? 1 : 2;
+                    changed(index) => {
+                        root.set-fps-limit(index == 0 ? FpsLimit.fps60 : index == 1 ? FpsLimit.fps30 : FpsLimit.unlimited);
+                    }
+                }
+                Text {
+                    text: @tr("Also applies on the character selection screen, where the in-game setting does not. Useful with several clients, since one is often waiting there.");
+                    font-size: Theme.fs-help;
+                    color: Theme.text-dim;
+                    wrap: word-wrap;
+                }
             }
 
             SectionLabel {

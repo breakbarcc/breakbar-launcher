@@ -9,6 +9,10 @@ pub struct LaunchOptions {
     pub share_archive: bool,
     /// Log in automatically with the credentials remembered in `Local.dat`.
     pub autologin: bool,
+    /// Frame rate limit (`-fps:N`), which also applies on the character selection screen (the
+    /// in-game setting does not). `None` leaves the client unlimited. Skipped if the account's own
+    /// extra arguments set `-fps` themselves.
+    pub fps_limit: Option<u32>,
 }
 
 impl Default for LaunchOptions {
@@ -16,6 +20,7 @@ impl Default for LaunchOptions {
         Self {
             share_archive: true,
             autologin: true,
+            fps_limit: None,
         }
     }
 }
@@ -38,7 +43,15 @@ pub fn game_args(account: &Account, options: LaunchOptions) -> Vec<String> {
     }
     args.push("-mumble".to_owned());
     args.push(account.mumble_link_name());
-    args.extend(split_args(&account.extra_args));
+    let extra = split_args(&account.extra_args);
+    if let Some(fps) = options.fps_limit
+        && !extra
+            .iter()
+            .any(|arg| arg.to_ascii_lowercase().starts_with("-fps"))
+    {
+        args.push(format!("-fps:{fps}"));
+    }
+    args.extend(extra);
     args
 }
 
@@ -117,8 +130,41 @@ mod tests {
         let options = LaunchOptions {
             share_archive: false,
             autologin: false,
+            fps_limit: None,
         };
         assert_eq!(game_args(&account, options), ["-mumble", "Breakbar_3"]);
+    }
+
+    #[test]
+    fn fps_limit_is_passed_unless_the_account_sets_its_own() {
+        let options = LaunchOptions {
+            fps_limit: Some(60),
+            ..LaunchOptions::default()
+        };
+        let mut account = Account::new(AccountId(4), "Alt");
+        assert_eq!(
+            game_args(&account, options),
+            [
+                "-shareArchive",
+                "-autologin",
+                "-mumble",
+                "Breakbar_4",
+                "-fps:60"
+            ]
+        );
+
+        account.extra_args = "-FPS:30 -dx11".to_owned();
+        assert_eq!(
+            game_args(&account, options),
+            [
+                "-shareArchive",
+                "-autologin",
+                "-mumble",
+                "Breakbar_4",
+                "-FPS:30",
+                "-dx11"
+            ]
+        );
     }
 
     #[test]

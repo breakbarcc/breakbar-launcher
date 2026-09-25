@@ -27,8 +27,14 @@ launch(account):
        filter ObjectType == Mutant, then NtQueryObject(name)  // never query pipes (may hang)
        DuplicateHandle(..., DUPLICATE_CLOSE_SOURCE)
   3. prepare profile (Local.dat) + environment block
-  4. CreateProcessW(Gw2-64.exe, "-shareArchive -autologin -mumble Breakbar_<id> [...]")
+  4. CreateProcessW(Gw2-64.exe, "-shareArchive -autologin -mumble Breakbar_<id> -fps:60 [...]")
 ```
+
+`-fps:N` is the frame rate limit from the settings (60 by default, 30 or unlimited); unlike the
+in-game setting it also applies on the character selection screen, where one client of a multibox
+setup usually waits. It is left out if the account's own extra arguments contain an `-fps` switch.
+`-autologin` alone is unreliable in the game (the login screen may stay open with the remembered
+credentials filled in), a known issue of the flag, not of the launch.
 
 The mutex is closed lazily – only when another client is about to start. No system-wide handle scan,
 no sleep/retry loops.

@@ -159,6 +159,7 @@ pub fn launch(
     gw2_path: &Path,
     account: &Account,
     mode: LaunchMode,
+    fps_limit: Option<u32>,
 ) -> Result<Launched, LaunchError> {
     if !gw2_path.is_file() {
         return Err(LaunchError::NoGamePath);
@@ -196,6 +197,7 @@ pub fn launch(
     let options = LaunchOptions {
         share_archive: !setup,
         autologin: !setup,
+        fps_limit,
     };
     let local_dat = bb_store::local_dat_path(account.id)?;
     let temp_dir = bb_store::ensure_profile_dir(account.id)?.join("Temp");
@@ -439,6 +441,7 @@ mod tests {
             &PathBuf::from(r"C:\does\not\exist\Gw2-64.exe"),
             &account,
             LaunchMode::Play,
+            None,
         );
         assert!(matches!(result, Err(LaunchError::NoGamePath)));
     }
@@ -548,7 +551,7 @@ mod tests {
             let stand_in = PathBuf::from(&windir).join("System32").join("ping.exe");
             let account = Account::new(AccountId(1), "Main");
 
-            let result = launch(&stand_in, &account, LaunchMode::Play);
+            let result = launch(&stand_in, &account, LaunchMode::Play, None);
 
             assert!(matches!(result, Err(LaunchError::ExitedDuringStartup(_))));
             let real = root.join("Roaming").join("Guild Wars 2");

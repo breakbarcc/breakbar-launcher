@@ -31,6 +31,28 @@ pub enum AfterStart {
     Close,
 }
 
+/// Frame rate limit passed to the game as `-fps:N`. Unlike the in-game setting it also applies
+/// on the character selection screen, where multiboxing keeps one client waiting most of the time.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default, Serialize, Deserialize)]
+#[serde(rename_all = "kebab-case")]
+pub enum FpsLimit {
+    #[default]
+    Fps60,
+    Fps30,
+    Unlimited,
+}
+
+impl FpsLimit {
+    /// The frame rate to pass to the game, `None` for no limit.
+    pub fn frames_per_second(self) -> Option<u32> {
+        match self {
+            Self::Fps60 => Some(60),
+            Self::Fps30 => Some(30),
+            Self::Unlimited => None,
+        }
+    }
+}
+
 #[derive(Debug, thiserror::Error)]
 pub enum StoreError {
     #[error("the APPDATA environment variable is not set")]
@@ -61,6 +83,8 @@ pub struct Config {
     pub companions: Vec<CompanionApp>,
     #[serde(default)]
     pub after_start: AfterStart,
+    #[serde(default)]
+    pub fps_limit: FpsLimit,
     /// Last dragged-to position of the instance-switcher overlay. `None` before it's ever been
     /// moved, so it starts at a fixed default position.
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -82,6 +106,7 @@ impl Default for Config {
             accounts: Vec::new(),
             companions: Vec::new(),
             after_start: AfterStart::default(),
+            fps_limit: FpsLimit::default(),
             overlay_position: None,
         }
     }

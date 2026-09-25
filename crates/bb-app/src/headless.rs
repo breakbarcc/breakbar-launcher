@@ -63,7 +63,12 @@ pub fn run(targets: &[LaunchTarget]) -> ExitCode {
     let (companion_errors, receiver) = mpsc::channel::<(String, std::io::Error)>();
     let mut monitors = Vec::new();
     for account in accounts {
-        match launcher::launch(&gw2_path, account, LaunchMode::Play) {
+        match launcher::launch(
+            &gw2_path,
+            account,
+            LaunchMode::Play,
+            config.fps_limit.frames_per_second(),
+        ) {
             Ok(launched) => {
                 let apps = config
                     .companions
