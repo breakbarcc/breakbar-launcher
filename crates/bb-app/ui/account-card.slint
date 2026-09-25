@@ -72,7 +72,7 @@ component StatusLabel {
         }
         if account.state != AccountState.starting && account.state != AccountState.stopping: VerticalLayout {
             alignment: center;
-            padding-top: 2px;
+            padding-top: 4px;
             Icon {
             size: 13px;
             weight: 2;
@@ -296,9 +296,10 @@ export component AccountCard {
         // dot in the accent color while they are.
         if account.has-companions: VerticalLayout {
             alignment: center;
+            padding-bottom: 5px;
             Rectangle {
-                width: 22px;
-                height: 22px;
+                width: 20px;
+                height: 20px;
                 accessible-role: image;
                 accessible-label: account.addon-active ? @tr("Companion app running") : @tr("Companion apps start with it");
                 Image {

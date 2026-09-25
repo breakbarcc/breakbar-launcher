@@ -6,6 +6,13 @@ All notable changes to Breakbar Launcher. The format follows
 
 Everything before 0.2.0 is in the git history and in [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
 
+## [0.7.1] - 2026-09-25
+
+### Fixed
+
+- Fine tuning of the account row: the status icon sits a little lower next to its label, and the
+  companion icon is 20 px and level with the action button.
+
 ## [0.7.0] - 2026-09-25
 
 ### Added
