@@ -12,6 +12,9 @@ export enum AfterStart { keep-open, minimize-to-tray, close }
 /// Frame rate limit passed to the game (`-fps:N`). Mirrors `bb_store::FpsLimit`.
 export enum FpsLimit { fps60, fps30, unlimited }
 
+/// Language of the UI. Mirrors `bb_store::LanguageChoice`.
+export enum LanguageChoice { system, english, german }
+
 /// One row of the "Nach dem Start" radio group: a plain radio dot plus a label, no card chrome.
 component RadioOption {
     in property <string> text;
@@ -142,6 +145,7 @@ export component SettingsPage inherits VerticalLayout {
     in property <bool> autostart;
     in property <AfterStart> after-start;
     in property <FpsLimit> fps-limit;
+    in property <LanguageChoice> language;
     /// Version of Breakbar, shown in the About section.
     in property <string> version;
     callback back();
@@ -151,6 +155,7 @@ export component SettingsPage inherits VerticalLayout {
     callback set-after-start(AfterStart);
     callback set-fps-limit(FpsLimit);
     callback set-theme(ThemeChoice);
+    callback set-language(LanguageChoice);
     callback open-website();
     callback open-license();
 
@@ -311,6 +316,29 @@ export component SettingsPage inherits VerticalLayout {
                 }
                 Text {
                     text: @tr("System follows the Windows app theme.");
+                    font-size: Theme.fs-help;
+                    color: Theme.text-dim;
+                    wrap: word-wrap;
+                }
+            }
+            VerticalLayout {
+                spacing: 6px;
+                Text {
+                    text: @tr("Language");
+                    font-size: Theme.fs-help;
+                    font-weight: 600;
+                    color: Theme.text-muted;
+                }
+                Segmented {
+                    // The language names are shown in their own language on purpose.
+                    options: [@tr("System"), "English", "Deutsch"];
+                    selected: root.language == LanguageChoice.system ? 0 : root.language == LanguageChoice.english ? 1 : 2;
+                    changed(index) => {
+                        root.set-language(index == 0 ? LanguageChoice.system : index == 1 ? LanguageChoice.english : LanguageChoice.german);
+                    }
+                }
+                Text {
+                    text: @tr("System follows the Windows display language.");
                     font-size: Theme.fs-help;
                     color: Theme.text-dim;
                     wrap: word-wrap;

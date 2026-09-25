@@ -7,14 +7,14 @@ import {
 import { AccountCard, AccountRow, AccountState } from "account-card.slint";
 import { AccountEditor, EditorData, CompanionToggle, LoginState } from "editor.slint";
 import { SetupPathPage, SetupAccountPage } from "setup.slint";
-import { AfterStart, FpsLimit, SettingsPage } from "settings.slint";
+import { AfterStart, FpsLimit, LanguageChoice, SettingsPage } from "settings.slint";
 import { Messages, LaunchFailure, PathProblem } from "messages.slint";
 import { OverlaySwitcher, SwitcherEntry } from "overlay.slint";
 
 export {
     Theme, AccountRow, AccountState, ToastData, ToastKind, Messages, LaunchFailure, PathProblem,
-    EditorData, CompanionToggle, LoginState, AfterStart, FpsLimit, OverlaySwitcher,
-    SwitcherEntry, ThemeChoice,
+    EditorData, CompanionToggle, LoginState, AfterStart, FpsLimit, LanguageChoice,
+    OverlaySwitcher, SwitcherEntry, ThemeChoice,
 }
 
 /// Which step of linking the ArenaNet installation into Steam is shown (hidden = no dialog).
@@ -436,6 +436,7 @@ export component MainWindow inherits Window {
     in property <bool> autostart;
     in property <AfterStart> after-start;
     in property <FpsLimit> fps-limit;
+    in property <LanguageChoice> language;
     in property <string> app-version;
     in property <[ToastData]> toasts;
     in-out property <Page> page: Page.accounts;
@@ -473,6 +474,7 @@ export component MainWindow inherits Window {
     callback set-after-start(AfterStart);
     callback set-fps-limit(FpsLimit);
     callback set-theme(ThemeChoice);
+    callback set-language(LanguageChoice);
     callback open-website();
     callback open-license();
     /// Open the editor for an account (0 = a new one).
@@ -822,6 +824,7 @@ export component MainWindow inherits Window {
         autostart: root.autostart;
         after-start: root.after-start;
         fps-limit: root.fps-limit;
+        language: root.language;
         version: root.app-version;
         back => { root.page = Page.accounts; }
         choose-gw2-path => { root.choose-gw2-path(); }
@@ -830,6 +833,7 @@ export component MainWindow inherits Window {
         set-after-start(value) => { root.set-after-start(value); }
         set-fps-limit(value) => { root.set-fps-limit(value); }
         set-theme(value) => { root.set-theme(value); }
+        set-language(value) => { root.set-language(value); }
         open-website => { root.open-website(); }
         open-license => { root.open-license(); }
     }

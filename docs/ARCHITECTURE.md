@@ -196,7 +196,12 @@ struct CompanionApp {
 - **Translations:** all user-visible text goes through Slint's `@tr` — texts the Rust side shows
   (toasts, error details) are functions of the `Messages` global in `ui/messages.slint`. English
   is the source language; German lives in `lang/de/LC_MESSAGES/breakbar-launcher.po` and is bundled at
-  compile time; the language follows Windows. After changing texts:
+  compile time. The language is a setting (`language = "system" | "english" | "german"` in
+  `config.toml`): System follows the Windows display language (German if it is German, English
+  otherwise, via the `sys-locale` crate), the others force one. It is applied with
+  `slint::select_bundled_translation` at startup and when the setting changes, and Slint
+  re-translates all open windows at once. Texts that were already turned into strings (an open
+  toast, an account row's detail line) keep their old language. After changing texts:
   `slint-tr-extractor -j -o lang/de/LC_MESSAGES/breakbar-launcher.po ui/*.slint` (from `crates/bb-app`),
   then translate the new entries.
 - **Screenshots for the README** (`docs/images`): the same test renders them in English at twice the

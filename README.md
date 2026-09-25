@@ -53,7 +53,7 @@ client in front, the spinner is a client that is starting):
 - **Runs in the background:** tray icon, optional start with Windows, and a choice of what the
   window does after starting an account.
 - **Desktop shortcuts** and a [command line](#command-line) to start accounts without opening the window.
-- **Dark and light theme** (or follow Windows), English and German.
+- **Dark and light theme** and **English or German**, each either fixed or following Windows.
 - **Loading screen FPS limit** (`-fps`), 60, 30 or unlimited.
 
 ## How multi-launching works

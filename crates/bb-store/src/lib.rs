@@ -31,6 +31,17 @@ pub enum AfterStart {
     Close,
 }
 
+/// Language of the UI.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default, Serialize, Deserialize)]
+#[serde(rename_all = "kebab-case")]
+pub enum LanguageChoice {
+    /// Follows the Windows display language (German if it is German, English otherwise).
+    #[default]
+    System,
+    English,
+    German,
+}
+
 /// Which color theme the UI uses.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default, Serialize, Deserialize)]
 #[serde(rename_all = "kebab-case")]
@@ -98,6 +109,8 @@ pub struct Config {
     pub fps_limit: FpsLimit,
     #[serde(default)]
     pub theme: ThemeChoice,
+    #[serde(default)]
+    pub language: LanguageChoice,
     /// Last dragged-to position of the instance-switcher overlay. `None` before it's ever been
     /// moved, so it starts at a fixed default position.
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -121,6 +134,7 @@ impl Default for Config {
             after_start: AfterStart::default(),
             fps_limit: FpsLimit::default(),
             theme: ThemeChoice::default(),
+            language: LanguageChoice::default(),
             overlay_position: None,
         }
     }

@@ -6,6 +6,13 @@ All notable changes to Breakbar Launcher. The format follows
 
 Everything before 0.2.0 is in the git history and in [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
 
+## [0.5.0] - 2026-09-25
+
+### Added
+
+- A language setting (System, English, Deutsch) in the settings. System follows the Windows display
+  language, as before; the choice is applied at once and stored in `config.toml`.
+
 ## [0.4.0] - 2026-09-25
 
 ### Changed

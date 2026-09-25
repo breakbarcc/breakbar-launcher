@@ -12,9 +12,9 @@ use bb_store::Config;
 use raw_window_handle::{HasWindowHandle, RawWindowHandle};
 use slint::{ComponentHandle, Model, SharedString};
 use ui::{
-    AccountRow, AccountState, AfterStart, CompanionToggle, EditorData, FpsLimit, LaunchFailure,
-    LoginState, MainWindow, Messages, PathProblem, SteamSetupStep, Theme, ThemeChoice, ToastData,
-    ToastKind,
+    AccountRow, AccountState, AfterStart, CompanionToggle, EditorData, FpsLimit, LanguageChoice,
+    LaunchFailure, LoginState, MainWindow, Messages, PathProblem, SteamSetupStep, Theme,
+    ThemeChoice, ToastData, ToastKind,
 };
 
 use crate::companions::{self, SharedInstances};
@@ -205,6 +205,7 @@ pub fn run() -> Result<(), slint::PlatformError> {
 
     let (mut app, load_error) = App::load();
     let window = MainWindow::new()?;
+    apply_language(app.config.language);
     let messages = window.global::<Messages>();
 
     if let Some(error) = load_error {
@@ -248,6 +249,7 @@ pub fn run() -> Result<(), slint::PlatformError> {
     window.set_after_start(to_ui_after_start(app.config.after_start));
     window.set_fps_limit(to_ui_fps_limit(app.config.fps_limit));
     window.set_app_version(env!("CARGO_PKG_VERSION").into());
+    window.set_language(to_ui_language(app.config.language));
     window
         .global::<Theme>()
         .set_choice(to_ui_theme(app.config.theme));
@@ -554,6 +556,21 @@ pub fn run() -> Result<(), slint::PlatformError> {
     window.on_open_website(|| open_url(WEBSITE_URL));
     window.on_open_license(|| open_url(LICENSE_URL));
 
+    window.on_set_language({
+        let app = Rc::clone(&app);
+        let weak = window.as_weak();
+        move |value| {
+            if let Some(window) = weak.upgrade() {
+                window.set_language(value);
+                let choice = from_ui_language(value);
+                apply_language(choice);
+                let mut app = app.borrow_mut();
+                app.config.language = choice;
+                app.save(&window);
+            }
+        }
+    });
+
     window.on_set_theme({
         let app = Rc::clone(&app);
         let weak = window.as_weak();
@@ -731,6 +748,37 @@ fn to_ui_after_start(value: bb_store::AfterStart) -> AfterStart {
         bb_store::AfterStart::KeepOpen => AfterStart::KeepOpen,
         bb_store::AfterStart::MinimizeToTray => AfterStart::MinimizeToTray,
         bb_store::AfterStart::Close => AfterStart::Close,
+    }
+}
+
+/// Selects the UI language. Slint picks the system language by itself when the first window is
+/// created; this makes the choice explicit (and lets "System" be chosen again later).
+fn apply_language(choice: bb_store::LanguageChoice) {
+    let tag = match choice {
+        bb_store::LanguageChoice::English => "en",
+        bb_store::LanguageChoice::German => "de",
+        bb_store::LanguageChoice::System => match sys_locale::get_locale() {
+            Some(locale) if locale.to_ascii_lowercase().starts_with("de") => "de",
+            _ => "en",
+        },
+    };
+    // Can only fail for a language that is not bundled, and both of these are.
+    let _ = slint::select_bundled_translation(tag);
+}
+
+fn to_ui_language(value: bb_store::LanguageChoice) -> LanguageChoice {
+    match value {
+        bb_store::LanguageChoice::System => LanguageChoice::System,
+        bb_store::LanguageChoice::English => LanguageChoice::English,
+        bb_store::LanguageChoice::German => LanguageChoice::German,
+    }
+}
+
+fn from_ui_language(value: LanguageChoice) -> bb_store::LanguageChoice {
+    match value {
+        LanguageChoice::System => bb_store::LanguageChoice::System,
+        LanguageChoice::English => bb_store::LanguageChoice::English,
+        LanguageChoice::German => bb_store::LanguageChoice::German,
     }
 }
 
