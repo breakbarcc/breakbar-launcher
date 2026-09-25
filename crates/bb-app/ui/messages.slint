@@ -80,6 +80,11 @@ export global Messages {
         @tr("Log in with „Remember email/password“ ticked, then close the client normally so the login is saved. Other accounts can be started afterwards.")
     }
 
+    /// Steam accounts have no login to remember; the setup start only fills their login file.
+    public pure function setting-up-steam() -> string {
+        @tr("Let the client finish loading, then close it normally so its login file is complete. Other accounts can be started afterwards.")
+    }
+
     public pure function slow-start-title() -> string {
         @tr("Unusually slow start")
     }

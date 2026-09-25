@@ -1032,6 +1032,7 @@ fn run_launch(window: &slint::Weak<MainWindow>, shared: &Arc<SharedInstances>, j
     let (hour, minute) = bb_win::time::local_hour_minute();
     let since = format!("{hour:02}:{minute:02}");
     let setup = launched.setup;
+    let steam = job.account.provider == Provider::Steam;
     let warning = launched.warning;
     let _ = window.upgrade_in_event_loop({
         let name = name.clone();
@@ -1047,7 +1048,11 @@ fn run_launch(window: &slint::Weak<MainWindow>, shared: &Arc<SharedInstances>, j
                     &window,
                     ToastKind::Info,
                     messages.invoke_setting_up_title(name.as_str().into()),
-                    messages.invoke_setting_up(),
+                    if steam {
+                        messages.invoke_setting_up_steam()
+                    } else {
+                        messages.invoke_setting_up()
+                    },
                 );
             }
             match warning {
@@ -1951,6 +1956,7 @@ mod preview {
             variant("narrow-dark", true, true, Accounts, (320, 360)),
             variant("settings-dark", true, false, Settings, (420, 700)),
             variant("settings-light", false, false, Settings, (420, 700)),
+            variant("editor-steam-dark", true, false, Editor, (420, 780)),
             variant("steam-link-dark", true, true, Accounts, (420, 520)),
             variant("steam-install-light", false, true, Accounts, (420, 520)),
         ];
@@ -1986,9 +1992,13 @@ mod preview {
             ui.set_editor(EditorData {
                 id: 1,
                 name: "Main".into(),
-                steam: false,
+                steam: name == "editor-steam-dark",
                 args: "-windowed -mapLoadinfo".into(),
-                login: LoginState::SetUp,
+                login: if name == "editor-steam-dark" {
+                    LoginState::Steam
+                } else {
+                    LoginState::SetUp
+                },
                 active: false,
                 companions: Rc::new(slint::VecModel::from(vec![CompanionToggle {
                     id: 1,

@@ -175,7 +175,7 @@ msgctxt "MainWindow"
 msgid "RUNNING"
 msgstr "LAUFEN"
 
-#: ui/app.slint:308 ui/app.slint:358 ui/app.slint:332 ui/app.slint:381 ui/app.slint:307 ui/app.slint:362 ui/app.slint:436
+#: ui/app.slint:308 ui/app.slint:358 ui/app.slint:332 ui/app.slint:381 ui/app.slint:362 ui/app.slint:436 ui/app.slint:492
 msgctxt "MainWindow"
 msgid "Add account"
 msgstr "Account hinzufügen"
@@ -234,7 +234,7 @@ msgctxt "Toast"
 msgid "Dismiss"
 msgstr "Hinweis schließen"
 
-#: ui/messages.slint:20 ui/messages.slint:66 ui/messages.slint:21 ui/messages.slint:72
+#: ui/messages.slint:20 ui/messages.slint:66 ui/messages.slint:21 ui/messages.slint:23
 msgctxt "Messages"
 msgid "Start failed"
 msgstr "Start fehlgeschlagen"
@@ -399,47 +399,47 @@ msgctxt "Messages"
 msgid "Settings"
 msgstr "Einstellungen"
 
-#: ui/messages.slint:122 ui/messages.slint:126 ui/messages.slint:134 ui/messages.slint:204
+#: ui/messages.slint:122 ui/messages.slint:126 ui/messages.slint:134 ui/messages.slint:209
 msgctxt "Messages"
 msgid "The file dialog could not be opened: {}"
 msgstr "Der Dateidialog konnte nicht geöffnet werden: {}"
 
-#: ui/messages.slint:126 ui/messages.slint:130 ui/messages.slint:138 ui/messages.slint:208
+#: ui/messages.slint:126 ui/messages.slint:130 ui/messages.slint:138 ui/messages.slint:213
 msgctxt "Messages"
 msgid "Choose the Guild Wars 2 client first."
 msgstr "Wähle zuerst den Guild-Wars-2-Client."
 
-#: ui/messages.slint:130 ui/messages.slint:134 ui/messages.slint:142 ui/messages.slint:212
+#: ui/messages.slint:130 ui/messages.slint:134 ui/messages.slint:142 ui/messages.slint:217
 msgctxt "Messages"
 msgid "Not the Guild Wars 2 client"
 msgstr "Nicht der Guild-Wars-2-Client"
 
-#: ui/messages.slint:134 ui/messages.slint:138 ui/messages.slint:146 ui/messages.slint:216
+#: ui/messages.slint:134 ui/messages.slint:138 ui/messages.slint:146 ui/messages.slint:221
 msgctxt "Messages"
 msgid "Guild Wars 2 client not usable"
 msgstr "Guild-Wars-2-Client nicht nutzbar"
 
-#: ui/messages.slint:139 ui/messages.slint:186 ui/messages.slint:194 ui/messages.slint:264
+#: ui/messages.slint:139 ui/messages.slint:186 ui/messages.slint:194 ui/messages.slint:269
 msgctxt "Messages"
 msgid "The file does not exist."
 msgstr "Die Datei existiert nicht."
 
-#: ui/messages.slint:142 ui/messages.slint:189 ui/messages.slint:197 ui/messages.slint:267
+#: ui/messages.slint:142 ui/messages.slint:189 ui/messages.slint:197 ui/messages.slint:272
 msgctxt "Messages"
 msgid "The file could not be read: {}"
 msgstr "Die Datei konnte nicht gelesen werden: {}"
 
-#: ui/messages.slint:145 ui/messages.slint:192 ui/messages.slint:200 ui/messages.slint:270
+#: ui/messages.slint:145 ui/messages.slint:192 ui/messages.slint:200 ui/messages.slint:275
 msgctxt "Messages"
 msgid "The file is not a Windows program."
 msgstr "Die Datei ist kein Windows-Programm."
 
-#: ui/messages.slint:148 ui/messages.slint:195 ui/messages.slint:203 ui/messages.slint:273
+#: ui/messages.slint:148 ui/messages.slint:195 ui/messages.slint:203 ui/messages.slint:278
 msgctxt "Messages"
 msgid "Only the 64-bit client (Gw2-64.exe) is supported."
 msgstr "Nur der 64-Bit-Client (Gw2-64.exe) wird unterstützt."
 
-#: ui/messages.slint:150 ui/messages.slint:197 ui/messages.slint:205 ui/messages.slint:275
+#: ui/messages.slint:150 ui/messages.slint:197 ui/messages.slint:205 ui/messages.slint:280
 msgctxt "Messages"
 msgid "The file is not the Guild Wars 2 client."
 msgstr "Die Datei ist nicht der Guild-Wars-2-Client."
@@ -489,7 +489,7 @@ msgctxt "AccountCard"
 msgid "Del"
 msgstr "Entf"
 
-#: ui/app.slint:124 ui/app.slint:140 ui/app.slint:92 ui/app.slint:108 ui/app.slint:96 ui/app.slint:112
+#: ui/app.slint:124 ui/app.slint:140 ui/app.slint:92 ui/app.slint:108 ui/app.slint:112
 msgctxt "ConfirmDelete"
 msgid "Delete „{}“?"
 msgstr "„{}“ löschen?"
@@ -621,15 +621,6 @@ msgstr "Fehlt"
 msgctxt "AccountEditor"
 msgid "Via Steam"
 msgstr "Über Steam"
-
-#: ui/editor.slint:231
-msgctxt "AccountEditor"
-msgid ""
-"Steam signs this account in. It only needs its own login file for its game "
-"settings, which the first start creates."
-msgstr ""
-"Steam meldet diesen Account an. Er braucht nur eine eigene Login-Datei für "
-"seine Spieleinstellungen, die der erste Start anlegt."
 
 #: ui/editor.slint:233
 msgctxt "AccountEditor"
@@ -901,7 +892,7 @@ msgctxt "SettingsPage"
 msgid "Gw2-64.exe found"
 msgstr "Gw2-64.exe gefunden"
 
-#: ui/settings.slint:127 ui/settings.slint:135 ui/settings.slint:129 ui/settings.slint:190
+#: ui/settings.slint:127 ui/settings.slint:135 ui/settings.slint:129 ui/settings.slint:198
 msgctxt "SettingsPage"
 msgid "File not found. Check the path."
 msgstr "Datei nicht gefunden. Prüfe den Pfad."
@@ -911,12 +902,12 @@ msgctxt "SettingsPage"
 msgid "Blish HUD.exe found"
 msgstr "Blish HUD.exe gefunden"
 
-#: ui/messages.slint:126 ui/messages.slint:128
+#: ui/messages.slint:126 ui/messages.slint:128 ui/messages.slint:133
 msgctxt "Messages"
 msgid "Could not change the Windows startup setting"
 msgstr "Windows-Start-Einstellung konnte nicht geändert werden"
 
-#: ui/messages.slint:130 ui/messages.slint:132
+#: ui/messages.slint:130 ui/messages.slint:132 ui/messages.slint:137
 msgctxt "Messages"
 msgid "{}"
 msgstr "{}"
@@ -936,57 +927,57 @@ msgctxt "SettingsPage"
 msgid "Opens the launcher when you sign in."
 msgstr "Öffnet den Launcher bei der Anmeldung."
 
-#: ui/messages.slint:137
+#: ui/messages.slint:137 ui/messages.slint:142
 msgctxt "Messages"
 msgid "Launch all ({})"
 msgstr "Alle starten ({})"
 
-#: ui/messages.slint:143
+#: ui/messages.slint:143 ui/messages.slint:148
 msgctxt "Messages"
 msgid "{} · Login required"
 msgstr "{} · Login nötig"
 
-#: ui/messages.slint:146
+#: ui/messages.slint:146 ui/messages.slint:151
 msgctxt "Messages"
 msgid "{} · Starting…"
 msgstr "{} · Startet…"
 
-#: ui/messages.slint:149
+#: ui/messages.slint:149 ui/messages.slint:154
 msgctxt "Messages"
 msgid "{} · Running"
 msgstr "{} · Läuft"
 
-#: ui/messages.slint:152
+#: ui/messages.slint:152 ui/messages.slint:157
 msgctxt "Messages"
 msgid "{} · Stopping…"
 msgstr "{} · Stoppt…"
 
-#: ui/messages.slint:155
+#: ui/messages.slint:155 ui/messages.slint:160
 msgctxt "Messages"
 msgid "{} · Locked"
 msgstr "{} · Gesperrt"
 
-#: ui/messages.slint:158
+#: ui/messages.slint:158 ui/messages.slint:163
 msgctxt "Messages"
 msgid "{} · Error"
 msgstr "{} · Fehler"
 
-#: ui/messages.slint:160
+#: ui/messages.slint:160 ui/messages.slint:165
 msgctxt "Messages"
 msgid "{} · Ready"
 msgstr "{} · Bereit"
 
-#: ui/messages.slint:164
+#: ui/messages.slint:164 ui/messages.slint:169
 msgctxt "Messages"
 msgid "Open window"
 msgstr "Fenster öffnen"
 
-#: ui/messages.slint:168
+#: ui/messages.slint:168 ui/messages.slint:173
 msgctxt "Messages"
 msgid "Quit"
 msgstr "Beenden"
 
-#: ui/messages.slint:172
+#: ui/messages.slint:172 ui/messages.slint:177
 msgctxt "Messages"
 msgid "Tray icon could not be created"
 msgstr "Tray-Symbol konnte nicht erstellt werden"
@@ -1021,7 +1012,7 @@ msgctxt "Messages"
 msgid "Show in launcher"
 msgstr "Im Launcher zeigen"
 
-#: ui/messages.slint:180
+#: ui/messages.slint:180 ui/messages.slint:185
 msgctxt "Messages"
 msgid "Stop"
 msgstr "Beenden"
@@ -1031,7 +1022,7 @@ msgctxt "Messages"
 msgid "Open launcher"
 msgstr "Launcher öffnen"
 
-#: ui/messages.slint:176
+#: ui/messages.slint:176 ui/messages.slint:181
 msgctxt "Messages"
 msgid "Start"
 msgstr "Starten"
@@ -1052,7 +1043,10 @@ msgid ""
 "„{}“ is a Steam account, and Steam only signs in a Guild Wars 2 that it "
 "has installed itself. Breakbar can link your existing installation into "
 "Steam, so nothing has to be downloaded again."
-msgstr "„{}“ ist ein Steam-Account, und Steam meldet nur ein Guild Wars 2 an, das es selbst installiert hat. Breakbar kann deine bestehende Installation mit Steam verknüpfen, sodass nichts erneut heruntergeladen werden muss."
+msgstr ""
+"„{}“ ist ein Steam-Account, und Steam meldet nur ein Guild Wars 2 an, "
+"das es selbst installiert hat. Breakbar kann deine bestehende Installation "
+"mit Steam verknüpfen, sodass nichts erneut heruntergeladen werden muss."
 
 #: ui/app.slint:212
 msgctxt "SteamSetupDialog"
@@ -1065,14 +1059,20 @@ msgid ""
 "The link to your Guild Wars 2 folder is in place. Open Steam, select Guild "
 "Wars 2 in your library and click Install. Steam finds the existing files and "
 "downloads only a few megabytes. Confirm here when it has finished."
-msgstr "Die Verknüpfung zu deinem Guild-Wars-2-Ordner ist angelegt. Öffne Steam, wähle Guild Wars 2 in deiner Bibliothek und klicke auf Installieren. Steam findet die vorhandenen Dateien und lädt nur wenige Megabyte herunter. Bestätige hier, sobald es fertig ist."
+msgstr ""
+"Die Verknüpfung zu deinem Guild-Wars-2-Ordner ist angelegt. Öffne Steam, "
+"wähle Guild Wars 2 in deiner Bibliothek und klicke auf Installieren. Steam "
+"findet die vorhandenen Dateien und lädt nur wenige Megabyte herunter. "
+"Bestätige hier, sobald es fertig ist."
 
 #: ui/app.slint:231
 msgctxt "SteamSetupDialog"
 msgid ""
 "Steam's installation was not found yet. Wait until Steam has finished and "
 "try again."
-msgstr "Die Steam-Installation wurde noch nicht gefunden. Warte, bis Steam fertig ist, und versuche es erneut."
+msgstr ""
+"Die Steam-Installation wurde noch nicht gefunden. Warte, bis Steam fertig "
+"ist, und versuche es erneut."
 
 #: ui/app.slint:242
 msgctxt "SteamSetupDialog"
@@ -1094,24 +1094,47 @@ msgctxt "SteamSetupDialog"
 msgid "Download finished"
 msgstr "Download fertig"
 
-#: ui/messages.slint:188
+#: ui/messages.slint:188 ui/messages.slint:193
 msgctxt "Messages"
 msgid "Steam is ready"
 msgstr "Steam ist bereit"
 
-#: ui/messages.slint:192
+#: ui/messages.slint:192 ui/messages.slint:197
 msgctxt "Messages"
 msgid "You can start „{}“ now."
 msgstr "„{}“ kann jetzt gestartet werden."
 
-#: ui/messages.slint:196
+#: ui/messages.slint:196 ui/messages.slint:201
 msgctxt "Messages"
 msgid "The link to Steam could not be created"
 msgstr "Die Verknüpfung zu Steam konnte nicht erstellt werden"
 
-#: ui/messages.slint:200
+#: ui/messages.slint:200 ui/messages.slint:205
 msgctxt "Messages"
 msgid ""
 "„{}“ already exists and does not point to your Guild Wars 2 "
 "installation. Remove or rename it, or install Guild Wars 2 through Steam."
-msgstr "„{}“ existiert bereits und zeigt nicht auf deine Guild-Wars-2-Installation. Entferne oder benenne den Ordner um, oder installiere Guild Wars 2 über Steam."
+msgstr ""
+"„{}“ existiert bereits und zeigt nicht auf deine Guild-Wars-2-"
+"Installation. Entferne oder benenne den Ordner um, oder installiere Guild "
+"Wars 2 über Steam."
+
+#: ui/editor.slint:231
+msgctxt "AccountEditor"
+msgid ""
+"Steam signs this account in. It only needs its own login file for its game "
+"settings, which the first start creates. If it is damaged, e.g. after an "
+"interrupted first start, the client can complete it on its own."
+msgstr "Steam meldet diesen Account an. Er braucht nur eine eigene Login-Datei für seine Spieleinstellungen, die der erste Start anlegt. Ist sie beschädigt, etwa nach einem abgebrochenen ersten Start, kann der Client sie selbst vervollständigen."
+
+#: ui/editor.slint:244
+msgctxt "AccountEditor"
+msgid "Repair login file"
+msgstr "Login-Datei reparieren"
+
+#: ui/messages.slint:85
+msgctxt "Messages"
+msgid ""
+"Let the client finish loading, then close it normally so its login file is "
+"complete. Other accounts can be started afterwards."
+msgstr "Lass den Client fertig laden und schließe ihn dann normal, damit seine Login-Datei vollständig ist. Danach können andere Accounts gestartet werden."

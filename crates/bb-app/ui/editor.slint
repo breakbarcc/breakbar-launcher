@@ -228,7 +228,7 @@ export component AccountEditor inherits VerticalLayout {
                         }
                         Text {
                             text: root.data.login == LoginState.steam
-                                ? @tr("Steam signs this account in. It only needs its own login file for its game settings, which the first start creates.")
+                                ? @tr("Steam signs this account in. It only needs its own login file for its game settings, which the first start creates. If it is damaged, e.g. after an interrupted first start, the client can complete it on its own.")
                                 : root.data.login == LoginState.missing
                                 ? @tr("On the next start the normal Guild Wars 2 login opens: log in once with „Remember email/password“ ticked.")
                                 : @tr("The account logs in automatically. Set up the login again if the password changed or it asks for a login.");
@@ -236,12 +236,12 @@ export component AccountEditor inherits VerticalLayout {
                             color: Theme.text-muted;
                             wrap: word-wrap;
                         }
-                        if root.data.login != LoginState.steam: HorizontalLayout {
+                        HorizontalLayout {
                             alignment: start;
                             Button {
                                 icon: Icons.login;
                                 icon-color: Theme.warn;
-                                text: @tr("Set up login");
+                                text: root.data.login == LoginState.steam ? @tr("Repair login file") : @tr("Set up login");
                                 enabled: !root.data.active;
                                 clicked => { root.set-up-login(); }
                             }

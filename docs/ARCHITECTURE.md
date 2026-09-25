@@ -85,6 +85,9 @@ account). Breakbar detects the build mismatch and guides the user instead of fai
   any number of ArenaNet accounts.
 - Steam accounts need no remembered login, only their own `Local.dat` (created by the automatic
   first start without `-shareArchive`).
+  A start with `-shareArchive` cannot complete a half-filled `Local.dat` ("Download failed (5)"), so the
+  account editor offers **Repair login file** for Steam accounts: the same setup start as "Set up
+  login" (no `-shareArchive`, no other client running), after which the file is complete.
 - **Guided setup** (`steam_setup.rs`): starting a Steam account while no Steam-capable client exists
   opens a dialog instead of failing. If the Steam folder has no Guild Wars 2 yet, it offers to create
   the junction `<Steam>steamappscommonGuild Wars 2` -> the configured installation (`mklink /J`,
