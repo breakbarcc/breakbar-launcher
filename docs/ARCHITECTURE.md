@@ -188,22 +188,21 @@ struct CompanionApp {
   of opening a second window over the same accounts. "After starting an account" (`AfterStart` in
   `config.toml`, mirrored as a Slint enum in `settings.slint`) then decides what a `Play` launch
   (not setup, not a manual stop) does to the window afterwards: nothing, hide to the tray, or quit.
-- **Instance-switcher overlay** (`ui/overlay.slint`, `overlay.rs`; design hand-off section 6):
-  a second top-level `Window` component (`OverlaySwitcher`, exported through `app.slint` next to
-  `MainWindow` so `slint_build` generates Rust bindings for it too), separate from the main window.
-  `no-frame: true`, `always-on-top: true`, `background: transparent` (the visible pill is a child
-  `Rectangle`, not the window's own background); `WindowMoveArea` covering the whole bar makes it
-  freely draggable (a plain click still reaches the chips underneath - only an actual drag
-  initiates a window move) and its last position is saved to `config.toml`
-  (`bb_store::OverlayPosition`). `overlay::Overlay` owns it and a `slint::Timer` that polls every
-  500 ms: rebuilds the chip list from the main window's account rows, shows/hides the bar depending
-  on whether anything is active, and highlights whichever chip's client owns the current foreground
-  window (`bb_win::window::foreground_pid`/`pid_of`/`activate_window`, matched by PID rather than a
-  specific `HWND`). Polling trades a little latency for not having to thread an explicit
-  "something changed" signal through every place `gui.rs` can touch a row; a future refinement can
-  tighten that if the delay ever matters. **First pass only:** fixed "Compact" size, no global
-  hotkeys, no vertical orientation, no opacity control, and no dedicated settings section (screen
-  15) yet - those are their own follow-up steps.
+- **Instance-switcher overlay** (, ; design hand-off section 6):
+  a second top-level  component (, exported through  next to
+   so  generates bindings for it too). , ,
+  transparent window background (the visible pill is a child ). A grip strip on the left
+  is the only , then one fixed-size numbered chip for each of the first four
+  accounts, running or not — never names, which made the bar reflow while switching. Left click on a
+  running chip switches to its game window; on an idle one it opens a menu with "Start"; right
+  click on a running one opens "Stop". Each menu starts with the account's name. The menus are
+  native Win32 popups (, shared with the tray), not Slint s: on this
+  backend an embedded popup is clipped to its owning window, and this window is only as big as the
+  bar. The bar only shows while some account is active.  owns it and a 500 ms
+   that rebuilds the chips from the main window's rows, highlights the chip whose
+  client owns the foreground window (matched by PID) and saves the dragged-to position
+  (). **First pass only:** no global hotkeys, other sizes, vertical
+  orientation, opacity control or settings section (screen 15) yet.
 - **Pitfall: `TouchArea` + `FocusScope` pairs.** Every clickable component pairs a `TouchArea`
   (the click) with a `FocusScope`-derived one (keyboard activation, e.g. our shared `Activation`
   helper). `FocusScope`'s `focus-on-click` defaults to `true` and grabs the mouse-down itself to
@@ -268,7 +267,7 @@ Config: `%APPDATA%\Breakbar\config.toml` (atomic write via temp file + `ReplaceF
 | 4.2 | ✅ Settings page: paths (companion app editor still pending) |
 | 4.3 | ✅ Start with Windows (`HKCU\...\Run`, toggle in Settings) |
 | 4.4 | ✅ Close behavior and tray (hide-to-tray close, tray menu, single instance, after-start setting) |
-| 4.5 | ✅ Instance switcher overlay: core (bar, click-to-switch, "+" menu, position); hotkeys/sizes/settings pending |
+| 4.5 | ✅ Instance switcher overlay: core (grip, numbered chips, click/context menus, position); hotkeys/sizes/settings pending |
 | 4.6 | Login set-up flow |
 | 5 | Patch detection + Local.dat refresh, window layout per account, priority/affinity, GFX per account |
 | 6 | Code signing (SignPath/Azure Trusted Signing), releases, winget |

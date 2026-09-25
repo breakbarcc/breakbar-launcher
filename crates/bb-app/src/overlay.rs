@@ -1,7 +1,7 @@
-//! The instance-switcher overlay: a small always-on-top bar for jumping between running clients
-//! (design hand-off section 6). First pass: the bar itself at a fixed size, click-to-switch, and
-//! the "+" menu to start accounts from it. Global hotkeys, the other two sizes, orientation,
-//! opacity and the dedicated settings section come with a later refinement.
+//! The instance-switcher overlay: a small always-on-top bar with one numbered chip per account
+//! (up to [`MAX_CHIPS`]), for jumping between running clients (design hand-off section 6). First
+//! pass: global hotkeys, the other sizes, orientation, opacity and the dedicated settings section
+//! come with a later refinement.
 
 use std::cell::{Cell, RefCell};
 use std::rc::Rc;
@@ -9,17 +9,19 @@ use std::time::Duration;
 
 use bb_core::AccountId;
 use bb_store::OverlayPosition;
+use bb_win::menu::MenuItem;
 use slint::{ComponentHandle, ModelRc, PhysicalPosition, Timer, TimerMode, VecModel};
 
-use crate::gui::ui::{AccountState, MainWindow, OverlaySwitcher, StartableEntry, SwitcherEntry};
-use crate::gui::{
-    App, LaunchQueue, is_active, is_startable, launch_all, rows, start_account, stop_account,
-};
+use crate::gui::ui::{AccountState, MainWindow, Messages, OverlaySwitcher, SwitcherEntry};
+use crate::gui::{App, LaunchQueue, is_active, native_handle, rows, start_account, stop_account};
 use crate::launcher::{GAME_WINDOW_CLASSES, LaunchMode};
 
 /// How often the overlay re-reads the account rows and the foreground window: cheap for the
 /// handful of rows involved, and simpler than threading an explicit "something changed" signal
 /// through every place `gui.rs` can change a row's state.
+/// The bar shows at most this many accounts (the first ones in the launcher's order).
+const MAX_CHIPS: usize = 4;
+
 const POLL_INTERVAL: Duration = Duration::from_millis(500);
 
 /// Owns the overlay window and keeps it alive. Dropping it destroys the window (and stops the
@@ -52,66 +54,26 @@ impl Overlay {
                 .set_position(PhysicalPosition::new(position.x, position.y));
         }
 
-        window.on_activate({
-            let weak = main_window.as_weak();
-            move |id| {
-                if let Some(main_window) = weak.upgrade() {
-                    activate(&main_window, AccountId(id as u32));
-                }
-            }
-        });
-
-        window.on_stop({
-            let weak = main_window.as_weak();
-            move |id| {
-                if let Some(main_window) = weak.upgrade() {
-                    stop_account(&main_window, AccountId(id as u32));
-                }
-            }
-        });
-
-        window.on_show_in_launcher({
-            let weak = main_window.as_weak();
-            move |_id| {
-                if let Some(main_window) = weak.upgrade() {
-                    let _ = main_window.show();
-                }
-            }
-        });
-
-        window.on_launch({
+        window.on_chip_clicked({
+            let overlay = window.as_weak();
+            let main = main_window.as_weak();
             let app = Rc::clone(app);
             let queue = Rc::clone(queue);
-            let weak = main_window.as_weak();
             move |id| {
-                if let Some(main_window) = weak.upgrade() {
-                    start_account(
-                        &main_window,
-                        &app,
-                        &queue,
-                        AccountId(id as u32),
-                        LaunchMode::Play,
-                    );
+                if let (Some(overlay), Some(main)) = (overlay.upgrade(), main.upgrade()) {
+                    chip_clicked(&overlay, &main, &app, &queue, AccountId(id as u32), false);
                 }
             }
         });
 
-        window.on_launch_all({
+        window.on_context_menu({
+            let overlay = window.as_weak();
+            let main = main_window.as_weak();
             let app = Rc::clone(app);
             let queue = Rc::clone(queue);
-            let weak = main_window.as_weak();
-            move || {
-                if let Some(main_window) = weak.upgrade() {
-                    launch_all(&main_window, &app, &queue);
-                }
-            }
-        });
-
-        window.on_open_launcher({
-            let weak = main_window.as_weak();
-            move || {
-                if let Some(main_window) = weak.upgrade() {
-                    let _ = main_window.show();
+            move |id| {
+                if let (Some(overlay), Some(main)) = (overlay.upgrade(), main.upgrade()) {
+                    chip_clicked(&overlay, &main, &app, &queue, AccountId(id as u32), true);
                 }
             }
         });
@@ -155,45 +117,97 @@ fn activate(main_window: &MainWindow, id: AccountId) {
     let _ = bb_win::window::activate_window(pid, GAME_WINDOW_CLASSES);
 }
 
-/// Rebuilds the overlay's entries and startable list from `main_window`'s current rows, and
-/// shows or hides it depending on whether anything is active.
+/// Shows `items` as a native popup menu owned by the overlay window.
+fn show_native_menu(overlay: &OverlaySwitcher, items: Vec<MenuItem>) {
+    if let Some(hwnd) = native_handle(overlay.window()) {
+        let _ = bb_win::menu::show(hwnd, items);
+    }
+}
+
+/// Left or right click (`right_click`) on a chip. A running client is switched to on a
+/// left click; a right click on it offers "Stop". An idle account offers "Start" either way.
+/// Every menu starts with the account's name, since the chips themselves only show numbers.
+fn chip_clicked(
+    overlay: &OverlaySwitcher,
+    main_window: &MainWindow,
+    app: &Rc<RefCell<App>>,
+    queue: &Rc<LaunchQueue>,
+    id: AccountId,
+    right_click: bool,
+) {
+    let Some(row) = rows(main_window)
+        .into_iter()
+        .find(|row| row.id == id.0 as i32)
+    else {
+        return;
+    };
+    let messages = main_window.global::<Messages>();
+    let mut items = vec![
+        MenuItem::entry(row.name.to_string(), false, || {}),
+        MenuItem::separator(),
+    ];
+    match row.state {
+        AccountState::Running if !right_click => {
+            activate(main_window, id);
+            return;
+        }
+        AccountState::Running => {
+            let weak = main_window.as_weak();
+            items.push(MenuItem::entry(
+                messages.invoke_overlay_stop(),
+                true,
+                move || {
+                    if let Some(main_window) = weak.upgrade() {
+                        stop_account(&main_window, id);
+                    }
+                },
+            ));
+        }
+        AccountState::Starting | AccountState::Stopping => return,
+        state => {
+            let weak = main_window.as_weak();
+            let app = Rc::clone(app);
+            let queue = Rc::clone(queue);
+            items.push(MenuItem::entry(
+                messages.invoke_overlay_start(),
+                state != AccountState::Locked,
+                move || {
+                    if let Some(main_window) = weak.upgrade() {
+                        start_account(&main_window, &app, &queue, id, LaunchMode::Play);
+                    }
+                },
+            ));
+        }
+    }
+    show_native_menu(overlay, items);
+}
+
+/// Rebuilds the overlay's chips from `main_window`'s current rows, and shows or hides it
+/// depending on whether anything is active.
 fn poll(overlay: &OverlaySwitcher, main_window: &MainWindow) {
-    let all_rows = rows(main_window);
     let foreground = bb_win::window::foreground_pid();
 
+    let all_rows = rows(main_window);
     let entries: Vec<SwitcherEntry> = all_rows
         .iter()
-        .filter(|row| is_active(row.state))
+        .take(MAX_CHIPS)
         .map(|row| SwitcherEntry {
             id: row.id,
             name: row.name.clone(),
-            active: row.handle != 0 && bb_win::window::pid_of(row.handle as isize) == foreground,
+            running: is_active(row.state),
+            active: row.handle != 0
+                && is_active(row.state)
+                && bb_win::window::pid_of(row.handle as isize) == foreground,
             starting: row.state == AccountState::Starting,
         })
         .collect();
 
-    if entries.is_empty() {
+    // Only shown while something runs: an all-idle bar would just be clutter over the desktop.
+    if !all_rows.iter().any(|row| is_active(row.state)) {
         let _ = overlay.hide();
         return;
     }
-
     overlay.set_entries(ModelRc::new(VecModel::from(entries)));
-    let startable: Vec<StartableEntry> = all_rows
-        .iter()
-        .filter(|row| !is_active(row.state))
-        .map(|row| StartableEntry {
-            id: row.id,
-            name: row.name.clone(),
-            enabled: row.state != AccountState::Locked,
-        })
-        .collect();
-    overlay.set_startable(ModelRc::new(VecModel::from(startable)));
-    overlay.set_launch_all_count(
-        all_rows
-            .iter()
-            .filter(|row| is_startable(row.state))
-            .count() as i32,
-    );
     let _ = overlay.show();
 }
 

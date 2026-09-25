@@ -1396,7 +1396,7 @@ fn pick_exe(
     initial_dir: Option<&Path>,
 ) -> Option<PathBuf> {
     let picked = bb_win::dialog::open_file(
-        native_handle(window),
+        native_handle(window.window()),
         title,
         &[filter, ("Programs", "*.exe")],
         initial_dir,
@@ -1690,7 +1690,7 @@ fn dismiss_toast(window: &MainWindow, id: i32) {
 
 /// Colors the native title bar like the current theme.
 fn apply_frame(window: &MainWindow, dark: bool) {
-    if let Some(hwnd) = native_handle(window) {
+    if let Some(hwnd) = native_handle(window.window()) {
         let colors = if dark { DARK_FRAME } else { LIGHT_FRAME };
         bb_win::window::set_frame(hwnd, dark, colors);
     }
@@ -1714,8 +1714,8 @@ fn display_path(path: Option<&Path>) -> String {
 }
 
 /// Returns the window's HWND so native dialogs can be made modal to it.
-fn native_handle(window: &MainWindow) -> Option<isize> {
-    let slint_window = window.window().window_handle();
+pub(crate) fn native_handle(window: &slint::Window) -> Option<isize> {
+    let slint_window = window.window_handle();
     let handle = slint_window.window_handle().ok()?;
     match handle.as_raw() {
         RawWindowHandle::Win32(win32) => Some(win32.hwnd.get()),
@@ -1879,33 +1879,34 @@ mod preview {
                     ui::SwitcherEntry {
                         id: 1,
                         name: "Main".into(),
+                        running: true,
                         active: true,
                         starting: false,
                     },
                     ui::SwitcherEntry {
                         id: 2,
                         name: "Raid Chrono".into(),
+                        running: true,
                         active: false,
                         starting: false,
                     },
                     ui::SwitcherEntry {
                         id: 3,
                         name: "Farm Alt".into(),
+                        running: true,
                         active: false,
                         starting: true,
+                    },
+                    ui::SwitcherEntry {
+                        id: 4,
+                        name: "Steam".into(),
+                        running: false,
+                        active: false,
+                        starting: false,
                     },
                 ]))
                 .into(),
             );
-            overlay.set_startable(
-                Rc::new(slint::VecModel::from(vec![ui::StartableEntry {
-                    id: 4,
-                    name: "Steam".into(),
-                    enabled: true,
-                }]))
-                .into(),
-            );
-            overlay.set_launch_all_count(1);
             overlay.show().unwrap();
             slint::platform::update_timers_and_animations();
 

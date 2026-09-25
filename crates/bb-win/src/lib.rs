@@ -8,6 +8,7 @@ mod com;
 pub mod console;
 pub mod dialog;
 pub mod junction;
+pub mod menu;
 pub mod mutex;
 mod nt;
 pub mod process;

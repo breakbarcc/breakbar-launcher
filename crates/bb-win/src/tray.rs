@@ -11,20 +11,20 @@ use std::cell::RefCell;
 use std::io;
 use std::sync::Once;
 
-use windows::Win32::Foundation::{HWND, LPARAM, LRESULT, POINT, WPARAM};
+use windows::Win32::Foundation::{HWND, LPARAM, LRESULT, WPARAM};
 use windows::Win32::Graphics::Gdi::HBRUSH;
 use windows::Win32::System::LibraryLoader::GetModuleHandleW;
 use windows::Win32::UI::Shell::{
     NIF_ICON, NIF_MESSAGE, NIF_TIP, NIM_ADD, NIM_DELETE, NOTIFYICONDATAW, Shell_NotifyIconW,
 };
 use windows::Win32::UI::WindowsAndMessaging::{
-    AppendMenuW, CreatePopupMenu, CreateWindowExW, DefWindowProcW, DestroyMenu, DestroyWindow,
-    FindWindowW, GetCursorPos, HICON, IDI_APPLICATION, IMAGE_ICON, LR_DEFAULTCOLOR, LoadImageW,
-    MF_DISABLED, MF_SEPARATOR, MF_STRING, PostMessageW, RegisterClassW, SetForegroundWindow,
-    TPM_NONOTIFY, TPM_RETURNCMD, TPM_RIGHTBUTTON, TrackPopupMenuEx, WM_APP, WM_CONTEXTMENU,
-    WM_LBUTTONDBLCLK, WM_LBUTTONUP, WM_NULL, WM_RBUTTONUP, WNDCLASSW, WS_EX_LEFT, WS_OVERLAPPED,
+    CreateWindowExW, DefWindowProcW, DestroyWindow, FindWindowW, HICON, IDI_APPLICATION,
+    IMAGE_ICON, LR_DEFAULTCOLOR, LoadImageW, PostMessageW, RegisterClassW, WM_APP, WM_CONTEXTMENU,
+    WM_LBUTTONDBLCLK, WM_LBUTTONUP, WM_RBUTTONUP, WNDCLASSW, WS_EX_LEFT, WS_OVERLAPPED,
 };
 use windows::core::{HSTRING, PCWSTR};
+
+pub use crate::menu::MenuItem;
 
 /// Not a message-only window (no `HWND_MESSAGE` parent): it needs to stay findable by
 /// [`request_show`] from a second Breakbar process, which `FindWindowW` cannot see into the
@@ -38,31 +38,6 @@ const CALLBACK_MESSAGE: u32 = WM_APP + 1;
 const SHOW_REQUEST_MESSAGE: u32 = WM_APP + 2;
 /// Resource id of the icon embedded via `assets/breakbar.rc`.
 const APP_ICON_ID: u16 = 1;
-
-/// One entry of a popup menu shown from a right click on the tray icon.
-#[allow(missing_debug_implementations)]
-pub enum MenuItem {
-    Entry {
-        text: String,
-        enabled: bool,
-        action: Box<dyn FnMut()>,
-    },
-    Separator,
-}
-
-impl MenuItem {
-    pub fn entry(text: impl Into<String>, enabled: bool, action: impl FnMut() + 'static) -> Self {
-        MenuItem::Entry {
-            text: text.into(),
-            enabled,
-            action: Box::new(action),
-        }
-    }
-
-    pub fn separator() -> Self {
-        MenuItem::Separator
-    }
-}
 
 type MenuBuilder = Box<dyn FnMut() -> Vec<MenuItem>>;
 
@@ -236,67 +211,11 @@ fn remove_icon(hwnd: HWND) -> io::Result<()> {
     }
 }
 
-/// Builds the native popup menu from `items`, shows it at the cursor, waits for a choice, and
-/// runs the chosen entry's action. Blocks until the menu closes (`TrackPopupMenuEx` pumps its
-/// own nested loop internally, same as any native modal Win32 UI).
 fn show_context_menu(hwnd: HWND) {
-    let Some(mut items) = ON_MENU.with(|cell| cell.borrow_mut().as_mut().map(|build| build()))
-    else {
+    let Some(items) = ON_MENU.with(|cell| cell.borrow_mut().as_mut().map(|build| build())) else {
         return;
     };
-    // SAFETY: the returned handle is only used below and destroyed before returning.
-    let Ok(menu) = (unsafe { CreatePopupMenu() }) else {
-        return;
-    };
-
-    for (index, item) in items.iter().enumerate() {
-        let id = index + 1;
-        // SAFETY: `menu` was just created above and is valid for the rest of this function.
-        let _ = unsafe {
-            match item {
-                MenuItem::Entry { text, enabled, .. } => AppendMenuW(
-                    menu,
-                    if *enabled {
-                        MF_STRING
-                    } else {
-                        MF_STRING | MF_DISABLED
-                    },
-                    id,
-                    &HSTRING::from(text.as_str()),
-                ),
-                MenuItem::Separator => AppendMenuW(menu, MF_SEPARATOR, id, PCWSTR::null()),
-            }
-        };
-    }
-
-    let mut point = POINT::default();
-    // SAFETY: `point` is a valid, appropriately sized out-pointer.
-    unsafe {
-        let _ = GetCursorPos(&mut point);
-    }
-    // SAFETY: documented Win32 pattern for tray icon menus, so the menu gets keyboard focus and
-    // closes correctly when the user clicks elsewhere.
-    unsafe {
-        let _ = SetForegroundWindow(hwnd);
-    }
-    let flags = TPM_RETURNCMD.0 | TPM_RIGHTBUTTON.0 | TPM_NONOTIFY.0;
-    // SAFETY: `menu` and `hwnd` are both valid; this blocks until the menu is dismissed.
-    let selected = unsafe { TrackPopupMenuEx(menu, flags, point.x, point.y, hwnd, None) };
-    // SAFETY: documented follow-up to the pattern above (a required no-op message).
-    unsafe {
-        let _ = PostMessageW(Some(hwnd), WM_NULL, WPARAM(0), LPARAM(0));
-    }
-    // SAFETY: `menu` is no longer needed after `TrackPopupMenuEx` returns.
-    unsafe {
-        let _ = DestroyMenu(menu);
-    }
-
-    let id = selected.0;
-    if id > 0
-        && let Some(MenuItem::Entry { action, .. }) = items.get_mut((id - 1) as usize)
-    {
-        action();
-    }
+    let _ = crate::menu::show(hwnd.0 as isize, items);
 }
 
 fn activate() {
