@@ -1,0 +1,39 @@
+// Only for the Slint preview in VS Code ("Slint: Show Preview" with this file open); the app does
+// not import it. Shows the account card in all its states, so the card can be edited and looked at
+// without starting the launcher. Switch between light and dark with the preview's own toolbar.
+
+import { Theme } from "theme.slint";
+import { AccountCard, AccountRow, AccountState } from "account-card.slint";
+
+export component AccountCardGallery inherits Window {
+    title: "Account card gallery";
+    background: Theme.bg;
+    default-font-family: Theme.font-ui;
+    default-font-size: Theme.fs-body;
+    preferred-width: 420px;
+    min-width: 320px;
+
+    // `compact` is what the card gets in a narrow window (icon-only action button).
+    in property <bool> compact: false;
+
+    property <[AccountRow]> rows: [
+        { id: 1, name: "Main", provider: "ArenaNet", steam: false, state: AccountState.idle, since: "", detail: "", handle: 0, selected: false, has-companions: true, addon-active: false },
+        { id: 2, name: "Raid Chrono", provider: "ArenaNet", steam: false, state: AccountState.starting, since: "", detail: "", handle: 0, selected: false, has-companions: true, addon-active: false },
+        { id: 3, name: "Farm Alt", provider: "ArenaNet", steam: false, state: AccountState.running, since: "14:02", detail: "", handle: 1, selected: false, has-companions: true, addon-active: true },
+        { id: 4, name: "Stopping", provider: "ArenaNet", steam: false, state: AccountState.stopping, since: "", detail: "", handle: 1, selected: false, has-companions: false, addon-active: false },
+        { id: 5, name: "New account", provider: "ArenaNet", steam: false, state: AccountState.needs-login, since: "", detail: "", handle: 0, selected: false, has-companions: false, addon-active: false },
+        { id: 6, name: "WvW Guard (selected)", provider: "ArenaNet", steam: false, state: AccountState.idle, since: "", detail: "", handle: 0, selected: true, has-companions: false, addon-active: false },
+        { id: 7, name: "Crafting", provider: "ArenaNet", steam: false, state: AccountState.error, since: "", detail: "Start failed", handle: 0, selected: false, has-companions: false, addon-active: false },
+        { id: 8, name: "Steam", provider: "Steam", steam: true, state: AccountState.idle, since: "", detail: "", handle: 0, selected: false, has-companions: false, addon-active: false },
+        { id: 9, name: "Steam second", provider: "Steam", steam: true, state: AccountState.locked, since: "", detail: "", handle: 0, selected: false, has-companions: false, addon-active: false },
+    ];
+
+    VerticalLayout {
+        padding: 12px;
+        spacing: 4px;
+        for row in root.rows: AccountCard {
+            account: row;
+            compact: root.compact;
+        }
+    }
+}

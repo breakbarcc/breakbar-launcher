@@ -639,6 +639,102 @@ export component Toast inherits Elevated {
 }
 
 /// On/off switch, 38 × 20: on = `primary` with an `on-primary` knob, off = `line-3` outline.
+/// Horizontal slider for whole numbers: drag or click on the track, arrow keys change the value by 1
+/// (Shift: 10).
+export component Slider {
+    in property <int> minimum: 0;
+    in property <int> maximum: 100;
+    in-out property <int> value;
+    in property <string> label;
+    in property <bool> enabled: true;
+    callback changed(int);
+
+    height: 24px;
+    forward-focus: focus;
+    accessible-role: slider;
+    accessible-label: root.label;
+    accessible-value: root.value;
+    accessible-value-minimum: root.minimum;
+    accessible-value-maximum: root.maximum;
+    accessible-value-step: 1;
+    accessible-action-increment => { root.set(root.value + 1); }
+    accessible-action-decrement => { root.set(root.value - 1); }
+
+    property <length> thumb: 16px;
+    property <float> fraction: (root.value - root.minimum) / max(1, root.maximum - root.minimum);
+
+    function set(new-value: int) {
+        root.value = max(root.minimum, min(root.maximum, new-value));
+        root.changed(root.value);
+    }
+    function set-from-pointer(x: length) {
+        root.set(root.minimum + round(max(0, min(1, (x - root.thumb / 2) / (root.width - root.thumb))) * (root.maximum - root.minimum)));
+    }
+
+    Rectangle {
+        y: (root.height - self.height) / 2;
+        height: 4px;
+        border-radius: 2px;
+        background: Theme.line-2;
+    }
+    Rectangle {
+        x: root.thumb / 2;
+        y: (root.height - self.height) / 2;
+        width: root.fraction * (root.width - root.thumb);
+        height: 4px;
+        border-radius: 2px;
+        background: Theme.primary;
+    }
+    thumb-shape := Rectangle {
+        x: root.fraction * (root.width - root.thumb);
+        y: (root.height - self.height) / 2;
+        width: root.thumb;
+        height: root.thumb;
+        border-radius: root.thumb / 2;
+        background: touch.pressed || touch.has-hover ? Theme.primary-hover : Theme.primary;
+        drop-shadow-color: Theme.shadow-color;
+        drop-shadow-blur: 3px;
+        drop-shadow-offset-y: 1px;
+        if focus.has-focus: FocusRing {
+            radius: root.thumb / 2;
+            around-width: root.thumb;
+            around-height: root.thumb;
+        }
+    }
+    touch := TouchArea {
+        enabled: root.enabled;
+        mouse-cursor: pointer;
+        pointer-event(event) => {
+            if event.kind == PointerEventKind.down && event.button == PointerEventButton.left {
+                focus.focus();
+                root.set-from-pointer(self.mouse-x);
+            }
+        }
+        moved => {
+            if self.pressed {
+                root.set-from-pointer(self.mouse-x);
+            }
+        }
+    }
+    // `focus-on-click: false`, like every `FocusScope` here: it would swallow the press before the
+    // `TouchArea` sees it (see the pitfall in docs/ARCHITECTURE.md).
+    focus := FocusScope {
+        enabled: root.enabled;
+        focus-on-click: false;
+        key-pressed(event) => {
+            if event.text == Key.LeftArrow || event.text == Key.DownArrow {
+                root.set(root.value - (event.modifiers.shift ? 10 : 1));
+                return accept;
+            }
+            if event.text == Key.RightArrow || event.text == Key.UpArrow {
+                root.set(root.value + (event.modifiers.shift ? 10 : 1));
+                return accept;
+            }
+            reject
+        }
+    }
+}
+
 export component Toggle {
     in-out property <bool> checked;
     in property <string> label;

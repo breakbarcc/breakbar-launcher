@@ -8,7 +8,7 @@ use std::rc::Rc;
 use std::time::Duration;
 
 use bb_core::AccountId;
-use bb_store::OverlayPosition;
+use bb_store::{OverlayPosition, OverlaySettings};
 use bb_win::menu::MenuItem;
 use slint::{ComponentHandle, Model, ModelRc, PhysicalPosition, Timer, TimerMode, VecModel};
 
@@ -53,7 +53,14 @@ impl Overlay {
     ) -> Result<Self, slint::PlatformError> {
         let window = OverlaySwitcher::new()?;
 
-        if let Some(position) = app.borrow().config.overlay_position {
+        // A position that is not on any monitor any more (a monitor was unplugged, or Windows
+        // parked a hidden window at -32000) would leave the bar unreachable.
+        if let Some(position) = app
+            .borrow()
+            .config
+            .overlay_position
+            .filter(|position| on_screen(position.x, position.y))
+        {
             window
                 .window()
                 .set_position(PhysicalPosition::new(position.x, position.y));
@@ -83,7 +90,7 @@ impl Overlay {
             }
         });
 
-        let last_position = Cell::new(app.borrow().config.overlay_position);
+        let mut position_saver = PositionSaver::new(app.borrow().config.overlay_position);
         let last_active = Cell::new(None);
         let poll_timer = Timer::default();
         poll_timer.start(TimerMode::Repeated, POLL_INTERVAL, {
@@ -96,8 +103,11 @@ impl Overlay {
                 else {
                     return;
                 };
-                poll(&overlay, &main_window, &last_active);
-                save_position_if_moved(&overlay, &app, &last_position);
+                let settings = app.borrow().config.overlay;
+                poll(&overlay, &main_window, &last_active, settings);
+                if let Some(position) = position_saver.observe(current_position(&overlay)) {
+                    app.borrow_mut().save_overlay_position(position);
+                }
             }
         });
 
@@ -194,7 +204,15 @@ fn chip_clicked(
 /// The highlighted chip is the last client that was in the foreground: it only moves when another
 /// client takes focus, not when focus goes to something else (including this overlay), since the
 /// user is still "in the game" then.
-fn poll(overlay: &OverlaySwitcher, main_window: &MainWindow, last_active: &Cell<Option<i32>>) {
+fn poll(
+    overlay: &OverlaySwitcher,
+    main_window: &MainWindow,
+    last_active: &Cell<Option<i32>>,
+    settings: OverlaySettings,
+) {
+    overlay.set_locked(settings.lock_position);
+    overlay.set_idle_opacity(f32::from(settings.opacity_percent()) / 100.0);
+
     let foreground = bb_win::window::foreground_pid();
 
     let all_rows = rows(main_window);
@@ -223,8 +241,12 @@ fn poll(overlay: &OverlaySwitcher, main_window: &MainWindow, last_active: &Cell<
         })
         .collect();
 
-    // Only shown while something runs: an all-idle bar would just be clutter over the desktop.
-    if !all_rows.iter().any(|row| is_active(row.state)) {
+    // Shown when enabled and there is something to switch between; by default only while a client
+    // runs, since an all-idle bar would just be clutter over the desktop.
+    let any_active = all_rows.iter().any(|row| is_active(row.state));
+    let wanted =
+        settings.enabled && !entries.is_empty() && (any_active || !settings.only_when_running);
+    if !wanted {
         if overlay.window().is_visible() {
             let _ = overlay.hide();
         }
@@ -242,22 +264,103 @@ fn poll(overlay: &OverlaySwitcher, main_window: &MainWindow, last_active: &Cell<
     }
 }
 
-/// Persists the overlay's position once it settles somewhere new (dragged via its
-/// `WindowMoveArea`). Best-effort, like the other background saves in this app: a failure here
-/// isn't worth a toast over something this minor.
-fn save_position_if_moved(
-    overlay: &OverlaySwitcher,
-    app: &RefCell<App>,
-    last_position: &Cell<Option<OverlayPosition>>,
-) {
-    let current = overlay.window().position();
-    let current = OverlayPosition {
-        x: current.x,
-        y: current.y,
-    };
-    if last_position.get() == Some(current) {
-        return;
+/// Whether a window at `(x, y)` is at least partly on one of the monitors.
+fn on_screen(x: i32, y: i32) -> bool {
+    let (left, top, width, height) = bb_win::window::virtual_screen();
+    x + 20 >= left && x <= left + width - 20 && y + 10 >= top && y <= top + height - 20
+}
+
+/// Where the overlay is now, `None` while it is hidden (a hidden window reports a parked position
+/// that must never be saved) or not on any monitor.
+fn current_position(overlay: &OverlaySwitcher) -> Option<OverlayPosition> {
+    if !overlay.window().is_visible() {
+        return None;
     }
-    last_position.set(Some(current));
-    app.borrow_mut().save_overlay_position(current);
+    let position = overlay.window().position();
+    on_screen(position.x, position.y).then_some(OverlayPosition {
+        x: position.x,
+        y: position.y,
+    })
+}
+
+/// Decides when the dragged-to position is worth saving: once it has stayed the same for two updates
+/// in a row (the drag is over) and differs from the saved one. Saving on every change would rewrite
+/// the config twice a second for as long as the bar is being dragged: `WindowMoveArea` hands the
+/// drag to Windows and Slint reports neither its start nor its end.
+#[derive(Debug)]
+struct PositionSaver {
+    saved: Option<OverlayPosition>,
+    pending: Option<OverlayPosition>,
+}
+
+impl PositionSaver {
+    fn new(saved: Option<OverlayPosition>) -> Self {
+        Self {
+            saved,
+            pending: None,
+        }
+    }
+
+    /// Looks at where the window is (`None`: not to be saved) and returns the position to save now,
+    /// if any. Best-effort like the other background saves in this app: a failure to write it isn't
+    /// worth a toast over something this minor.
+    fn observe(&mut self, current: Option<OverlayPosition>) -> Option<OverlayPosition> {
+        let Some(current) = current else {
+            self.pending = None;
+            return None;
+        };
+        if self.saved == Some(current) {
+            self.pending = None;
+            return None;
+        }
+        if self.pending == Some(current) {
+            self.pending = None;
+            self.saved = Some(current);
+            return Some(current);
+        }
+        self.pending = Some(current);
+        None
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn at(x: i32, y: i32) -> Option<OverlayPosition> {
+        Some(OverlayPosition { x, y })
+    }
+
+    #[test]
+    fn saves_only_once_the_position_has_settled() {
+        let mut saver = PositionSaver::new(at(10, 10));
+        // Unchanged: nothing to save.
+        assert_eq!(saver.observe(at(10, 10)), None);
+        // Being dragged: every update is somewhere else.
+        assert_eq!(saver.observe(at(20, 10)), None);
+        assert_eq!(saver.observe(at(30, 10)), None);
+        assert_eq!(saver.observe(at(40, 10)), None);
+        // Let go: the same place twice in a row.
+        assert_eq!(saver.observe(at(40, 10)), at(40, 10));
+        // And not again while it stays there.
+        assert_eq!(saver.observe(at(40, 10)), None);
+    }
+
+    #[test]
+    fn a_hidden_or_off_screen_window_resets_the_wait() {
+        let mut saver = PositionSaver::new(None);
+        assert_eq!(saver.observe(at(5, 5)), None);
+        assert_eq!(saver.observe(None), None);
+        // The first sighting after the gap only starts the wait again.
+        assert_eq!(saver.observe(at(5, 5)), None);
+        assert_eq!(saver.observe(at(5, 5)), at(5, 5));
+    }
+
+    #[test]
+    fn moving_back_to_the_saved_position_saves_nothing() {
+        let mut saver = PositionSaver::new(at(1, 1));
+        assert_eq!(saver.observe(at(9, 9)), None);
+        assert_eq!(saver.observe(at(1, 1)), None);
+        assert_eq!(saver.observe(at(1, 1)), None);
+    }
 }

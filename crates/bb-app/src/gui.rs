@@ -1,6 +1,7 @@
 //! The main window and its state.
 
 use std::cell::{Cell, RefCell};
+use std::collections::VecDeque;
 use std::path::{Path, PathBuf};
 use std::rc::Rc;
 use std::sync::{Arc, mpsc};
@@ -12,9 +13,9 @@ use bb_store::Config;
 use raw_window_handle::{HasWindowHandle, RawWindowHandle};
 use slint::{ComponentHandle, Model, SharedString};
 use ui::{
-    AccountRow, AccountState, AfterStart, CompanionToggle, EditorData, FpsLimit, LaunchFailure,
-    LoginState, MainWindow, Messages, PathProblem, SteamSetupStep, Theme, ThemeChoice, ToastData,
-    ToastKind,
+    AccountRow, AccountState, AfterStart, CompanionToggle, EditorData, FpsLimit, LanguageChoice,
+    LaunchFailure, LoginState, MainWindow, Messages, PathProblem, SteamSetupStep, Theme,
+    ThemeChoice, ToastData, ToastKind,
 };
 
 use crate::companions::{self, SharedInstances};
@@ -44,6 +45,8 @@ const LIGHT_FRAME: bb_win::window::FrameColors = bb_win::window::FrameColors {
 
 /// At most this many toasts are shown at once; older ones make room.
 const MAX_TOASTS: usize = 3;
+/// How often the logins are checked against the game's build (see `sync_login_states`).
+const LOGIN_CHECK_INTERVAL: Duration = Duration::from_secs(5);
 /// Toasts disappear after this long, unless the pointer is on them.
 const TOAST_LIFETIME: Duration = Duration::from_secs(6);
 
@@ -55,6 +58,8 @@ const INSTANCE_MUTEX_NAME: &str = "Breakbar-Instance";
 
 /// Breakbar's website, opened from the About section.
 const WEBSITE_URL: &str = "https://www.breakbar.cc/";
+/// Slint's website, opened from the "Made with Slint" badge.
+const SLINT_URL: &str = "https://slint.dev/";
 /// The license text in the repository (`repository` of the workspace manifest).
 const LICENSE_URL: &str = concat!(env!("CARGO_PKG_REPOSITORY"), "/blob/main/LICENSE");
 
@@ -74,6 +79,8 @@ pub(crate) struct App {
     draft: Option<Draft>,
     /// The Steam setup dialog is open for this link.
     steam_setup: Option<PendingSteamSetup>,
+    /// Accounts still to go through "Set up one after another" after a game update.
+    refresh_queue: VecDeque<AccountId>,
 }
 
 /// State behind the Steam setup dialog (see [`steam_setup`]).
@@ -106,6 +113,7 @@ impl App {
                     first_start,
                     draft: None,
                     steam_setup: None,
+                    refresh_queue: VecDeque::new(),
                 },
                 None,
             ),
@@ -116,6 +124,7 @@ impl App {
                     first_start: false,
                     draft: None,
                     steam_setup: None,
+                    refresh_queue: VecDeque::new(),
                 },
                 Some(error),
             ),
@@ -205,6 +214,7 @@ pub fn run() -> Result<(), slint::PlatformError> {
 
     let (mut app, load_error) = App::load();
     let window = MainWindow::new()?;
+    apply_language(app.config.language);
     let messages = window.global::<Messages>();
 
     if let Some(error) = load_error {
@@ -248,12 +258,27 @@ pub fn run() -> Result<(), slint::PlatformError> {
     window.set_after_start(to_ui_after_start(app.config.after_start));
     window.set_fps_limit(to_ui_fps_limit(app.config.fps_limit));
     window.set_app_version(env!("CARGO_PKG_VERSION").into());
+    window.set_language(to_ui_language(app.config.language));
+    show_overlay_settings(&window, app.config.overlay);
     window
         .global::<Theme>()
         .set_choice(to_ui_theme(app.config.theme));
     refresh(&window);
 
     let app = Rc::new(RefCell::new(app));
+    sync_login_states(&window, &app);
+    // A game update can happen while Breakbar runs (through the game's own launcher or Steam), so
+    // the logins are looked at again now and then: a few file times, nothing else.
+    let _login_check = slint::Timer::default();
+    _login_check.start(slint::TimerMode::Repeated, LOGIN_CHECK_INTERVAL, {
+        let app = Rc::clone(&app);
+        let weak = window.as_weak();
+        move || {
+            if let Some(window) = weak.upgrade() {
+                sync_login_states(&window, &app);
+            }
+        }
+    });
     let queue = Rc::new(LaunchQueue::start(window.as_weak()));
 
     let _overlay = match crate::overlay::Overlay::new(&window, &app, &queue) {
@@ -339,6 +364,35 @@ pub fn run() -> Result<(), slint::PlatformError> {
         move || {
             if let Some(window) = weak.upgrade() {
                 close_steam_setup(&window, &app);
+            }
+        }
+    });
+
+    window.on_refresh_logins({
+        let app = Rc::clone(&app);
+        let queue = Rc::clone(&queue);
+        let weak = window.as_weak();
+        move || {
+            let Some(window) = weak.upgrade() else {
+                return;
+            };
+            let ids = outdated_accounts(&window, &app);
+            app.borrow_mut().refresh_queue = ids.into();
+            continue_refresh(&window, &app, &queue, true);
+        }
+    });
+
+    window.on_client_exited({
+        let app = Rc::clone(&app);
+        let queue = Rc::clone(&queue);
+        let weak = window.as_weak();
+        move |setup_finished| {
+            let Some(window) = weak.upgrade() else {
+                return;
+            };
+            sync_login_states(&window, &app);
+            if setup_finished {
+                continue_refresh(&window, &app, &queue, false);
             }
         }
     });
@@ -553,6 +607,47 @@ pub fn run() -> Result<(), slint::PlatformError> {
 
     window.on_open_website(|| open_url(WEBSITE_URL));
     window.on_open_license(|| open_url(LICENSE_URL));
+    window.on_open_slint(|| open_url(SLINT_URL));
+
+    window.on_set_overlay_enabled(overlay_setting(&app, &window, |settings, value| {
+        settings.enabled = value;
+    }));
+    window.on_set_overlay_only_running(overlay_setting(&app, &window, |settings, value| {
+        settings.only_when_running = value;
+    }));
+    window.on_set_overlay_locked(overlay_setting(&app, &window, |settings, value| {
+        settings.lock_position = value;
+    }));
+    window.on_set_overlay_opacity({
+        let app = Rc::clone(&app);
+        let weak = window.as_weak();
+        move |percent| {
+            if let Some(window) = weak.upgrade() {
+                let mut app = app.borrow_mut();
+                app.config.overlay.idle_opacity = percent.clamp(
+                    i32::from(bb_store::OverlaySettings::MIN_OPACITY),
+                    i32::from(bb_store::OverlaySettings::MAX_OPACITY),
+                ) as u8;
+                show_overlay_settings(&window, app.config.overlay);
+                app.save(&window);
+            }
+        }
+    });
+
+    window.on_set_language({
+        let app = Rc::clone(&app);
+        let weak = window.as_weak();
+        move |value| {
+            if let Some(window) = weak.upgrade() {
+                window.set_language(value);
+                let choice = from_ui_language(value);
+                apply_language(choice);
+                let mut app = app.borrow_mut();
+                app.config.language = choice;
+                app.save(&window);
+            }
+        }
+    });
 
     window.on_set_theme({
         let app = Rc::clone(&app);
@@ -731,6 +826,64 @@ fn to_ui_after_start(value: bb_store::AfterStart) -> AfterStart {
         bb_store::AfterStart::KeepOpen => AfterStart::KeepOpen,
         bb_store::AfterStart::MinimizeToTray => AfterStart::MinimizeToTray,
         bb_store::AfterStart::Close => AfterStart::Close,
+    }
+}
+
+/// Shows the overlay settings on the settings page. The overlay window itself picks them up from
+/// the config on its next update (twice a second).
+fn show_overlay_settings(window: &MainWindow, settings: bb_store::OverlaySettings) {
+    window.set_overlay_enabled(settings.enabled);
+    window.set_overlay_only_running(settings.only_when_running);
+    window.set_overlay_locked(settings.lock_position);
+    window.set_overlay_opacity(i32::from(settings.opacity_percent()));
+}
+
+/// A callback that changes one of the on/off overlay settings and saves the config.
+fn overlay_setting(
+    app: &Rc<RefCell<App>>,
+    window: &MainWindow,
+    change: impl Fn(&mut bb_store::OverlaySettings, bool) + 'static,
+) -> impl FnMut(bool) + 'static {
+    let app = Rc::clone(app);
+    let weak = window.as_weak();
+    move |value| {
+        if let Some(window) = weak.upgrade() {
+            let mut app = app.borrow_mut();
+            change(&mut app.config.overlay, value);
+            show_overlay_settings(&window, app.config.overlay);
+            app.save(&window);
+        }
+    }
+}
+
+/// Selects the UI language. Slint picks the system language by itself when the first window is
+/// created; this makes the choice explicit (and lets "System" be chosen again later).
+fn apply_language(choice: bb_store::LanguageChoice) {
+    let tag = match choice {
+        bb_store::LanguageChoice::English => "en",
+        bb_store::LanguageChoice::German => "de",
+        bb_store::LanguageChoice::System => match sys_locale::get_locale() {
+            Some(locale) if locale.to_ascii_lowercase().starts_with("de") => "de",
+            _ => "en",
+        },
+    };
+    // Can only fail for a language that is not bundled, and both of these are.
+    let _ = slint::select_bundled_translation(tag);
+}
+
+fn to_ui_language(value: bb_store::LanguageChoice) -> LanguageChoice {
+    match value {
+        bb_store::LanguageChoice::System => LanguageChoice::System,
+        bb_store::LanguageChoice::English => LanguageChoice::English,
+        bb_store::LanguageChoice::German => LanguageChoice::German,
+    }
+}
+
+fn from_ui_language(value: LanguageChoice) -> bb_store::LanguageChoice {
+    match value {
+        LanguageChoice::System => bb_store::LanguageChoice::System,
+        LanguageChoice::English => bb_store::LanguageChoice::English,
+        LanguageChoice::German => bb_store::LanguageChoice::German,
     }
 }
 
@@ -1122,6 +1275,7 @@ fn run_launch(window: &slint::Weak<MainWindow>, shared: &Arc<SharedInstances>, j
     let id = job.account.id;
     let name = job.account.name.clone();
     let login_before = login_file_stamp(id);
+    let gw2_path = job.gw2_path.clone();
 
     let launched = match launcher::launch(&job.gw2_path, &job.account, job.mode, job.fps_limit) {
         Ok(launched) => launched,
@@ -1237,11 +1391,17 @@ fn run_launch(window: &slint::Weak<MainWindow>, shared: &Arc<SharedInstances>, j
                     }
                 }
             });
+            let finished = setup && !stopped && failure.is_none();
             if setup {
                 window.set_login_setup_name(SharedString::new());
-                if !stopped && failure.is_none() {
-                    report_login_setup(&window, id, &name, steam, login_before);
+            }
+            if finished {
+                // The client is through with this build: the login counts as current for it even
+                // if the client had nothing to change in its file.
+                if let Some(build) = game::game_build(&gw2_path) {
+                    let _ = bb_store::mark_build_verified(id, build);
                 }
+                report_login_setup(&window, id, &name, steam, login_before);
             }
             if let Some(code) = failure {
                 push_toast(
@@ -1251,6 +1411,7 @@ fn run_launch(window: &slint::Weak<MainWindow>, shared: &Arc<SharedInstances>, j
                     messages.invoke_exited(name.as_str().into(), code.into()),
                 );
             }
+            window.invoke_client_exited(finished);
         });
     });
 }
@@ -1327,6 +1488,81 @@ fn path_problem(error: &game::Gw2PathError) -> (PathProblem, SharedString) {
         E::NotExecutable => (PathProblem::NotExecutable, SharedString::new()),
         E::Not64Bit => (PathProblem::Not64Bit, SharedString::new()),
         E::NotGw2 => (PathProblem::NotGw2, SharedString::new()),
+    }
+}
+
+/// The accounts (in list order) that don't run and whose login is older than the game.
+fn outdated_accounts(window: &MainWindow, app: &RefCell<App>) -> Vec<AccountId> {
+    let Some(gw2_path) = app.borrow().config.gw2_path.clone() else {
+        return Vec::new();
+    };
+    rows(window)
+        .into_iter()
+        .filter(|row| !is_active(row.state))
+        .map(|row| AccountId(row.id as u32))
+        .filter(|id| game::login_outdated(&gw2_path, *id))
+        .collect()
+}
+
+/// Puts every account that isn't running in the state its login calls for (no or an outdated
+/// login: "login needed"; otherwise ready) and shows which accounts have to refresh their login
+/// after a game update. A game update makes every `Local.dat` older than `Gw2.dat`, see
+/// [`game::login_outdated`].
+fn sync_login_states(window: &MainWindow, app: &RefCell<App>) {
+    let gw2_path = app.borrow().config.gw2_path.clone();
+    let mut outdated_names = Vec::new();
+    for row in rows(window) {
+        let id = AccountId(row.id as u32);
+        let outdated = gw2_path
+            .as_deref()
+            .is_some_and(|path| game::login_outdated(path, id));
+        if matches!(row.state, AccountState::Idle | AccountState::NeedsLogin) {
+            let wanted = if outdated || (!row.steam && !bb_store::is_set_up(id)) {
+                AccountState::NeedsLogin
+            } else {
+                AccountState::Idle
+            };
+            if wanted != row.state {
+                update_row(window, id, |row| row.state = wanted);
+            }
+        }
+        if outdated && !is_active(row.state) {
+            outdated_names.push(row.name.to_string());
+        }
+    }
+    let names: SharedString = outdated_names.join(", ").into();
+    if window.get_refresh_names() != names {
+        window.set_refresh_names(names);
+    }
+    refresh(window);
+}
+
+/// Goes on with "Set up one after another": takes the next account of the queue that still needs
+/// its login refreshed. The first one is started at once (the user just asked for it); each
+/// further one is offered in the login dialog after the previous one finished.
+fn continue_refresh(window: &MainWindow, app: &RefCell<App>, queue: &LaunchQueue, start_now: bool) {
+    loop {
+        let Some(id) = app.borrow_mut().refresh_queue.pop_front() else {
+            return;
+        };
+        let outdated = app
+            .borrow()
+            .config
+            .gw2_path
+            .as_deref()
+            .is_some_and(|path| game::login_outdated(path, id));
+        let Some(row) = row(window, id) else {
+            continue;
+        };
+        if !outdated || !is_startable(row.state) {
+            continue;
+        }
+        if start_now {
+            start_account(window, app, queue, id, LaunchMode::SetUpLogin);
+        } else {
+            offer_login_setup(window, id, row.name.as_str(), row.steam);
+        }
+        return;
     }
 }
 
@@ -2117,8 +2353,8 @@ mod preview {
         };
         use ui::Page::{Accounts, Editor, Settings, SetupAccount, SetupPath};
         let variants = [
-            variant("accounts-dark", true, true, Accounts, (420, 520)),
-            variant("accounts-light", false, true, Accounts, (420, 520)),
+            variant("accounts-dark", true, true, Accounts, (420, 600)),
+            variant("accounts-light", false, true, Accounts, (420, 600)),
             variant("empty-dark", true, false, Accounts, (420, 520)),
             variant("empty-light", false, false, Accounts, (420, 520)),
             variant("editor-dark", true, false, Editor, (420, 780)),
@@ -2132,9 +2368,12 @@ mod preview {
                 (420, 520),
             ),
             variant("narrow-dark", true, true, Accounts, (320, 360)),
-            variant("settings-dark", true, false, Settings, (420, 1060)),
-            variant("settings-light", false, false, Settings, (420, 1060)),
+            variant("settings-dark", true, false, Settings, (420, 1400)),
+            variant("settings-light", false, false, Settings, (420, 1400)),
+            variant("settings-top-light", false, false, Settings, (420, 600)),
             variant("editor-steam-dark", true, false, Editor, (420, 780)),
+            variant("login-refresh-dark", true, true, Accounts, (420, 600)),
+            variant("login-refresh-light", false, true, Accounts, (420, 600)),
             variant("login-offer-dark", true, true, Accounts, (420, 520)),
             variant("login-offer-steam-light", false, true, Accounts, (420, 520)),
             variant("login-banner-dark", true, true, Accounts, (420, 520)),
@@ -2173,6 +2412,13 @@ mod preview {
             ui.set_autostart(name == "settings-dark");
             ui.set_after_start(AfterStart::MinimizeToTray);
             ui.set_app_version(env!("CARGO_PKG_VERSION").into());
+            if name.starts_with("login-refresh") {
+                ui.set_refresh_names("Main, 2nd, Steam Acc".into());
+            }
+            ui.set_overlay_enabled(true);
+            ui.set_overlay_only_running(true);
+            ui.set_overlay_locked(false);
+            ui.set_overlay_opacity(58);
             ui.set_setup_detected_path(r"C:\Program Files\Guild Wars 2\Gw2-64.exe".into());
             if demo {
                 set_rows(&ui, demo_rows());
@@ -2257,6 +2503,8 @@ mod preview {
             } else {
                 ThemeChoice::Light
             });
+            // Shown as under the pointer; at rest it is dimmed (58 % by default).
+            overlay.set_idle_opacity(1.0);
             overlay.set_entries(
                 Rc::new(slint::VecModel::from(vec![
                     ui::SwitcherEntry {

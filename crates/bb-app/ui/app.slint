@@ -7,14 +7,14 @@ import {
 import { AccountCard, AccountRow, AccountState } from "account-card.slint";
 import { AccountEditor, EditorData, CompanionToggle, LoginState } from "editor.slint";
 import { SetupPathPage, SetupAccountPage } from "setup.slint";
-import { AfterStart, FpsLimit, SettingsPage } from "settings.slint";
+import { AfterStart, FpsLimit, LanguageChoice, SettingsPage } from "settings.slint";
 import { Messages, LaunchFailure, PathProblem } from "messages.slint";
 import { OverlaySwitcher, SwitcherEntry } from "overlay.slint";
 
 export {
     Theme, AccountRow, AccountState, ToastData, ToastKind, Messages, LaunchFailure, PathProblem,
-    EditorData, CompanionToggle, LoginState, AfterStart, FpsLimit, OverlaySwitcher,
-    SwitcherEntry, ThemeChoice,
+    EditorData, CompanionToggle, LoginState, AfterStart, FpsLimit, LanguageChoice,
+    OverlaySwitcher, SwitcherEntry, ThemeChoice,
 }
 
 /// Which step of linking the ArenaNet installation into Steam is shown (hidden = no dialog).
@@ -295,6 +295,71 @@ component LoginSetupBanner {
     }
 }
 
+/// Shown above the list after a game update: the accounts that have to refresh their login once.
+component RefreshBanner {
+    in property <string> names;
+    in property <bool> enabled: true;
+    callback refresh();
+
+    height: content.preferred-height;
+
+    Rectangle {
+        border-radius: Theme.radius-card;
+        background: Theme.ok-soft;
+        border-width: 1px;
+        border-color: Theme.ok.with-alpha(0.4);
+    }
+    content := VerticalLayout {
+        padding: 12px;
+        spacing: 10px;
+        HorizontalLayout {
+            spacing: 10px;
+            VerticalLayout {
+                alignment: start;
+                padding-top: 1px;
+                Icon {
+                    path: Icons.checkcircle;
+                    color: Theme.ok;
+                }
+            }
+            VerticalLayout {
+                horizontal-stretch: 1;
+                spacing: 4px;
+                Text {
+                    text: @tr("The game was updated");
+                    font-size: Theme.fs-body;
+                    font-weight: 600;
+                    color: Theme.text;
+                    wrap: word-wrap;
+                }
+                Text {
+                    text: @tr("These accounts have to refresh their login once, which needs one start each:");
+                    font-size: 12.5px;
+                    color: Theme.text-muted;
+                    wrap: word-wrap;
+                }
+                Text {
+                    text: root.names;
+                    font-family: Theme.font-mono;
+                    font-size: 12px;
+                    color: Theme.text;
+                    wrap: word-wrap;
+                }
+            }
+        }
+        HorizontalLayout {
+            alignment: start;
+            Button {
+                kind: ButtonKind.primary;
+                icon: Icons.login;
+                text: @tr("Set up one after another");
+                enabled: root.enabled;
+                clicked => { root.refresh(); }
+            }
+        }
+    }
+}
+
 /// Steam accounts need Steam's own copy of the game: offers to link the existing installation into
 /// Steam (step `link`), then waits for the user to click Install in Steam (step `install`).
 component SteamSetupDialog {
@@ -436,6 +501,11 @@ export component MainWindow inherits Window {
     in property <bool> autostart;
     in property <AfterStart> after-start;
     in property <FpsLimit> fps-limit;
+    in property <LanguageChoice> language;
+    in property <bool> overlay-enabled;
+    in property <bool> overlay-only-running;
+    in property <bool> overlay-locked;
+    in property <int> overlay-opacity;
     in property <string> app-version;
     in property <[ToastData]> toasts;
     in-out property <Page> page: Page.accounts;
@@ -449,6 +519,8 @@ export component MainWindow inherits Window {
     in property <bool> steam-setup-retry;
     /// Name of the account whose login is being set up (empty = none) and whether it is a Steam account.
     in property <string> login-setup-name;
+    /// Names (joined) of the accounts whose login is older than the game; empty = none.
+    in property <string> refresh-names;
     in property <bool> login-setup-steam;
     /// Account whose login setup is offered after creating it (0 = no dialog), its name and platform.
     in property <int> login-offer-id;
@@ -473,8 +545,14 @@ export component MainWindow inherits Window {
     callback set-after-start(AfterStart);
     callback set-fps-limit(FpsLimit);
     callback set-theme(ThemeChoice);
+    callback set-language(LanguageChoice);
+    callback set-overlay-enabled(bool);
+    callback set-overlay-only-running(bool);
+    callback set-overlay-locked(bool);
+    callback set-overlay-opacity(int);
     callback open-website();
     callback open-license();
+    callback open-slint();
     /// Open the editor for an account (0 = a new one).
     callback edit-account(int);
     /// Editor: switch a companion app for the account being edited.
@@ -499,6 +577,10 @@ export component MainWindow inherits Window {
     /// Login offer dialog: set it up now (account id) / later.
     callback login-offer-accept(int);
     callback login-offer-dismiss();
+    /// Refresh the logins of the accounts in `refresh-names`, one after another.
+    callback refresh-logins();
+    /// A client exited (Rust calls this; true if it was a setup launch that finished properly).
+    callback client-exited(bool);
     callback dismiss-toast(int);
     /// The theme switched between dark and light (the native title bar has to follow).
     callback theme-changed(bool);
@@ -620,6 +702,17 @@ export component MainWindow inherits Window {
             LoginSetupBanner {
                 name: root.login-setup-name;
                 steam: root.login-setup-steam;
+            }
+        }
+
+        if root.refresh-names != "": HorizontalLayout {
+            padding-left: 12px;
+            padding-right: 12px;
+            padding-bottom: 8px;
+            RefreshBanner {
+                names: root.refresh-names;
+                enabled: root.login-setup-name == "";
+                refresh => { root.refresh-logins(); }
             }
         }
 
@@ -822,6 +915,11 @@ export component MainWindow inherits Window {
         autostart: root.autostart;
         after-start: root.after-start;
         fps-limit: root.fps-limit;
+        language: root.language;
+        overlay-enabled: root.overlay-enabled;
+        overlay-only-running: root.overlay-only-running;
+        overlay-locked: root.overlay-locked;
+        overlay-opacity: root.overlay-opacity;
         version: root.app-version;
         back => { root.page = Page.accounts; }
         choose-gw2-path => { root.choose-gw2-path(); }
@@ -830,8 +928,14 @@ export component MainWindow inherits Window {
         set-after-start(value) => { root.set-after-start(value); }
         set-fps-limit(value) => { root.set-fps-limit(value); }
         set-theme(value) => { root.set-theme(value); }
+        set-language(value) => { root.set-language(value); }
+        set-overlay-enabled(value) => { root.set-overlay-enabled(value); }
+        set-overlay-only-running(value) => { root.set-overlay-only-running(value); }
+        set-overlay-locked(value) => { root.set-overlay-locked(value); }
+        set-overlay-opacity(value) => { root.set-overlay-opacity(value); }
         open-website => { root.open-website(); }
         open-license => { root.open-license(); }
+        open-slint => { root.open-slint(); }
     }
 
     // ── Toasts ───────────────────────────────────────────────────────────────────────────────

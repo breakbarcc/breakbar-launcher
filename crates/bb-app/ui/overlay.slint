@@ -81,6 +81,10 @@ export component OverlaySwitcher inherits Window {
     default-font-size: Theme.fs-body;
 
     in property <[SwitcherEntry]> entries;
+    /// The grip does not move the window (the position is locked).
+    in property <bool> locked;
+    /// Opacity while the pointer is not on the bar (0 to 1); it is opaque under the pointer.
+    in property <float> idle-opacity: 0.58;
     /// Left click on a chip (by account id).
     callback chip-clicked(int);
     /// Right click on a chip (by account id).
@@ -96,6 +100,7 @@ export component OverlaySwitcher inherits Window {
         height: content.preferred-height;
         border-radius: Theme.radius-overlay;
         background: hover.has-hover ? Theme.overlay-hover : Theme.overlay-idle;
+        opacity: hover.has-hover ? 1.0 : root.idle-opacity;
         border-width: 1px;
         border-color: hover.has-hover ? Theme.overlay-line : transparent;
         drop-shadow-color: hover.has-hover ? Theme.shadow-color : transparent;
@@ -114,8 +119,9 @@ export component OverlaySwitcher inherits Window {
                     path: Icons.grip;
                     color: Theme.text-dim;
                     size: 12px;
+                    opacity: root.locked ? 0.35 : 1.0;
                 }
-                WindowMoveArea { }
+                if !root.locked: WindowMoveArea { }
             }
             // Equal padding above, below and to the right of the chips.
             HorizontalLayout {

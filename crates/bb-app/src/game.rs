@@ -90,6 +90,46 @@ pub fn steam_client(preferred: &Path) -> Option<PathBuf> {
         .find(|path| supports_steam(path) && validate(path).is_ok())
 }
 
+/// Write time of `Gw2.dat` next to the client, in seconds since the epoch. The patcher stamps the
+/// file with the time of the build it installs, so this changes with every game update and works
+/// as the build number without asking the network. `None` if the file is missing.
+pub fn game_build(gw2_exe: &Path) -> Option<u64> {
+    modified_seconds(&gw2_exe.with_file_name("Gw2.dat"))
+}
+
+fn modified_seconds(path: &Path) -> Option<u64> {
+    let modified = std::fs::metadata(path).ok()?.modified().ok()?;
+    Some(
+        modified
+            .duration_since(std::time::UNIX_EPOCH)
+            .ok()?
+            .as_secs(),
+    )
+}
+
+/// A `Local.dat` written before this much time earlier than the game build counts as older.
+const LOCAL_DAT_SLACK_SECONDS: u64 = 2;
+
+/// Whether the account has a `Local.dat` that is older than the installed game and so has to be
+/// refreshed by one setup launch (a client started with `-shareArchive` can't update it).
+///
+/// After a game update the client rewrites the file with the time of the new build, so a file
+/// older than `Gw2.dat` was made for an older build. If a setup launch has since finished against
+/// this very build (see [`bb_store::verified_build`]) the file counts as current anyway, even when
+/// the client had nothing to change in it.
+pub fn login_outdated(gw2_exe: &Path, id: bb_core::AccountId) -> bool {
+    let Some(build) = game_build(gw2_exe) else {
+        return false;
+    };
+    let Some(local) = bb_store::local_dat_path(id)
+        .ok()
+        .and_then(|path| modified_seconds(&path))
+    else {
+        return false;
+    };
+    local + LOCAL_DAT_SLACK_SECONDS < build && bb_store::verified_build(id) != Some(build)
+}
+
 fn candidates() -> Vec<PathBuf> {
     let mut candidates = Vec::new();
 
@@ -203,6 +243,50 @@ mod tests {
         assert_eq!(steam_client(&exe), Some(exe.clone()));
 
         std::fs::remove_dir_all(&dir).unwrap();
+    }
+
+    fn set_modified(path: &Path, seconds: u64) {
+        let file = std::fs::OpenOptions::new().write(true).open(path).unwrap();
+        file.set_modified(std::time::UNIX_EPOCH + std::time::Duration::from_secs(seconds))
+            .unwrap();
+    }
+
+    #[test]
+    fn a_local_dat_older_than_the_game_is_outdated_until_verified() {
+        crate::test_support::with_isolated_appdata("login-outdated", |root| {
+            let game = root.join("game");
+            std::fs::create_dir_all(&game).unwrap();
+            let exe = game.join(GW2_EXE);
+            let id = bb_core::AccountId(1);
+
+            // Nothing to compare yet: no game files, no profile.
+            assert!(!login_outdated(&exe, id));
+            let dat = game.join("Gw2.dat");
+            std::fs::write(&dat, b"x").unwrap();
+            set_modified(&dat, 1_000_000);
+            assert_eq!(game_build(&exe), Some(1_000_000));
+            assert!(!login_outdated(&exe, id));
+
+            let local = bb_store::local_dat_path(id).unwrap();
+            std::fs::create_dir_all(local.parent().unwrap()).unwrap();
+            std::fs::write(&local, b"x").unwrap();
+
+            // Refreshed by the update itself (same stamp) or later: current.
+            set_modified(&local, 1_000_000);
+            assert!(!login_outdated(&exe, id));
+            set_modified(&local, 1_500_000);
+            assert!(!login_outdated(&exe, id));
+
+            // Written before the build: out of date ...
+            set_modified(&local, 900_000);
+            assert!(login_outdated(&exe, id));
+
+            // ... until a setup launch has finished against this build, but not for the next one.
+            bb_store::mark_build_verified(id, 1_000_000).unwrap();
+            assert!(!login_outdated(&exe, id));
+            set_modified(&dat, 2_000_000);
+            assert!(login_outdated(&exe, id));
+        });
     }
 
     #[test]

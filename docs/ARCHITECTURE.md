@@ -81,7 +81,23 @@ no sleep/retry loops.
   (as with Launchbuddy); per-account graphics settings are a possible later extension.
 
 **After a game patch** `Local.dat` files of an older build must be refreshed (one normal launch per
-account). Breakbar detects the build mismatch and guides the user instead of failing.
+account). Breakbar detects that locally and guides the user instead of failing:
+
+- *Detection* (`game::login_outdated`): the patcher stamps `Gw2.dat` with the time of the build it
+  installs, and the client rewrites an account's `Local.dat` with the same time when it refreshes it.
+  A `Local.dat` older than `Gw2.dat` (2 s slack) was made for an older build. No network access
+  is needed. If the client had nothing to change, a setup launch that finished against this build
+  is recorded in `profiles<id>uild-verified.txt` (`bb_store::mark_build_verified`), and the
+  account does not count as outdated again for that build.
+- *Effect:* such accounts get the state "login needed" (with the Login button), a launch of one
+  is automatically a setup launch (`launcher::launch`), and a banner above the list ("The game was
+  updated", screen 07) names them. The logins are looked at every 5 seconds, since the game can be
+  updated (game launcher, Steam) while Breakbar runs, and after each client exits.
+- *"Set up one after another":* starts the first account's setup launch and, whenever one finishes
+  properly, offers the next in the login dialog (Later / Set up now), so no client starts without
+  a click. The queue lives in `App::refresh_queue`.
+- *Not done:* "update required" (screen 06), i.e. noticing that the game itself is behind the
+  current build, needs the network or the client's error dialog and is not part of this.
 
 ## Steam accounts
 
@@ -196,7 +212,12 @@ struct CompanionApp {
 - **Translations:** all user-visible text goes through Slint's `@tr` — texts the Rust side shows
   (toasts, error details) are functions of the `Messages` global in `ui/messages.slint`. English
   is the source language; German lives in `lang/de/LC_MESSAGES/breakbar-launcher.po` and is bundled at
-  compile time; the language follows Windows. After changing texts:
+  compile time. The language is a setting (`language = "system" | "english" | "german"` in
+  `config.toml`): System follows the Windows display language (German if it is German, English
+  otherwise, via the `sys-locale` crate), the others force one. It is applied with
+  `slint::select_bundled_translation` at startup and when the setting changes, and Slint
+  re-translates all open windows at once. Texts that were already turned into strings (an open
+  toast, an account row's detail line) keep their old language. After changing texts:
   `slint-tr-extractor -j -o lang/de/LC_MESSAGES/breakbar-launcher.po ui/*.slint` (from `crates/bb-app`),
   then translate the new entries.
 - **Screenshots for the README** (`docs/images`): the same test renders them in English at twice the
@@ -211,7 +232,7 @@ struct CompanionApp {
   sit in the main window's footer, and a "// Behavior" section with the "After starting an
   account" radio group and the "Start with Windows" toggle, a "// Game" section with the loading
   screen frame rate limit and an "// Appearance" section with the theme (System / Light / Dark).
-  and an "// About" section (icon, version, website and license links, "Made with Slint", trademark
+  and an "// About" section (icon, version, website and license links, the official "Made with Slint" badge as an SVG in `assets/badge` (a variant per theme; the winit backend brings SVG support along), trademark
   notice). The companion app editor is the only part of that screen still missing.
 - **Theme.** `config.toml` stores `theme = "system" | "light" | "dark"`. The `Theme` global has a
   `choice` property set from Rust, and `dark` is computed from it (System follows the Windows app
@@ -244,11 +265,19 @@ struct CompanionApp {
   "Start"; right click on a running one opens "Stop". Each menu starts with the account's name.
   The menus are native Win32 popups (`bb_win::menu`, shared with the tray), not Slint
   `PopupWindow`s: on this backend an embedded popup is clipped to its owning window, and this
-  window is only as big as the bar. The bar only shows while some account is active.
+  window is only as big as the bar.
   `overlay::Overlay` owns it plus a 500 ms `slint::Timer` that rebuilds the chips from the main
   window's rows, highlights the chip whose client owns the foreground window (matched by PID) and
-  saves the dragged-to position (`bb_store::OverlayPosition`). **First pass only:** no global
-  hotkeys, other sizes, vertical orientation, opacity control or settings section (screen 15).
+  saves the dragged-to position (`bb_store::OverlayPosition`) once it has stayed the same for two
+  updates in a row (`WindowMoveArea` hands the drag to Windows; Slint reports neither its start nor
+  its end), never while the window is hidden (Windows reports a parked -32000/-32000 then) or off
+  every monitor, and ignores such a saved position at startup. Its settings (`[overlay]` in
+  `config.toml`, `bb_store::OverlaySettings`, section "// Switcher" of the settings page) are read
+  on every update, so they apply within half a second: show it at all, only while a client runs
+  (default; otherwise it stays while Breakbar runs, as long as there is an account), lock the
+  position (the grip stops being a `WindowMoveArea`) and the opacity at rest (30-100 %, default 58;
+  the whole bar is fully opaque under the pointer). **Not done yet:** global hotkeys, other sizes,
+  vertical orientation.
 - **Pitfall: `TouchArea` + `FocusScope` pairs.** Every clickable component pairs a `TouchArea`
   (the click) with a `FocusScope`-derived one (keyboard activation, e.g. our shared `Activation`
   helper). `FocusScope`'s `focus-on-click` defaults to `true` and grabs the mouse-down itself to
@@ -313,7 +342,9 @@ Config: `%APPDATA%\Breakbar\config.toml` (atomic write via temp file + `ReplaceF
 | 4.2 | ✅ Settings page: paths, game (FPS limit), appearance (theme), about (companion app editor still pending) |
 | 4.3 | ✅ Start with Windows (`HKCU\...\Run`, toggle in Settings) |
 | 4.4 | ✅ Close behavior and tray (hide-to-tray close, tray menu, single instance, after-start setting) |
-| 4.5 | ✅ Instance switcher overlay: core (grip, numbered chips, click/context menus, position); hotkeys/sizes/settings pending |
+| 4.5 | ✅ Instance switcher overlay: core (grip, numbered chips, click/context menus, position) and settings (show, only while running, lock position, opacity); hotkeys, other sizes and vertical orientation pending |
 | 4.6 | ✅ Login set-up flow: offer after creating an account, banner while the setup client runs, result check of `Local.dat` (patch detection and "set up one after another" belong to phase 5) |
-| 5 | Patch detection + Local.dat refresh, window layout per account, priority/affinity, GFX per account |
-| 6 | Code signing (SignPath/Azure Trusted Signing), releases, winget |
+| 5.1 | ✅ Patch detection (local, `Gw2.dat` vs `Local.dat` write time) and "Set up one after another" (banner, login state, sequential refresh); the "update required" banner is not done |
+| 5.2 | Window layout per account, priority/affinity, GFX per account |
+| 6.1 | ✅ Release workflow: a push to the `release` branch publishes the crate version as a GitHub release (`breakbar-launcher.exe`, checksum, `latest.json`); the signing job for SignPath is prepared but off and untested (see CONTRIBUTING.md) |
+| 6.2 | Code signing approved and switched on, website, in-app update check and update, winget |
