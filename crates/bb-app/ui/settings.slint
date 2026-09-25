@@ -1,7 +1,7 @@
 // Settings page (design hand-off: screen 11). Paths and behavior so far; the other sections
 // (companion apps, appearance, about) come with later steps.
 
-import { Theme } from "theme.slint";
+import { Theme, ThemeChoice } from "theme.slint";
 import { Icons } from "icons.slint";
 import { Activation, Icon, Button, FocusRing, IconButton, SectionLabel, FieldLabel, Toggle, Segmented } from "components.slint";
 
@@ -148,6 +148,7 @@ export component SettingsPage inherits VerticalLayout {
     callback toggle-autostart();
     callback set-after-start(AfterStart);
     callback set-fps-limit(FpsLimit);
+    callback set-theme(ThemeChoice);
 
     // Header: back arrow, title (matches the account editor's).
     HorizontalLayout {
@@ -283,6 +284,32 @@ export component SettingsPage inherits VerticalLayout {
                     checked: root.autostart;
                     label: @tr("Start with Windows");
                     toggled => { root.toggle-autostart(); }
+                }
+            }
+
+            SectionLabel {
+                text: @tr("// APPEARANCE");
+            }
+            VerticalLayout {
+                spacing: 6px;
+                Text {
+                    text: @tr("Theme");
+                    font-size: Theme.fs-help;
+                    font-weight: 600;
+                    color: Theme.text-muted;
+                }
+                Segmented {
+                    options: [@tr("System"), @tr("Light"), @tr("Dark")];
+                    selected: Theme.choice == ThemeChoice.system ? 0 : Theme.choice == ThemeChoice.light ? 1 : 2;
+                    changed(index) => {
+                        root.set-theme(index == 0 ? ThemeChoice.system : index == 1 ? ThemeChoice.light : ThemeChoice.dark);
+                    }
+                }
+                Text {
+                    text: @tr("System follows the Windows app theme.");
+                    font-size: Theme.fs-help;
+                    color: Theme.text-dim;
+                    wrap: word-wrap;
                 }
             }
         }

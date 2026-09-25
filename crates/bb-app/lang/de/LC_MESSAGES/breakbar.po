@@ -175,7 +175,7 @@ msgctxt "MainWindow"
 msgid "RUNNING"
 msgstr "LAUFEN"
 
-#: ui/app.slint:308 ui/app.slint:358 ui/app.slint:332 ui/app.slint:381 ui/app.slint:492 ui/app.slint:597 ui/app.slint:600
+#: ui/app.slint:308 ui/app.slint:358 ui/app.slint:332 ui/app.slint:381 ui/app.slint:597 ui/app.slint:600 ui/app.slint:601
 msgctxt "MainWindow"
 msgid "Add account"
 msgstr "Account hinzufügen"
@@ -234,7 +234,7 @@ msgctxt "Toast"
 msgid "Dismiss"
 msgstr "Hinweis schließen"
 
-#: ui/messages.slint:20 ui/messages.slint:66 ui/messages.slint:21 ui/messages.slint:23
+#: ui/messages.slint:20 ui/messages.slint:66 ui/messages.slint:21 ui/messages.slint:72
 msgctxt "Messages"
 msgid "Start failed"
 msgstr "Start fehlgeschlagen"
@@ -474,7 +474,7 @@ msgctxt "AccountCard"
 msgid "Del"
 msgstr "Entf"
 
-#: ui/app.slint:124 ui/app.slint:140 ui/app.slint:92 ui/app.slint:108 ui/app.slint:97 ui/app.slint:113
+#: ui/app.slint:124 ui/app.slint:140 ui/app.slint:92 ui/app.slint:108 ui/app.slint:113
 msgctxt "ConfirmDelete"
 msgid "Delete „{}“?"
 msgstr "„{}“ löschen?"
@@ -877,7 +877,7 @@ msgctxt "SettingsPage"
 msgid "Gw2-64.exe found"
 msgstr "Gw2-64.exe gefunden"
 
-#: ui/settings.slint:127 ui/settings.slint:135 ui/settings.slint:129 ui/settings.slint:195 ui/settings.slint:203
+#: ui/settings.slint:127 ui/settings.slint:135 ui/settings.slint:129 ui/settings.slint:203 ui/settings.slint:196
 msgctxt "SettingsPage"
 msgid "File not found. Check the path."
 msgstr "Datei nicht gefunden. Prüfe den Pfad."
@@ -902,7 +902,7 @@ msgctxt "SettingsPage"
 msgid "// BEHAVIOR"
 msgstr "// VERHALTEN"
 
-#: ui/settings.slint:150 ui/settings.slint:164 ui/settings.slint:239 ui/settings.slint:284
+#: ui/settings.slint:150 ui/settings.slint:164 ui/settings.slint:239 ui/settings.slint:271 ui/settings.slint:285
 msgctxt "SettingsPage"
 msgid "Start with Windows"
 msgstr "Mit Windows starten"
@@ -967,22 +967,22 @@ msgctxt "Messages"
 msgid "Tray icon could not be created"
 msgstr "Tray-Symbol konnte nicht erstellt werden"
 
-#: ui/settings.slint:208 ui/settings.slint:239
+#: ui/settings.slint:208 ui/settings.slint:239 ui/settings.slint:240
 msgctxt "SettingsPage"
 msgid "After starting an account"
 msgstr "Nach dem Start"
 
-#: ui/settings.slint:214 ui/settings.slint:245
+#: ui/settings.slint:214 ui/settings.slint:245 ui/settings.slint:246
 msgctxt "SettingsPage"
 msgid "Keep the window open"
 msgstr "Fenster geöffnet lassen"
 
-#: ui/settings.slint:219 ui/settings.slint:250
+#: ui/settings.slint:219 ui/settings.slint:250 ui/settings.slint:251
 msgctxt "SettingsPage"
 msgid "Minimize to the tray"
 msgstr "In den Tray minimieren"
 
-#: ui/settings.slint:224 ui/settings.slint:255
+#: ui/settings.slint:224 ui/settings.slint:255 ui/settings.slint:256
 msgctxt "SettingsPage"
 msgid "Close the launcher"
 msgstr "Launcher schließen"
@@ -1220,32 +1220,32 @@ msgstr ""
 "gesetztem „E-Mail/Passwort merken“ an, schließe den Client normal und "
 "versuche es erneut."
 
-#: ui/settings.slint:208
+#: ui/settings.slint:208 ui/settings.slint:209
 msgctxt "SettingsPage"
 msgid "// GAME"
 msgstr "// SPIEL"
 
-#: ui/settings.slint:213
+#: ui/settings.slint:213 ui/settings.slint:214
 msgctxt "SettingsPage"
 msgid "Frame rate limit for loading screens"
 msgstr "Bildratenbegrenzung für Ladebildschirme"
 
-#: ui/settings.slint:219
+#: ui/settings.slint:219 ui/settings.slint:220
 msgctxt "SettingsPage"
 msgid "60 FPS"
 msgstr "60 FPS"
 
-#: ui/settings.slint:219
+#: ui/settings.slint:219 ui/settings.slint:220
 msgctxt "SettingsPage"
 msgid "30 FPS"
 msgstr "30 FPS"
 
-#: ui/settings.slint:219
+#: ui/settings.slint:219 ui/settings.slint:220
 msgctxt "SettingsPage"
 msgid "Unlimited"
 msgstr "Unbegrenzt"
 
-#: ui/settings.slint:226
+#: ui/settings.slint:226 ui/settings.slint:227
 msgctxt "SettingsPage"
 msgid ""
 "Only limits the loading screens. It does not apply in the game world or on "
@@ -1255,3 +1255,33 @@ msgstr ""
 "Begrenzt nur die Ladebildschirme. Es gilt weder in der Spielwelt noch im "
 "Charakterauswahl-Bildschirm und hat nichts mit dem Framelimiter in den "
 "Grafikoptionen des Spiels zu tun."
+
+#: ui/settings.slint:291
+msgctxt "SettingsPage"
+msgid "// APPEARANCE"
+msgstr "// DARSTELLUNG"
+
+#: ui/settings.slint:296
+msgctxt "SettingsPage"
+msgid "Theme"
+msgstr "Farbschema"
+
+#: ui/settings.slint:302
+msgctxt "SettingsPage"
+msgid "System"
+msgstr "System"
+
+#: ui/settings.slint:302
+msgctxt "SettingsPage"
+msgid "Light"
+msgstr "Hell"
+
+#: ui/settings.slint:302
+msgctxt "SettingsPage"
+msgid "Dark"
+msgstr "Dunkel"
+
+#: ui/settings.slint:309
+msgctxt "SettingsPage"
+msgid "System follows the Windows app theme."
+msgstr "System folgt dem Windows-App-Design."

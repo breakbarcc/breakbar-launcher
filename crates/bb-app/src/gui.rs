@@ -13,7 +13,8 @@ use raw_window_handle::{HasWindowHandle, RawWindowHandle};
 use slint::{ComponentHandle, Model, SharedString};
 use ui::{
     AccountRow, AccountState, AfterStart, CompanionToggle, EditorData, FpsLimit, LaunchFailure,
-    LoginState, MainWindow, Messages, PathProblem, SteamSetupStep, Theme, ToastData, ToastKind,
+    LoginState, MainWindow, Messages, PathProblem, SteamSetupStep, Theme, ThemeChoice, ToastData,
+    ToastKind,
 };
 
 use crate::companions::{self, SharedInstances};
@@ -241,6 +242,9 @@ pub fn run() -> Result<(), slint::PlatformError> {
     window.set_autostart(bb_win::autostart::is_enabled(APP_NAME));
     window.set_after_start(to_ui_after_start(app.config.after_start));
     window.set_fps_limit(to_ui_fps_limit(app.config.fps_limit));
+    window
+        .global::<Theme>()
+        .set_choice(to_ui_theme(app.config.theme));
     refresh(&window);
 
     let app = Rc::new(RefCell::new(app));
@@ -258,6 +262,13 @@ pub fn run() -> Result<(), slint::PlatformError> {
             None
         }
     };
+    if let Some(overlay) = _overlay
+        .as_ref()
+        .and_then(|overlay| overlay.window().upgrade())
+    {
+        let theme = to_ui_theme(app.borrow().config.theme);
+        overlay.global::<Theme>().set_choice(theme);
+    }
 
     window.on_launch_account({
         let app = Rc::clone(&app);
@@ -534,6 +545,23 @@ pub fn run() -> Result<(), slint::PlatformError> {
         }
     });
 
+    window.on_set_theme({
+        let app = Rc::clone(&app);
+        let weak = window.as_weak();
+        let overlay = _overlay.as_ref().map(crate::overlay::Overlay::window);
+        move |value| {
+            if let Some(window) = weak.upgrade() {
+                window.global::<Theme>().set_choice(value);
+                if let Some(overlay) = overlay.as_ref().and_then(slint::Weak::upgrade) {
+                    overlay.global::<Theme>().set_choice(value);
+                }
+                let mut app = app.borrow_mut();
+                app.config.theme = from_ui_theme(value);
+                app.save(&window);
+            }
+        }
+    });
+
     window.on_set_fps_limit({
         let app = Rc::clone(&app);
         let weak = window.as_weak();
@@ -694,6 +722,22 @@ fn to_ui_after_start(value: bb_store::AfterStart) -> AfterStart {
         bb_store::AfterStart::KeepOpen => AfterStart::KeepOpen,
         bb_store::AfterStart::MinimizeToTray => AfterStart::MinimizeToTray,
         bb_store::AfterStart::Close => AfterStart::Close,
+    }
+}
+
+fn to_ui_theme(value: bb_store::ThemeChoice) -> ThemeChoice {
+    match value {
+        bb_store::ThemeChoice::System => ThemeChoice::System,
+        bb_store::ThemeChoice::Light => ThemeChoice::Light,
+        bb_store::ThemeChoice::Dark => ThemeChoice::Dark,
+    }
+}
+
+fn from_ui_theme(value: ThemeChoice) -> bb_store::ThemeChoice {
+    match value {
+        ThemeChoice::System => bb_store::ThemeChoice::System,
+        ThemeChoice::Light => bb_store::ThemeChoice::Light,
+        ThemeChoice::Dark => bb_store::ThemeChoice::Dark,
     }
 }
 
@@ -2062,8 +2106,8 @@ mod preview {
                 (420, 520),
             ),
             variant("narrow-dark", true, true, Accounts, (320, 360)),
-            variant("settings-dark", true, false, Settings, (420, 700)),
-            variant("settings-light", false, false, Settings, (420, 700)),
+            variant("settings-dark", true, false, Settings, (420, 820)),
+            variant("settings-light", false, false, Settings, (420, 820)),
             variant("editor-steam-dark", true, false, Editor, (420, 780)),
             variant("login-offer-dark", true, true, Accounts, (420, 520)),
             variant("login-offer-steam-light", false, true, Accounts, (420, 520)),
@@ -2088,7 +2132,11 @@ mod preview {
         {
             window.set_size(PhysicalSize::new(width, height));
             let ui = MainWindow::new().unwrap();
-            ui.global::<Theme>().set_dark(dark);
+            ui.global::<Theme>().set_choice(if dark {
+                ThemeChoice::Dark
+            } else {
+                ThemeChoice::Light
+            });
             ui.set_gw2_path(r"C:\Program Files\Guild Wars 2\Gw2-64.exe".into());
             ui.set_gw2_path_ok(true);
             ui.set_blish_path(r"D:\Tools\Blish HUD\Blish HUD.exe".into());
@@ -2169,7 +2217,11 @@ mod preview {
             let (width, height) = (260, 32);
             window.set_size(PhysicalSize::new(width, height));
             let overlay = ui::OverlaySwitcher::new().unwrap();
-            overlay.global::<Theme>().set_dark(dark);
+            overlay.global::<Theme>().set_choice(if dark {
+                ThemeChoice::Dark
+            } else {
+                ThemeChoice::Light
+            });
             overlay.set_entries(
                 Rc::new(slint::VecModel::from(vec![
                     ui::SwitcherEntry {

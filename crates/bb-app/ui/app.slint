@@ -1,4 +1,4 @@
-import { Theme } from "theme.slint";
+import { Theme, ThemeChoice } from "theme.slint";
 import { Icons } from "icons.slint";
 import {
     Icon, Button, ButtonKind, IconButton, SectionLabel, LinkButton, SegmentBar, Toast, ToastData,
@@ -14,7 +14,7 @@ import { OverlaySwitcher, SwitcherEntry } from "overlay.slint";
 export {
     Theme, AccountRow, AccountState, ToastData, ToastKind, Messages, LaunchFailure, PathProblem,
     EditorData, CompanionToggle, LoginState, AfterStart, FpsLimit, OverlaySwitcher,
-    SwitcherEntry,
+    SwitcherEntry, ThemeChoice,
 }
 
 /// Which step of linking the ArenaNet installation into Steam is shown (hidden = no dialog).
@@ -471,6 +471,7 @@ export component MainWindow inherits Window {
     callback toggle-autostart();
     callback set-after-start(AfterStart);
     callback set-fps-limit(FpsLimit);
+    callback set-theme(ThemeChoice);
     /// Open the editor for an account (0 = a new one).
     callback edit-account(int);
     /// Editor: switch a companion app for the account being edited.
@@ -824,6 +825,7 @@ export component MainWindow inherits Window {
         toggle-autostart => { root.toggle-autostart(); }
         set-after-start(value) => { root.set-after-start(value); }
         set-fps-limit(value) => { root.set-fps-limit(value); }
+        set-theme(value) => { root.set-theme(value); }
     }
 
     // ── Toasts ───────────────────────────────────────────────────────────────────────────────

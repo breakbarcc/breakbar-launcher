@@ -3,9 +3,14 @@
 
 import { Palette } from "std-widgets.slint";
 
+/// The theme the user picked; `system` follows the Windows app theme. Mirrors `bb_store::ThemeChoice`.
+export enum ThemeChoice { system, light, dark }
+
 export global Theme {
-    /// Follows the Windows app theme; Rust overrides it once the user picks a theme explicitly.
-    in-out property <bool> dark: Palette.color-scheme != ColorScheme.light;
+    /// Set by Rust from the settings.
+    in-out property <ThemeChoice> choice: ThemeChoice.system;
+    out property <bool> dark: choice == ThemeChoice.dark
+        || (choice == ThemeChoice.system && Palette.color-scheme != ColorScheme.light);
 
     // Window background
     out property <color> bg: dark ? #0d0f12 : #ece2cc;

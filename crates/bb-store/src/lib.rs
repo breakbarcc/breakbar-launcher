@@ -31,6 +31,17 @@ pub enum AfterStart {
     Close,
 }
 
+/// Which color theme the UI uses.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default, Serialize, Deserialize)]
+#[serde(rename_all = "kebab-case")]
+pub enum ThemeChoice {
+    /// Follows the Windows app theme.
+    #[default]
+    System,
+    Light,
+    Dark,
+}
+
 /// Frame rate limit passed to the game as `-fps:N`. The game only applies it during loading
 /// screens (a known bug on the wiki); it is independent of the in-game Frame Limiter.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default, Serialize, Deserialize)]
@@ -85,6 +96,8 @@ pub struct Config {
     pub after_start: AfterStart,
     #[serde(default)]
     pub fps_limit: FpsLimit,
+    #[serde(default)]
+    pub theme: ThemeChoice,
     /// Last dragged-to position of the instance-switcher overlay. `None` before it's ever been
     /// moved, so it starts at a fixed default position.
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -107,6 +120,7 @@ impl Default for Config {
             companions: Vec::new(),
             after_start: AfterStart::default(),
             fps_limit: FpsLimit::default(),
+            theme: ThemeChoice::default(),
             overlay_position: None,
         }
     }

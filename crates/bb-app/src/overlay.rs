@@ -38,6 +38,11 @@ impl std::fmt::Debug for Overlay {
 }
 
 impl Overlay {
+    /// A handle for applying settings (the theme) to the overlay window later.
+    pub(crate) fn window(&self) -> slint::Weak<OverlaySwitcher> {
+        self._window.as_weak()
+    }
+
     /// Creates the overlay, restores its last saved position, and starts polling `main_window`'s
     /// account rows to keep it in sync. Does not show it yet — it only appears once an account is
     /// active (see the poll below).
