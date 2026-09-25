@@ -3,13 +3,15 @@
 use std::fs::OpenOptions;
 use std::io;
 use std::os::windows::fs::OpenOptionsExt;
-use std::os::windows::io::AsRawHandle;
+use std::os::windows::io::OwnedHandle;
+use std::os::windows::process::ExitStatusExt;
 use std::path::Path;
-use std::process::{Child, Command, ExitStatus};
+use std::process::{Command, ExitStatus};
 use std::thread;
 use std::time::{Duration, Instant};
 
 use bb_core::{Account, LaunchOptions, Provider, game_args, steam};
+use bb_win::process::Process;
 
 use crate::profile_link::{self, ProfileLinkError};
 
@@ -20,6 +22,9 @@ const POLL_INTERVAL: Duration = Duration::from_millis(100);
 const LOCK_STABLE_FOR: Duration = Duration::from_secs(3);
 /// Upper bound for startup; generous because a client may check for updates first.
 const STARTUP_TIMEOUT: Duration = Duration::from_secs(120);
+/// How long a client that exited successfully during startup gets to show up again as a new
+/// process (see [`restarted_client`]).
+const RESTART_GRACE: Duration = Duration::from_secs(5);
 /// Named mutex serializing launches across Breakbar processes (the window and shortcut starts),
 /// because each launch points `%APPDATA%\Guild Wars 2` at its account for a few seconds.
 const LAUNCH_LOCK: &str = "Breakbar-Launch";
@@ -62,18 +67,20 @@ pub enum LaunchError {
 #[derive(Debug)]
 pub struct RunningClient {
     pid: u32,
-    child: Child,
+    process: Process,
 }
 
 impl RunningClient {
+    /// The client's process id. Not necessarily the one of the process Breakbar spawned: a client
+    /// that updates itself starts over as a new process (see [`restarted_client`]).
     pub fn pid(&self) -> u32 {
         self.pid
     }
 
-    /// Raw OS handle of the client process, valid until this value (or the `Child` it borrows
-    /// from) is dropped. Used to stop the process without the PID-reuse race of re-opening it.
+    /// Raw OS handle of the client process, valid until this value is dropped. Used to stop the
+    /// process without the PID-reuse race of re-opening it.
     pub fn raw_handle(&self) -> isize {
-        self.child.as_raw_handle() as isize
+        self.process.raw_handle()
     }
 
     /// Blocks until the client shows its game window (not the launcher/patcher window, which has
@@ -83,7 +90,7 @@ impl RunningClient {
     /// until the game window appears, and only for clients with companions waiting for it.
     pub fn wait_for_game_window(&mut self) -> bool {
         loop {
-            if !matches!(self.child.try_wait(), Ok(None)) {
+            if !matches!(self.process.try_wait(), Ok(None)) {
                 return false;
             }
             if bb_win::window::has_visible_window(self.pid, GAME_WINDOW_CLASSES).unwrap_or(false) {
@@ -94,8 +101,9 @@ impl RunningClient {
     }
 
     /// Blocks the calling thread until the client process exits.
-    pub fn wait_for_exit(mut self) -> io::Result<ExitStatus> {
-        self.child.wait()
+    pub fn wait_for_exit(self) -> io::Result<ExitStatus> {
+        let code = self.process.wait()?;
+        Ok(ExitStatus::from_raw(code))
     }
 }
 
@@ -234,41 +242,87 @@ fn start_and_wait(
     for (key, value) in provider_env(account) {
         command.env(key, value);
     }
-    let mut child = command.spawn().map_err(LaunchError::Spawn)?;
+    let child = command.spawn().map_err(LaunchError::Spawn)?;
+    let process = Process::from(OwnedHandle::from(child));
 
-    let warning = match wait_until_locked(&mut child, local_dat)? {
-        true => None,
-        false => Some(LaunchWarning::SlowStart),
-    };
+    let exe_name = gw2_path
+        .file_name()
+        .and_then(|name| name.to_str())
+        .unwrap_or(crate::game::GW2_EXE);
+    let (process, locked) = wait_until_locked(process, exe_name, local_dat)?;
+    let warning = (!locked).then_some(LaunchWarning::SlowStart);
 
     Ok((
         RunningClient {
-            pid: child.id(),
-            child,
+            pid: process.pid(),
+            process,
         },
         warning,
     ))
 }
 
-/// Waits until `path` has been locked for [`LOCK_STABLE_FOR`] without interruption. Returns
-/// `Ok(false)` on timeout and an error if the client exits first.
-fn wait_until_locked(child: &mut Child, path: &Path) -> Result<bool, LaunchError> {
+/// Waits until `path` has been locked for [`LOCK_STABLE_FOR`] without interruption. Returns the
+/// process that holds it (which is not `process` if that one restarted itself, see
+/// [`restarted_client`]) and whether it did, `false` on a timeout. An error if the client exits
+/// first.
+fn wait_until_locked(
+    mut process: Process,
+    exe_name: &str,
+    path: &Path,
+) -> Result<(Process, bool), LaunchError> {
     let started = Instant::now();
     let mut locked_since: Option<Instant> = None;
     loop {
-        if let Some(status) = child.try_wait().map_err(LaunchError::Spawn)? {
-            return Err(LaunchError::ExitedDuringStartup(status));
+        if let Some(code) = process
+            .try_wait()
+            .map_err(io::Error::from)
+            .map_err(LaunchError::Spawn)?
+        {
+            process = restarted_client(process.pid(), code, exe_name)?;
+            locked_since = None;
+            continue;
         }
         if is_locked(path) {
             let since = *locked_since.get_or_insert_with(Instant::now);
             if since.elapsed() >= LOCK_STABLE_FOR {
-                return Ok(true);
+                return Ok((process, true));
             }
         } else {
             locked_since = None;
         }
         if started.elapsed() >= STARTUP_TIMEOUT {
-            return Ok(false);
+            return Ok((process, false));
+        }
+        thread::sleep(POLL_INTERVAL);
+    }
+}
+
+/// The client that took over from `pid`, which exited with `code` during startup.
+///
+/// A client whose executable is out of date replaces it with the current one and starts it (with
+/// the same arguments), then exits successfully itself. That happens when Steam has just
+/// (re)installed its own older `Gw2-64.exe`, and can happen with any game patch. The new process is
+/// the client; the old one's exit is not a failed start. The new process is found through its
+/// parent id, which Windows keeps after the parent has exited.
+///
+/// Any other exit during startup is an error, and so is a successful exit that no new client
+/// follows within [`RESTART_GRACE`] (the user closed the launcher window, say).
+fn restarted_client(pid: u32, code: u32, exe_name: &str) -> Result<Process, LaunchError> {
+    let exited = || LaunchError::ExitedDuringStartup(ExitStatus::from_raw(code));
+    if code != 0 {
+        return Err(exited());
+    }
+    let started = Instant::now();
+    loop {
+        let successors = bb_win::process::find_child_processes(pid, exe_name).unwrap_or_default();
+        if let Some(successor) = successors
+            .into_iter()
+            .find_map(|pid| Process::open(pid).ok())
+        {
+            return Ok(successor);
+        }
+        if started.elapsed() >= RESTART_GRACE {
+            return Err(exited());
         }
         thread::sleep(POLL_INTERVAL);
     }
@@ -400,6 +454,37 @@ mod tests {
             provider_env(&steam_account),
             [("SteamAppId", "1284210".to_owned())]
         );
+    }
+
+    /// A client that exits successfully and was followed by a new process of the same executable
+    /// (started by it) hands over to that process; a failing exit never does. The test process
+    /// plays the exited client, a renamed copy of `ping.exe` its successor. The copy has its own
+    /// name so the other tests, which use `ping.exe` as a stand-in client, do not see it running.
+    #[test]
+    fn a_restarted_client_is_adopted() {
+        let windir = std::env::var_os("SystemRoot").expect("SystemRoot is set");
+        let name = format!("breakbar-restart-{}.exe", std::process::id());
+        let exe = std::env::temp_dir().join(&name);
+        fs::copy(
+            PathBuf::from(windir).join("System32").join("ping.exe"),
+            &exe,
+        )
+        .unwrap();
+        let mut successor = Command::new(&exe)
+            .args(["-n", "30", "127.0.0.1"])
+            .stdout(std::process::Stdio::null())
+            .spawn()
+            .unwrap();
+
+        let adopted = restarted_client(std::process::id(), 0, &name).unwrap();
+        let failed = restarted_client(std::process::id(), 1, &name);
+
+        let pid = adopted.pid();
+        bb_win::process::terminate(adopted.raw_handle()).unwrap();
+        let _ = successor.wait();
+        let _ = fs::remove_file(&exe);
+        assert_eq!(pid, successor.id());
+        assert!(matches!(failed, Err(LaunchError::ExitedDuringStartup(_))));
     }
 
     #[test]

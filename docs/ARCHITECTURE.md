@@ -92,6 +92,14 @@ account). Breakbar detects the build mismatch and guides the user instead of fai
   confirm; the confirmation re-checks and reports success, or asks to wait. A foreign folder in
   Steam's place is never touched (error toast). Steam not installed falls through to the normal
   launch error. The junction is only ever created in Steam's main library folder.
+- **The client restarts itself on first start.** Steam installs its own, older `Gw2-64.exe`; the
+  first start replaces it with the current one and starts that as a new process, then exits with
+  code 0. Breakbar therefore treats a successful exit during startup as a hand-over: it looks for a
+  new process of the same executable whose parent is the exited one (Windows keeps the parent id)
+  and adopts it, keeping the account's profile linked until that process holds its `Local.dat`. An
+  exit that no successor follows within a few seconds stays a failed start. Before this, the
+  restarted client ran against the shared profile and left the account's `Local.dat` half-filled, so
+  the next start with `-shareArchive` failed with "Download failed (5)".
 - Verified with a real Steam-linked account: Steam adopts the junctioned files (~15 MB download), and
   both ArenaNet and Steam accounts start. Steam briefly swaps in its own `Gw2-64.exe`, which the
   game's updater replaces with the normal one on the first start.

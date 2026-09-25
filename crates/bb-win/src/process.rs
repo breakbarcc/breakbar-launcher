@@ -6,11 +6,16 @@
 //! owning process exits, Windows is free to hand that PID to an unrelated process, and
 //! terminating "by PID" at the wrong moment could hit that unrelated process instead.
 
-use windows::Win32::Foundation::{CloseHandle, ERROR_NO_MORE_FILES, HANDLE};
+use std::os::windows::io::{AsRawHandle, FromRawHandle, OwnedHandle};
+
+use windows::Win32::Foundation::{CloseHandle, ERROR_NO_MORE_FILES, HANDLE, WAIT_OBJECT_0};
 use windows::Win32::System::Diagnostics::ToolHelp::{
     CreateToolhelp32Snapshot, PROCESSENTRY32W, Process32FirstW, Process32NextW, TH32CS_SNAPPROCESS,
 };
-use windows::Win32::System::Threading::TerminateProcess;
+use windows::Win32::System::Threading::{
+    GetExitCodeProcess, GetProcessId, INFINITE, OpenProcess, PROCESS_QUERY_LIMITED_INFORMATION,
+    PROCESS_SYNCHRONIZE, PROCESS_TERMINATE, TerminateProcess, WaitForSingleObject,
+};
 use windows::core::Result;
 
 /// Exit code recorded for a process ended via [`terminate`].
@@ -22,6 +27,35 @@ pub const TERMINATED_EXIT_CODE: u32 = 1;
 /// Used to find Guild Wars 2 clients Breakbar didn't itself launch (e.g. already running from a
 /// previous session), so their single-instance mutex can be closed too.
 pub fn find_processes_by_name(exe_name: &str) -> Result<Vec<u32>> {
+    Ok(snapshot()?
+        .into_iter()
+        .filter(|entry| entry.name.eq_ignore_ascii_case(exe_name))
+        .map(|entry| entry.pid)
+        .collect())
+}
+
+/// Returns the process ids of all running processes named `exe_name` (case-insensitive) that
+/// were started by process `parent_pid`.
+///
+/// The parent may already have exited: Windows keeps the recorded parent id, so a client that
+/// restarts itself (after updating its own executable) can still be found through the process it
+/// replaced. A reused parent id could in theory match an unrelated process, but only one with the
+/// same executable name that was started by a process with that very id.
+pub fn find_child_processes(parent_pid: u32, exe_name: &str) -> Result<Vec<u32>> {
+    Ok(snapshot()?
+        .into_iter()
+        .filter(|entry| entry.parent_pid == parent_pid && entry.name.eq_ignore_ascii_case(exe_name))
+        .map(|entry| entry.pid)
+        .collect())
+}
+
+struct ProcessEntry {
+    pid: u32,
+    parent_pid: u32,
+    name: String,
+}
+
+fn snapshot() -> Result<Vec<ProcessEntry>> {
     // SAFETY: no preconditions; the returned handle is closed via the guard below.
     let snapshot = unsafe { CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0) }?;
     let snapshot = SnapshotHandle(snapshot);
@@ -33,21 +67,21 @@ pub fn find_processes_by_name(exe_name: &str) -> Result<Vec<u32>> {
     // SAFETY: `entry.dwSize` is set as required; `entry` is valid for the duration of the call.
     let mut result = unsafe { Process32FirstW(snapshot.0, &mut entry) };
 
-    let mut pids = Vec::new();
+    let mut entries = Vec::new();
     loop {
         match result {
-            Ok(()) => {
-                if exe_file_name(&entry.szExeFile).eq_ignore_ascii_case(exe_name) {
-                    pids.push(entry.th32ProcessID);
-                }
-            }
+            Ok(()) => entries.push(ProcessEntry {
+                pid: entry.th32ProcessID,
+                parent_pid: entry.th32ParentProcessID,
+                name: exe_file_name(&entry.szExeFile),
+            }),
             Err(error) if error.code() == ERROR_NO_MORE_FILES.to_hresult() => break,
             Err(error) => return Err(error),
         }
         // SAFETY: `entry` is valid for the duration of the call, matching `Process32FirstW`.
         result = unsafe { Process32NextW(snapshot.0, &mut entry) };
     }
-    Ok(pids)
+    Ok(entries)
 }
 
 /// Decodes a NUL-terminated, NUL-padded wide string from a `PROCESSENTRY32W::szExeFile` buffer.
@@ -77,6 +111,75 @@ pub fn terminate(handle: isize) -> Result<()> {
     // SAFETY: `handle` is a live process handle owned by the caller for the duration of this
     // call (see doc comment); we only signal it here and never close it.
     unsafe { TerminateProcess(handle, TERMINATED_EXIT_CODE) }
+}
+
+/// A process the caller holds a handle to: one it spawned (from its `Child`) or one it opened
+/// by id. Unlike `Child`, it can also stand for a process somebody else started.
+#[derive(Debug)]
+pub struct Process(OwnedHandle);
+
+impl From<OwnedHandle> for Process {
+    /// `handle` needs `PROCESS_TERMINATE`, `SYNCHRONIZE` and `PROCESS_QUERY_LIMITED_INFORMATION`
+    /// access, which the handle of a spawned `Child` has (`OwnedHandle::from(child)`).
+    fn from(handle: OwnedHandle) -> Self {
+        Self(handle)
+    }
+}
+
+impl Process {
+    /// Opens the running process `pid` for waiting on it and terminating it.
+    pub fn open(pid: u32) -> Result<Self> {
+        // SAFETY: no preconditions; the returned handle is owned by the `OwnedHandle` below.
+        let handle = unsafe {
+            OpenProcess(
+                PROCESS_TERMINATE | PROCESS_SYNCHRONIZE | PROCESS_QUERY_LIMITED_INFORMATION,
+                false,
+                pid,
+            )
+        }?;
+        // SAFETY: `handle` was just returned by `OpenProcess` and nobody else owns it.
+        Ok(Self(unsafe { OwnedHandle::from_raw_handle(handle.0) }))
+    }
+
+    /// The raw handle, valid as long as this value lives (see [`terminate`]).
+    pub fn raw_handle(&self) -> isize {
+        self.0.as_raw_handle() as isize
+    }
+
+    /// The process id.
+    pub fn pid(&self) -> u32 {
+        // SAFETY: the handle is a live process handle owned by `self`.
+        unsafe { GetProcessId(self.handle()) }
+    }
+
+    /// The exit code if the process has exited, `None` while it still runs.
+    pub fn try_wait(&self) -> Result<Option<u32>> {
+        // SAFETY: the handle is a live process handle with `SYNCHRONIZE` access.
+        if unsafe { WaitForSingleObject(self.handle(), 0) } == WAIT_OBJECT_0 {
+            self.exit_code().map(Some)
+        } else {
+            Ok(None)
+        }
+    }
+
+    /// Blocks until the process has exited and returns its exit code.
+    pub fn wait(&self) -> Result<u32> {
+        // SAFETY: the handle is a live process handle with `SYNCHRONIZE` access; waiting on it
+        // from several threads is fine.
+        unsafe { WaitForSingleObject(self.handle(), INFINITE) };
+        self.exit_code()
+    }
+
+    fn exit_code(&self) -> Result<u32> {
+        let mut code = 0;
+        // SAFETY: the handle has `PROCESS_QUERY_LIMITED_INFORMATION` access; `code` is valid.
+        unsafe { GetExitCodeProcess(self.handle(), &mut code) }?;
+        Ok(code)
+    }
+
+    fn handle(&self) -> HANDLE {
+        HANDLE(self.0.as_raw_handle())
+    }
 }
 
 #[cfg(test)]
@@ -116,6 +219,39 @@ mod tests {
             "{pids:?} should contain {}",
             child.id()
         );
+    }
+
+    #[test]
+    fn finds_children_by_parent_and_name() {
+        let mut child = Command::new("ping.exe")
+            .args(["-n", "30", "127.0.0.1"])
+            .spawn()
+            .unwrap();
+
+        let mine = find_child_processes(std::process::id(), "ping.exe").unwrap();
+        let other = find_child_processes(std::process::id(), "breakbar-not-running.exe").unwrap();
+
+        terminate(child.as_raw_handle() as isize).unwrap();
+        let _ = child.wait();
+        assert!(mine.contains(&child.id()));
+        assert!(other.is_empty());
+    }
+
+    #[test]
+    fn a_process_can_be_opened_waited_for_and_stopped() {
+        let mut child = Command::new("ping.exe")
+            .args(["-n", "30", "127.0.0.1"])
+            .spawn()
+            .unwrap();
+        let process = Process::open(child.id()).unwrap();
+        assert_eq!(process.pid(), child.id());
+        assert_eq!(process.try_wait().unwrap(), None);
+
+        terminate(process.raw_handle()).unwrap();
+
+        assert_eq!(process.wait().unwrap(), TERMINATED_EXIT_CODE);
+        assert_eq!(process.try_wait().unwrap(), Some(TERMINATED_EXIT_CODE));
+        let _ = child.wait();
     }
 
     #[test]
