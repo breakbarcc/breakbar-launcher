@@ -1,0 +1,153 @@
+name: Release
+
+# Pushing to the `release` branch publishes the version in Cargo.toml as a GitHub release.
+# See "Releasing" in CONTRIBUTING.md.
+on:
+  push:
+    branches: [release]
+
+env:
+  CARGO_TERM_COLOR: always
+
+# One release at a time; a later push waits instead of racing the earlier one.
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: windows-latest
+    permissions:
+      contents: read
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+      artifact-id: ${{ steps.upload.outputs.artifact-id }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Read the version
+        id: version
+        shell: pwsh
+        run: |
+          $metadata = cargo metadata --no-deps --format-version 1 | ConvertFrom-Json
+          $package = $metadata.packages | Where-Object { $_.name -eq 'breakbar-launcher' }
+          $version = $package.version
+          if ($version -notmatch '^\d+\.\d+\.\d+$') { throw "Not a plain x.y.z version: $version" }
+          "version=$version" >> $env:GITHUB_OUTPUT
+
+      # The version is what makes a release, so it must be new and described.
+      - name: Check that the version is new and in the changelog
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          gh release view "v$env:VERSION" *> $null
+          if ($LASTEXITCODE -eq 0) { throw "v$env:VERSION is already released. Raise the version in Cargo.toml (see CONTRIBUTING.md)." }
+          if (-not (Select-String -Path CHANGELOG.md -Pattern "^## \[$([regex]::Escape($env:VERSION))\]" -Quiet)) {
+            throw "CHANGELOG.md has no entry for $env:VERSION."
+          }
+
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+      - run: cargo test --locked
+      - run: cargo build --release --locked
+
+      - name: Collect the executable
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force dist | Out-Null
+          Copy-Item target/release/breakbar-launcher.exe dist/breakbar-launcher.exe
+
+      - name: Upload the unsigned executable
+        id: upload
+        uses: actions/upload-artifact@v4
+        with:
+          name: unsigned
+          path: dist/breakbar-launcher.exe
+          if-no-files-found: error
+
+  # Signing through the SignPath Foundation (free for open source projects). Turned on by the
+  # repository variable SIGNPATH_ENABLED=true once SignPath has approved the project; until then
+  # the release is published unsigned. NOT TESTED yet: check the inputs against SignPath's current
+  # documentation for the GitHub connector when setting it up.
+  sign:
+    needs: build
+    if: ${{ vars.SIGNPATH_ENABLED == 'true' }}
+    runs-on: windows-latest
+    permissions:
+      contents: read
+      actions: read
+    steps:
+      - name: Sign with SignPath
+        uses: signpath/github-action-submit-signing-request@v1
+        with:
+          api-token: ${{ secrets.SIGNPATH_API_TOKEN }}
+          organization-id: ${{ vars.SIGNPATH_ORGANIZATION_ID }}
+          project-slug: ${{ vars.SIGNPATH_PROJECT_SLUG }}
+          signing-policy-slug: ${{ vars.SIGNPATH_SIGNING_POLICY_SLUG }}
+          github-artifact-id: ${{ needs.build.outputs.artifact-id }}
+          wait-for-completion: true
+          output-artifact-directory: signed
+
+      - name: Upload the signed executable
+        uses: actions/upload-artifact@v4
+        with:
+          name: signed
+          path: signed/breakbar-launcher.exe
+          if-no-files-found: error
+
+  release:
+    needs: [build, sign]
+    # `sign` is skipped while signing is off; a failed signing must not fall back to an unsigned
+    # release.
+    if: ${{ !cancelled() && needs.build.result == 'success' && (needs.sign.result == 'success' || needs.sign.result == 'skipped') }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    env:
+      GH_TOKEN: ${{ github.token }}
+      VERSION: ${{ needs.build.outputs.version }}
+      SIGNED: ${{ needs.sign.result == 'success' }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: ${{ needs.sign.result == 'success' && 'signed' || 'unsigned' }}
+          path: dist
+
+      - name: Write the checksum, the update manifest and the release notes
+        shell: bash
+        run: |
+          cd dist
+          sha256=$(sha256sum breakbar-launcher.exe | cut -d' ' -f1)
+          echo "$sha256  breakbar-launcher.exe" > breakbar-launcher.exe.sha256
+          cd ..
+
+          # The section of this version in the changelog, without its heading.
+          awk -v v="$VERSION" '
+            $0 ~ "^## \\[" v "\\]" { found = 1; next }
+            found && /^## \[/ { exit }
+            found { print }
+          ' CHANGELOG.md | sed -e '/./,$!d' > notes.md
+
+          jq -n \
+            --arg version "$VERSION" \
+            --arg url "https://github.com/${{ github.repository }}/releases/download/v${VERSION}/breakbar-launcher.exe" \
+            --arg sha256 "$sha256" \
+            --arg notes "$(cat notes.md)" \
+            --arg released "$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
+            --argjson signed "$SIGNED" \
+            '{version: $version, url: $url, sha256: $sha256, signed: $signed, released: $released, notes: $notes}' \
+            > dist/latest.json
+
+      - name: Publish the release
+        run: |
+          gh release create "v$VERSION" \
+            --target "${{ github.sha }}" \
+            --title "Breakbar Launcher $VERSION" \
+            --notes-file notes.md \
+            dist/breakbar-launcher.exe \
+            dist/breakbar-launcher.exe.sha256 \
+            dist/latest.json

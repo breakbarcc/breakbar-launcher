@@ -19,6 +19,43 @@ VS Code:
 - **Screenshots without a window:** see "Previews without a window" in
   [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
 
+## Releasing
+
+A release is published by pushing to the `release` branch; the workflow
+[`.github/workflows/release.yml`](.github/workflows/release.yml) does the rest:
+
+1. Make sure the version in the root `Cargo.toml` is the new one and that [CHANGELOG.md](CHANGELOG.md)
+   has a `## [x.y.z]` section for it (see [Versioning](#versioning)).
+2. Push it: `git push origin main:release` (or merge `main` into `release` and push that).
+3. The workflow reads the version from the crate, stops if it is already released or missing from
+   the changelog, runs the tests, builds `breakbar-launcher.exe` in release mode and creates the
+   GitHub release `vx.y.z` for that commit. The release notes are the changelog section.
+
+The release contains three files with fixed names, so that
+`https://github.com/breakbarcc/breakbar-launcher/releases/latest/download/<file>` always points to the
+newest one:
+
+- `breakbar-launcher.exe`, the program (what the download button of the website links to)
+- `breakbar-launcher.exe.sha256`, its SHA-256 checksum
+- `latest.json`, the update manifest: `version`, `url`, `sha256`, `signed`, `released`, `notes`
+
+### Code signing (SignPath)
+
+Releases are unsigned until the project is approved by the
+[SignPath Foundation](https://signpath.org/terms.html) (free for open source projects; it wants a
+public repository with an OSI license, a released version and a download page that describes the
+program). Once it is approved:
+
+1. Create the repository variables `SIGNPATH_ORGANIZATION_ID`, `SIGNPATH_PROJECT_SLUG` and
+   `SIGNPATH_SIGNING_POLICY_SLUG` and the secret `SIGNPATH_API_TOKEN` (Settings, Secrets and
+   variables, Actions).
+2. Set the variable `SIGNPATH_ENABLED` to `true`.
+
+The workflow then sends the built executable to SignPath, waits for the signed one and publishes
+that instead; `signed` in `latest.json` becomes `true`. If signing fails, no release is published
+(it never falls back to an unsigned one). The signing job has not been run yet: check its inputs
+against SignPath's documentation for the GitHub connector when setting it up.
+
 ## Versioning
 
 Breakbar follows [Semantic Versioning](https://semver.org/). The version lives in one place,

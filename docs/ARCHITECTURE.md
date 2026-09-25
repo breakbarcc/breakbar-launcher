@@ -346,4 +346,5 @@ Config: `%APPDATA%\Breakbar\config.toml` (atomic write via temp file + `ReplaceF
 | 4.6 | ✅ Login set-up flow: offer after creating an account, banner while the setup client runs, result check of `Local.dat` (patch detection and "set up one after another" belong to phase 5) |
 | 5.1 | ✅ Patch detection (local, `Gw2.dat` vs `Local.dat` write time) and "Set up one after another" (banner, login state, sequential refresh); the "update required" banner is not done |
 | 5.2 | Window layout per account, priority/affinity, GFX per account |
-| 6 | Code signing (SignPath/Azure Trusted Signing), releases, winget |
+| 6.1 | ✅ Release workflow: a push to the `release` branch publishes the crate version as a GitHub release (`breakbar-launcher.exe`, checksum, `latest.json`); the signing job for SignPath is prepared but off and untested (see CONTRIBUTING.md) |
+| 6.2 | Code signing approved and switched on, website, in-app update check and update, winget |
