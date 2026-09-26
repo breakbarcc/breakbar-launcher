@@ -9,7 +9,7 @@ use std::thread;
 use std::time::Duration;
 
 use bb_core::{Account, AccountId, BLISH_HUD, CompanionApp, CompanionId, Provider, Scope, Trigger};
-use bb_store::Config;
+use bb_store::{Config, ConfigWriter};
 use raw_window_handle::{HasWindowHandle, RawWindowHandle};
 use slint::{ComponentHandle, Model, SharedString, VecModel};
 use ui::{
@@ -118,6 +118,9 @@ pub(crate) struct App {
     steam_setup: Option<PendingSteamSetup>,
     /// Accounts still to go through "Set up one after another" after a game update.
     refresh_queue: VecDeque<AccountId>,
+    /// Writes the config in the background; `None` until the window exists (see
+    /// [`App::start_writer`]), when it is written right away instead.
+    writer: Option<ConfigWriter>,
 }
 
 /// State behind the Steam setup dialog (see [`steam_setup`]).
@@ -151,6 +154,7 @@ impl App {
                     draft: None,
                     steam_setup: None,
                     refresh_queue: VecDeque::new(),
+                    writer: None,
                 },
                 None,
             ),
@@ -162,6 +166,7 @@ impl App {
                     draft: None,
                     steam_setup: None,
                     refresh_queue: VecDeque::new(),
+                    writer: None,
                 },
                 Some(error),
             ),
@@ -199,12 +204,39 @@ impl App {
             .find(|app| app.name == BLISH_HUD)
     }
 
+    /// Lets the config be written on a background thread from now on, which keeps the window
+    /// from stuttering while a slow disk flushes the file. A write that fails is reported with a
+    /// toast, like a save that fails at once.
+    fn start_writer(&mut self, window: &MainWindow) {
+        let weak = window.as_weak();
+        self.writer = Some(ConfigWriter::start(move |error| {
+            crate::log::write(format!("could not write the settings: {error}"));
+            let _ = weak.upgrade_in_event_loop(move |window| {
+                let messages = window.global::<Messages>();
+                push_toast(
+                    &window,
+                    ToastKind::Error,
+                    messages.invoke_settings_title(),
+                    messages.invoke_settings_save_failed(error.to_string().into()),
+                );
+            });
+        }));
+    }
+
+    /// Hands the config over for saving to `path`: to the writer thread if there is one.
+    fn store(&self, path: &Path) -> Result<(), bb_store::StoreError> {
+        match &self.writer {
+            Some(writer) => writer.submit(&self.config, path),
+            None => self.config.save(path),
+        }
+    }
+
     /// Persists the overlay's dragged-to position, best-effort: this runs on every drag, so a
     /// failure isn't worth a toast over something this minor.
     pub(crate) fn save_overlay_position(&mut self, position: bb_store::OverlayPosition) {
         self.config.overlay_position = Some(position);
         if let Some(path) = &self.config_path {
-            let _ = self.config.save(path);
+            let _ = self.store(path);
         }
     }
 
@@ -223,7 +255,7 @@ impl App {
         let messages = window.global::<Messages>();
         let detail = match &self.config_path {
             None => messages.invoke_settings_load_failed("".into()),
-            Some(path) => match self.config.save(path) {
+            Some(path) => match self.store(path) {
                 Ok(()) => return,
                 Err(error) => messages.invoke_settings_save_failed(error.to_string().into()),
             },
@@ -251,6 +283,7 @@ pub fn run() -> Result<(), slint::PlatformError> {
 
     let (mut app, load_error) = App::load();
     let window = MainWindow::new()?;
+    app.start_writer(&window);
     apply_language(app.config.language);
     check_startup(&window, &mut app, load_error);
     show_initial_state(&window, &app);
@@ -282,7 +315,11 @@ pub fn run() -> Result<(), slint::PlatformError> {
     // tray icon (a plain Win32 window of our own), so with that variant, closing to the tray would
     // quit Breakbar right along with it. This variant only exits on an explicit
     // `quit_event_loop()`, which is exactly what the tray menu's "Quit" calls.
-    slint::run_event_loop_until_quit()?;
+    let result = slint::run_event_loop_until_quit();
+    // Ends the writer thread once it has written what is still queued. Closures kept by the tray
+    // and the windows hold on to `app`, so it can't be counted on to be dropped at the end.
+    app.borrow_mut().writer = None;
+    result?;
     window.hide()
 }
 

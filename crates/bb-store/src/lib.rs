@@ -3,6 +3,7 @@
 //! The config never contains credentials; logins live exclusively in per-account `Local.dat` files.
 
 mod profile;
+mod writer;
 
 use std::fs;
 use std::io::{self, Write};
@@ -15,6 +16,7 @@ pub use profile::{
     delete_profile, ensure_profile_dir, is_set_up, local_dat_path, mark_build_verified,
     profile_dir, shared_profile_dir, verified_build,
 };
+pub use writer::ConfigWriter;
 
 const CURRENT_VERSION: u32 = 1;
 
@@ -187,7 +189,7 @@ impl Default for Config {
 ///
 /// # Errors
 ///
-/// Returns [`StoreError`] if `%LOCALAPPDATA%` is not set.
+/// Returns [`StoreError::NoAppData`] if `%APPDATA%` is not set.
 pub fn default_config_path() -> Result<PathBuf, StoreError> {
     let app_data = std::env::var_os("APPDATA").ok_or(StoreError::NoAppData)?;
     Ok(PathBuf::from(app_data).join("Breakbar").join("config.toml"))
@@ -198,7 +200,7 @@ impl Config {
     ///
     /// # Errors
     ///
-    /// Returns [`StoreError`] if `%LOCALAPPDATA%` is not set.
+    /// Returns [`StoreError`] if the file exists but can't be read, or isn't a valid config.
     pub fn load(path: &Path) -> Result<Self, StoreError> {
         let text = match fs::read_to_string(path) {
             Ok(text) => text,
@@ -216,27 +218,42 @@ impl Config {
         })
     }
 
-    /// Saves the config atomically: write a temp file, flush it to disk, then replace the target.
+    /// The config as the text of `config.toml`.
     ///
     /// # Errors
     ///
-    /// Returns [`StoreError`] if `%LOCALAPPDATA%` is not set.
-    pub fn save(&self, path: &Path) -> Result<(), StoreError> {
-        let text = toml::to_string_pretty(self)?;
-        let io_err = |source| StoreError::Io {
-            path: path.to_owned(),
-            source,
-        };
-        if let Some(dir) = path.parent() {
-            fs::create_dir_all(dir).map_err(io_err)?;
-        }
-        let tmp = path.with_extension("toml.tmp");
-        let mut file = fs::File::create(&tmp).map_err(io_err)?;
-        file.write_all(text.as_bytes()).map_err(io_err)?;
-        file.sync_all().map_err(io_err)?;
-        drop(file);
-        fs::rename(&tmp, path).map_err(io_err)
+    /// Returns [`StoreError::Serialize`] if the config can't be turned into text.
+    pub fn to_toml(&self) -> Result<String, StoreError> {
+        Ok(toml::to_string_pretty(self)?)
     }
+
+    /// Saves the config atomically: write a temp file, flush it to disk, then replace the target.
+    /// The window uses a [`ConfigWriter`] instead, which does this on another thread.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`StoreError`] if the config can't be serialized or the file can't be written.
+    pub fn save(&self, path: &Path) -> Result<(), StoreError> {
+        write_atomic(path, &self.to_toml()?)
+    }
+}
+
+/// Writes `text` to `path` so that the file is never half written: into a temp file next to it,
+/// flushed to disk, then renamed over the target.
+pub(crate) fn write_atomic(path: &Path, text: &str) -> Result<(), StoreError> {
+    let io_err = |source| StoreError::Io {
+        path: path.to_owned(),
+        source,
+    };
+    if let Some(dir) = path.parent() {
+        fs::create_dir_all(dir).map_err(io_err)?;
+    }
+    let tmp = path.with_extension("toml.tmp");
+    let mut file = fs::File::create(&tmp).map_err(io_err)?;
+    file.write_all(text.as_bytes()).map_err(io_err)?;
+    file.sync_all().map_err(io_err)?;
+    drop(file);
+    fs::rename(&tmp, path).map_err(io_err)
 }
 
 #[cfg(test)]

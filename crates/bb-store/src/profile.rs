@@ -43,7 +43,7 @@ fn profiles_root() -> Result<PathBuf, StoreError> {
 ///
 /// # Errors
 ///
-/// Returns [`StoreError`] if `%LOCALAPPDATA%` is not set.
+/// Returns [`StoreError`] if `%LOCALAPPDATA%` is not set or the folder can't be created.
 pub fn ensure_profile_dir(account_id: AccountId) -> Result<PathBuf, StoreError> {
     let dir = profile_dir(account_id)?;
     std::fs::create_dir_all(&dir).map_err(|source| StoreError::Io {
@@ -59,7 +59,7 @@ pub fn ensure_profile_dir(account_id: AccountId) -> Result<PathBuf, StoreError> 
 ///
 /// # Errors
 ///
-/// Returns [`StoreError`] if `%LOCALAPPDATA%` is not set.
+/// Returns [`StoreError`] if `%LOCALAPPDATA%` is not set or the folder can't be removed.
 pub fn delete_profile(account_id: AccountId) -> Result<(), StoreError> {
     let dir = profile_dir(account_id)?;
     match std::fs::remove_dir_all(&dir) {
@@ -113,7 +113,7 @@ pub fn verified_build(account_id: AccountId) -> Option<u64> {
 ///
 /// # Errors
 ///
-/// Returns [`StoreError`] if `%LOCALAPPDATA%` is not set.
+/// Returns [`StoreError`] if `%LOCALAPPDATA%` is not set or the record can't be written.
 pub fn mark_build_verified(account_id: AccountId, build: u64) -> Result<(), StoreError> {
     ensure_profile_dir(account_id)?;
     let path = verified_build_path(account_id)?;
