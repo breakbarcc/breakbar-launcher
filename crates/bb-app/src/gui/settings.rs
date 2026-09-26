@@ -8,12 +8,13 @@ use super::{
 };
 
 /// Shows the overlay settings on the settings page. The overlay window itself picks them up from
-/// the config on its next update (twice a second).
+/// the config on its next update, which this asks for.
 pub(super) fn show_overlay_settings(window: &MainWindow, settings: bb_store::OverlaySettings) {
     window.set_overlay_enabled(settings.enabled);
     window.set_overlay_only_running(settings.only_when_running);
     window.set_overlay_locked(settings.lock_position);
     window.set_overlay_opacity(i32::from(settings.opacity_percent()));
+    crate::overlay::wake();
 }
 
 /// A callback that changes one of the on/off overlay settings and saves the config.

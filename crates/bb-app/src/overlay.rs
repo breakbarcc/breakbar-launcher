@@ -4,7 +4,7 @@
 //! come with a later refinement.
 
 use std::cell::{Cell, RefCell};
-use std::rc::Rc;
+use std::rc::{Rc, Weak};
 use std::time::Duration;
 
 use bb_core::AccountId;
@@ -16,19 +16,36 @@ use crate::gui::ui::{AccountState, MainWindow, Messages, OverlaySwitcher, Switch
 use crate::gui::{App, LaunchQueue, is_active, native_handle, rows, start_account, stop_account};
 use crate::launcher::{GAME_WINDOW_CLASSES, LaunchMode};
 
-/// How often the overlay re-reads the account rows and the foreground window: cheap for the
-/// handful of rows involved, and simpler than threading an explicit "something changed" signal
-/// through every place `gui` can change a row's state.
 /// The bar shows at most this many accounts (the first ones in the launcher's order).
 const MAX_CHIPS: usize = 4;
 
+/// How often the overlay re-reads the account rows and the foreground window while it is shown
+/// (the foreground window has no change notification here, and the rows are a handful).
 const POLL_INTERVAL: Duration = Duration::from_millis(500);
+
+thread_local! {
+    /// The timer that drives the overlay, so that [`wake`] can start it again from anywhere.
+    static POLL: RefCell<Weak<Timer>> = const { RefCell::new(Weak::new()) };
+}
+
+/// Tells the overlay that something it shows may have changed: an account row, or one of its
+/// settings. While it is hidden it doesn't poll at all (an idle Breakbar in the tray wakes up
+/// only for the login check), so every such change has to call this.
+pub(crate) fn wake() {
+    POLL.with(|poll| {
+        if let Some(timer) = poll.borrow().upgrade()
+            && !timer.running()
+        {
+            timer.restart();
+        }
+    });
+}
 
 /// Owns the overlay window and keeps it alive. Dropping it destroys the window (and stops the
 /// timer that drives it).
 pub(crate) struct Overlay {
     window: OverlaySwitcher,
-    _poll: Timer,
+    _poll: Rc<Timer>,
 }
 
 impl std::fmt::Debug for Overlay {
@@ -45,7 +62,8 @@ impl Overlay {
 
     /// Creates the overlay, restores its last saved position, and starts polling `main_window`'s
     /// account rows to keep it in sync. Does not show it yet — it only appears once an account is
-    /// active (see the poll below).
+    /// active (see the poll below). The polling stops whenever the overlay is hidden and starts
+    /// again with [`wake`].
     pub(crate) fn new(
         main_window: &MainWindow,
         app: &Rc<RefCell<App>>,
@@ -92,11 +110,12 @@ impl Overlay {
 
         let mut position_saver = PositionSaver::new(app.borrow().config.overlay_position);
         let last_active = Cell::new(None);
-        let poll_timer = Timer::default();
+        let poll_timer = Rc::new(Timer::default());
         poll_timer.start(TimerMode::Repeated, POLL_INTERVAL, {
             let app = Rc::clone(app);
             let overlay_weak = window.as_weak();
             let main_weak = main_window.as_weak();
+            let timer = Rc::downgrade(&poll_timer);
             move || {
                 let (Some(overlay), Some(main_window)) =
                     (overlay_weak.upgrade(), main_weak.upgrade())
@@ -104,12 +123,17 @@ impl Overlay {
                     return;
                 };
                 let settings = app.borrow().config.overlay;
-                poll(&overlay, &main_window, &last_active, settings);
+                let shown = poll(&overlay, &main_window, &last_active, settings);
                 if let Some(position) = position_saver.observe(current_position(&overlay)) {
                     app.borrow_mut().save_overlay_position(position);
                 }
+                // Hidden: nothing changes until a row or a setting does, and that calls `wake`.
+                if !shown && let Some(timer) = timer.upgrade() {
+                    timer.stop();
+                }
             }
         });
+        POLL.with(|poll| *poll.borrow_mut() = Rc::downgrade(&poll_timer));
 
         Ok(Self {
             window,
@@ -199,7 +223,7 @@ fn chip_clicked(
 }
 
 /// Rebuilds the overlay's chips from `main_window`'s current rows, and shows or hides it
-/// depending on whether anything is active.
+/// depending on whether anything is active. Returns whether the overlay is shown afterwards.
 ///
 /// The highlighted chip is the last client that was in the foreground: it only moves when another
 /// client takes focus, not when focus goes to something else (including this overlay), since the
@@ -209,7 +233,7 @@ fn poll(
     main_window: &MainWindow,
     last_active: &Cell<Option<i32>>,
     settings: OverlaySettings,
-) {
+) -> bool {
     overlay.set_locked(settings.lock_position);
     overlay.set_idle_opacity(f32::from(settings.opacity_percent()) / 100.0);
 
@@ -250,7 +274,7 @@ fn poll(
         if overlay.window().is_visible() {
             let _ = overlay.hide();
         }
-        return;
+        return false;
     }
     // Touch the window only when something actually changed: re-showing it or replacing the
     // chips on every tick would interrupt a drag in progress (the OS move loop keeps timers
@@ -262,6 +286,7 @@ fn poll(
     if !overlay.window().is_visible() {
         let _ = overlay.show();
     }
+    true
 }
 
 /// Whether a window at `(x, y)` is at least partly on one of the monitors.
@@ -330,6 +355,21 @@ mod tests {
     #[allow(clippy::unnecessary_wraps)] // the positions are `Option`s, this is one of them
     fn at(x: i32, y: i32) -> Option<OverlayPosition> {
         Some(OverlayPosition { x, y })
+    }
+
+    #[test]
+    fn waking_starts_a_stopped_poll_timer() {
+        let timer = Rc::new(Timer::default());
+        timer.start(TimerMode::Repeated, POLL_INTERVAL, || {});
+        POLL.with(|poll| *poll.borrow_mut() = Rc::downgrade(&timer));
+
+        timer.stop();
+        assert!(!timer.running());
+        wake();
+        assert!(timer.running());
+        // Waking a running timer changes nothing.
+        wake();
+        assert!(timer.running());
     }
 
     #[test]

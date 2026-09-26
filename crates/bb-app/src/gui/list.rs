@@ -80,6 +80,7 @@ fn with_model<R>(window: &MainWindow, f: impl FnOnce(&VecModel<AccountRow>) -> R
 /// Replaces all rows at once (the start, and the previews).
 pub(super) fn set_rows(window: &MainWindow, rows: Vec<AccountRow>) {
     with_model(window, |model| model.set_vec(rows));
+    crate::overlay::wake();
 }
 
 /// Adds `row` at `index` (the end if that is past it).
@@ -87,6 +88,7 @@ pub(super) fn insert_row(window: &MainWindow, index: usize, row: AccountRow) {
     with_model(window, |model| {
         model.insert(index.min(model.row_count()), row);
     });
+    crate::overlay::wake();
 }
 
 /// Removes the row of account `id`.
@@ -96,17 +98,20 @@ pub(super) fn remove_row(window: &MainWindow, id: AccountId) {
             model.remove(index);
         }
     });
+    crate::overlay::wake();
 }
 
 /// Moves the row of account `id` to position `to`.
 pub(super) fn move_row(window: &MainWindow, id: AccountId, to: usize) {
     with_model(window, |model| move_in(model, id, to));
+    crate::overlay::wake();
 }
 
 /// Changes the row of account `id` with `f`. Nothing is touched if `f` leaves the row as it was.
 pub(super) fn update_row(window: &MainWindow, id: AccountId, f: impl FnOnce(&mut AccountRow)) {
     if with_model(window, |model| update_in(model, id, f)) {
         refresh(window);
+        crate::overlay::wake();
     }
 }
 
