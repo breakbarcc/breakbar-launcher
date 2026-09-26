@@ -329,11 +329,11 @@ Config: `%APPDATA%\Breakbar\config.toml` (atomic write via temp file + `ReplaceF
 
 | Phase | Content |
 |---|---|
-| 1 | Repository, license, docs, CI |
-| 2 | Cargo workspace skeleton, manifest, empty Slint window, CLI parsing |
-| 3.1 | GW2 path selection + validation (file dialog, registry/Steam auto-detect) |
-| 3.2 | Single launch + process monitoring |
-| 3.3 | Multi-launch (mutex kill + `-shareArchive`), benchmarks with 2–5 clients |
+| 1 | ✅ Repository, license, docs, CI |
+| 2 | ✅ Cargo workspace skeleton, manifest, empty Slint window, CLI parsing |
+| 3.1 | ✅ GW2 path selection + validation (file dialog, registry/Steam auto-detect) |
+| 3.2 | ✅ Single launch + process monitoring |
+| 3.3 | ✅ Multi-launch (mutex kill + `-shareArchive`), benchmarks with 2–5 clients |
 | 3.4 | ✅ Per-account `Local.dat` via a junction swapped only during launch, serialized launches, one-time setup launch |
 | 3.5 | ✅ Steam accounts: direct start with `-provider Steam` + `SteamAppId`, Steam install auto-selected, one Steam account at a time (verified with a real Steam account; guided setup links an ArenaNet install into Steam) |
 | 3.6 | ✅ Companion apps (per-client / shared, start on process or game window, graceful close), Blish HUD preset (not yet tested with a real Blish HUD) |
