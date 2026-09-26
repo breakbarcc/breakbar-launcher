@@ -4,6 +4,8 @@
 
 **A fast, lightweight multi-launcher for Guild Wars 2 on Windows.**
 
+**Website: [launcher.breakbar.cc](https://launcher.breakbar.cc/)**
+
 [![CI](https://github.com/breakbarcc/breakbar-launcher/actions/workflows/ci.yml/badge.svg)](https://github.com/breakbarcc/breakbar-launcher/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 ![Platform: Windows 10/11 x64](https://img.shields.io/badge/platform-Windows%2010%2F11%20x64-lightgrey)
@@ -20,8 +22,10 @@ uses almost no CPU while idle.
 
 > [!NOTE]
 > Breakbar Launcher is in early development (version 0.x). Things may change between versions, see
-> the [changelog](CHANGELOG.md). There are no releases yet: you build it yourself (see
-> [Building](#building)).
+> the [changelog](CHANGELOG.md). Download the newest version from the
+> [website](https://launcher.breakbar.cc/) or the [releases](../../releases) page (the program is
+> not code-signed yet, so Windows SmartScreen may show a notice on the first start), or build it
+> yourself (see [Building](#building)).
 
 <details>
 <summary>More screenshots: light theme and instance switcher</summary>

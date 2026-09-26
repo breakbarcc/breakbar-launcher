@@ -93,8 +93,8 @@ const APP_NAME: &str = "Breakbar Launcher";
 /// Named mutex marking a Breakbar GUI as already running (see [`run`]).
 const INSTANCE_MUTEX_NAME: &str = "Breakbar-Instance";
 
-/// Breakbar's website, opened from the About section.
-const WEBSITE_URL: &str = "https://www.breakbar.cc/";
+/// Breakbar Launcher's website, opened from the About section.
+const WEBSITE_URL: &str = "https://launcher.breakbar.cc/";
 /// Slint's website, opened from the "Made with Slint" badge.
 const SLINT_URL: &str = "https://slint.dev/";
 /// The license text in the repository (`repository` of the workspace manifest).

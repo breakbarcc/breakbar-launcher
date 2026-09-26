@@ -10,6 +10,7 @@ Everything before 0.2.0 is in the git history and in [docs/ARCHITECTURE.md](docs
 
 ### Changed
 
+- The link in the About section opens the Breakbar Launcher website, https://launcher.breakbar.cc/.
 - The window no longer waits for the disk: settings are written by a background thread (changes
   that come in meanwhile are merged, and a failed write still shows a message), and deleting an
   account removes its profile folder in the background. A deleted account's folder that could not be
