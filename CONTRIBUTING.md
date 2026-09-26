@@ -119,6 +119,13 @@ advisories show up without any change here. It fails on known vulnerabilities an
 crates.io. A new license that is fine goes into `deny.toml`; a vulnerability is fixed by updating the
 crate (`cargo update -p <crate>`), and only ignored in `deny.toml`, with a reason, if no fix exists.
 
+The actions used by the workflows are pinned to a commit (`uses: owner/action@<sha> # v4`), not to a
+tag, because a tag can be moved to other code after the fact and the release workflow signs and
+publishes what it builds. To update one, look up the commit of the new tag, for example
+`gh api repos/actions/checkout/git/ref/tags/v4 --jq .object` (if its type is `tag`, follow it with
+`git/tags/<sha>` to the commit), and change the SHA and the comment together. `dtolnay/rust-toolchain`
+takes its toolchain from the ref it is used at, so it is given `toolchain: stable` explicitly.
+
 Locally (once: `cargo install cargo-deny cargo-audit --locked`): `cargo deny check`, and
 `cargo audit` for the unmaintained-crate warnings that `cargo deny` leaves out.
 

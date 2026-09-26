@@ -28,7 +28,7 @@ jobs:
       version: ${{ steps.version.outputs.version }}
       artifact-id: ${{ steps.upload.outputs.artifact-id }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
 
       - name: Read the version
         id: version
@@ -57,8 +57,10 @@ jobs:
             throw "CHANGELOG.md has no entry for $env:VERSION."
           }
 
-      - uses: dtolnay/rust-toolchain@stable
-      - uses: Swatinem/rust-cache@v2
+      - uses: dtolnay/rust-toolchain@6bed0761d98439e5a578e2877258200ad565ba87 # stable
+        with:
+          toolchain: stable
+      - uses: Swatinem/rust-cache@6323deb102c322ba6fcbdcafc7e3dddab59af2b6 # v2
       - run: cargo test --locked
       - run: cargo build --release --locked
 
@@ -70,7 +72,7 @@ jobs:
 
       - name: Upload the unsigned executable
         id: upload
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: unsigned
           path: dist/breakbar-launcher.exe
@@ -89,7 +91,7 @@ jobs:
       actions: read
     steps:
       - name: Sign with SignPath
-        uses: signpath/github-action-submit-signing-request@v1
+        uses: signpath/github-action-submit-signing-request@ced31329c0317e779dad2eec2a7c3bb46ea1343e # v1
         with:
           api-token: ${{ secrets.SIGNPATH_API_TOKEN }}
           organization-id: ${{ vars.SIGNPATH_ORGANIZATION_ID }}
@@ -100,7 +102,7 @@ jobs:
           output-artifact-directory: signed
 
       - name: Upload the signed executable
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: signed
           path: signed/breakbar-launcher.exe
@@ -119,9 +121,9 @@ jobs:
       VERSION: ${{ needs.build.outputs.version }}
       SIGNED: ${{ needs.sign.result == 'success' }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
 
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
         with:
           name: ${{ needs.sign.result == 'success' && 'signed' || 'unsigned' }}
           path: dist
