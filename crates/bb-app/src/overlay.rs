@@ -18,7 +18,7 @@ use crate::launcher::{GAME_WINDOW_CLASSES, LaunchMode};
 
 /// How often the overlay re-reads the account rows and the foreground window: cheap for the
 /// handful of rows involved, and simpler than threading an explicit "something changed" signal
-/// through every place `gui.rs` can change a row's state.
+/// through every place `gui` can change a row's state.
 /// The bar shows at most this many accounts (the first ones in the launcher's order).
 const MAX_CHIPS: usize = 4;
 
@@ -27,7 +27,7 @@ const POLL_INTERVAL: Duration = Duration::from_millis(500);
 /// Owns the overlay window and keeps it alive. Dropping it destroys the window (and stops the
 /// timer that drives it).
 pub(crate) struct Overlay {
-    _window: OverlaySwitcher,
+    window: OverlaySwitcher,
     _poll: Timer,
 }
 
@@ -40,7 +40,7 @@ impl std::fmt::Debug for Overlay {
 impl Overlay {
     /// A handle for applying settings (the theme) to the overlay window later.
     pub(crate) fn window(&self) -> slint::Weak<OverlaySwitcher> {
-        self._window.as_weak()
+        self.window.as_weak()
     }
 
     /// Creates the overlay, restores its last saved position, and starts polling `main_window`'s
@@ -112,7 +112,7 @@ impl Overlay {
         });
 
         Ok(Self {
-            _window: window,
+            window,
             _poll: poll_timer,
         })
     }
@@ -327,6 +327,7 @@ impl PositionSaver {
 mod tests {
     use super::*;
 
+    #[allow(clippy::unnecessary_wraps)] // the positions are `Option`s, this is one of them
     fn at(x: i32, y: i32) -> Option<OverlayPosition> {
         Some(OverlayPosition { x, y })
     }

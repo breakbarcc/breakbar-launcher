@@ -66,9 +66,9 @@ pub struct ArgContext<'a> {
 pub const BLISH_HUD: &str = "Blish HUD";
 
 impl CompanionApp {
-    /// Preset for Blish HUD: one instance per client, attached via PID and MumbleLink name.
+    /// Preset for Blish HUD: one instance per client, attached via PID and `MumbleLink` name.
     ///
-    /// Blish HUD's single-instance mutex includes the MumbleLink name, so one instance per
+    /// Blish HUD's single-instance mutex includes the `MumbleLink` name, so one instance per
     /// client works as long as every client has its own name (see
     /// [`crate::Account::mumble_link_name`]). It waits for the game window itself, but starting
     /// it only once that window is shown keeps it from starting for a client that never gets
@@ -89,6 +89,7 @@ impl CompanionApp {
     ///
     /// The template is split first, so a substituted value containing spaces (such as an
     /// account name) stays a single argument.
+    #[must_use]
     pub fn expand_args(&self, ctx: &ArgContext<'_>) -> Vec<String> {
         let pid = ctx.pid.to_string();
         split_args(&self.args)

@@ -38,15 +38,14 @@ pub fn run(targets: &[LaunchTarget]) -> ExitCode {
     let mut accounts: Vec<&Account> = Vec::new();
     let mut errors: Vec<String> = Vec::new();
     for target in targets {
-        match resolve(&config, target) {
-            Some(account) => accounts.push(account),
-            None => {
-                let name = target.to_string();
-                errors.push(text(
-                    &|texts| texts.unknown_account(&name),
-                    format!("There is no account \"{name}\"."),
-                ));
-            }
+        if let Some(account) = resolve(&config, target) {
+            accounts.push(account);
+        } else {
+            let name = target.to_string();
+            errors.push(text(
+                &|texts| texts.unknown_account(&name),
+                format!("There is no account \"{name}\"."),
+            ));
         }
     }
 
@@ -55,7 +54,7 @@ pub fn run(targets: &[LaunchTarget]) -> ExitCode {
             &|texts| texts.launch_failure(&launcher::LaunchError::NoGamePath, ""),
             launcher::LaunchError::NoGamePath.to_string(),
         ));
-        show_errors(&texts, &errors);
+        show_errors(texts.as_ref(), &errors);
         return ExitCode::FAILURE;
     };
 
@@ -88,17 +87,20 @@ pub fn run(targets: &[LaunchTarget]) -> ExitCode {
                     session.stop();
                 }));
             }
-            Err(error) => errors.push(text(
-                &|texts| texts.launch_failure(&error, &account.name),
-                error.to_string(),
-            )),
+            Err(error) => {
+                crate::log::write(format!("starting {} failed: {error}", account.name));
+                errors.push(text(
+                    &|texts| texts.launch_failure(&error, &account.name),
+                    error.to_string(),
+                ));
+            }
         }
     }
     drop(companion_errors);
 
     let failed = !errors.is_empty();
     if failed {
-        show_errors(&texts, &errors);
+        show_errors(texts.as_ref(), &errors);
     }
     // Companion errors arrive while the clients run; the loop ends once every monitor is done.
     for (app, error) in receiver {
@@ -106,7 +108,7 @@ pub fn run(targets: &[LaunchTarget]) -> ExitCode {
             &|texts| texts.companion_failed(&app, &error),
             format!("{app}: {error}"),
         );
-        show_errors(&texts, &[message]);
+        show_errors(texts.as_ref(), &[message]);
     }
     for monitor in monitors {
         let _ = monitor.join();
@@ -125,9 +127,7 @@ fn resolve<'a>(config: &'a Config, target: &LaunchTarget) -> Option<&'a Account>
     })
 }
 
-fn show_errors(texts: &Option<Texts>, errors: &[String]) {
-    let title = texts
-        .as_ref()
-        .map_or_else(|| "Start failed".to_owned(), Texts::start_failed);
+fn show_errors(texts: Option<&Texts>, errors: &[String]) {
+    let title = texts.map_or_else(|| "Start failed".to_owned(), Texts::start_failed);
     bb_win::dialog::error_box(&format!("{TITLE} – {title}"), &errors.join("\n\n"));
 }

@@ -20,6 +20,10 @@ pub type Filter<'a> = (&'a str, &'a str);
 /// Shows the system "open file" dialog, modal to `owner`.
 ///
 /// Returns `Ok(None)` if the user cancelled.
+///
+/// # Errors
+///
+/// Returns the Windows error if the underlying call fails.
 pub fn open_file(
     owner: Option<isize>,
     title: &str,

@@ -6,6 +6,20 @@ All notable changes to Breakbar Launcher. The format follows
 
 Everything before 0.2.0 is in the git history and in [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
 
+## [0.9.0] - 2026-09-26
+
+### Added
+
+- A log file, `%LOCALAPPDATA%\Breakbar\breakbar.log`, for problems that had no place to show up:
+  failed starts (also from shortcuts), a launch lock that couldn't be taken, and the profile folder
+  being pointed back after an unfinished start. It keeps at most about 512 KB (the current file and
+  one `.old`) and never holds logins.
+
+### Changed
+
+- Internal clean-up only, nothing you can see: the window code is split into modules, the code
+  passes Clippy's stricter `pedantic` checks, and outdated comments were brought up to date.
+
 ## [0.8.1] - 2026-09-26
 
 ### Fixed

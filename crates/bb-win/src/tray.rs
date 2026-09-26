@@ -30,7 +30,7 @@ pub use crate::menu::MenuItem;
 /// [`request_show`] from a second Breakbar process, which `FindWindowW` cannot see into the
 /// message-only window class.
 const CLASS_NAME: &str = "BreakbarTrayIcon";
-/// Shell_NotifyIcon's callback message: carries the triggering mouse message in `lParam` (the
+/// `Shell_NotifyIcon`'s callback message: carries the triggering mouse message in `lParam` (the
 /// legacy, un-versioned packing — this never calls `NIM_SETVERSION`).
 const CALLBACK_MESSAGE: u32 = WM_APP + 1;
 /// Sent by [`request_show`] (a second Breakbar process asking the running one to show itself);
@@ -59,6 +59,10 @@ impl Tray {
     /// `on_menu` is asked to build a fresh menu every time the icon is right-clicked or the
     /// context-menu key is pressed on it, so it can reflect current state; the chosen entry's
     /// `action` runs right after the menu closes.
+    ///
+    /// # Errors
+    ///
+    /// Returns the Windows error if the underlying call fails.
     pub fn new(
         tooltip: &str,
         on_activate: impl FnMut() + 'static,
@@ -106,7 +110,7 @@ fn create_hidden_window() -> io::Result<HWND> {
         };
         // SAFETY: `class` is fully initialized and only needs to live for this call.
         unsafe {
-            RegisterClassW(&class);
+            RegisterClassW(&raw const class);
         }
     });
 
@@ -136,6 +140,10 @@ fn create_hidden_window() -> io::Result<HWND> {
 /// window, for a second process launched while the first is already running (autostart, another
 /// desktop shortcut, `breakbar-launcher.exe` started by hand again). Returns an error if no instance is
 /// found running.
+///
+/// # Errors
+///
+/// Returns the Windows error if the underlying call fails.
 pub fn request_show() -> io::Result<()> {
     let class_name = HSTRING::from(CLASS_NAME);
     // SAFETY: `class_name` outlives this call; no window name filter is applied.
@@ -189,7 +197,7 @@ fn notify_icon_data(hwnd: HWND, tooltip: &str) -> NOTIFYICONDATAW {
 fn add_icon(hwnd: HWND, tooltip: &str) -> io::Result<()> {
     let data = notify_icon_data(hwnd, tooltip);
     // SAFETY: `data` is fully initialized and only needs to live for this call.
-    if unsafe { Shell_NotifyIconW(NIM_ADD, &data) }.as_bool() {
+    if unsafe { Shell_NotifyIconW(NIM_ADD, &raw const data) }.as_bool() {
         Ok(())
     } else {
         Err(io::Error::other("Shell_NotifyIcon(NIM_ADD) failed"))
@@ -204,7 +212,7 @@ fn remove_icon(hwnd: HWND) -> io::Result<()> {
         ..Default::default()
     };
     // SAFETY: `data` is fully initialized and only needs to live for this call.
-    if unsafe { Shell_NotifyIconW(NIM_DELETE, &data) }.as_bool() {
+    if unsafe { Shell_NotifyIconW(NIM_DELETE, &raw const data) }.as_bool() {
         Ok(())
     } else {
         Err(io::Error::other("Shell_NotifyIcon(NIM_DELETE) failed"))

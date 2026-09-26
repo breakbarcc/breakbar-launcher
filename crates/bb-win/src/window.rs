@@ -22,6 +22,10 @@ pub struct WindowInfo {
 }
 
 /// Lists the top-level windows owned by process `pid`, in z-order.
+///
+/// # Errors
+///
+/// Returns the Windows error if the underlying call fails.
 pub fn process_windows(pid: u32) -> Result<Vec<WindowInfo>> {
     let mut all: Vec<HWND> = Vec::new();
     // SAFETY: the callback only runs during this call, and `lparam` points to `all`, which
@@ -41,6 +45,10 @@ pub fn process_windows(pid: u32) -> Result<Vec<WindowInfo>> {
 }
 
 /// Whether process `pid` shows a top-level window of one of `classes`.
+///
+/// # Errors
+///
+/// Returns the Windows error if the underlying call fails.
 pub fn has_visible_window(pid: u32, classes: &[&str]) -> Result<bool> {
     Ok(process_windows(pid)?
         .iter()
@@ -49,6 +57,10 @@ pub fn has_visible_window(pid: u32, classes: &[&str]) -> Result<bool> {
 
 /// Asks every top-level window of process `pid` to close (`WM_CLOSE`), the same as clicking its
 /// close button, so the program can save its state. Returns how many windows were asked.
+///
+/// # Errors
+///
+/// Returns the Windows error if the underlying call fails.
 pub fn request_close(pid: u32) -> Result<usize> {
     let windows = process_windows(pid)?;
     for window in &windows {
@@ -67,6 +79,10 @@ pub fn request_close(pid: u32) -> Result<usize> {
 
 /// Restores (if minimized) and activates the first visible window of `pid` whose class is one of
 /// `classes`. Returns whether such a window was found.
+///
+/// # Errors
+///
+/// Returns the Windows error if the underlying call fails.
 pub fn activate_window(pid: u32, classes: &[&str]) -> Result<bool> {
     let Some(window) = process_windows(pid)?
         .into_iter()
@@ -86,6 +102,7 @@ pub fn activate_window(pid: u32, classes: &[&str]) -> Result<bool> {
 }
 
 /// PID owning the current foreground window, or 0 if there is none.
+#[must_use]
 pub fn foreground_pid() -> u32 {
     // SAFETY: takes no arguments; a missing foreground window yields a null handle, and
     // `window_pid` reports that as PID 0.
@@ -93,6 +110,7 @@ pub fn foreground_pid() -> u32 {
 }
 
 /// PID of the process behind an open handle to it (such as a `Child`'s raw handle).
+#[must_use]
 pub fn pid_of(handle: isize) -> u32 {
     // SAFETY: `handle` is a still-open handle owned by the caller; this call only reads it.
     unsafe { GetProcessId(HANDLE(handle as *mut _)) }
@@ -108,6 +126,7 @@ pub struct FrameColors {
 
 /// The virtual screen, the bounding box of all monitors, as `(left, top, width, height)` in physical
 /// pixels. Left and top are negative for a monitor left of or above the primary one.
+#[must_use]
 pub fn virtual_screen() -> (i32, i32, i32, i32) {
     // SAFETY: `GetSystemMetrics` has no preconditions.
     unsafe {
@@ -166,7 +185,7 @@ unsafe extern "system" fn collect(hwnd: HWND, lparam: LPARAM) -> BOOL {
 fn window_pid(hwnd: HWND) -> u32 {
     let mut pid = 0;
     // SAFETY: `pid` is valid for the call; an invalid window yields 0.
-    unsafe { GetWindowThreadProcessId(hwnd, Some(&mut pid)) };
+    unsafe { GetWindowThreadProcessId(hwnd, Some(&raw mut pid)) };
     pid
 }
 

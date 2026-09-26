@@ -1,11 +1,10 @@
 //! Per-account profile locations.
 //!
-//! Every account gets its own folder under `%LOCALAPPDATA%\Breakbar\profiles\<id>\`. Pointing a
-//! client's `APPDATA` (and `TMP`/`TEMP`) environment variables at that folder instead of the
-//! real ones gives it its own `Local.dat`, GFX settings, and temp files — the mechanism the
-//! architecture doc calls "Spike S1, Approach A". It needs no symlink, no Developer Mode/admin
-//! rights, and places no restriction on how many clients can be launched at once, unlike
-//! swapping a single shared `Local.dat` file in and out between launches.
+//! Every account gets its own folder under `%LOCALAPPDATA%\Breakbar\profiles\<id>\`, holding its
+//! `Local.dat`, its temp folder and the record of the game build it was set up for. The game only
+//! ever reads `%APPDATA%\Guild Wars 2`, so that real folder is a junction which points at an
+//! account's profile only while that account's client starts (see `profile_link` in the app).
+//! The `shared` profile is what it points at the rest of the time.
 
 use std::path::PathBuf;
 
@@ -14,6 +13,10 @@ use bb_core::AccountId;
 use crate::StoreError;
 
 /// The account's isolated profile folder. Does not create it; see [`ensure_profile_dir`].
+///
+/// # Errors
+///
+/// Returns [`StoreError`] if `%LOCALAPPDATA%` is not set.
 pub fn profile_dir(account_id: AccountId) -> Result<PathBuf, StoreError> {
     Ok(profiles_root()?.join(account_id.0.to_string()))
 }
@@ -21,6 +24,10 @@ pub fn profile_dir(account_id: AccountId) -> Result<PathBuf, StoreError> {
 /// The shared default profile: what `%APPDATA%\Guild Wars 2` points at whenever no launch is in
 /// progress, so clients started outside Breakbar and settings written by running clients (such
 /// as graphics settings) land here. Account ids are numeric, so this name never collides.
+///
+/// # Errors
+///
+/// Returns [`StoreError`] if `%LOCALAPPDATA%` is not set.
 pub fn shared_profile_dir() -> Result<PathBuf, StoreError> {
     Ok(profiles_root()?.join("shared"))
 }
@@ -33,6 +40,10 @@ fn profiles_root() -> Result<PathBuf, StoreError> {
 }
 
 /// [`profile_dir`], creating it (and its parents) first if it doesn't exist yet.
+///
+/// # Errors
+///
+/// Returns [`StoreError`] if `%LOCALAPPDATA%` is not set.
 pub fn ensure_profile_dir(account_id: AccountId) -> Result<PathBuf, StoreError> {
     let dir = profile_dir(account_id)?;
     std::fs::create_dir_all(&dir).map_err(|source| StoreError::Io {
@@ -45,6 +56,10 @@ pub fn ensure_profile_dir(account_id: AccountId) -> Result<PathBuf, StoreError> 
 /// Permanently deletes the account's profile folder, including its `Local.dat` (the remembered
 /// login). A missing folder is not an error. Only ever touches `profiles\<id>`: the shared
 /// profile has a non-numeric name and can't be addressed through an [`AccountId`].
+///
+/// # Errors
+///
+/// Returns [`StoreError`] if `%LOCALAPPDATA%` is not set.
 pub fn delete_profile(account_id: AccountId) -> Result<(), StoreError> {
     let dir = profile_dir(account_id)?;
     match std::fs::remove_dir_all(&dir) {
@@ -55,6 +70,10 @@ pub fn delete_profile(account_id: AccountId) -> Result<(), StoreError> {
 }
 
 /// Path to the account's `Local.dat`, inside its profile, once GW2 has created it.
+///
+/// # Errors
+///
+/// Returns [`StoreError`] if `%LOCALAPPDATA%` is not set.
 pub fn local_dat_path(account_id: AccountId) -> Result<PathBuf, StoreError> {
     Ok(profile_dir(account_id)?
         .join("Guild Wars 2")
@@ -67,6 +86,7 @@ pub fn local_dat_path(account_id: AccountId) -> Result<PathBuf, StoreError> {
 /// "data archive cannot be opened"), so an account without one needs a single setup launch
 /// without `-shareArchive` first. Whether the file also holds remembered credentials can't be
 /// told from outside; that only decides whether `-autologin` skips the login screen.
+#[must_use]
 pub fn is_set_up(account_id: AccountId) -> bool {
     local_dat_path(account_id).is_ok_and(|path| path.is_file())
 }
@@ -80,6 +100,7 @@ fn verified_build_path(account_id: AccountId) -> Result<PathBuf, StoreError> {
 /// date against by a setup launch, if it has been. A `Local.dat` that is older than the game but
 /// was verified for this very build is not out of date: the client only rewrites it when it has
 /// something to change.
+#[must_use]
 pub fn verified_build(account_id: AccountId) -> Option<u64> {
     std::fs::read_to_string(verified_build_path(account_id).ok()?)
         .ok()?
@@ -89,6 +110,10 @@ pub fn verified_build(account_id: AccountId) -> Option<u64> {
 }
 
 /// Records that a setup launch of the account finished against game build `build`.
+///
+/// # Errors
+///
+/// Returns [`StoreError`] if `%LOCALAPPDATA%` is not set.
 pub fn mark_build_verified(account_id: AccountId, build: u64) -> Result<(), StoreError> {
     ensure_profile_dir(account_id)?;
     let path = verified_build_path(account_id)?;

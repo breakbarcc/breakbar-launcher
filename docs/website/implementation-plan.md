@@ -74,7 +74,7 @@ Links that go back to the site:
 |---|---|
 | breakbar.cc (main site) | https://launcher.breakbar.cc/ |
 | The repository README | add a "Website" line or badge with https://launcher.breakbar.cc/ |
-| The program, About section | currently opens https://www.breakbar.cc/; change `WEBSITE_URL` in `crates/bb-app/src/gui.rs` to the launcher site once it is live (a small app change with a new version) |
+| The program, About section | currently opens https://www.breakbar.cc/; change `WEBSITE_URL` in `crates/bb-app/src/gui/mod.rs` to the launcher site once it is live (a small app change with a new version) |
 | SignPath application | https://launcher.breakbar.cc/ as the download page |
 
 ## 4. Checklist before announcing

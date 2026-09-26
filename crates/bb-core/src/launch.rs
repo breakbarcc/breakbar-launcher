@@ -29,6 +29,7 @@ impl Default for LaunchOptions {
 ///
 /// Each element is a single argv entry (no manual quoting): pass them to a process API that
 /// quotes as needed, such as [`std::process::Command::args`].
+#[must_use]
 pub fn game_args(account: &Account, options: LaunchOptions) -> Vec<String> {
     let mut args = Vec::with_capacity(8);
     if options.share_archive {
@@ -58,6 +59,7 @@ pub fn game_args(account: &Account, options: LaunchOptions) -> Vec<String> {
 /// Splits a free-form argument string into individual tokens, similar to a shell's word
 /// splitting: whitespace separates tokens, and `"..."` groups a token that contains whitespace.
 /// There is no escape character; a quote cannot be embedded in a quoted token.
+#[must_use]
 pub fn split_args(text: &str) -> Vec<String> {
     let mut tokens = Vec::new();
     let mut chars = text.chars().peekable();

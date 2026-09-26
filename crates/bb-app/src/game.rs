@@ -60,7 +60,7 @@ pub fn validate(path: &Path) -> Result<(), Gw2PathError> {
 
 /// Searches the usual install locations and returns the first valid client.
 ///
-/// Order: ArenaNet installer registry entry, uninstall entry, Steam libraries, Program Files.
+/// Order: `ArenaNet` installer registry entry, uninstall entry, Steam libraries, Program Files.
 pub fn detect() -> Option<PathBuf> {
     candidates().into_iter().find(|path| validate(path).is_ok())
 }
@@ -73,7 +73,7 @@ const STEAM_INSTALL_SCRIPT: &str = "install_script.vdf";
 ///
 /// Steam does not ship `steam_api64.dll` with the game (checked against a real installation), so
 /// that cannot be used to tell the installations apart. The Steam client only leaves its
-/// `install_script.vdf` in a folder it installed the game into, which includes an ArenaNet folder
+/// `install_script.vdf` in a folder it installed the game into, which includes an `ArenaNet` folder
 /// that was linked into a Steam library with a directory junction.
 pub fn supports_steam(gw2_exe: &Path) -> bool {
     gw2_exe.with_file_name(STEAM_INSTALL_SCRIPT).is_file()

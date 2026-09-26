@@ -61,7 +61,7 @@ BEGIN
 END
 "#
     );
-    let path = PathBuf::from(env("OUT_DIR")).join("version.rc");
-    std::fs::write(&path, resource).expect("failed to write the version resource");
-    path
+    let rc_path = PathBuf::from(env("OUT_DIR")).join("version.rc");
+    std::fs::write(&rc_path, resource).expect("failed to write the version resource");
+    rc_path
 }

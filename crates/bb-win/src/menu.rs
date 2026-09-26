@@ -35,6 +35,7 @@ impl MenuItem {
         }
     }
 
+    #[must_use]
     pub fn separator() -> Self {
         MenuItem::Separator
     }
@@ -44,6 +45,10 @@ impl MenuItem {
 /// window on the calling thread, as a raw handle), and runs the chosen entry's action. Blocks until the menu
 /// closes (`TrackPopupMenuEx` pumps its own nested loop internally, same as any native modal
 /// Win32 UI).
+///
+/// # Errors
+///
+/// Returns the Windows error if the underlying call fails.
 pub fn show(hwnd: isize, mut items: Vec<MenuItem>) -> io::Result<()> {
     let hwnd = HWND(hwnd as *mut _);
     // SAFETY: the returned handle is only used below and destroyed before returning.
@@ -72,7 +77,7 @@ pub fn show(hwnd: isize, mut items: Vec<MenuItem>) -> io::Result<()> {
     let mut point = POINT::default();
     // SAFETY: `point` is a valid, appropriately sized out-pointer.
     unsafe {
-        let _ = GetCursorPos(&mut point);
+        let _ = GetCursorPos(&raw mut point);
     }
     // SAFETY: documented Win32 pattern for context menus, so the menu gets keyboard focus and
     // closes correctly when the user clicks elsewhere.

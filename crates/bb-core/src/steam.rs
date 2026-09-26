@@ -12,6 +12,7 @@ pub const GW2_INSTALL_DIR: &str = r"steamapps\common\Guild Wars 2";
 ///
 /// Only the `"path"` entries are of interest, so instead of a full VDF parser this scans the
 /// quoted tokens and returns every value that follows a `"path"` key.
+#[must_use]
 pub fn library_folders(vdf: &str) -> Vec<PathBuf> {
     let tokens = quoted_tokens(vdf);
     tokens

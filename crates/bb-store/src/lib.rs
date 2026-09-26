@@ -67,6 +67,7 @@ pub enum FpsLimit {
 
 impl FpsLimit {
     /// The frame rate to pass to the game, `None` for no limit.
+    #[must_use]
     pub fn frames_per_second(self) -> Option<u32> {
         match self {
             Self::Fps60 => Some(60),
@@ -140,6 +141,7 @@ impl OverlaySettings {
     pub const MAX_OPACITY: u8 = 100;
 
     /// `idle_opacity` limited to the allowed range (a hand-edited config may hold anything).
+    #[must_use]
     pub fn opacity_percent(self) -> u8 {
         self.idle_opacity
             .clamp(Self::MIN_OPACITY, Self::MAX_OPACITY)
@@ -182,6 +184,10 @@ impl Default for Config {
 }
 
 /// Default location of the config file: `%APPDATA%\Breakbar\config.toml`.
+///
+/// # Errors
+///
+/// Returns [`StoreError`] if `%LOCALAPPDATA%` is not set.
 pub fn default_config_path() -> Result<PathBuf, StoreError> {
     let app_data = std::env::var_os("APPDATA").ok_or(StoreError::NoAppData)?;
     Ok(PathBuf::from(app_data).join("Breakbar").join("config.toml"))
@@ -189,6 +195,10 @@ pub fn default_config_path() -> Result<PathBuf, StoreError> {
 
 impl Config {
     /// Loads the config from `path`. A missing file yields the default config.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`StoreError`] if `%LOCALAPPDATA%` is not set.
     pub fn load(path: &Path) -> Result<Self, StoreError> {
         let text = match fs::read_to_string(path) {
             Ok(text) => text,
@@ -207,6 +217,10 @@ impl Config {
     }
 
     /// Saves the config atomically: write a temp file, flush it to disk, then replace the target.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`StoreError`] if `%LOCALAPPDATA%` is not set.
     pub fn save(&self, path: &Path) -> Result<(), StoreError> {
         let text = toml::to_string_pretty(self)?;
         let io_err = |source| StoreError::Io {

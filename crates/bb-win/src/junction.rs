@@ -1,17 +1,13 @@
 //! NTFS directory junctions (mount-point reparse points).
 //!
-//! Guild Wars 2 resolves its `%APPDATA%` through the Windows "known folder" API rather than by
-//! reading the `APPDATA` environment variable, so redirecting a child process's environment
-//! block (as originally implemented) has no effect on where it reads/writes `Local.dat` —
-//! verified by testing: only the client's embedded Chromium subsystem respected the redirected
-//! `TEMP`, while `Local.dat`/`GFXSettings` still landed in the real, un-redirected folder.
-//!
-//! A directory junction placed directly on `%APPDATA%\Guild Wars 2` is the mechanism that
-//! actually works, and the one gw2launcher uses for the same reason (see its
-//! `Windows/Symlink.cs::CreateJunction`, which this implementation was cross-checked against,
-//! together with the authoritative field layout in `[MS-FSCC] 2.1.2.4 Mount Point Reparse
-//! Buffer`). Unlike a symbolic link, a junction needs no special privilege — no admin rights,
-//! no Developer Mode — only write access to the parent directory.
+//! Guild Wars 2 resolves its `%APPDATA%` through the Windows "known folder" API, not through the
+//! `APPDATA` environment variable, so a child process's environment can't send it to another
+//! folder (tested: only its embedded browser respected a changed `TEMP`; `Local.dat` still landed
+//! in the real folder). A directory junction placed directly on `%APPDATA%\Guild Wars 2` does work,
+//! and is what gw2launcher uses for the same reason (its `Windows/Symlink.cs::CreateJunction`, which
+//! this implementation was cross-checked against, together with the field layout in
+//! `[MS-FSCC] 2.1.2.4 Mount Point Reparse Buffer`). Unlike a symbolic link, a junction needs no
+//! special privilege: no admin rights, no Developer Mode, only write access to the parent directory.
 
 use std::path::Path;
 
@@ -33,6 +29,10 @@ const NT_PATH_PREFIX: &str = r"\??\";
 ///
 /// `target` does not need to exist yet — NTFS only resolves it when something actually opens a
 /// path through `link`.
+///
+/// # Errors
+///
+/// Returns the Windows error if the underlying call fails.
 pub fn create(link: &Path, target: &Path) -> Result<()> {
     let buffer = mount_point_buffer(target);
 

@@ -176,7 +176,9 @@ pub fn launch(
 
     // Waits while another Breakbar process launches; released when this launch returns.
     let _lock = bb_win::mutex::OwnedMutex::acquire(LAUNCH_LOCK).inspect_err(|error| {
-        eprintln!("could not take the launch lock, launching anyway: {error}")
+        crate::log::write(format!(
+            "could not take the launch lock, launching anyway: {error}"
+        ));
     });
 
     // A client of this account already runs (e.g. started from a shortcut): it holds the
@@ -235,7 +237,9 @@ pub fn launch(
 /// process (which holds the launch lock) instead of interfering with it. Returns the error, if any.
 pub fn recover_profile_link() -> Result<bool, ProfileLinkError> {
     let _lock = bb_win::mutex::OwnedMutex::acquire(LAUNCH_LOCK).inspect_err(|error| {
-        eprintln!("could not take the launch lock for the profile check: {error}")
+        crate::log::write(format!(
+            "could not take the launch lock for the profile check: {error}"
+        ));
     });
     profile_link::restore_shared_if_stranded()
 }
@@ -411,7 +415,9 @@ fn running_clients(gw2_path: &Path) -> Vec<u32> {
         .and_then(|name| name.to_str())
         .unwrap_or(crate::game::GW2_EXE);
     bb_win::process::find_processes_by_name(exe_name).unwrap_or_else(|error| {
-        eprintln!("could not list running Guild Wars 2 clients: {error}");
+        crate::log::write(format!(
+            "could not list running Guild Wars 2 clients: {error}"
+        ));
         Vec::new()
     })
 }
@@ -427,7 +433,9 @@ fn ensure_mutex_clear(gw2_path: &Path) {
         Ok(true) => {}
         Ok(false) => return,
         Err(error) => {
-            eprintln!("could not check the Guild Wars 2 mutex, launching anyway: {error}");
+            crate::log::write(format!(
+                "could not check the Guild Wars 2 mutex, launching anyway: {error}"
+            ));
             return;
         }
     }
@@ -435,7 +443,9 @@ fn ensure_mutex_clear(gw2_path: &Path) {
         match bb_win::mutex::kill_gw2_mutex(pid) {
             Ok(true) => return,
             Ok(false) => {}
-            Err(error) => eprintln!("could not close the mutex held by PID {pid}: {error}"),
+            Err(error) => crate::log::write(format!(
+                "could not close the mutex held by PID {pid}: {error}"
+            )),
         }
     }
 }

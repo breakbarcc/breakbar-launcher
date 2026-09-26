@@ -7,6 +7,7 @@ mod game;
 mod gui;
 mod headless;
 mod launcher;
+mod log;
 mod overlay;
 mod profile_link;
 mod steam_setup;
@@ -21,7 +22,7 @@ fn main() -> ExitCode {
     let command = match cli::parse(std::env::args_os()) {
         Ok(command) => command,
         Err(error) => {
-            bb_win::console::attach_parent_console();
+            let _ = bb_win::console::attach_parent_console();
             eprintln!("error: {error}\n\n{}", cli::HELP);
             return ExitCode::FAILURE;
         }
@@ -29,19 +30,26 @@ fn main() -> ExitCode {
 
     if matches!(command, Command::Gui | Command::Launch(_)) {
         // Best-effort: a failure here shows up again when a launch needs the folder.
-        if let Err(error) = launcher::recover_profile_link() {
-            eprintln!("could not check Guild Wars 2's data folder: {error}");
+        match launcher::recover_profile_link() {
+            Ok(true) => log::write(
+                "pointed Guild Wars 2's data folder back at the shared profile \
+                 (an earlier start had not finished)",
+            ),
+            Ok(false) => {}
+            Err(error) => log::write(format!(
+                "could not check Guild Wars 2's data folder: {error}"
+            )),
         }
     }
 
     match command {
         Command::Help => {
-            bb_win::console::attach_parent_console();
+            let _ = bb_win::console::attach_parent_console();
             print!("{}", cli::HELP);
             ExitCode::SUCCESS
         }
         Command::Version => {
-            bb_win::console::attach_parent_console();
+            let _ = bb_win::console::attach_parent_console();
             println!("breakbar-launcher {}", env!("CARGO_PKG_VERSION"));
             ExitCode::SUCCESS
         }
@@ -49,7 +57,7 @@ fn main() -> ExitCode {
         Command::Gui => match gui::run() {
             Ok(()) => ExitCode::SUCCESS,
             Err(error) => {
-                eprintln!("error: {error}");
+                log::write(format!("the window failed: {error}"));
                 ExitCode::FAILURE
             }
         },

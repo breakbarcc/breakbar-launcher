@@ -25,6 +25,10 @@ pub struct Shortcut<'a> {
 }
 
 /// Writes `shortcut` to `link` (a `.lnk` path), replacing an existing file.
+///
+/// # Errors
+///
+/// Returns the Windows error if the underlying call fails.
 pub fn create(link: &Path, shortcut: &Shortcut<'_>) -> Result<()> {
     let _com = ComApartment::enter()?;
     // SAFETY: COM is initialized for this thread by `_com`; every string passed lives until the
@@ -43,6 +47,10 @@ pub fn create(link: &Path, shortcut: &Shortcut<'_>) -> Result<()> {
 }
 
 /// The current user's desktop folder.
+///
+/// # Errors
+///
+/// Returns the Windows error if the underlying call fails.
 pub fn desktop_dir() -> Result<PathBuf> {
     // SAFETY: the returned buffer is freed with CoTaskMemFree after copying it.
     unsafe {

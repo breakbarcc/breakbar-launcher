@@ -13,7 +13,7 @@ pub struct AccountId(pub u32);
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default, Serialize, Deserialize)]
 #[serde(rename_all = "kebab-case")]
 pub enum Provider {
-    /// Regular ArenaNet account, logged in via its own `Local.dat`.
+    /// Regular `ArenaNet` account, logged in via its own `Local.dat`.
     #[default]
     ArenaNet,
     /// Steam-linked account, authenticated by the running Steam client.
@@ -21,6 +21,7 @@ pub enum Provider {
 }
 
 impl Provider {
+    #[must_use]
     pub fn display_name(self) -> &'static str {
         match self {
             Provider::ArenaNet => "ArenaNet",
@@ -57,7 +58,8 @@ impl Account {
         }
     }
 
-    /// Unique MumbleLink shared memory name, so overlays never read another client's data.
+    /// Unique `MumbleLink` shared memory name, so overlays never read another client's data.
+    #[must_use]
     pub fn mumble_link_name(&self) -> String {
         format!("Breakbar_{}", self.id.0)
     }

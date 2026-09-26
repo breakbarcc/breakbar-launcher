@@ -28,6 +28,7 @@ impl Root {
 /// Reads a string value (`REG_SZ`, or `REG_EXPAND_SZ` with variables expanded).
 ///
 /// Returns `None` if the key or value does not exist or is not a string.
+#[must_use]
 pub fn read_string(root: Root, subkey: &str, value: &str) -> Option<String> {
     let subkey = HSTRING::from(subkey);
     let value = HSTRING::from(value);
@@ -42,7 +43,7 @@ pub fn read_string(root: Root, subkey: &str, value: &str) -> Option<String> {
             RRF_RT_REG_SZ,
             None,
             None,
-            Some(&mut size),
+            Some(&raw mut size),
         )
     };
     if status.is_err() {
@@ -59,7 +60,7 @@ pub fn read_string(root: Root, subkey: &str, value: &str) -> Option<String> {
             RRF_RT_REG_SZ,
             None,
             Some(buffer.as_mut_ptr().cast()),
-            Some(&mut size),
+            Some(&raw mut size),
         )
     };
     if status.is_err() {
@@ -71,6 +72,10 @@ pub fn read_string(root: Root, subkey: &str, value: &str) -> Option<String> {
 }
 
 /// Writes a `REG_SZ` value, creating `subkey` if it doesn't exist yet.
+///
+/// # Errors
+///
+/// Returns the OS error if the registry can't be written.
 pub fn write_string(root: Root, subkey: &str, value: &str, data: &str) -> Result<(), io::Error> {
     let subkey = HSTRING::from(subkey);
     let value = HSTRING::from(value);
@@ -91,7 +96,7 @@ pub fn write_string(root: Root, subkey: &str, value: &str, data: &str) -> Result
             REG_OPTION_NON_VOLATILE,
             KEY_SET_VALUE,
             None,
-            &mut hkey,
+            &raw mut hkey,
             None,
         )
     };
@@ -112,6 +117,10 @@ pub fn write_string(root: Root, subkey: &str, value: &str, data: &str) -> Result
 }
 
 /// Deletes a value. Missing keys or values are not an error.
+///
+/// # Errors
+///
+/// Returns the OS error if the registry can't be written.
 pub fn delete_value(root: Root, subkey: &str, value: &str) -> Result<(), io::Error> {
     let subkey = HSTRING::from(subkey);
     let value = HSTRING::from(value);

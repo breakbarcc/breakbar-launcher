@@ -317,6 +317,10 @@ crates/
   bb-core/   domain: Account, Profile, LaunchPlan, CompanionApp, ProcessMonitor
   bb-store/  config.toml (serde), atomic writes
   bb-app/    binary `breakbar-launcher`: main.rs, Slint UI (ui/), CLI (`breakbar-launcher --launch "Main,Alt1"`)
+    src/gui/ the window, one module per area: accounts (editor, shortcuts), launch (queue, client
+             start/exit), login, list (rows, toasts), settings, steam_dialog, tray, convert
+    src/log.rs  `%LOCALAPPDATA%\Breakbar\breakbar.log`, problems with no other place to go (256 KB,
+                one `.old` file)
     assets/  app.manifest (asInvoker, PerMonitorV2, longPathAware, UTF-8), resource script
 ```
 

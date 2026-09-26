@@ -1,10 +1,10 @@
 //! Pointing the real `%APPDATA%\Guild Wars 2` at an account's own profile during a launch.
 //!
-//! Guild Wars 2 only ever reads and writes `%APPDATA%\Guild Wars 2` — see [`bb_win::junction`]'s
-//! module docs for why redirecting a child process's own environment doesn't work. That real
-//! folder is therefore turned into an NTFS junction which normally points at a shared default
-//! profile, and is pointed at an account's own profile only for the few seconds it takes that
-//! account's client to start and take its `Local.dat`:
+//! Guild Wars 2 only ever reads and writes `%APPDATA%\Guild Wars 2` (see [`bb_win::junction`] for
+//! why the environment cannot redirect that). That real folder is therefore turned into an NTFS
+//! junction which normally points at a shared default profile, and is pointed at an account's own
+//! profile only for the few seconds it takes that account's client to start and take its
+//! `Local.dat`:
 //!
 //! 1. [`point_to_account`] — the client about to start will find that account's `Local.dat`.
 //! 2. The client starts and opens `Local.dat` exclusively; from then on it only uses that open

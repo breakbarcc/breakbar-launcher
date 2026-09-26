@@ -9,6 +9,7 @@ pub const MACHINE_AMD64: u16 = 0x8664;
 /// Returns the target machine of a PE image, read from the start of the file.
 ///
 /// Returns `None` if `header` is not a PE image or is too short to contain the PE header.
+#[must_use]
 pub fn machine(header: &[u8]) -> Option<u16> {
     if header.get(..2)? != b"MZ" {
         return None;

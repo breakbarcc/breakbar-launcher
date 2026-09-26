@@ -12,6 +12,7 @@ use windows::core::HSTRING;
 const FALLBACK_TRANSLATION: &str = "040904b0";
 
 /// Returns the `ProductName` from an executable's version resource.
+#[must_use]
 pub fn product_name(path: &Path) -> Option<String> {
     let data = version_info(path)?;
     let translation = translation(&data).unwrap_or_else(|| FALLBACK_TRANSLATION.to_owned());
@@ -61,7 +62,7 @@ fn query(data: &[u8], key: &HSTRING) -> Option<(*const c_void, u32)> {
     let mut len = 0u32;
     // SAFETY: `data` is a version info block returned by GetFileVersionInfoW; the returned
     // pointer points into `data` and is only used while `data` is alive.
-    let found = unsafe { VerQueryValueW(data.as_ptr().cast(), key, &mut ptr, &mut len) };
+    let found = unsafe { VerQueryValueW(data.as_ptr().cast(), key, &raw mut ptr, &raw mut len) };
     (found.as_bool() && !ptr.is_null()).then_some((ptr.cast_const(), len))
 }
 

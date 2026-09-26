@@ -13,6 +13,10 @@ use windows::core::{HSTRING, Result};
 pub const GW2_MUTEX_NAME: &str = "AN-Mutex-Window-Guild Wars 2";
 
 /// Returns whether a named mutex exists in the current session namespace.
+///
+/// # Errors
+///
+/// Returns the Windows error if the underlying call fails.
 pub fn mutex_exists(name: &str) -> Result<bool> {
     let name = HSTRING::from(name);
     // SAFETY: `name` is a valid, NUL-terminated wide string that outlives the call.
@@ -28,6 +32,10 @@ pub fn mutex_exists(name: &str) -> Result<bool> {
 }
 
 /// Returns whether a Guild Wars 2 client currently holds its single-instance mutex.
+///
+/// # Errors
+///
+/// Returns the Windows error if the underlying call fails.
 pub fn gw2_mutex_exists() -> Result<bool> {
     mutex_exists(GW2_MUTEX_NAME)
 }
@@ -38,6 +46,10 @@ pub fn gw2_mutex_exists() -> Result<bool> {
 ///
 /// Returns `Ok(true)` if the mutex was found and closed, `Ok(false)` if `pid` didn't have one
 /// open (nothing to do — for example, it hasn't created it yet, or already lost it).
+///
+/// # Errors
+///
+/// Returns the Windows error if the underlying call fails.
 pub fn kill_gw2_mutex(pid: u32) -> Result<bool> {
     crate::nt::close_named_mutex_in_process(pid, GW2_MUTEX_NAME)
 }
@@ -50,6 +62,10 @@ pub struct OwnedMutex(HANDLE);
 impl OwnedMutex {
     /// Creates or opens the named mutex and waits until this thread owns it. A mutex left behind
     /// by a process that died while holding it is taken over.
+    ///
+    /// # Errors
+    ///
+    /// Returns the Windows error if the underlying call fails.
     pub fn acquire(name: &str) -> Result<Self> {
         let name = HSTRING::from(name);
         // SAFETY: `name` is a valid wide string for the call; the handle is owned by `Self`.

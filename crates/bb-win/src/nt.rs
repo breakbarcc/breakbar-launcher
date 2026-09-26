@@ -230,7 +230,7 @@ fn mutant_type_index() -> Result<u32> {
             OBJECT_TYPE_INFORMATION_CLASS,
             buffer.as_mut_ptr().cast(),
             (buffer.len() * size_of::<u64>()) as u32,
-            &mut used,
+            &raw mut used,
         )
     };
     if status.0 < 0 {
@@ -258,7 +258,7 @@ fn query_process_handles(process: HANDLE) -> Result<Vec<u64>> {
                 PROCESS_HANDLE_INFORMATION,
                 buffer.as_mut_ptr().cast(),
                 size as u32,
-                &mut used,
+                &raw mut used,
             )
         };
         if status.0 >= 0 {
@@ -284,8 +284,9 @@ fn query_process_handles(process: HANDLE) -> Result<Vec<u64>> {
 unsafe fn handle_entries(snapshot: &[u64]) -> &[ProcessHandleTableEntryInfo] {
     // `snapshot` is a `u64` buffer, so it is aligned for both structs (their alignment is 8).
     let bytes = std::mem::size_of_val(snapshot);
-    let base = snapshot.as_ptr().cast::<u8>();
+    let base = snapshot.as_ptr();
     let header_len = size_of::<ProcessHandleSnapshotInformation>();
+    const { assert!(size_of::<ProcessHandleSnapshotInformation>().is_multiple_of(size_of::<u64>())) };
     if bytes < header_len {
         return &[];
     }
@@ -302,7 +303,8 @@ unsafe fn handle_entries(snapshot: &[u64]) -> &[ProcessHandleTableEntryInfo] {
     // layout, which keeps them 8-byte aligned.
     unsafe {
         std::slice::from_raw_parts(
-            base.add(header_len).cast::<ProcessHandleTableEntryInfo>(),
+            base.add(header_len / size_of::<u64>())
+                .cast::<ProcessHandleTableEntryInfo>(),
             count,
         )
     }
@@ -328,7 +330,7 @@ fn duplicate_for_local_query(source_process: HANDLE, handle: HANDLE) -> Result<H
             source_process,
             handle,
             CURRENT_PROCESS,
-            &mut duplicate,
+            &raw mut duplicate,
             0,
             false,
             windows::Win32::Foundation::DUPLICATE_SAME_ACCESS,
@@ -350,7 +352,7 @@ fn object_name_of(handle: HANDLE) -> Result<Option<String>> {
             OBJECT_NAME_INFORMATION_CLASS,
             buffer.as_mut_ptr().cast(),
             (buffer.len() * size_of::<u64>()) as u32,
-            &mut used,
+            &raw mut used,
         )
     };
     if status.0 < 0 {

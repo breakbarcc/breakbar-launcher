@@ -26,6 +26,10 @@ pub const TERMINATED_EXIT_CODE: u32 = 1;
 ///
 /// Used to find Guild Wars 2 clients Breakbar didn't itself launch (e.g. already running from a
 /// previous session), so their single-instance mutex can be closed too.
+///
+/// # Errors
+///
+/// Returns the Windows error if the underlying call fails.
 pub fn find_processes_by_name(exe_name: &str) -> Result<Vec<u32>> {
     Ok(snapshot()?
         .into_iter()
@@ -41,6 +45,10 @@ pub fn find_processes_by_name(exe_name: &str) -> Result<Vec<u32>> {
 /// restarts itself (after updating its own executable) can still be found through the process it
 /// replaced. A reused parent id could in theory match an unrelated process, but only one with the
 /// same executable name that was started by a process with that very id.
+///
+/// # Errors
+///
+/// Returns the Windows error if the underlying call fails.
 pub fn find_child_processes(parent_pid: u32, exe_name: &str) -> Result<Vec<u32>> {
     Ok(snapshot()?
         .into_iter()
@@ -65,7 +73,7 @@ fn snapshot() -> Result<Vec<ProcessEntry>> {
         ..Default::default()
     };
     // SAFETY: `entry.dwSize` is set as required; `entry` is valid for the duration of the call.
-    let mut result = unsafe { Process32FirstW(snapshot.0, &mut entry) };
+    let mut result = unsafe { Process32FirstW(snapshot.0, &raw mut entry) };
 
     let mut entries = Vec::new();
     loop {
@@ -79,7 +87,7 @@ fn snapshot() -> Result<Vec<ProcessEntry>> {
             Err(error) => return Err(error),
         }
         // SAFETY: `entry` is valid for the duration of the call, matching `Process32FirstW`.
-        result = unsafe { Process32NextW(snapshot.0, &mut entry) };
+        result = unsafe { Process32NextW(snapshot.0, &raw mut entry) };
     }
     Ok(entries)
 }
@@ -106,6 +114,10 @@ impl Drop for SnapshotHandle {
 /// does not close it: whoever owns the handle keeps that responsibility. Calling it concurrently
 /// with another thread waiting on the same handle (e.g. via `Child::wait`) is safe; Windows
 /// handles have no thread affinity and support this without extra synchronization.
+///
+/// # Errors
+///
+/// Returns the Windows error if the underlying call fails.
 pub fn terminate(handle: isize) -> Result<()> {
     let handle = HANDLE(handle as *mut _);
     // SAFETY: `handle` is a live process handle owned by the caller for the duration of this
@@ -128,6 +140,10 @@ impl From<OwnedHandle> for Process {
 
 impl Process {
     /// Opens the running process `pid` for waiting on it and terminating it.
+    ///
+    /// # Errors
+    ///
+    /// Returns the Windows error if the underlying call fails.
     pub fn open(pid: u32) -> Result<Self> {
         // SAFETY: no preconditions; the returned handle is owned by the `OwnedHandle` below.
         let handle = unsafe {
@@ -142,17 +158,23 @@ impl Process {
     }
 
     /// The raw handle, valid as long as this value lives (see [`terminate`]).
+    #[must_use]
     pub fn raw_handle(&self) -> isize {
         self.0.as_raw_handle() as isize
     }
 
     /// The process id.
+    #[must_use]
     pub fn pid(&self) -> u32 {
         // SAFETY: the handle is a live process handle owned by `self`.
         unsafe { GetProcessId(self.handle()) }
     }
 
     /// The exit code if the process has exited, `None` while it still runs.
+    ///
+    /// # Errors
+    ///
+    /// Returns the Windows error if the underlying call fails.
     pub fn try_wait(&self) -> Result<Option<u32>> {
         // SAFETY: the handle is a live process handle with `SYNCHRONIZE` access.
         if unsafe { WaitForSingleObject(self.handle(), 0) } == WAIT_OBJECT_0 {
@@ -163,6 +185,10 @@ impl Process {
     }
 
     /// Blocks until the process has exited and returns its exit code.
+    ///
+    /// # Errors
+    ///
+    /// Returns the Windows error if the underlying call fails.
     pub fn wait(&self) -> Result<u32> {
         // SAFETY: the handle is a live process handle with `SYNCHRONIZE` access; waiting on it
         // from several threads is fine.
@@ -173,7 +199,7 @@ impl Process {
     fn exit_code(&self) -> Result<u32> {
         let mut code = 0;
         // SAFETY: the handle has `PROCESS_QUERY_LIMITED_INFORMATION` access; `code` is valid.
-        unsafe { GetExitCodeProcess(self.handle(), &mut code) }?;
+        unsafe { GetExitCodeProcess(self.handle(), &raw mut code) }?;
         Ok(code)
     }
 

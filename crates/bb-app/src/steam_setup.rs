@@ -1,7 +1,7 @@
-//! Making an ArenaNet installation usable for Steam accounts.
+//! Making an `ArenaNet` installation usable for Steam accounts.
 //!
 //! Steam only signs in a Guild Wars 2 that it installed itself (its own `Gw2-64.exe` build, and
-//! `install_script.vdf` next to it), but the Steam version is a 1:1 copy of the ArenaNet one. So a
+//! `install_script.vdf` next to it), but the Steam version is a 1:1 copy of the `ArenaNet` one. So a
 //! directory junction from Steam's library folder to the existing installation, followed by
 //! "Install" in Steam, makes Steam adopt the files and download only a few megabytes.
 

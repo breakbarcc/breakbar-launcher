@@ -7,6 +7,7 @@ use windows::Win32::System::Console::{ATTACH_PARENT_PROCESS, AttachConsole};
 /// GUI subsystem.
 ///
 /// Returns `false` if the parent process has no console.
+#[must_use]
 pub fn attach_parent_console() -> bool {
     // SAFETY: AttachConsole has no memory-safety preconditions.
     unsafe { AttachConsole(ATTACH_PARENT_PROCESS).is_ok() }
