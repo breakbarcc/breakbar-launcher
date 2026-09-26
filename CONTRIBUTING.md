@@ -91,7 +91,7 @@ The site at https://launcher.breakbar.cc is built from [`site/`](site) (see
 - The site goes live from the `release` branch, like the program, so that it never describes
   something that is not released yet: a push to `release` that changes `site/` builds and deploys
   it. A pull request only builds it.
-- A push that only changes `site/`, `docs/` or Markdown files is not a release: the release workflow
+- A push that only changes `site/`, `docs/`, Markdown files or `.github/` is not a release: the release workflow
   skips it, so a site fix goes out with a plain `git push origin main:release`, without a new version.
 - The version on the page is the newest GitHub release. The release workflow starts the site
   workflow after publishing (`gh workflow run site.yml`), because a release created with the default

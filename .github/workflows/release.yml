@@ -5,11 +5,13 @@ name: Release
 on:
   push:
     branches: [release]
-    # A push that only changes the website or the docs is no release (the site workflow handles it).
+    # A push that only changes the website, the docs or the workflows is no release (the site
+    # workflow handles the website; a release needs a new version in Cargo.toml anyway).
     paths-ignore:
       - "site/**"
       - "docs/**"
       - "**/*.md"
+      - ".github/**"
 
 env:
   CARGO_TERM_COLOR: always
@@ -167,6 +169,9 @@ jobs:
   # rebuilt explicitly; it then shows the new version.
   site:
     needs: release
+    # Without this, the job is skipped whenever the signing job before it is: the implicit
+    # `success()` of a job is false if any job upstream of it was skipped, not only its direct needs.
+    if: ${{ !cancelled() && needs.release.result == 'success' }}
     runs-on: ubuntu-latest
     permissions:
       actions: write
