@@ -229,6 +229,17 @@ pub fn launch(
     })
 }
 
+/// Undoes a launch that never finished: if Breakbar crashed or was killed while
+/// `%APPDATA%\Guild Wars 2` pointed at an account, a client started outside Breakbar would use that
+/// account's `Local.dat`. Call once at startup; it waits for a launch running in another Breakbar
+/// process (which holds the launch lock) instead of interfering with it. Returns the error, if any.
+pub fn recover_profile_link() -> Result<bool, ProfileLinkError> {
+    let _lock = bb_win::mutex::OwnedMutex::acquire(LAUNCH_LOCK).inspect_err(|error| {
+        eprintln!("could not take the launch lock for the profile check: {error}")
+    });
+    profile_link::restore_shared_if_stranded()
+}
+
 /// Spawns the client and waits until it owns `local_dat`. On a timeout the client is kept (it may
 /// just be updating), with a warning instead of an error.
 fn start_and_wait(

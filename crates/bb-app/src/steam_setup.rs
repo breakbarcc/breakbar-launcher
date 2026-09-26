@@ -6,16 +6,11 @@
 //! "Install" in Steam, makes Steam adopt the files and download only a few megabytes.
 
 use std::io;
-use std::os::windows::process::CommandExt;
 use std::path::{Path, PathBuf};
-use std::process::Command;
 
 use bb_core::steam::GW2_INSTALL_DIR;
 
 use crate::game;
-
-/// `CREATE_NO_WINDOW`: no console flashing up for the `mklink` helper.
-const CREATE_NO_WINDOW: u32 = 0x0800_0000;
 
 /// A directory junction from Steam's library to the existing installation.
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -82,24 +77,19 @@ fn points_to(link: &Link) -> bool {
     }
 }
 
-/// Creates the junction (no administrator rights needed). Uses the shell's `mklink /J`.
+/// Creates the junction (no administrator rights needed), directly through the file system API:
+/// going through `cmd` would interpret characters such as `&` or `%` in a path.
 pub fn create_link(link: &Link) -> io::Result<()> {
     if let Some(parent) = link.link.parent() {
         std::fs::create_dir_all(parent)?;
     }
-    let output = Command::new("cmd")
-        .arg("/C")
-        .arg("mklink")
-        .arg("/J")
-        .arg(&link.link)
-        .arg(&link.target)
-        .creation_flags(CREATE_NO_WINDOW)
-        .output()?;
-    if !output.status.success() {
+    // Fails if something already occupies the place, so nothing is ever overwritten.
+    std::fs::create_dir(&link.link)?;
+    if let Err(error) = bb_win::junction::create(&link.link, &link.target) {
+        // Only the empty folder created just above is removed.
+        let _ = std::fs::remove_dir(&link.link);
         return Err(io::Error::other(format!(
-            "mklink exited with {}: {}",
-            output.status,
-            String::from_utf8_lossy(&output.stderr).trim()
+            "could not create the link: {error}"
         )));
     }
     if points_to(link) {
@@ -124,7 +114,7 @@ mod tests {
 
     #[test]
     fn plans_follow_the_state_of_the_steam_folder() {
-        let root = temp("steam-plan");
+        let root = temp("steam & plan");
         let steam = root.join("Steam");
         let gw2 = root.join("Games").join("Guild Wars 2");
         std::fs::create_dir_all(&gw2).unwrap();

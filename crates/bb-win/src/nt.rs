@@ -182,7 +182,11 @@ pub fn close_named_mutex_in_process(pid: u32, object_name: &str) -> Result<bool>
         // `\Sessions\1\BaseNamedObjects\<name>` (or `\BaseNamedObjects\<name>` in session 0),
         // not the bare name passed to `CreateMutexW`/`OpenMutexW` — those resolve it against
         // the calling process's session automatically. Match on the last path component.
-        let matches = object_name_of(duplicate.0)?
+        // A mutex whose name can't be read (too long for the buffer, say) is simply not ours:
+        // it must not stop the search for the one that is.
+        let matches = object_name_of(duplicate.0)
+            .ok()
+            .flatten()
             .is_some_and(|full_name| last_path_component(&full_name) == object_name);
         if !matches {
             continue;
@@ -216,7 +220,7 @@ fn mutant_type_index() -> Result<u32> {
     let handle = unsafe { CreateMutexW(None, false, &name) }?;
     let handle = OwnedHandle(handle);
 
-    let mut buffer = vec![0u8; QUERY_OBJECT_BUFFER_BYTES];
+    let mut buffer = aligned_buffer(QUERY_OBJECT_BUFFER_BYTES);
     let mut used = 0u32;
     // SAFETY: `buffer` is `QUERY_OBJECT_BUFFER_BYTES` long, matching the length passed in;
     // `handle.0` is a live handle we just created.
@@ -225,7 +229,7 @@ fn mutant_type_index() -> Result<u32> {
             handle.0,
             OBJECT_TYPE_INFORMATION_CLASS,
             buffer.as_mut_ptr().cast(),
-            buffer.len() as u32,
+            (buffer.len() * size_of::<u64>()) as u32,
             &mut used,
         )
     };
@@ -241,10 +245,10 @@ fn mutant_type_index() -> Result<u32> {
 }
 
 /// Snapshots `process`'s handle table, growing the buffer until it fits.
-fn query_process_handles(process: HANDLE) -> Result<Vec<u8>> {
+fn query_process_handles(process: HANDLE) -> Result<Vec<u64>> {
     let mut size = 64 * 1024;
     loop {
-        let mut buffer = vec![0u8; size];
+        let mut buffer = aligned_buffer(size);
         let mut used = 0u32;
         // SAFETY: `buffer` is `size` bytes long, matching the length passed in; `process` is a
         // live handle with `PROCESS_QUERY_INFORMATION` access.
@@ -277,30 +281,37 @@ fn query_process_handles(process: HANDLE) -> Result<Vec<u8>> {
 ///
 /// `snapshot` must have been filled by a successful `NtQueryInformationProcess(
 /// ProcessHandleInformation)` call.
-unsafe fn handle_entries(snapshot: &[u8]) -> &[ProcessHandleTableEntryInfo] {
+unsafe fn handle_entries(snapshot: &[u64]) -> &[ProcessHandleTableEntryInfo] {
+    // `snapshot` is a `u64` buffer, so it is aligned for both structs (their alignment is 8).
+    let bytes = std::mem::size_of_val(snapshot);
+    let base = snapshot.as_ptr().cast::<u8>();
     let header_len = size_of::<ProcessHandleSnapshotInformation>();
-    if snapshot.len() < header_len {
+    if bytes < header_len {
         return &[];
     }
-    // SAFETY: checked above that `snapshot` holds at least a full header.
-    let header = unsafe { &*snapshot.as_ptr().cast::<ProcessHandleSnapshotInformation>() };
+    // SAFETY: checked above that `snapshot` holds at least a full header, and it is aligned.
+    let header = unsafe { &*base.cast::<ProcessHandleSnapshotInformation>() };
 
     let entry_len = size_of::<ProcessHandleTableEntryInfo>();
-    let available_entries = (snapshot.len() - header_len) / entry_len;
+    let available_entries = (bytes - header_len) / entry_len;
     // Defensive: trust the byte length we actually allocated over the kernel-reported count.
     let count = header.number_of_handles.min(available_entries);
 
     // SAFETY: `count` was just clamped to the number of whole entries that fit within
-    // `snapshot`, and the entries begin immediately after the header per the NT struct layout.
+    // `snapshot`; the entries begin immediately after the 16-byte header per the NT struct
+    // layout, which keeps them 8-byte aligned.
     unsafe {
         std::slice::from_raw_parts(
-            snapshot
-                .as_ptr()
-                .add(header_len)
-                .cast::<ProcessHandleTableEntryInfo>(),
+            base.add(header_len).cast::<ProcessHandleTableEntryInfo>(),
             count,
         )
     }
+}
+
+/// A zeroed buffer of at least `bytes` bytes that is aligned for the NT structs read out of it
+/// (a `Vec<u8>` is only guaranteed to be 1-byte aligned).
+fn aligned_buffer(bytes: usize) -> Vec<u64> {
+    vec![0u64; bytes.div_ceil(size_of::<u64>())]
 }
 
 /// Duplicates `handle` (owned by `source_process`) into Breakbar's own process so it can be
@@ -328,7 +339,7 @@ fn duplicate_for_local_query(source_process: HANDLE, handle: HANDLE) -> Result<H
 
 /// Reads the name of a locally-owned object handle, if it has one.
 fn object_name_of(handle: HANDLE) -> Result<Option<String>> {
-    let mut buffer = vec![0u8; QUERY_OBJECT_BUFFER_BYTES];
+    let mut buffer = aligned_buffer(QUERY_OBJECT_BUFFER_BYTES);
     let mut used = 0u32;
     // SAFETY: `buffer` is `QUERY_OBJECT_BUFFER_BYTES` long, matching the length passed in;
     // `handle` is a handle this process owns (a local duplicate), so querying its name cannot
@@ -338,7 +349,7 @@ fn object_name_of(handle: HANDLE) -> Result<Option<String>> {
             handle,
             OBJECT_NAME_INFORMATION_CLASS,
             buffer.as_mut_ptr().cast(),
-            buffer.len() as u32,
+            (buffer.len() * size_of::<u64>()) as u32,
             &mut used,
         )
     };

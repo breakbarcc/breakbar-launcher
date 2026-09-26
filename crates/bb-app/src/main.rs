@@ -27,6 +27,13 @@ fn main() -> ExitCode {
         }
     };
 
+    if matches!(command, Command::Gui | Command::Launch(_)) {
+        // Best-effort: a failure here shows up again when a launch needs the folder.
+        if let Err(error) = launcher::recover_profile_link() {
+            eprintln!("could not check Guild Wars 2's data folder: {error}");
+        }
+    }
+
     match command {
         Command::Help => {
             bb_win::console::attach_parent_console();

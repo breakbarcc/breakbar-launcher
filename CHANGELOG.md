@@ -6,6 +6,19 @@ All notable changes to Breakbar Launcher. The format follows
 
 Everything before 0.2.0 is in the git history and in [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
 
+## [0.8.1] - 2026-09-26
+
+### Fixed
+
+- Setting up Steam accounts no longer runs `cmd` to create the link to the installation, so a game
+  folder with `&` or `%` in its path can't be misread as a command.
+- If Breakbar crashed or was killed while starting an account, `%APPDATA%\Guild Wars 2` stayed
+  pointed at that account, and a game started outside Breakbar would have used its login. Breakbar
+  now points it back at the shared profile the next time it starts.
+- Closing Guild Wars 2's single-instance mutex no longer gives up when one of the game's other
+  mutexes has a name that can't be read; it keeps looking for the right one.
+- Internal: the buffers read from Windows' handle tables are properly aligned.
+
 ## [0.8.0] - 2026-09-25
 
 ### Added

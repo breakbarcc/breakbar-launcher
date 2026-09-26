@@ -63,6 +63,24 @@ pub fn point_to_shared() -> Result<(), ProfileLinkError> {
     point_to(&shared_gw2_dir()?)
 }
 
+/// Points `%APPDATA%\Guild Wars 2` back at the shared profile if it is a junction that points
+/// somewhere else, which is what a launch that never finished (a crash, the process killed) leaves
+/// behind. Returns whether it had to be repointed. Does nothing if the folder is no junction, so it
+/// never migrates an installation on its own.
+///
+/// Call it only while no launch is in progress (see `launcher::recover_profile_link`).
+pub fn restore_shared_if_stranded() -> Result<bool, ProfileLinkError> {
+    if !is_reparse_point(&real_gw2_dir()?)? {
+        return Ok(false);
+    }
+    let shared = shared_gw2_dir()?;
+    if already_linked_to(&real_gw2_dir()?, &shared) {
+        return Ok(false);
+    }
+    point_to(&shared)?;
+    Ok(true)
+}
+
 fn point_to(target: &Path) -> Result<(), ProfileLinkError> {
     let real = real_gw2_dir()?;
     ensure_linked(&real)?;
@@ -231,6 +249,31 @@ mod tests {
 
             assert!(already_linked_to(&real(root), &profile(root, "shared")));
             assert!(account.is_dir(), "the account profile must be left alone");
+        });
+    }
+
+    #[test]
+    fn a_launch_that_never_finished_is_undone() {
+        with_isolated_appdata("stranded", |root| {
+            fs::create_dir_all(real(root)).unwrap();
+            point_to_shared().unwrap();
+            assert!(!restore_shared_if_stranded().unwrap());
+
+            // Breakbar died between pointing at the account and pointing back.
+            point_to_account(AccountId(1)).unwrap();
+            assert!(already_linked_to(&real(root), &profile(root, "1")));
+
+            assert!(restore_shared_if_stranded().unwrap());
+            assert!(already_linked_to(&real(root), &profile(root, "shared")));
+        });
+    }
+
+    #[test]
+    fn an_ordinary_folder_is_left_alone_when_recovering() {
+        with_isolated_appdata("stranded-plain", |root| {
+            fs::create_dir_all(real(root)).unwrap();
+            assert!(!restore_shared_if_stranded().unwrap());
+            assert!(!is_reparse_point(&real(root)).unwrap());
         });
     }
 
