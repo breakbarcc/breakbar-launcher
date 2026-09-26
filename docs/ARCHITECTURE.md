@@ -327,7 +327,7 @@ crates/
 Slint runs with the winit backend and the **software renderer** (no GPU context → lowest RAM,
 smallest binary). Switch to femtovg/skia only if measurements show a need.
 
-Config: `%APPDATA%Breakbarconfig.toml`, written atomically (temp file, flushed, renamed) by a background thread (`ConfigWriter` in bb-store) so the window never waits for the disk. Deleting an account renames its profile folder at once and removes it in the background; at start, leftovers of that and entries older than 14 days in the accounts' `Temp` folders are removed.
+Config: `%APPDATA%\Breakbar\config.toml`, written atomically (temp file, flushed, renamed) by a background thread (`ConfigWriter` in bb-store) so the window never waits for the disk. Deleting an account renames its profile folder at once and removes it in the background; at start, leftovers of that and entries older than 14 days in the accounts' `Temp` folders are removed.
 
 ## Roadmap
 
