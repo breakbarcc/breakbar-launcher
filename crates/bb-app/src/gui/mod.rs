@@ -11,7 +11,7 @@ use std::time::Duration;
 use bb_core::{Account, AccountId, BLISH_HUD, CompanionApp, CompanionId, Provider, Scope, Trigger};
 use bb_store::Config;
 use raw_window_handle::{HasWindowHandle, RawWindowHandle};
-use slint::{ComponentHandle, Model, SharedString};
+use slint::{ComponentHandle, Model, SharedString, VecModel};
 use ui::{
     AccountRow, AccountState, AfterStart, CompanionToggle, EditorData, FpsLimit, LanguageChoice,
     LaunchFailure, LoginState, MainWindow, Messages, PathProblem, SteamSetupStep, Theme,
@@ -42,8 +42,8 @@ use convert::{
 };
 use launch::{launch_all, launch_failure, toggle_account};
 use list::{
-    account_row, account_rows, apply_account, apply_frame, clear_selection, is_startable,
-    push_toast, refresh, row, set_rows, update_row,
+    account_row, account_rows, apply_account, apply_frame, clear_selection, insert_row,
+    is_startable, move_row, push_toast, refresh, remove_row, row, set_rows, update_row,
 };
 use login::{
     idle_state, login_file_stamp, offer_login_setup, report_login_setup, sync_login_states,

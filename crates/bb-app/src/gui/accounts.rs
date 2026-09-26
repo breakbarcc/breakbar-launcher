@@ -1,10 +1,10 @@
 //! Adding, editing, moving and deleting accounts, and what hangs off an account (shortcut, profile folder).
 
 use super::{
-    Account, AccountId, AccountRow, AccountState, App, CompanionId, CompanionToggle,
-    ComponentHandle, Config, Draft, EditorData, LoginState, MainWindow, Messages, Model, Provider,
-    Rc, RefCell, Scope, SharedString, ToastKind, Trigger, account_row, apply_account, idle_state,
-    is_active, offer_login_setup, push_toast, refresh, row, rows, set_rows, ui, update_row,
+    Account, AccountId, AccountState, App, CompanionId, CompanionToggle, ComponentHandle, Config,
+    Draft, EditorData, LoginState, MainWindow, Messages, Model, Provider, Rc, RefCell, Scope,
+    SharedString, ToastKind, Trigger, account_row, apply_account, idle_state, insert_row,
+    is_active, move_row, offer_login_setup, push_toast, refresh, remove_row, row, ui, update_row,
 };
 
 /// Adds `account` to the config and the list, at `index` (the end if `None`).
@@ -23,9 +23,7 @@ pub(super) fn insert_account(
     app_ref.save(window);
     drop(app_ref);
 
-    let mut rows = rows(window);
-    rows.insert(index.min(rows.len()), row);
-    set_rows(window, rows);
+    insert_row(window, index, row);
     refresh(window);
 }
 
@@ -220,12 +218,7 @@ pub(super) fn move_account(window: &MainWindow, app: &RefCell<App>, id: AccountI
     app_ref.save(window);
     drop(app_ref);
 
-    let mut rows = rows(window);
-    if let Some(from) = rows.iter().position(|row| row.id == id.0 as i32) {
-        let row = rows.remove(from);
-        rows.insert(to.min(rows.len()), row);
-        set_rows(window, rows);
-    }
+    move_row(window, id, to);
 }
 
 /// Deletes the account and, for good, its profile folder with the saved login. The UI has asked
@@ -261,11 +254,7 @@ pub(super) fn delete_account(window: &MainWindow, app: &RefCell<App>, id: Accoun
     }
     drop(app_ref);
 
-    let rows: Vec<AccountRow> = rows(window)
-        .into_iter()
-        .filter(|row| row.id != id.0 as i32)
-        .collect();
-    set_rows(window, rows);
+    remove_row(window, id);
     refresh(window);
 
     match bb_store::delete_profile(id) {
