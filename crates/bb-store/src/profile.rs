@@ -6,7 +6,9 @@
 //! account's profile only while that account's client starts (see `profile_link` in the app).
 //! The `shared` profile is what it points at the rest of the time.
 
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
+use std::sync::atomic::{AtomicU32, Ordering};
+use std::time::{Duration, SystemTime};
 
 use bb_core::AccountId;
 
@@ -53,20 +55,126 @@ pub fn ensure_profile_dir(account_id: AccountId) -> Result<PathBuf, StoreError> 
     Ok(dir)
 }
 
+/// Part of the name of a profile folder that is being deleted (`<id>.deleting-<n>`). Account ids
+/// are numbers, so it never collides with a live profile.
+const TRASH_MARKER: &str = ".deleting-";
+
 /// Permanently deletes the account's profile folder, including its `Local.dat` (the remembered
-/// login). A missing folder is not an error. Only ever touches `profiles\<id>`: the shared
-/// profile has a non-numeric name and can't be addressed through an [`AccountId`].
+/// login), and returns once it is gone. A missing folder is not an error. Only ever touches
+/// `profiles\<id>`: the shared profile has a non-numeric name and can't be addressed through an
+/// [`AccountId`]. The window uses [`trash_profile`] instead, so it doesn't wait for the disk.
 ///
 /// # Errors
 ///
 /// Returns [`StoreError`] if `%LOCALAPPDATA%` is not set or the folder can't be removed.
 pub fn delete_profile(account_id: AccountId) -> Result<(), StoreError> {
+    match trash_profile(account_id)? {
+        Some(trash) => remove_folder(&trash),
+        None => Ok(()),
+    }
+}
+
+/// Takes the account's profile folder out of the way at once, for the caller to remove with
+/// [`remove_folder`] in the background: the folder is renamed, which takes no time however much
+/// it holds (the game launcher's cache in `Temp` can be large). Returns the folder to remove, or
+/// `None` if the account had no profile. If the folder can't be renamed (something inside is
+/// still open), the folder itself is returned.
+///
+/// A folder that is never removed (Breakbar ended in between) is picked up by
+/// [`sweep_leftovers`] at the next start.
+///
+/// # Errors
+///
+/// Returns [`StoreError`] if `%LOCALAPPDATA%` is not set.
+pub fn trash_profile(account_id: AccountId) -> Result<Option<PathBuf>, StoreError> {
     let dir = profile_dir(account_id)?;
-    match std::fs::remove_dir_all(&dir) {
+    Ok(trash_in(&dir))
+}
+
+/// Removes a folder returned by [`trash_profile`]. A missing folder is not an error.
+///
+/// # Errors
+///
+/// Returns [`StoreError::Io`] if the folder can't be removed.
+pub fn remove_folder(dir: &Path) -> Result<(), StoreError> {
+    match std::fs::remove_dir_all(dir) {
         Ok(()) => Ok(()),
         Err(error) if error.kind() == std::io::ErrorKind::NotFound => Ok(()),
-        Err(source) => Err(StoreError::Io { path: dir, source }),
+        Err(source) => Err(StoreError::Io {
+            path: dir.to_owned(),
+            source,
+        }),
     }
+}
+
+fn trash_in(dir: &Path) -> Option<PathBuf> {
+    static COUNTER: AtomicU32 = AtomicU32::new(0);
+    if !dir.exists() {
+        return None;
+    }
+    let name = dir.file_name()?.to_string_lossy().into_owned();
+    let trash = dir.with_file_name(format!(
+        "{name}{TRASH_MARKER}{}-{}",
+        std::process::id(),
+        COUNTER.fetch_add(1, Ordering::Relaxed)
+    ));
+    match std::fs::rename(dir, &trash) {
+        Ok(()) => Some(trash),
+        Err(_) => Some(dir.to_owned()),
+    }
+}
+
+/// Removes the profile folders left behind by a deletion that didn't finish. Returns how many
+/// were removed. Best-effort: what can't be removed now stays for the next start.
+#[must_use]
+pub fn sweep_leftovers() -> usize {
+    profiles_root().map_or(0, |root| sweep_in(&root))
+}
+
+fn sweep_in(root: &Path) -> usize {
+    let Ok(entries) = std::fs::read_dir(root) else {
+        return 0;
+    };
+    entries
+        .filter_map(Result::ok)
+        .filter(|entry| entry.file_name().to_string_lossy().contains(TRASH_MARKER))
+        .filter(|entry| remove_folder(&entry.path()).is_ok())
+        .count()
+}
+
+/// Removes what has been in the account's `Temp` folder (the temp folder of its client) for longer
+/// than `older_than`, and returns how many entries that were. The folder only ever grows
+/// otherwise. Best-effort: an entry that is still in use can't be removed and stays. Call it only
+/// while no client of the account runs.
+#[must_use]
+pub fn prune_temp(account_id: AccountId, older_than: Duration) -> usize {
+    profile_dir(account_id).map_or(0, |dir| prune_in(&dir.join("Temp"), older_than))
+}
+
+fn prune_in(temp: &Path, older_than: Duration) -> usize {
+    let Some(cutoff) = SystemTime::now().checked_sub(older_than) else {
+        return 0;
+    };
+    let Ok(entries) = std::fs::read_dir(temp) else {
+        return 0;
+    };
+    entries
+        .filter_map(Result::ok)
+        .filter(|entry| {
+            entry
+                .metadata()
+                .and_then(|metadata| metadata.modified())
+                .is_ok_and(|modified| modified < cutoff)
+        })
+        .filter(|entry| {
+            let path = entry.path();
+            if path.is_dir() {
+                std::fs::remove_dir_all(path).is_ok()
+            } else {
+                std::fs::remove_file(path).is_ok()
+            }
+        })
+        .count()
 }
 
 /// Path to the account's `Local.dat`, inside its profile, once GW2 has created it.
@@ -144,6 +252,88 @@ mod tests {
         assert!(!dir.exists());
         // Deleting again is fine.
         delete_profile(id).unwrap();
+    }
+
+    fn scratch(name: &str) -> PathBuf {
+        let dir =
+            std::env::temp_dir().join(format!("breakbar-profiles-{}-{name}", std::process::id()));
+        let _ = std::fs::remove_dir_all(&dir);
+        std::fs::create_dir_all(&dir).unwrap();
+        dir
+    }
+
+    #[test]
+    fn a_trashed_folder_is_out_of_the_way_at_once() {
+        let root = scratch("trash");
+        let profile = root.join("7");
+        std::fs::create_dir_all(profile.join("Temp")).unwrap();
+        std::fs::write(profile.join("Temp").join("cache"), b"x").unwrap();
+
+        let trash = trash_in(&profile).unwrap();
+
+        assert!(
+            !profile.exists(),
+            "the profile is gone under its name right away"
+        );
+        assert!(trash.join("Temp").join("cache").is_file());
+        assert!(
+            trash
+                .file_name()
+                .unwrap()
+                .to_string_lossy()
+                .starts_with("7.deleting-")
+        );
+        remove_folder(&trash).unwrap();
+        assert!(!trash.exists());
+        // Nothing to trash, and removing what is gone, are both fine.
+        assert_eq!(trash_in(&profile), None);
+        remove_folder(&trash).unwrap();
+        std::fs::remove_dir_all(&root).unwrap();
+    }
+
+    #[test]
+    fn leftovers_of_a_deletion_are_swept_but_profiles_are_not() {
+        let root = scratch("sweep");
+        for name in ["1", "shared", "2.deleting-99-0", "3.deleting-99-1"] {
+            std::fs::create_dir_all(root.join(name).join("Guild Wars 2")).unwrap();
+        }
+
+        assert_eq!(sweep_in(&root), 2);
+
+        assert!(root.join("1").is_dir());
+        assert!(root.join("shared").is_dir());
+        assert!(!root.join("2.deleting-99-0").exists());
+        assert!(!root.join("3.deleting-99-1").exists());
+        std::fs::remove_dir_all(&root).unwrap();
+    }
+
+    #[test]
+    fn only_old_entries_of_the_temp_folder_are_pruned() {
+        let temp = scratch("prune");
+        let old = SystemTime::now() - Duration::from_hours(30 * 24);
+        for name in ["old-file", "new-file"] {
+            std::fs::write(temp.join(name), b"x").unwrap();
+        }
+        std::fs::File::options()
+            .write(true)
+            .open(temp.join("old-file"))
+            .unwrap()
+            .set_modified(old)
+            .unwrap();
+        std::fs::create_dir_all(temp.join("old-dir")).unwrap();
+        std::fs::write(temp.join("old-dir").join("inner"), b"x").unwrap();
+        // A folder's own time changes when something is added to it, so age the folder last.
+        std::fs::File::open(temp.join("old-dir"))
+            .and_then(|dir| dir.set_modified(old))
+            .ok();
+
+        let removed = prune_in(&temp, Duration::from_hours(14 * 24));
+
+        assert!(removed >= 1);
+        assert!(!temp.join("old-file").exists());
+        assert!(temp.join("new-file").is_file());
+        assert_eq!(prune_in(&temp.join("missing"), Duration::ZERO), 0);
+        std::fs::remove_dir_all(&temp).unwrap();
     }
 
     #[test]

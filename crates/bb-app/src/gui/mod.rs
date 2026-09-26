@@ -284,6 +284,7 @@ pub fn run() -> Result<(), slint::PlatformError> {
     let (mut app, load_error) = App::load();
     let window = MainWindow::new()?;
     app.start_writer(&window);
+    tidy_profiles(&app.config);
     apply_language(app.config.language);
     check_startup(&window, &mut app, load_error);
     show_initial_state(&window, &app);
@@ -321,6 +322,30 @@ pub fn run() -> Result<(), slint::PlatformError> {
     app.borrow_mut().writer = None;
     result?;
     window.hide()
+}
+
+/// Removes what deleted accounts and old client runs left in the profile folders, on a thread of
+/// its own so that it never holds up the window. An account whose client runs (say one started
+/// from a desktop shortcut) is skipped.
+fn tidy_profiles(config: &Config) {
+    /// Entries of a client's temp folder untouched for this long are removed.
+    const TEMP_MAX_AGE: Duration = Duration::from_hours(14 * 24);
+    let ids: Vec<AccountId> = config.accounts.iter().map(|account| account.id).collect();
+    let _ = thread::Builder::new()
+        .name("profile-tidy".to_owned())
+        .spawn(move || {
+            let mut removed = bb_store::sweep_leftovers();
+            for id in ids {
+                if !launcher::account_running(id) {
+                    removed += bb_store::prune_temp(id, TEMP_MAX_AGE);
+                }
+            }
+            if removed > 0 {
+                crate::log::write(format!(
+                    "removed {removed} old entries from the profile folders"
+                ));
+            }
+        });
 }
 
 /// Tells the user what is wrong with the config or the game path, and picks the first page: the

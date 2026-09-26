@@ -14,7 +14,8 @@ use serde::{Deserialize, Serialize};
 
 pub use profile::{
     delete_profile, ensure_profile_dir, is_set_up, local_dat_path, mark_build_verified,
-    profile_dir, shared_profile_dir, verified_build,
+    profile_dir, prune_temp, remove_folder, shared_profile_dir, sweep_leftovers, trash_profile,
+    verified_build,
 };
 pub use writer::ConfigWriter;
 

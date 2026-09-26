@@ -257,13 +257,20 @@ pub(super) fn delete_account(window: &MainWindow, app: &RefCell<App>, id: Accoun
     remove_row(window, id);
     refresh(window);
 
-    match bb_store::delete_profile(id) {
-        Ok(()) => push_toast(
-            window,
-            ToastKind::Success,
-            messages.invoke_deleted_title(row.name),
-            SharedString::new(),
-        ),
+    // The folder is renamed at once and removed in the background: the game launcher's cache in
+    // it can be large, and the window must not wait for the disk.
+    match bb_store::trash_profile(id) {
+        Ok(trash) => {
+            if let Some(trash) = trash {
+                remove_in_background(trash);
+            }
+            push_toast(
+                window,
+                ToastKind::Success,
+                messages.invoke_deleted_title(row.name),
+                SharedString::new(),
+            );
+        }
         Err(error) => push_toast(
             window,
             ToastKind::Error,
@@ -444,4 +451,16 @@ pub(super) fn wire(window: &MainWindow, app: &Rc<RefCell<App>>) {
             }
         }
     });
+}
+
+/// Removes a deleted account's profile folder on a thread of its own. If that doesn't finish (the
+/// program ends first, or something in it is still open), the next start removes what is left.
+fn remove_in_background(folder: std::path::PathBuf) {
+    let _ = std::thread::Builder::new()
+        .name("profile-removal".to_owned())
+        .spawn(move || {
+            if let Err(error) = bb_store::remove_folder(&folder) {
+                crate::log::write(format!("could not remove a deleted profile: {error}"));
+            }
+        });
 }

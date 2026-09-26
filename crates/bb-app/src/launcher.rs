@@ -367,6 +367,11 @@ fn restarted_client(
     }
 }
 
+/// Whether a client of `account_id` is running: it holds the account's `Local.dat` open.
+pub fn account_running(account_id: bb_core::AccountId) -> bool {
+    bb_store::local_dat_path(account_id).is_ok_and(|path| is_locked(&path))
+}
+
 /// Whether another process holds `path` open without allowing others to read it.
 fn is_locked(path: &Path) -> bool {
     match OpenOptions::new().read(true).share_mode(0).open(path) {

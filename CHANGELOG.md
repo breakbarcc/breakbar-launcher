@@ -6,6 +6,25 @@ All notable changes to Breakbar Launcher. The format follows
 
 Everything before 0.2.0 is in the git history and in [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
 
+## [0.9.1] - 2026-09-26
+
+### Changed
+
+- The window no longer waits for the disk: settings are written by a background thread (changes
+  that come in meanwhile are merged, and a failed write still shows a message), and deleting an
+  account removes its profile folder in the background. A deleted account's folder that could not be
+  removed before Breakbar ended is removed at the next start.
+- A row of the account list is updated on its own instead of rebuilding the whole list on every
+  change, which avoids flicker and keeps hover states.
+- The instance switcher stops checking the account list and the foreground window while it is
+  hidden. An idle Breakbar in the tray now wakes up only for the login check every 5 seconds.
+
+### Fixed
+
+- The temp folders of the accounts (`%LOCALAPPDATA%\Breakbar\profiles\<id>\Temp`), which only grew
+  before, are cleaned at start: entries that were not touched for 14 days are removed (accounts that
+  are running are skipped).
+
 ## [0.9.0] - 2026-09-26
 
 ### Added
