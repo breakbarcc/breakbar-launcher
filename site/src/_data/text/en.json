@@ -1,24 +1,34 @@
 {
-  "paths": { "home": "/", "imprint": "/imprint/", "privacy": "/privacy/" },
-
+  "paths": {
+    "home": "/",
+    "imprint": "/imprint/",
+    "privacy": "/privacy/"
+  },
   "pages": {
     "home": {
       "title": "Breakbar Launcher — multi-launcher for Guild Wars 2",
       "description": "Breakbar Launcher starts several Guild Wars 2 clients at once, each with its own account. Free, open source, Windows.",
       "ogDescription": "Starts several Guild Wars 2 clients at once, each with its own account. Free, open source, Windows."
     },
-    "imprint": { "title": "Imprint — Breakbar Launcher", "description": "" },
-    "privacy": { "title": "Privacy — Breakbar Launcher", "description": "" },
-    "notFound": { "title": "Page not found — Breakbar Launcher", "description": "" }
+    "imprint": {
+      "title": "Imprint — Breakbar Launcher",
+      "description": ""
+    },
+    "privacy": {
+      "title": "Privacy — Breakbar Launcher",
+      "description": ""
+    },
+    "notFound": {
+      "title": "Page not found — Breakbar Launcher",
+      "description": ""
+    }
   },
-
   "common": {
     "brand": "Breakbar Launcher",
     "by": "by breakbar.cc",
     "downloadForWindows": "Download for Windows",
     "reportProblem": "Report a problem"
   },
-
   "header": {
     "features": "Features",
     "how": "How it works",
@@ -33,7 +43,6 @@
     "toggleTheme": "Toggle theme",
     "language": "Deutsch"
   },
-
   "footer": {
     "nav": "Footer",
     "changelog": "Changelog",
@@ -43,7 +52,6 @@
     "disclaimer": "Not an official Guild Wars 2 product. A fan project by breakbar.cc. Guild Wars 2 is a trademark of ArenaNet, LLC. Breakbar Launcher is not affiliated with ArenaNet or NCSOFT.",
     "slintAlt": "Made with Slint"
   },
-
   "hero": {
     "status": "early development",
     "title": "All your Guild Wars 2 accounts, side by side.",
@@ -57,7 +65,6 @@
     "altDark": "Breakbar Launcher main window, dark theme: a toolbar with Start selection and a running counter above a list of seven accounts, one selected.",
     "altLight": "Breakbar Launcher main window, light theme, showing the same account list."
   },
-
   "features": {
     "label": "// FEATURES",
     "title": "Built for players who run more than one account.",
@@ -94,56 +101,110 @@
       "editorAlt": "Account editor for the account Main: name and platform, the login file status with a “Set up login” button, the Blish HUD companion app switched on, and additional launch arguments."
     }
   },
-
   "all": {
     "label": "// ALL FEATURES",
     "title": "Everything in the current version.",
     "core": {
       "label": "core",
       "items": [
-        { "name": "Multi-launch", "text": "Any number of clients, all or a selection." },
-        { "name": "Separate logins", "text": "One login file per account. No email or password stored." },
-        { "name": "Guided login setup", "text": "Tells you when the login was saved." },
-        { "name": "ArenaNet and Steam accounts", "text": "Side by side, one Steam account at a time." },
-        { "name": "Game update detection", "text": "Refreshes the logins that need it after a patch." }
+        {
+          "name": "Multi-launch",
+          "text": "Any number of clients, all or a selection."
+        },
+        {
+          "name": "Separate logins",
+          "text": "One login file per account. No email or password stored."
+        },
+        {
+          "name": "Guided login setup",
+          "text": "Tells you when the login was saved."
+        },
+        {
+          "name": "ArenaNet and Steam accounts",
+          "text": "Side by side, one Steam account at a time."
+        },
+        {
+          "name": "Game update detection",
+          "text": "Refreshes the logins that need it after a patch."
+        }
       ]
     },
     "daily": {
       "label": "everyday use",
       "listName": "Account list",
       "listText": "Multi-select, drag to reorder, duplicate, rename, open the profile folder.",
-      "keys": ["F2", "Ctrl+D", "Alt+↑/↓", "Space", "Del"],
+      "keys": [
+        "F2",
+        "Ctrl+D",
+        "Alt+↑/↓",
+        "Space",
+        "Del"
+      ],
       "shortcutsName": "Shortcuts and command line",
       "command": "breakbar-launcher --launch \"Main,Alt1\"",
       "items": [
-        { "name": "Companion apps", "text": "Blish HUD, per client or once for all." },
-        { "name": "Instance switcher", "text": "Always-on-top bar, one chip per account." },
-        { "name": "Runs in the tray", "text": "Optional start with Windows; stay open, minimize or close after launch." },
-        { "name": "Loading-screen FPS limit", "text": "60, 30 or unlimited, loading screens only." }
+        {
+          "name": "Companion apps",
+          "text": "Blish HUD, per client or once for all."
+        },
+        {
+          "name": "Instance switcher",
+          "text": "Always-on-top bar, one chip per account."
+        },
+        {
+          "name": "Runs in the tray",
+          "text": "Optional start with Windows; stay open, minimize or close after launch."
+        },
+        {
+          "name": "Loading-screen FPS limit",
+          "text": "60, 30 or unlimited, loading screens only."
+        }
       ]
     },
     "comfort": {
       "label": "comfort",
       "items": [
-        { "name": "Dark and light theme", "text": "Or follow Windows." },
-        { "name": "English and German", "text": "" },
-        { "name": "Native Rust, lightweight", "text": "Near-zero CPU while idle." },
-        { "name": "Single portable .exe", "text": "No installer." },
-        { "name": "Open source", "text": "MIT license." }
+        {
+          "name": "Dark and light theme",
+          "text": "Or follow Windows."
+        },
+        {
+          "name": "English and German",
+          "text": ""
+        },
+        {
+          "name": "Native Rust, lightweight",
+          "text": "Near-zero CPU while idle."
+        },
+        {
+          "name": "Single portable .exe",
+          "text": "No installer."
+        },
+        {
+          "name": "Open source",
+          "text": "MIT license."
+        }
       ]
     }
   },
-
   "how": {
     "label": "// HOW IT WORKS",
     "title": "Three steps, once.",
     "steps": [
-      { "title": "Add your accounts.", "text": "Pick your Guild Wars 2 folder once, then add an account by name." },
-      { "title": "Log in once each.", "text": "The normal game login opens. Tick “Remember email/password” and close the client. Breakbar saves that login for the account." },
-      { "title": "Press Launch all.", "text": "Each account starts with its own login, side by side." }
+      {
+        "title": "Add your accounts.",
+        "text": "Pick your Guild Wars 2 folder once, then add an account by name."
+      },
+      {
+        "title": "Log in once each.",
+        "text": "The normal game login opens. Tick “Remember email/password” and close the client. Breakbar saves that login for the account."
+      },
+      {
+        "title": "Press Launch all.",
+        "text": "Each account starts with its own login, side by side."
+      }
     ]
   },
-
   "steam": {
     "label": "// STEAM ACCOUNTS",
     "title": "One Steam account, any number of ArenaNet accounts.",
@@ -157,7 +218,6 @@
       "Steam adopts the files, no re-download"
     ]
   },
-
   "faq": {
     "label": "// FAQ",
     "title": "Questions.",
@@ -166,9 +226,18 @@
         "question": "Is it allowed? Is it safe?",
         "answer": "Breakbar starts the game's own program with the game's own options and keeps a separate login file for each account. To allow several clients, it closes the game's single-instance lock in the running client. It does not change game files, inject code or read game memory, and the source is public. It is not an official ArenaNet product and not endorsed by ArenaNet; you use it at your own risk."
       },
-      { "question": "Does it store my password?", "answer": "No. Breakbar never stores an email or a password." },
-      { "question": "Does it cost anything?", "answer": "No. It is free and open source under the MIT license." },
-      { "question": "Which Windows versions?", "answer": "Windows 10 and 11, 64-bit." },
+      {
+        "question": "Does it store my password?",
+        "answer": "No. Breakbar Launcher never stores an email or a password."
+      },
+      {
+        "question": "Does it cost anything?",
+        "answer": "No. It is free and open source under the MIT license."
+      },
+      {
+        "question": "Which Windows versions?",
+        "answer": "Windows 10 and 11, 64-bit."
+      },
       {
         "question": "Why does Windows show a warning on first start?",
         "answer": "The first start may show a Windows SmartScreen notice because the program is new. Releases will be code-signed."
@@ -181,9 +250,21 @@
         "question": "Can I run it from any folder?",
         "answer": "Yes. Put it in your own folder, for example in your user folder, not in <code class=\"mono\">C:\\Program Files</code>, so it can update itself later without administrator rights."
       }
-    ]
+    ],
+    "policy": {
+      "intro": "ArenaNet allows playing several accounts at the same time under conditions. In short, from their policy on dual and multi-boxing:",
+      "points": [
+        "You may run several accounts, but you must play and control each one yourself, attended and independent of the others.",
+        "One keystroke or mouse click may act on one account only. No macros or input broadcasting that trigger actions on more than one account.",
+        "No bots or third-party tools that play characters for you or play unattended.",
+        "Multi-boxing is allowed in PvE only, not in PvP, WvW or other competitive activities.",
+        "Breaking these rules can lead to the suspension or termination of the accounts involved."
+      ],
+      "note": "Breakbar Launcher only starts and organizes the clients. It sends no input to them and plays nothing for you, so keeping to these rules is up to you.",
+      "link": "Read ArenaNet’s full policy: Dual or Multi-Boxing",
+      "url": "https://help.guildwars2.com/hc/en-us/articles/360013658134-Policy-Dual-or-Multi-Boxing"
+    }
   },
-
   "download": {
     "label": "// DOWNLOAD",
     "title": "Get Breakbar Launcher.",
@@ -207,13 +288,11 @@
       "changesValue": "Changelog"
     }
   },
-
   "legal": {
     "imprint": "Imprint",
     "privacy": "Privacy",
     "todo": "TODO"
   },
-
   "notFound": {
     "title": "This page doesn't exist.",
     "text": "The page you were looking for isn't here — maybe it moved, or the link was wrong.",

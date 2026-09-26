@@ -225,6 +225,16 @@ permalink: "{{ text[locale.code].paths.home }}index.html"
       <details{% if loop.first %} open{% endif %}>
         <summary>{{ item.question }}</summary>
         <p>{{ item.answer | safe }}</p>
+        {%- if loop.first %}
+        <p>{{ t.faq.policy.intro }}</p>
+        <ul>
+          {%- for point in t.faq.policy.points %}
+          <li>{{ point }}</li>
+          {%- endfor %}
+        </ul>
+        <p>{{ t.faq.policy.note }}</p>
+        <p><a href="{{ t.faq.policy.url }}" rel="noopener">{{ t.faq.policy.link }}</a></p>
+        {%- endif %}
       </details>
       {%- endfor %}
     </div>

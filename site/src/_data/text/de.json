@@ -1,24 +1,34 @@
 {
-  "paths": { "home": "/de/", "imprint": "/de/impressum/", "privacy": "/de/datenschutz/" },
-
+  "paths": {
+    "home": "/de/",
+    "imprint": "/de/impressum/",
+    "privacy": "/de/datenschutz/"
+  },
   "pages": {
     "home": {
       "title": "Breakbar Launcher — Multi-Launcher für Guild Wars 2",
       "description": "Breakbar Launcher startet mehrere Guild-Wars-2-Clients gleichzeitig, jeden mit seinem eigenen Account. Kostenlos, Open Source, für Windows.",
       "ogDescription": "Startet mehrere Guild-Wars-2-Clients gleichzeitig, jeden mit seinem eigenen Account. Kostenlos, Open Source, für Windows."
     },
-    "imprint": { "title": "Impressum — Breakbar Launcher", "description": "" },
-    "privacy": { "title": "Datenschutz — Breakbar Launcher", "description": "" },
-    "notFound": { "title": "Seite nicht gefunden — Breakbar Launcher", "description": "" }
+    "imprint": {
+      "title": "Impressum — Breakbar Launcher",
+      "description": ""
+    },
+    "privacy": {
+      "title": "Datenschutz — Breakbar Launcher",
+      "description": ""
+    },
+    "notFound": {
+      "title": "Seite nicht gefunden — Breakbar Launcher",
+      "description": ""
+    }
   },
-
   "common": {
     "brand": "Breakbar Launcher",
     "by": "von breakbar.cc",
     "downloadForWindows": "Für Windows herunterladen",
     "reportProblem": "Problem melden"
   },
-
   "header": {
     "features": "Funktionen",
     "how": "So funktioniert’s",
@@ -33,7 +43,6 @@
     "toggleTheme": "Design wechseln",
     "language": "English"
   },
-
   "footer": {
     "nav": "Fußbereich",
     "changelog": "Changelog",
@@ -43,7 +52,6 @@
     "disclaimer": "Kein offizielles Guild-Wars-2-Produkt. Ein Fanprojekt von breakbar.cc. Guild Wars 2 ist eine Marke von ArenaNet, LLC. Breakbar Launcher steht in keiner Verbindung zu ArenaNet oder NCSOFT.",
     "slintAlt": "Made with Slint"
   },
-
   "hero": {
     "status": "frühe Entwicklung",
     "title": "Alle deine Guild Wars 2 Accounts, nebeneinander.",
@@ -57,7 +65,6 @@
     "altDark": "Hauptfenster von Breakbar Launcher im dunklen Design: eine Leiste mit „Auswahl starten“ und einem Zähler für laufende Clients über einer Liste von sieben Accounts, einer davon ausgewählt.",
     "altLight": "Hauptfenster von Breakbar Launcher im hellen Design mit derselben Account-Liste."
   },
-
   "features": {
     "label": "// FUNKTIONEN",
     "title": "Für alle, die mehr als einen Account spielen.",
@@ -94,56 +101,110 @@
       "editorAlt": "Bearbeitung des Accounts Main: Name und Plattform, der Status der Login-Datei mit einer Schaltfläche zum Einrichten, das eingeschaltete Begleitprogramm Blish HUD und zusätzliche Startargumente."
     }
   },
-
   "all": {
     "label": "// ALLE FUNKTIONEN",
     "title": "Alles in der aktuellen Version.",
     "core": {
       "label": "kern",
       "items": [
-        { "name": "Multi-Launch", "text": "Beliebig viele Clients, alle oder eine Auswahl." },
-        { "name": "Getrennte Logins", "text": "Eine Login-Datei pro Account. Keine E-Mail-Adresse und kein Passwort gespeichert." },
-        { "name": "Geführte Login-Einrichtung", "text": "Sagt dir, wann der Login gespeichert wurde." },
-        { "name": "ArenaNet- und Steam-Accounts", "text": "Nebeneinander, ein Steam-Account zur Zeit." },
-        { "name": "Erkennung von Spiel-Updates", "text": "Erneuert nach einem Patch die Logins, die es brauchen." }
+        {
+          "name": "Multi-Launch",
+          "text": "Beliebig viele Clients, alle oder eine Auswahl."
+        },
+        {
+          "name": "Getrennte Logins",
+          "text": "Eine Login-Datei pro Account. Keine E-Mail-Adresse und kein Passwort gespeichert."
+        },
+        {
+          "name": "Geführte Login-Einrichtung",
+          "text": "Sagt dir, wann der Login gespeichert wurde."
+        },
+        {
+          "name": "ArenaNet- und Steam-Accounts",
+          "text": "Nebeneinander, ein Steam-Account zur Zeit."
+        },
+        {
+          "name": "Erkennung von Spiel-Updates",
+          "text": "Erneuert nach einem Patch die Logins, die es brauchen."
+        }
       ]
     },
     "daily": {
       "label": "alltag",
       "listName": "Account-Liste",
       "listText": "Mehrfachauswahl, per Ziehen sortieren, duplizieren, umbenennen, Profilordner öffnen.",
-      "keys": ["F2", "Strg+D", "Alt+↑/↓", "Leertaste", "Entf"],
+      "keys": [
+        "F2",
+        "Strg+D",
+        "Alt+↑/↓",
+        "Leertaste",
+        "Entf"
+      ],
       "shortcutsName": "Verknüpfungen und Kommandozeile",
       "command": "breakbar-launcher --launch \"Main,Alt1\"",
       "items": [
-        { "name": "Begleitprogramme", "text": "Blish HUD, pro Client oder einmal für alle." },
-        { "name": "Instanz-Umschalter", "text": "Leiste im Vordergrund, ein Feld pro Account." },
-        { "name": "Läuft im Infobereich", "text": "Optional mit Windows starten; nach dem Start offen lassen, minimieren oder schließen." },
-        { "name": "FPS-Limit für Ladebildschirme", "text": "60, 30 oder unbegrenzt, nur für Ladebildschirme." }
+        {
+          "name": "Begleitprogramme",
+          "text": "Blish HUD, pro Client oder einmal für alle."
+        },
+        {
+          "name": "Instanz-Umschalter",
+          "text": "Leiste im Vordergrund, ein Feld pro Account."
+        },
+        {
+          "name": "Läuft im Infobereich",
+          "text": "Optional mit Windows starten; nach dem Start offen lassen, minimieren oder schließen."
+        },
+        {
+          "name": "FPS-Limit für Ladebildschirme",
+          "text": "60, 30 oder unbegrenzt, nur für Ladebildschirme."
+        }
       ]
     },
     "comfort": {
       "label": "komfort",
       "items": [
-        { "name": "Dunkles und helles Design", "text": "Oder wie Windows." },
-        { "name": "Englisch und Deutsch", "text": "" },
-        { "name": "Nativ in Rust, leichtgewichtig", "text": "Fast keine CPU-Last im Leerlauf." },
-        { "name": "Eine portable .exe", "text": "Kein Installer." },
-        { "name": "Open Source", "text": "MIT-Lizenz." }
+        {
+          "name": "Dunkles und helles Design",
+          "text": "Oder wie Windows."
+        },
+        {
+          "name": "Englisch und Deutsch",
+          "text": ""
+        },
+        {
+          "name": "Nativ in Rust, leichtgewichtig",
+          "text": "Fast keine CPU-Last im Leerlauf."
+        },
+        {
+          "name": "Eine portable .exe",
+          "text": "Kein Installer."
+        },
+        {
+          "name": "Open Source",
+          "text": "MIT-Lizenz."
+        }
       ]
     }
   },
-
   "how": {
     "label": "// SO FUNKTIONIERT’S",
     "title": "Drei Schritte, einmalig.",
     "steps": [
-      { "title": "Accounts hinzufügen.", "text": "Wähle einmal deinen Guild-Wars-2-Ordner und füge dann einen Account mit Namen hinzu." },
-      { "title": "Einmal je Account anmelden.", "text": "Die normale Anmeldung des Spiels öffnet sich. Setze den Haken bei „E-Mail/Passwort merken“ und schließe den Client. Breakbar speichert diesen Login für den Account." },
-      { "title": "Launch all drücken.", "text": "Jeder Account startet mit seinem eigenen Login, nebeneinander." }
+      {
+        "title": "Accounts hinzufügen.",
+        "text": "Wähle einmal deinen Guild-Wars-2-Ordner und füge dann einen Account mit Namen hinzu."
+      },
+      {
+        "title": "Einmal je Account anmelden.",
+        "text": "Die normale Anmeldung des Spiels öffnet sich. Setze den Haken bei „E-Mail/Passwort merken“ und schließe den Client. Breakbar speichert diesen Login für den Account."
+      },
+      {
+        "title": "Launch all drücken.",
+        "text": "Jeder Account startet mit seinem eigenen Login, nebeneinander."
+      }
     ]
   },
-
   "steam": {
     "label": "// STEAM-ACCOUNTS",
     "title": "Ein Steam-Account, beliebig viele ArenaNet-Accounts.",
@@ -157,7 +218,6 @@
       "Steam übernimmt die Dateien, kein erneuter Download"
     ]
   },
-
   "faq": {
     "label": "// FAQ",
     "title": "Fragen.",
@@ -166,9 +226,18 @@
         "question": "Ist das erlaubt? Ist es sicher?",
         "answer": "Breakbar startet das Programm des Spiels mit den eigenen Startoptionen des Spiels und legt für jeden Account eine eigene Login-Datei an. Damit mehrere Clients laufen können, schließt es die Einzelinstanz-Sperre des Spiels im laufenden Client. Es verändert keine Spieldateien, schleust keinen Code ein und liest keinen Spielspeicher aus, und der Quellcode ist öffentlich. Es ist kein offizielles ArenaNet-Produkt und wird nicht von ArenaNet unterstützt; du nutzt es auf eigene Gefahr."
       },
-      { "question": "Speichert es mein Passwort?", "answer": "Nein. Breakbar speichert weder E-Mail-Adressen noch Passwörter." },
-      { "question": "Kostet es etwas?", "answer": "Nein. Es ist kostenlos und Open Source unter der MIT-Lizenz." },
-      { "question": "Welche Windows-Versionen?", "answer": "Windows 10 und 11, 64 Bit." },
+      {
+        "question": "Speichert es mein Passwort?",
+        "answer": "Nein. Breakbar Launcher speichert weder E-Mail-Adressen noch Passwörter."
+      },
+      {
+        "question": "Kostet es etwas?",
+        "answer": "Nein. Es ist kostenlos und Open Source unter der MIT-Lizenz."
+      },
+      {
+        "question": "Welche Windows-Versionen?",
+        "answer": "Windows 10 und 11, 64 Bit."
+      },
       {
         "question": "Warum zeigt Windows beim ersten Start eine Warnung?",
         "answer": "Beim ersten Start kann Windows SmartScreen eine Meldung zeigen, weil das Programm neu ist. Releases werden künftig codesigniert."
@@ -181,9 +250,21 @@
         "question": "Kann ich es aus jedem Ordner starten?",
         "answer": "Ja. Lege es in einen eigenen Ordner, zum Beispiel in deinen Benutzerordner, nicht nach <code class=\"mono\">C:\\Program Files</code>, damit es sich später ohne Administratorrechte selbst aktualisieren kann."
       }
-    ]
+    ],
+    "policy": {
+      "intro": "ArenaNet erlaubt es, mehrere Accounts gleichzeitig zu spielen, allerdings unter Bedingungen. Kurz zusammengefasst aus der Richtlinie zu Dual- und Multi-Boxing (englisch):",
+      "points": [
+        "Du darfst mehrere Accounts betreiben, musst aber jeden selbst, beaufsichtigt und unabhängig von den anderen spielen und steuern.",
+        "Ein Tastendruck oder Mausklick darf nur auf einen Account wirken. Keine Makros oder Eingabe-Weiterleitung, die Aktionen auf mehr als einem Account auslösen.",
+        "Keine Bots oder Programme von Drittanbietern, die Charaktere für dich spielen oder unbeaufsichtigt spielen.",
+        "Multi-Boxing ist nur in PvE erlaubt, nicht in PvP, WvW oder anderen Wettbewerbsaktivitäten.",
+        "Bei Verstößen können die beteiligten Accounts gesperrt oder gelöscht werden."
+      ],
+      "note": "Breakbar Launcher startet und ordnet die Clients nur. Es sendet keine Eingaben an sie und spielt nichts für dich, die Einhaltung dieser Regeln liegt also bei dir.",
+      "link": "Die vollständige Richtlinie von ArenaNet lesen: Dual or Multi-Boxing",
+      "url": "https://help.guildwars2.com/hc/en-us/articles/360013658134-Policy-Dual-or-Multi-Boxing"
+    }
   },
-
   "download": {
     "label": "// DOWNLOAD",
     "title": "Breakbar Launcher herunterladen.",
@@ -207,13 +288,11 @@
       "changesValue": "Changelog"
     }
   },
-
   "legal": {
     "imprint": "Impressum",
     "privacy": "Datenschutz",
     "todo": "TODO"
   },
-
   "notFound": {
     "title": "Diese Seite gibt es nicht.",
     "text": "Die gesuchte Seite ist nicht hier — vielleicht wurde sie verschoben, oder der Link war falsch.",

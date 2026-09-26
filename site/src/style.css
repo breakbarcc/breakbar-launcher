@@ -98,8 +98,6 @@ a:hover { text-decoration: underline; text-underline-offset: 3px; }
   width: 32px;
   height: 32px;
   border-radius: 8px;
-  background: var(--surface);
-  border: 1px solid var(--accent-text);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -582,6 +580,21 @@ details {
 }
 
 .faq-grid details:nth-last-child(-n+2) { border-bottom: 1px solid var(--border); }
+
+/* the first answer is long (it quotes the game rules), so it spans both columns */
+.faq-grid details:first-child { grid-column: 1 / -1; }
+
+details ul {
+  margin: 12px 0 0 1.1em;
+  padding-left: 1.2em;
+  font-size: 15.5px;
+  line-height: 1.6;
+  color: var(--muted);
+}
+
+details li + li { margin-top: 6px; }
+
+details p a { color: var(--accent-text); }
 
 summary {
   font-size: 18px;
