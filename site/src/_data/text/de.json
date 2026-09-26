@@ -85,7 +85,7 @@
       "label": "03 / instanz-umschalter",
       "title": "Zwischen den Clients springen, mit einer kleinen Leiste.",
       "body": "Eine Leiste, die immer im Vordergrund bleibt, mit einem nummerierten Feld pro Account. Klicke, um zu einem laufenden Client zu springen, klicke mit rechts, um ihn zu beenden, oder klicke auf einen ruhenden, um ihn zu starten. Sie lässt sich immer oder nur bei laufenden Clients anzeigen, an ihrer Position festsetzen und in der Deckkraft anpassen.",
-      "alt": "Umschalter-Leiste, die über einem einfarbigen Hintergrund schwebt, mit vier nummerierten Feldern: eines läuft, eines ist aktiv, eines ruht."
+      "alt": "Umschalter-Leiste, die über einem einfarbigen Hintergrund schwebt, mit vier nummerierten Feldern: der aktive Client, ein laufender, einer, der gerade startet, und ein ruhender."
     },
     "updates": {
       "label": "04 / begleitprogramme & updates",

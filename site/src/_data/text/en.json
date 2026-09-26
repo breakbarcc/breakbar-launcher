@@ -85,7 +85,7 @@
       "label": "03 / instance switcher",
       "title": "Jump between clients from a small bar.",
       "body": "An always-on-top bar with one numbered chip per account. Click to jump to a running client, right-click to stop it, click an idle one to start it. Show it always or only while a client runs, lock its position, set its opacity.",
-      "alt": "Instance switcher bar, floating over a plain backdrop, with four numbered chips: one running, one active, one idle."
+      "alt": "Instance switcher bar, floating over a plain backdrop, with four numbered chips: the active client, a running one, one that is starting and an idle one."
     },
     "updates": {
       "label": "04 / companion apps & updates",

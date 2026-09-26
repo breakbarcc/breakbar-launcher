@@ -30,6 +30,7 @@ build reads the workspace version from `Cargo.toml`.
 ## Adding a language
 
 1. Add an entry to `src/_data/locales.js` and copy `en.json` to `xx.json`, translate it.
-2. Put its screenshots in `src/assets/shots/xx/` and point `shots` at them.
+2. Render its screenshots (`BREAKBAR_PREVIEW_LANG=xx`, see `src/assets/README.md`) into
+   `src/assets/shots/xx/` and point `shots` at that folder.
 
 The legal pages (`imprint`, `privacy`) still contain `TODO` and are `noindex` until they have text.

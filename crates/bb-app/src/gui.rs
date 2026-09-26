@@ -2422,7 +2422,14 @@ mod preview {
             ui.set_overlay_opacity(58);
             ui.set_setup_detected_path(r"C:\Program Files\Guild Wars 2\Gw2-64.exe".into());
             if demo {
-                set_rows(&ui, demo_rows());
+                // The failed row carries its reason as text, which must be in the preview language too.
+                let mut rows = demo_rows();
+                for row in &mut rows {
+                    if row.state == AccountState::Error {
+                        row.detail = ui.global::<Messages>().invoke_start_failed();
+                    }
+                }
+                set_rows(&ui, rows);
                 if std::env::var_os("BREAKBAR_PREVIEW_NO_TOAST").is_none() {
                     let messages = ui.global::<Messages>();
                     push_toast(
