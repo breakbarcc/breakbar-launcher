@@ -1,0 +1,60 @@
+{%- set loc = locale or locales[0] -%}
+{%- set t = text[loc.code] -%}
+{%- set page_meta = t.pages[pageKey] -%}
+{%- set home_url = site.origin + t.paths.home -%}
+<!doctype html>
+<html lang="{{ loc.code }}" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="dark light">
+<meta name="theme-color" content="#0d0f12">
+<title>{{ page_meta.title }}</title>
+{% if page_meta.description %}<meta name="description" content="{{ page_meta.description }}">
+{% endif %}{% if noindex %}<meta name="robots" content="noindex">
+{% endif %}
+<script>
+/* Set the theme before the first paint, so a light theme does not flash dark. */
+try {
+  var stored = localStorage.getItem("breakbar-theme");
+  var theme = stored === "light" || stored === "dark" ? stored
+    : (matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark");
+  document.documentElement.setAttribute("data-theme", theme);
+} catch (e) {}
+</script>
+
+<link rel="icon" href="/assets/favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png">
+<link rel="apple-touch-icon" href="/assets/icon-256.png">
+{% if pageKey == "home" %}
+<link rel="canonical" href="{{ home_url }}">
+{% for other in locales %}<link rel="alternate" hreflang="{{ other.code }}" href="{{ site.origin }}{{ text[other.code].paths.home }}">
+{% endfor %}<link rel="alternate" hreflang="x-default" href="{{ site.origin }}{{ text.en.paths.home }}">
+
+<meta property="og:title" content="{{ page_meta.title }}">
+<meta property="og:description" content="{{ page_meta.ogDescription }}">
+<meta property="og:type" content="website">
+<meta property="og:url" content="{{ home_url }}">
+<meta property="og:locale" content="{{ loc.code }}">
+<meta property="og:image" content="{{ site.origin }}/assets/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="{{ page_meta.title }}">
+<meta name="twitter:description" content="{{ page_meta.ogDescription }}">
+<meta name="twitter:image" content="{{ site.origin }}/assets/og-image.png">
+{% endif %}
+<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+
+{% include "header.njk" %}
+
+{{ content | safe }}
+
+{% include "footer.njk" %}
+
+<script src="/script.js"></script>
+</body>
+</html>

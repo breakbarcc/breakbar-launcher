@@ -1,0 +1,13 @@
+---
+layout: base.njk
+noindex: true
+pagination:
+  data: locales
+  size: 1
+  alias: locale
+pageKey: imprint
+permalink: "{{ text[locale.code].paths.imprint }}index.html"
+---
+{%- set t = text[locale.code] -%}
+{%- set legal_title = t.legal.imprint -%}
+{% include "legal-body.njk" %}

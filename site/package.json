@@ -1,0 +1,17 @@
+{
+  "name": "breakbar-launcher-site",
+  "private": true,
+  "version": "0.0.0",
+  "description": "Website of Breakbar Launcher (launcher.breakbar.cc), built with Eleventy",
+  "type": "module",
+  "scripts": {
+    "build": "eleventy",
+    "start": "eleventy --serve"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "devDependencies": {
+    "@11ty/eleventy": "^3.1.6"
+  }
+}

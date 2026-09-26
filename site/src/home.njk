@@ -1,0 +1,266 @@
+---
+layout: base.njk
+pagination:
+  data: locales
+  size: 1
+  alias: locale
+pageKey: home
+permalink: "{{ text[locale.code].paths.home }}index.html"
+---
+{%- set t = text[locale.code] -%}
+{%- set shots = locale.shots -%}
+<main>
+
+<!-- HERO -->
+<section id="top" class="hero dots">
+  <div class="wrap hero-inner">
+    <div class="hero-copy">
+      <p class="eyebrow"><span class="mono">// v{{ site.version }}</span><span class="pill">{{ t.hero.status }}</span></p>
+      <h1>{{ t.hero.title }}</h1>
+      <p class="lede">{{ t.hero.lede }}</p>
+      <div class="cta-row">
+        <a class="btn btn-primary" href="{{ site.urls.download }}" rel="noopener">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg>
+          <span>{{ t.common.downloadForWindows }}</span>
+          <span class="mono btn-version">v{{ site.version }}</span>
+        </a>
+        <a class="btn btn-secondary" href="{{ site.urls.repo }}" rel="noopener">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8 7l-5 5 5 5M16 7l5 5-5 5"/></svg>
+          <span>{{ t.hero.github }}</span>
+        </a>
+      </div>
+      <p class="mono fine-print">{{ t.hero.finePrint }}</p>
+    </div>
+
+    <div class="hero-shot-wrap">
+      <div class="shot-toggle" role="group" aria-label="{{ t.hero.shotTheme }}">
+        <button type="button" class="shot-btn active" data-shot="dark">{{ t.hero.dark }}</button>
+        <button type="button" class="shot-btn" data-shot="light">{{ t.hero.light }}</button>
+      </div>
+      <figure class="shot-frame">
+        <div class="shot-bar"><span class="shot-dot"></span><span>{{ t.hero.shotTitle }}</span></div>
+        <div class="shot-body" style="aspect-ratio: 7 / 10">
+          <img class="shot-img shot-dark active" src="{{ shots }}/account-list-dark.png" width="840" height="1200" alt="{{ t.hero.altDark }}" decoding="async">
+          <img class="shot-img shot-light" src="{{ shots }}/account-list-light.png" width="840" height="1200" alt="{{ t.hero.altLight }}" decoding="async">
+        </div>
+      </figure>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURE HIGHLIGHTS -->
+<section id="features" class="section">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="mono eyebrow-label">{{ t.features.label }}</span>
+      <h2>{{ t.features.title }}</h2>
+    </div>
+
+    <div class="highlight">
+      <div class="highlight-copy">
+        <span class="mono step-label">{{ t.features.multi.label }}</span>
+        <h3>{{ t.features.multi.title }}</h3>
+        <p>{{ t.features.multi.body }}</p>
+      </div>
+      <div class="highlight-shot">
+        <div class="dual-shot">
+          <div class="shot-card back">
+            <img src="{{ shots }}/account-list-dark.png" width="840" height="1200" alt="{{ t.features.multi.altDark }}" loading="lazy" decoding="async">
+          </div>
+          <div class="shot-card front">
+            <img src="{{ shots }}/account-list-light.png" width="840" height="1200" alt="{{ t.features.multi.altLight }}" loading="lazy" decoding="async">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="highlight reverse">
+      <div class="highlight-shot">
+        <div class="shot-card standalone" style="aspect-ratio: 21 / 26">
+          <img src="{{ shots }}/login-dialog.png" width="840" height="1040" alt="{{ t.features.logins.alt }}" loading="lazy" decoding="async">
+        </div>
+      </div>
+      <div class="highlight-copy">
+        <span class="mono step-label">{{ t.features.logins.label }}</span>
+        <h3>{{ t.features.logins.title }}</h3>
+        <p>{{ t.features.logins.body }}</p>
+      </div>
+    </div>
+
+    <div class="highlight">
+      <div class="highlight-copy">
+        <span class="mono step-label">{{ t.features.switcher.label }}</span>
+        <h3>{{ t.features.switcher.title }}</h3>
+        <p>{{ t.features.switcher.body }}</p>
+      </div>
+      <div class="highlight-shot">
+        <div class="shot-plain" style="aspect-ratio: 1200 / 560">
+          <img src="{{ shots }}/instance-switcher.png" width="1200" height="560" alt="{{ t.features.switcher.alt }}" loading="lazy" decoding="async">
+        </div>
+      </div>
+    </div>
+
+    <div class="highlight reverse">
+      <div class="highlight-shot">
+        <div class="shot-card standalone" style="aspect-ratio: 7 / 10">
+          <img src="{{ shots }}/update-banner.png" width="840" height="1200" alt="{{ t.features.updates.alt }}" loading="lazy" decoding="async">
+        </div>
+      </div>
+      <div class="highlight-copy">
+        <span class="mono step-label">{{ t.features.updates.label }}</span>
+        <h3>{{ t.features.updates.title }}</h3>
+        <p>{{ t.features.updates.body }}</p>
+      </div>
+    </div>
+
+    <div class="mini-gallery">
+      <span class="mono step-label">{{ t.features.gallery.label }}</span>
+      <div class="mini-gallery-grid">
+        <figure class="mini-shot">
+          <div class="shot-card standalone" style="aspect-ratio: 7 / 10">
+            <img src="{{ shots }}/settings-light.png" width="840" height="1200" alt="{{ t.features.gallery.settingsAlt }}" loading="lazy" decoding="async">
+          </div>
+          <figcaption>{{ t.features.gallery.settingsCaption }}</figcaption>
+        </figure>
+        <figure class="mini-shot">
+          <div class="shot-card standalone" style="aspect-ratio: 7 / 13">
+            <img src="{{ shots }}/account-editor-dark.png" width="840" height="1560" alt="{{ t.features.gallery.editorAlt }}" loading="lazy" decoding="async">
+          </div>
+          <figcaption>{{ t.features.gallery.editorCaption }}</figcaption>
+        </figure>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ALL FEATURES -->
+<section class="section section-surface">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="mono eyebrow-label">{{ t.all.label }}</span>
+      <h2>{{ t.all.title }}</h2>
+    </div>
+    <div class="feature-grid">
+      <div class="feature-col">
+        <h3 class="mono col-label">{{ t.all.core.label }}</h3>
+        {%- for item in t.all.core.items %}
+        <div class="feature-item"><strong>{{ item.name }}</strong><span>{{ item.text }}</span></div>
+        {%- endfor %}
+      </div>
+      <div class="feature-col">
+        <h3 class="mono col-label">{{ t.all.daily.label }}</h3>
+        <div class="feature-item">
+          <strong>{{ t.all.daily.listName }}</strong>
+          <span>{{ t.all.daily.listText }}</span>
+          <span class="kbd-row">{% for key in t.all.daily.keys %}<kbd>{{ key }}</kbd>{% endfor %}</span>
+        </div>
+        {%- for item in t.all.daily.items %}
+        <div class="feature-item"><strong>{{ item.name }}</strong><span>{{ item.text }}</span></div>
+        {%- if loop.index == 2 %}
+        <div class="feature-item">
+          <strong>{{ t.all.daily.shortcutsName }}</strong>
+          <code class="mono cmd">{{ t.all.daily.command }}</code>
+        </div>
+        {%- endif %}
+        {%- endfor %}
+      </div>
+      <div class="feature-col">
+        <h3 class="mono col-label">{{ t.all.comfort.label }}</h3>
+        {%- for item in t.all.comfort.items %}
+        <div class="feature-item"><strong>{{ item.name }}</strong>{% if item.text %}<span>{{ item.text }}</span>{% endif %}</div>
+        {%- endfor %}
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section id="how" class="section">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="mono eyebrow-label">{{ t.how.label }}</span>
+      <h2>{{ t.how.title }}</h2>
+    </div>
+    <ol class="steps">
+      {%- for step in t.how.steps %}
+      <li>
+        <span class="mono step-num">0{{ loop.index }}</span>
+        <h3>{{ step.title }}</h3>
+        <p>{{ step.text }}</p>
+      </li>
+      {%- endfor %}
+    </ol>
+  </div>
+</section>
+
+<!-- STEAM -->
+<section class="section">
+  <div class="wrap steam-grid">
+    <div class="section-head">
+      <span class="mono eyebrow-label">{{ t.steam.label }}</span>
+      <h2>{{ t.steam.title }}</h2>
+    </div>
+    <div class="steam-copy">
+      {%- for paragraph in t.steam.paragraphs %}
+      <p>{{ paragraph }}</p>
+      {%- endfor %}
+      <div class="steam-steps">
+        {%- for step in t.steam.steps %}
+        <div class="steam-step"><span class="mono">{{ loop.index }}</span><span>{{ step }}</span></div>
+        {%- endfor %}
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section class="section">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="mono eyebrow-label">{{ t.faq.label }}</span>
+      <h2>{{ t.faq.title }}</h2>
+    </div>
+    <div class="faq-grid">
+      {%- for item in t.faq.items %}
+      <details{% if loop.first %} open{% endif %}>
+        <summary>{{ item.question }}</summary>
+        <p>{{ item.answer | safe }}</p>
+      </details>
+      {%- endfor %}
+    </div>
+  </div>
+</section>
+
+<!-- DOWNLOAD -->
+<section id="download" class="section dots download-section">
+  <div class="wrap">
+    <div class="download-card">
+      <div class="download-copy">
+        <span class="mono eyebrow-label">{{ t.download.label }}</span>
+        <h2>{{ t.download.title }}</h2>
+        <p>{{ t.download.lede }}</p>
+        <div class="cta-row">
+          <a class="btn btn-primary" href="{{ site.urls.download }}" rel="noopener">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg>
+            <span>{{ t.common.downloadForWindows }}</span>
+            <span class="mono btn-version">v{{ site.version }}</span>
+          </a>
+          <a class="text-link" href="{{ site.urls.releases }}" rel="noopener">{{ t.download.allReleases }}</a>
+        </div>
+        <p class="download-report"><a href="{{ site.urls.issues }}" rel="noopener">{{ t.common.reportProblem }}</a></p>
+      </div>
+      <dl class="download-facts">
+        <dt class="mono">{{ t.download.facts.version }}</dt><dd>{{ site.version }}</dd>
+        <dt class="mono">{{ t.download.facts.status }}</dt><dd>{{ t.download.facts.statusValue }}</dd>
+        <dt class="mono">{{ t.download.facts.system }}</dt><dd>{{ t.download.facts.systemValue }}</dd>
+        <dt class="mono">{{ t.download.facts.needs }}</dt><dd>{{ t.download.facts.needsValue }}</dd>
+        <dt class="mono">{{ t.download.facts.license }}</dt><dd>{{ t.download.facts.licenseValue }}</dd>
+        <dt class="mono">{{ t.download.facts.checksum }}</dt><dd><a href="{{ site.urls.checksum }}" rel="noopener">{{ t.download.facts.checksumValue }}</a></dd>
+        <dt class="mono">{{ t.download.facts.signed }}</dt><dd>{{ t.download.facts.signedValue }}</dd>
+        <dt class="mono">{{ t.download.facts.changes }}</dt><dd><a href="{{ site.urls.changelog }}" rel="noopener">{{ t.download.facts.changesValue }}</a></dd>
+      </dl>
+    </div>
+  </div>
+</section>
+
+</main>

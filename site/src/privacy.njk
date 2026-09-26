@@ -1,0 +1,13 @@
+---
+layout: base.njk
+noindex: true
+pagination:
+  data: locales
+  size: 1
+  alias: locale
+pageKey: privacy
+permalink: "{{ text[locale.code].paths.privacy }}index.html"
+---
+{%- set t = text[locale.code] -%}
+{%- set legal_title = t.legal.privacy -%}
+{% include "legal-body.njk" %}

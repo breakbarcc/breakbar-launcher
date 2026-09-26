@@ -10,25 +10,25 @@ distributed through GitHub releases (see the release workflow and CONTRIBUTING.m
 |---|---|
 | Where does the site's source live? | In this repository, folder `site/`. One place for version and links, and the deploy can read the newest release. A separate repository is only worth it if others should edit the site independently. |
 | Hosting | GitHub Pages (free, HTTPS, no server), deployed by a GitHub Actions workflow. |
-| Version on the page | Filled in at deploy time from the latest GitHub release (`{{VERSION}}` placeholders), not fetched in the browser. Works without JavaScript and needs no cross-origin request. |
+| Technology | Eleventy (Nunjucks templates, JSON text files per language, no client framework) in `site/`; English at `/`, German at `/de/`. Chosen over plain HTML because of the second language (one template, two text files) and over Vite + React because the site is content only. See `site/README.md`. |
+| Version on the page | Passed to the build as `SITE_VERSION` from the latest GitHub release at deploy time, not fetched in the browser. Works without JavaScript and needs no cross-origin request. |
 | Legal pages | A German private person publishing a site needs at least a privacy notice, and an imprint is safest. Have the texts checked (imprint under the Digital Services Act, privacy under GDPR); GitHub Pages logs visitor IP addresses. Not legal advice. |
 | Analytics | None. No cookies, no third-party scripts (keeps the privacy page short). |
 
 ## 2. Steps in order
 
-1. **Revise the design** with `docs/website/design-change-list.md` and the images in
-   `docs/website/assets/`. Result: a folder with `index.html`, `style.css`, `script.js`, `404.html`,
-   `imprint/`, `privacy/`, `assets/`.
-2. **Add the site to the repository** as `site/` (copy `docs/website/assets/*` into `site/assets/`
-   if the design did not include them) and a file `site/CNAME` containing `launcher.breakbar.cc`.
-   Put the legal texts into `site/imprint/index.html` and `site/privacy/index.html`.
+1. **Revise the design** with `docs/website/design-change-list.md`. Done: the delivered design was
+   converted into Eleventy templates (phase 1), the images live in `site/src/assets/`.
+2. **Add the site to the repository** as `site/`, with `site/src/CNAME` containing
+   `launcher.breakbar.cc`. Done. Still open: the legal texts (`site/src/_data/text/*.json`, key
+   `legal`, and `src/_includes/legal-body.njk`), German screenshots.
 3. **Add the deploy workflow** `.github/workflows/site.yml`:
    - Triggers: push to `main` that changes `site/**`, `workflow_dispatch`.
-   - Job: check out, look up the newest release (`gh release view --json tagName`), replace every
-     `{{VERSION}}` in `site/**/*.html` (`sed`), then `actions/upload-pages-artifact` and
-     `actions/deploy-pages` (permissions `pages: write`, `id-token: write`, environment
+   - Job: check out, look up the newest release (`gh release view --json tagName`), then
+     `npm ci && npm run build` in `site/` with `SITE_VERSION` set, then `actions/upload-pages-artifact`
+     (path `site/_site`) and `actions/deploy-pages` (permissions `pages: write`, `id-token: write`, environment
      `github-pages`).
-   - Before the first release exists it uses `latest` as the text.
+   - Before the first release exists the build uses the version in `Cargo.toml`.
 4. **Refresh the site after every release.** A release created by the release workflow with the
    default token does not start other workflows. Add a last step to `release.yml`:
    `gh workflow run site.yml` (needs `actions: write` on that job). Then the version on the page

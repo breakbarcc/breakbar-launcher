@@ -1,0 +1,222 @@
+{
+  "paths": { "home": "/", "imprint": "/imprint/", "privacy": "/privacy/" },
+
+  "pages": {
+    "home": {
+      "title": "Breakbar Launcher — multi-launcher for Guild Wars 2",
+      "description": "Breakbar Launcher starts several Guild Wars 2 clients at once, each with its own account. Free, open source, Windows.",
+      "ogDescription": "Starts several Guild Wars 2 clients at once, each with its own account. Free, open source, Windows."
+    },
+    "imprint": { "title": "Imprint — Breakbar Launcher", "description": "" },
+    "privacy": { "title": "Privacy — Breakbar Launcher", "description": "" },
+    "notFound": { "title": "Page not found — Breakbar Launcher", "description": "" }
+  },
+
+  "common": {
+    "brand": "Breakbar Launcher",
+    "by": "by breakbar.cc",
+    "downloadForWindows": "Download for Windows",
+    "reportProblem": "Report a problem"
+  },
+
+  "header": {
+    "features": "Features",
+    "how": "How it works",
+    "download": "Download",
+    "github": "GitHub",
+    "main": "breakbar.cc",
+    "mainNav": "Main",
+    "mobileNav": "Mobile",
+    "menuOpen": "Open menu",
+    "toLight": "Switch to light theme",
+    "toDark": "Switch to dark theme",
+    "toggleTheme": "Toggle theme",
+    "language": "Deutsch"
+  },
+
+  "footer": {
+    "nav": "Footer",
+    "changelog": "Changelog",
+    "license": "License (MIT)",
+    "imprint": "Imprint",
+    "privacy": "Privacy",
+    "disclaimer": "Not an official Guild Wars 2 product. A fan project by breakbar.cc. Guild Wars 2 is a trademark of ArenaNet, LLC. Breakbar Launcher is not affiliated with ArenaNet or NCSOFT.",
+    "slintAlt": "Made with Slint"
+  },
+
+  "hero": {
+    "status": "early development",
+    "title": "All your Guild Wars 2 accounts, side by side.",
+    "lede": "Breakbar Launcher starts several game clients at once, each with its own account, and keeps them organized. One small portable .exe. Free and open source.",
+    "github": "View on GitHub",
+    "finePrint": "Windows 10/11 x64 · free · open source (MIT)",
+    "shotTheme": "Screenshot theme",
+    "dark": "Dark",
+    "light": "Light",
+    "shotTitle": "Breakbar Launcher",
+    "altDark": "Breakbar Launcher main window, dark theme: a toolbar with Start selection and a running counter above a list of seven accounts, one selected.",
+    "altLight": "Breakbar Launcher main window, light theme, showing the same account list."
+  },
+
+  "features": {
+    "label": "// FEATURES",
+    "title": "Built for players who run more than one account.",
+    "multi": {
+      "label": "01 / multi-launch",
+      "title": "Start every client at once.",
+      "body": "Launch all accounts with one click, or only the ones you select. Breakbar closes the game's single-instance lock and opens the data file read-only. Your game files are never modified.",
+      "altDark": "Account list, dark theme",
+      "altLight": "Account list, light theme"
+    },
+    "logins": {
+      "label": "02 / separate logins",
+      "title": "Its own login per account. No passwords stored.",
+      "body": "Every account gets its own login file. A short guided dialog walks you through the one-time login and tells you when it was saved. Breakbar never stores an email or a password.",
+      "alt": "Guided login dialog: “Set up the login of Main?” with three numbered steps and a note that Breakbar stores no passwords."
+    },
+    "switcher": {
+      "label": "03 / instance switcher",
+      "title": "Jump between clients from a small bar.",
+      "body": "An always-on-top bar with one numbered chip per account. Click to jump to a running client, right-click to stop it, click an idle one to start it. Show it always or only while a client runs, lock its position, set its opacity.",
+      "alt": "Instance switcher bar, floating over a plain backdrop, with four numbered chips: one running, one active, one idle."
+    },
+    "updates": {
+      "label": "04 / companion apps & updates",
+      "title": "Your tools start with the game. Updates are guided.",
+      "body": "Start and stop Blish HUD together with the game, once per client or once for all clients. After a game patch, a banner names the accounts whose login needs refreshing and walks you through it, one after another.",
+      "alt": "Account list with a banner reading “The game was updated”, naming three accounts that need their login refreshed, and a “Set up one after another” button."
+    },
+    "gallery": {
+      "label": "See it in the app",
+      "settingsCaption": "Settings: paths, frame rate limit, behavior",
+      "settingsAlt": "Settings screen: Guild Wars 2 and Blish HUD paths, loading-screen frame rate limit, and behavior after starting an account.",
+      "editorCaption": "Account editor: name, login, companion apps, launch arguments",
+      "editorAlt": "Account editor for the account Main: name and platform, the login file status with a “Set up login” button, the Blish HUD companion app switched on, and additional launch arguments."
+    }
+  },
+
+  "all": {
+    "label": "// ALL FEATURES",
+    "title": "Everything in the current version.",
+    "core": {
+      "label": "core",
+      "items": [
+        { "name": "Multi-launch", "text": "Any number of clients, all or a selection." },
+        { "name": "Separate logins", "text": "One login file per account. No email or password stored." },
+        { "name": "Guided login setup", "text": "Tells you when the login was saved." },
+        { "name": "ArenaNet and Steam accounts", "text": "Side by side, one Steam account at a time." },
+        { "name": "Game update detection", "text": "Refreshes the logins that need it after a patch." }
+      ]
+    },
+    "daily": {
+      "label": "everyday use",
+      "listName": "Account list",
+      "listText": "Multi-select, drag to reorder, duplicate, rename, open the profile folder.",
+      "keys": ["F2", "Ctrl+D", "Alt+↑/↓", "Space", "Del"],
+      "shortcutsName": "Shortcuts and command line",
+      "command": "breakbar-launcher --launch \"Main,Alt1\"",
+      "items": [
+        { "name": "Companion apps", "text": "Blish HUD, per client or once for all." },
+        { "name": "Instance switcher", "text": "Always-on-top bar, one chip per account." },
+        { "name": "Runs in the tray", "text": "Optional start with Windows; stay open, minimize or close after launch." },
+        { "name": "Loading-screen FPS limit", "text": "60, 30 or unlimited, loading screens only." }
+      ]
+    },
+    "comfort": {
+      "label": "comfort",
+      "items": [
+        { "name": "Dark and light theme", "text": "Or follow Windows." },
+        { "name": "English and German", "text": "" },
+        { "name": "Native Rust, lightweight", "text": "Near-zero CPU while idle." },
+        { "name": "Single portable .exe", "text": "No installer." },
+        { "name": "Open source", "text": "MIT license." }
+      ]
+    }
+  },
+
+  "how": {
+    "label": "// HOW IT WORKS",
+    "title": "Three steps, once.",
+    "steps": [
+      { "title": "Add your accounts.", "text": "Pick your Guild Wars 2 folder once, then add an account by name." },
+      { "title": "Log in once each.", "text": "The normal game login opens. Tick “Remember email/password” and close the client. Breakbar saves that login for the account." },
+      { "title": "Press Launch all.", "text": "Each account starts with its own login, side by side." }
+    ]
+  },
+
+  "steam": {
+    "label": "// STEAM ACCOUNTS",
+    "title": "One Steam account, any number of ArenaNet accounts.",
+    "paragraphs": [
+      "Steam signs in with the Steam user that is currently signed in, so one Steam account can run at a time, next to any number of ArenaNet accounts.",
+      "Steam only signs in a copy of the game that it installed. If you have the standalone game, Breakbar offers to link your existing installation into Steam. You click Install in Steam once, and Steam adopts the files instead of downloading the game again."
+    ],
+    "steps": [
+      "Breakbar links your install into Steam",
+      "You click Install in Steam once",
+      "Steam adopts the files, no re-download"
+    ]
+  },
+
+  "faq": {
+    "label": "// FAQ",
+    "title": "Questions.",
+    "items": [
+      {
+        "question": "Is it allowed? Is it safe?",
+        "answer": "Breakbar starts the game's own program with the game's own options and keeps a separate login file for each account. To allow several clients, it closes the game's single-instance lock in the running client. It does not change game files, inject code or read game memory, and the source is public. It is not an official ArenaNet product and not endorsed by ArenaNet; you use it at your own risk."
+      },
+      { "question": "Does it store my password?", "answer": "No. Breakbar never stores an email or a password." },
+      { "question": "Does it cost anything?", "answer": "No. It is free and open source under the MIT license." },
+      { "question": "Which Windows versions?", "answer": "Windows 10 and 11, 64-bit." },
+      {
+        "question": "Why does Windows show a warning on first start?",
+        "answer": "The first start may show a Windows SmartScreen notice because the program is new. Releases will be code-signed."
+      },
+      {
+        "question": "Where is my data?",
+        "answer": "Settings in <code class=\"mono\">%APPDATA%\\Breakbar</code>, login profiles in <code class=\"mono\">%LOCALAPPDATA%\\Breakbar</code>. Deleting an account deletes its profile."
+      },
+      {
+        "question": "Can I run it from any folder?",
+        "answer": "Yes. Put it in your own folder, for example in your user folder, not in <code class=\"mono\">C:\\Program Files</code>, so it can update itself later without administrator rights."
+      }
+    ]
+  },
+
+  "download": {
+    "label": "// DOWNLOAD",
+    "title": "Get Breakbar Launcher.",
+    "lede": "One portable .exe, always the newest release. Put it in any folder and run it.",
+    "allReleases": "All releases",
+    "facts": {
+      "version": "version",
+      "status": "status",
+      "statusValue": "Early development",
+      "system": "system",
+      "systemValue": "Windows 10/11 x64",
+      "needs": "needs",
+      "needsValue": "An installed Guild Wars 2",
+      "license": "license",
+      "licenseValue": "MIT, free",
+      "checksum": "checksum",
+      "checksumValue": "SHA-256",
+      "signed": "signed",
+      "signedValue": "not yet",
+      "changes": "changes",
+      "changesValue": "Changelog"
+    }
+  },
+
+  "legal": {
+    "imprint": "Imprint",
+    "privacy": "Privacy",
+    "todo": "TODO"
+  },
+
+  "notFound": {
+    "title": "This page doesn't exist.",
+    "text": "The page you were looking for isn't here — maybe it moved, or the link was wrong.",
+    "back": "Back to the start page"
+  }
+}
