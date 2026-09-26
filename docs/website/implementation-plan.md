@@ -23,7 +23,8 @@ distributed through GitHub releases (see the release workflow and CONTRIBUTING.m
    `launcher.breakbar.cc`. Done. Still open: the legal texts (`site/src/_data/text/*.json`, key
    `legal`, and `src/_includes/legal-body.njk`), German screenshots.
 3. **Add the deploy workflow** `.github/workflows/site.yml` (done, see "Website" in CONTRIBUTING.md):
-   - Triggers: push to `main` that changes `site/**`, `workflow_dispatch`.
+   - Triggers: push to `release` that changes `site/**` (so the site never runs ahead of the
+     released program), pull requests (build only), `workflow_dispatch`.
    - Job: check out, look up the newest release (`gh release view --json tagName`), then
      `npm ci && npm run build` in `site/` with `SITE_VERSION` set, then `actions/upload-pages-artifact`
      (path `site/_site`) and `actions/deploy-pages` (permissions `pages: write`, `id-token: write`, environment

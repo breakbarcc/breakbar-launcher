@@ -1,14 +1,15 @@
 name: Site
 
 # Builds the website in `site/` and publishes it with GitHub Pages (launcher.breakbar.cc).
-# See "Website" in CONTRIBUTING.md.
+# The site goes live from the `release` branch, like the program, so it never describes something
+# that has not been released. See "Website" in CONTRIBUTING.md.
 on:
   push:
-    branches: [main]
+    branches: [release]
     paths:
       - "site/**"
       - ".github/workflows/site.yml"
-  # A pull request only builds the site, which catches a missing text or a broken template.
+  # A pull request (into main) only builds the site, which catches a missing text or a broken template.
   pull_request:
     paths:
       - "site/**"

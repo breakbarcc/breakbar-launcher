@@ -88,19 +88,25 @@ The site at https://launcher.breakbar.cc is built from [`site/`](site) (see
 [site/README.md](site/README.md)) and published with GitHub Pages by
 [`.github/workflows/site.yml`](.github/workflows/site.yml):
 
-- A push to `main` that changes `site/` builds and deploys it. A pull request only builds it.
+- The site goes live from the `release` branch, like the program, so that it never describes
+  something that is not released yet: a push to `release` that changes `site/` builds and deploys
+  it. A pull request only builds it.
+- A push that only changes `site/`, `docs/` or Markdown files is not a release: the release workflow
+  skips it, so a site fix goes out with a plain `git push origin main:release`, without a new version.
 - The version on the page is the newest GitHub release. The release workflow starts the site
   workflow after publishing (`gh workflow run site.yml`), because a release created with the default
   token does not trigger other workflows.
-- The workflow can also be started by hand (Actions, Site, "Run workflow").
+- The workflow can also be started by hand (Actions, Site, "Run workflow", branch `release`).
 
 Set up once, in the repository settings (the workflow does not change any settings):
 
 1. Settings, Pages, Source: "GitHub Actions". Do this before the first push that touches `site/`,
    otherwise the deploy step fails (run it again afterwards).
-2. Settings, Pages, Custom domain: `launcher.breakbar.cc`; tick "Enforce HTTPS" once the
+2. Settings, Environments, `github-pages`, Deployment branches: add `release`. By default the
+   environment only accepts deployments from `main`, and the deploy would be rejected.
+3. Settings, Pages, Custom domain: `launcher.breakbar.cc`; tick "Enforce HTTPS" once the
    certificate is issued.
-3. DNS of breakbar.cc: a `CNAME` record `launcher` pointing to `breakbarcc.github.io` (no `A`
+4. DNS of breakbar.cc: a `CNAME` record `launcher` pointing to `breakbarcc.github.io` (no `A`
    record). Verify the domain for the organization first (Organization settings, Pages, Verified
    domains), so that nobody else can claim subdomains that point to GitHub Pages.
 

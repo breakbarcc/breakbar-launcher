@@ -5,6 +5,11 @@ name: Release
 on:
   push:
     branches: [release]
+    # A push that only changes the website or the docs is no release (the site workflow handles it).
+    paths-ignore:
+      - "site/**"
+      - "docs/**"
+      - "**/*.md"
 
 env:
   CARGO_TERM_COLOR: always
@@ -168,4 +173,4 @@ jobs:
       GH_REPO: ${{ github.repository }}
     steps:
       - name: Rebuild the website
-        run: gh workflow run site.yml --ref main
+        run: gh workflow run site.yml --ref "${{ github.ref_name }}"
