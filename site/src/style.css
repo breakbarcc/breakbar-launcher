@@ -707,26 +707,7 @@ details p {
 :root[data-theme="light"] .slint-badge-dark { display: none; }
 :root[data-theme="light"] .slint-badge-light { display: block; }
 
-/* ---------- Legal / 404 pages ---------- */
-
-.legal-main {
-  padding: 72px 0 100px;
-}
-
-.legal-main h1 {
-  font-size: 40px;
-  font-weight: 700;
-  letter-spacing: -0.015em;
-  margin-bottom: 32px;
-}
-
-.legal-main p {
-  font-size: 16px;
-  line-height: 1.65;
-  color: var(--muted);
-  margin-bottom: 16px;
-  max-width: 640px;
-}
+/* ---------- 404 page ---------- */
 
 .not-found {
   min-height: 60vh;

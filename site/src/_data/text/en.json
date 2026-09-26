@@ -1,22 +1,12 @@
 {
   "paths": {
-    "home": "/",
-    "imprint": "/imprint/",
-    "privacy": "/privacy/"
+    "home": "/"
   },
   "pages": {
     "home": {
       "title": "Breakbar Launcher — multi-launcher for Guild Wars 2",
       "description": "Breakbar Launcher starts several Guild Wars 2 clients at once, each with its own account. Free, open source, Windows.",
       "ogDescription": "Starts several Guild Wars 2 clients at once, each with its own account. Free, open source, Windows."
-    },
-    "imprint": {
-      "title": "Imprint — Breakbar Launcher",
-      "description": ""
-    },
-    "privacy": {
-      "title": "Privacy — Breakbar Launcher",
-      "description": ""
     },
     "notFound": {
       "title": "Page not found — Breakbar Launcher",
@@ -287,11 +277,6 @@
       "changes": "changes",
       "changesValue": "Changelog"
     }
-  },
-  "legal": {
-    "imprint": "Imprint",
-    "privacy": "Privacy",
-    "todo": "TODO"
   },
   "notFound": {
     "title": "This page doesn't exist.",

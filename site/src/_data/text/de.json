@@ -1,22 +1,12 @@
 {
   "paths": {
-    "home": "/de/",
-    "imprint": "/de/impressum/",
-    "privacy": "/de/datenschutz/"
+    "home": "/de/"
   },
   "pages": {
     "home": {
       "title": "Breakbar Launcher — Multi-Launcher für Guild Wars 2",
       "description": "Breakbar Launcher startet mehrere Guild-Wars-2-Clients gleichzeitig, jeden mit seinem eigenen Account. Kostenlos, Open Source, für Windows.",
       "ogDescription": "Startet mehrere Guild-Wars-2-Clients gleichzeitig, jeden mit seinem eigenen Account. Kostenlos, Open Source, für Windows."
-    },
-    "imprint": {
-      "title": "Impressum — Breakbar Launcher",
-      "description": ""
-    },
-    "privacy": {
-      "title": "Datenschutz — Breakbar Launcher",
-      "description": ""
     },
     "notFound": {
       "title": "Seite nicht gefunden — Breakbar Launcher",
@@ -287,11 +277,6 @@
       "changes": "änderungen",
       "changesValue": "Changelog"
     }
-  },
-  "legal": {
-    "imprint": "Impressum",
-    "privacy": "Datenschutz",
-    "todo": "TODO"
   },
   "notFound": {
     "title": "Diese Seite gibt es nicht.",
