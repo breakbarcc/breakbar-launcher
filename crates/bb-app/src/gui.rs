@@ -2371,6 +2371,7 @@ mod preview {
             variant("settings-dark", true, false, Settings, (420, 1400)),
             variant("settings-light", false, false, Settings, (420, 1400)),
             variant("settings-top-light", false, false, Settings, (420, 600)),
+            variant("settings-top-dark", true, false, Settings, (420, 600)),
             variant("editor-steam-dark", true, false, Editor, (420, 780)),
             variant("login-refresh-dark", true, true, Accounts, (420, 600)),
             variant("login-refresh-light", false, true, Accounts, (420, 600)),
