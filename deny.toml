@@ -1,0 +1,41 @@
+# Checked by `cargo deny check` (see .github/workflows/audit.yml). Run it locally the same way.
+
+[graph]
+# Only the Windows build is shipped; the Linux and macOS crates in Cargo.lock don't matter.
+targets = ["x86_64-pc-windows-msvc"]
+
+[advisories]
+# Known vulnerabilities and yanked crates fail the check. Unmaintained crates are only reported for
+# the workspace itself. Two that Slint pulls in (bincode, ttf-parser) are reported as unmaintained by
+# `cargo audit`; there is nothing to do about them here until Slint moves on.
+ignore = []
+
+[licenses]
+# Permissive licenses only. Slint is used under its royalty-free license (the "Made with Slint"
+# badge in the About section is part of its terms); it also offers GPL-3.0, which stays off this
+# list on purpose.
+allow = [
+  "0BSD",
+  "Apache-2.0",
+  "BSD-2-Clause",
+  "BSD-3-Clause",
+  "BSL-1.0",
+  "CC0-1.0",
+  "MIT",
+  "Unicode-3.0",
+  "Unlicense",
+  "Zlib",
+  "LicenseRef-Slint-Royalty-free-2.0",
+]
+confidence-threshold = 0.8
+
+[bans]
+# Several versions of a crate come with Slint's own dependencies; only report them.
+multiple-versions = "warn"
+wildcards = "allow"
+
+[sources]
+unknown-registry = "deny"
+unknown-git = "deny"
+allow-registry = ["https://github.com/rust-lang/crates.io-index"]
+allow-git = []

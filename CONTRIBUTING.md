@@ -110,6 +110,18 @@ Set up once, in the repository settings (the workflow does not change any settin
    record). Verify the domain for the organization first (Organization settings, Pages, Verified
    domains), so that nobody else can claim subdomains that point to GitHub Pages.
 
+## Dependency checks
+
+[`.github/workflows/audit.yml`](.github/workflows/audit.yml) runs `cargo deny check` (rules in
+[`deny.toml`](deny.toml)) when `Cargo.lock` or a `Cargo.toml` changes, and every Monday, because new
+advisories show up without any change here. It fails on known vulnerabilities and yanked crates
+(RustSec advisory database), on licenses outside the allowed list, and on crates from anywhere but
+crates.io. A new license that is fine goes into `deny.toml`; a vulnerability is fixed by updating the
+crate (`cargo update -p <crate>`), and only ignored in `deny.toml`, with a reason, if no fix exists.
+
+Locally (once: `cargo install cargo-deny cargo-audit --locked`): `cargo deny check`, and
+`cargo audit` for the unmaintained-crate warnings that `cargo deny` leaves out.
+
 ## Versioning
 
 Breakbar follows [Semantic Versioning](https://semver.org/). The version lives in one place,
