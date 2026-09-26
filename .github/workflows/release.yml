@@ -155,3 +155,17 @@ jobs:
             dist/breakbar-launcher.exe \
             dist/breakbar-launcher.exe.sha256 \
             dist/latest.json
+
+  # A release created with the default token does not start other workflows, so the website is
+  # rebuilt explicitly; it then shows the new version.
+  site:
+    needs: release
+    runs-on: ubuntu-latest
+    permissions:
+      actions: write
+    env:
+      GH_TOKEN: ${{ github.token }}
+      GH_REPO: ${{ github.repository }}
+    steps:
+      - name: Rebuild the website
+        run: gh workflow run site.yml --ref main

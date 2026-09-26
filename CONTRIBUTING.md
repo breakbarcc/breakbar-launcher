@@ -82,6 +82,28 @@ that instead; `signed` in `latest.json` becomes `true`. If signing fails, no rel
 (it never falls back to an unsigned one). The signing job has not been run yet: check its inputs
 against SignPath's documentation for the GitHub connector when setting it up.
 
+## Website
+
+The site at https://launcher.breakbar.cc is built from [`site/`](site) (see
+[site/README.md](site/README.md)) and published with GitHub Pages by
+[`.github/workflows/site.yml`](.github/workflows/site.yml):
+
+- A push to `main` that changes `site/` builds and deploys it. A pull request only builds it.
+- The version on the page is the newest GitHub release. The release workflow starts the site
+  workflow after publishing (`gh workflow run site.yml`), because a release created with the default
+  token does not trigger other workflows.
+- The workflow can also be started by hand (Actions, Site, "Run workflow").
+
+Set up once, in the repository settings (the workflow does not change any settings):
+
+1. Settings, Pages, Source: "GitHub Actions". Do this before the first push that touches `site/`,
+   otherwise the deploy step fails (run it again afterwards).
+2. Settings, Pages, Custom domain: `launcher.breakbar.cc`; tick "Enforce HTTPS" once the
+   certificate is issued.
+3. DNS of breakbar.cc: a `CNAME` record `launcher` pointing to `breakbarcc.github.io` (no `A`
+   record). Verify the domain for the organization first (Organization settings, Pages, Verified
+   domains), so that nobody else can claim subdomains that point to GitHub Pages.
+
 ## Versioning
 
 Breakbar follows [Semantic Versioning](https://semver.org/). The version lives in one place,

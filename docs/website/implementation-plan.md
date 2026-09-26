@@ -22,7 +22,7 @@ distributed through GitHub releases (see the release workflow and CONTRIBUTING.m
 2. **Add the site to the repository** as `site/`, with `site/src/CNAME` containing
    `launcher.breakbar.cc`. Done. Still open: the legal texts (`site/src/_data/text/*.json`, key
    `legal`, and `src/_includes/legal-body.njk`), German screenshots.
-3. **Add the deploy workflow** `.github/workflows/site.yml`:
+3. **Add the deploy workflow** `.github/workflows/site.yml` (done, see "Website" in CONTRIBUTING.md):
    - Triggers: push to `main` that changes `site/**`, `workflow_dispatch`.
    - Job: check out, look up the newest release (`gh release view --json tagName`), then
      `npm ci && npm run build` in `site/` with `SITE_VERSION` set, then `actions/upload-pages-artifact`
@@ -32,7 +32,7 @@ distributed through GitHub releases (see the release workflow and CONTRIBUTING.m
 4. **Refresh the site after every release.** A release created by the release workflow with the
    default token does not start other workflows. Add a last step to `release.yml`:
    `gh workflow run site.yml` (needs `actions: write` on that job). Then the version on the page
-   updates within a minute of a release.
+   updates within a minute of a release. Done: the `site` job of `release.yml`.
 5. **Turn on Pages:** repository Settings, Pages, Source "GitHub Actions". Then set the custom domain
    `launcher.breakbar.cc` and later "Enforce HTTPS" (available after the certificate is issued).
 6. **DNS** (where breakbar.cc is managed): add `CNAME launcher -> breakbarcc.github.io`. Do not add

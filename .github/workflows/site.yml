@@ -1,0 +1,78 @@
+name: Site
+
+# Builds the website in `site/` and publishes it with GitHub Pages (launcher.breakbar.cc).
+# See "Website" in CONTRIBUTING.md.
+on:
+  push:
+    branches: [main]
+    paths:
+      - "site/**"
+      - ".github/workflows/site.yml"
+  # A pull request only builds the site, which catches a missing text or a broken template.
+  pull_request:
+    paths:
+      - "site/**"
+      - ".github/workflows/site.yml"
+  # Also started by the release workflow, so that the version on the page follows a new release.
+  workflow_dispatch:
+
+# One deployment at a time; a later run waits instead of racing the earlier one.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+
+      # The page shows the newest published version. Before the first release exists the build
+      # falls back to the version in Cargo.toml.
+      - name: Find the newest release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          tag=$(gh release view --json tagName --jq .tagName 2>/dev/null || true)
+          if [ -n "$tag" ]; then
+            echo "SITE_VERSION=${tag#v}" >> "$GITHUB_ENV"
+            echo "Newest release: $tag"
+          else
+            echo "No release yet, the version comes from Cargo.toml."
+          fi
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: site/package-lock.json
+
+      - name: Build the site
+        working-directory: site
+        run: |
+          npm ci
+          npm run build
+
+      - uses: actions/configure-pages@v5
+        if: ${{ github.event_name != 'pull_request' }}
+
+      - uses: actions/upload-pages-artifact@v3
+        if: ${{ github.event_name != 'pull_request' }}
+        with:
+          path: site/_site
+
+  deploy:
+    needs: build
+    if: ${{ github.event_name != 'pull_request' }}
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

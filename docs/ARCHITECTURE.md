@@ -347,4 +347,4 @@ Config: `%APPDATA%\Breakbar\config.toml` (atomic write via temp file + `ReplaceF
 | 5.1 | ✅ Patch detection (local, `Gw2.dat` vs `Local.dat` write time) and "Set up one after another" (banner, login state, sequential refresh); the "update required" banner is not done |
 | 5.2 | Window layout per account, priority/affinity, GFX per account |
 | 6.1 | ✅ Release workflow: a push to the `release` branch publishes the crate version as a GitHub release (`breakbar-launcher.exe`, checksum, `latest.json`); the signing job for SignPath is prepared but off and untested (see CONTRIBUTING.md) |
-| 6.2 | Code signing approved and switched on, website, in-app update check and update, winget |
+| 6.2 | ✅ Website (Eleventy in `site/`, English and German, deployed with GitHub Pages by `site.yml`). Open: code signing approved and switched on, in-app update check and update, winget |
