@@ -1,6 +1,7 @@
 {
   "paths": {
-    "home": "/de/"
+    "home": "/de/",
+    "privacy": "/de/datenschutz/"
   },
   "pages": {
     "home": {
@@ -11,6 +12,10 @@
     "notFound": {
       "title": "Seite nicht gefunden — Breakbar Launcher",
       "description": ""
+    },
+    "privacy": {
+      "title": "Datenschutz — Breakbar Launcher",
+      "description": "Datenschutzerklärung der Website launcher.breakbar.cc: Hosting bei GitHub Pages, keine Cookies, kein Tracking."
     }
   },
   "common": {
@@ -282,5 +287,58 @@
     "title": "Diese Seite gibt es nicht.",
     "text": "Die gesuchte Seite ist nicht hier — vielleicht wurde sie verschoben, oder der Link war falsch.",
     "back": "Zurück zur Startseite"
+  },
+  "privacy": {
+    "title": "Datenschutzerklärung",
+    "sections": [
+      {
+        "heading": "Geltungsbereich und Verantwortlicher",
+        "paragraphs": [
+          "Diese Datenschutzerklärung gilt für die Website <strong>launcher.breakbar.cc</strong> (Breakbar Launcher). Für <a href=\"https://www.breakbar.cc/\" rel=\"noopener\">breakbar.cc</a> und die Tools auf den anderen Subdomains gelten deren eigene Datenschutzerklärungen, für die Hauptseite <a href=\"https://www.breakbar.cc/datenschutz\" rel=\"noopener\">diese</a>.",
+          "Verantwortlich im Sinne der DSGVO ist Patrick Schmidt, Fischenzstr. 39, Konstanz, E-Mail: info@breakbar.cc. Weitere Angaben stehen im <a href=\"https://www.breakbar.cc/impressum\" rel=\"noopener\">Impressum</a>."
+        ]
+      },
+      {
+        "heading": "Hosting bei GitHub Pages",
+        "paragraphs": [
+          "Diese Website wird über GitHub Pages ausgeliefert (GitHub Inc., 88 Colin P. Kelly Jr. Street, San Francisco, CA 94107, USA). Beim Aufruf verarbeitet GitHub technisch notwendige Server-Log-Daten, unter anderem die IP-Adresse, Datum und Uhrzeit des Zugriffs, die aufgerufene Seite und Angaben zum verwendeten Browser. Dabei können Daten in die USA übermittelt werden.",
+          "Rechtsgrundlage ist Art. 6 Abs. 1 lit. f DSGVO: Ich habe ein berechtigtes Interesse an einer sicheren und effizienten Bereitstellung dieser Website. Weitere Informationen: <a href=\"https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement\" rel=\"noopener\">Datenschutzerklärung von GitHub</a>."
+        ]
+      },
+      {
+        "heading": "Domain-Namensdienst",
+        "paragraphs": [
+          "Die Domain breakbar.cc wird über den DNS-Dienst von Cloudflare, Inc. (101 Townsend St, San Francisco, CA 94107, USA) verwaltet. Cloudflare beantwortet dabei nur die Anfrage, welche Adresse zu „launcher.breakbar.cc“ gehört. Der Datenverkehr dieser Website läuft nicht über Cloudflare. Weitere Informationen: <a href=\"https://www.cloudflare.com/privacypolicy/\" rel=\"noopener\">Datenschutzerklärung von Cloudflare</a>."
+        ]
+      },
+      {
+        "heading": "Cookies, lokaler Speicher und Tracking",
+        "paragraphs": [
+          "Diese Website setzt keine Cookies und verwendet keine Analyse- oder Tracking-Dienste. Schriftarten, Skripte und Bilder werden von dieser Website selbst ausgeliefert, es wird nichts von Servern Dritter nachgeladen.",
+          "Wenn Sie zwischen hellem und dunklem Design wechseln, wird Ihre Auswahl unter dem Schlüssel „breakbar-theme“ im lokalen Speicher (localStorage) Ihres Browsers abgelegt, damit sie beim nächsten Besuch erhalten bleibt. Der Wert verlässt Ihren Browser nicht, wird nur auf Ihren ausdrücklichen Wunsch gesetzt (§ 25 Abs. 2 Nr. 2 TDDDG) und lässt sich in den Browsereinstellungen jederzeit löschen."
+        ]
+      },
+      {
+        "heading": "Download und externe Links",
+        "paragraphs": [
+          "Der Download-Knopf und die Links zu Änderungsliste, Lizenz, Quellcode und Fehlermeldungen führen zu GitHub (github.com). Sobald Sie sie anklicken, verarbeitet GitHub Ihre Anfrage, unter anderem Ihre IP-Adresse, nach seiner eigenen Datenschutzerklärung. Das Gleiche gilt für die Links zu breakbar.cc und slint.dev. Auf die dortige Datenverarbeitung habe ich keinen Einfluss."
+        ]
+      },
+      {
+        "heading": "Das Programm Breakbar Launcher",
+        "paragraphs": [
+          "Das Programm läuft lokal auf Ihrem Rechner. Es speichert seine Einstellungen, die Konten (Namen und Pfade) und eine kleine Protokolldatei mit Fehlermeldungen in den Ordnern <code>%APPDATA%\\Breakbar</code> und <code>%LOCALAPPDATA%\\Breakbar</code>. Passwörter und E-Mail-Adressen speichert es nicht; eine gespeicherte Anmeldung legt das Spiel selbst in seiner eigenen Datei ab.",
+          "Die aktuelle Version baut von sich aus keine Internetverbindung auf und sendet keine Daten an mich oder an Dritte. Sollte sich das ändern, etwa durch eine Prüfung auf neue Versionen, wird diese Erklärung angepasst."
+        ]
+      },
+      {
+        "heading": "Ihre Rechte",
+        "paragraphs": [
+          "Sie haben das Recht auf Auskunft (Art. 15 DSGVO), Berichtigung (Art. 16), Löschung (Art. 17), Einschränkung der Verarbeitung (Art. 18) und Datenübertragbarkeit (Art. 20). Werden Daten aufgrund berechtigter Interessen verarbeitet, können Sie dem widersprechen (Art. 21). Außerdem können Sie sich bei einer Datenschutz-Aufsichtsbehörde beschweren (Art. 77), zum Beispiel beim Landesbeauftragten für den Datenschutz und die Informationsfreiheit Baden-Württemberg.",
+          "Bei Fragen wenden Sie sich an info@breakbar.cc. Die Server-Logs beim Hosting liegen bei GitHub, Auskunfts- und Löschwünsche dazu richten Sie bitte an GitHub."
+        ]
+      }
+    ],
+    "updated": "Stand: September 2026"
   }
 }

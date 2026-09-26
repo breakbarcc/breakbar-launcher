@@ -19,7 +19,7 @@ Node 20 or newer.
 | All texts, per language | `src/_data/text/en.json`, `de.json` (same keys; the build fails if `de.json` lacks one) |
 | Languages, URL prefixes, screenshot folder | `src/_data/locales.js` |
 | Version, links | `src/_data/site.js` |
-| Page templates | `src/home.njk`, `notfound.njk`, `sitemap.xml.njk` |
+| Page templates | `src/home.njk`, `privacy.njk`, `notfound.njk`, `sitemap.xml.njk` |
 | Header, footer, `<head>` | `src/_includes/` |
 | Styles, script | `src/style.css`, `src/script.js` |
 | Images | `src/assets/` (see the README there) |
@@ -33,6 +33,8 @@ build reads the workspace version from `Cargo.toml`.
 2. Render its screenshots (`BREAKBAR_PREVIEW_LANG=xx`, see `src/assets/README.md`) into
    `src/assets/shots/xx/` and point `shots` at that folder.
 
-The site has no imprint or privacy page of its own: the footer links go to the pages of the main site
-(`urls.imprint`, `urls.privacy` in `src/_data/site.js`). Those pages have to cover this site too (see
-`docs/website/implementation-plan.md`, "Legal pages").
+The site has no imprint of its own: the footer links to the one of the main site (`urls.imprint` in
+`src/_data/site.js`). The privacy policy is a page of the site (text under `privacy` in the language
+files): hosting (GitHub Pages), the DNS service and the browser storage differ from the main site. Change
+it whenever one of those changes (an analytics script, a new external resource, a new network feature of
+the program).

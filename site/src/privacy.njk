@@ -1,0 +1,24 @@
+---
+layout: base.njk
+pagination:
+  data: locales
+  size: 1
+  alias: locale
+pageKey: privacy
+permalink: "{{ text[locale.code].paths.privacy }}index.html"
+---
+{%- set p = text[locale.code].privacy -%}
+<main class="legal-main">
+  <div class="wrap">
+    <h1>{{ p.title }}</h1>
+    {%- for section in p.sections %}
+    <section>
+      <h2>{{ section.heading }}</h2>
+      {%- for paragraph in section.paragraphs %}
+      <p>{{ paragraph | safe }}</p>
+      {%- endfor %}
+    </section>
+    {%- endfor %}
+    <p class="legal-updated">{{ p.updated }}</p>
+  </div>
+</main>

@@ -23,9 +23,9 @@ export default {
     license: `${repo}/blob/main/LICENSE`,
     issues: `${repo}/issues/new`,
     main: "https://www.breakbar.cc/",
-    // The legal pages of the whole breakbar.cc project (one operator); this site has none of its own.
+    // The imprint is the one of the whole breakbar.cc project (one operator); this site has none of its
+    // own. The privacy policy is its own page, because hosting and data differ (see privacy.njk).
     imprint: "https://www.breakbar.cc/impressum",
-    privacy: "https://www.breakbar.cc/datenschutz",
     slint: "https://slint.dev",
   },
 };

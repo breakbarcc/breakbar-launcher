@@ -1,6 +1,7 @@
 {
   "paths": {
-    "home": "/"
+    "home": "/",
+    "privacy": "/privacy/"
   },
   "pages": {
     "home": {
@@ -11,6 +12,10 @@
     "notFound": {
       "title": "Page not found — Breakbar Launcher",
       "description": ""
+    },
+    "privacy": {
+      "title": "Privacy Policy — Breakbar Launcher",
+      "description": "Privacy policy of the website launcher.breakbar.cc: hosted on GitHub Pages, no cookies, no tracking."
     }
   },
   "common": {
@@ -282,5 +287,58 @@
     "title": "This page doesn't exist.",
     "text": "The page you were looking for isn't here — maybe it moved, or the link was wrong.",
     "back": "Back to the start page"
+  },
+  "privacy": {
+    "title": "Privacy Policy",
+    "sections": [
+      {
+        "heading": "Scope and controller",
+        "paragraphs": [
+          "This privacy policy applies to the website <strong>launcher.breakbar.cc</strong> (Breakbar Launcher). <a href=\"https://www.breakbar.cc/\" rel=\"noopener\">breakbar.cc</a> and the tools on its other subdomains have their own privacy policies; the one of the main site is <a href=\"https://www.breakbar.cc/datenschutz\" rel=\"noopener\">here</a> (in German).",
+          "The controller under the GDPR is Patrick Schmidt, Fischenzstr. 39, Konstanz, Germany, email: info@breakbar.cc. More details are in the <a href=\"https://www.breakbar.cc/impressum\" rel=\"noopener\">imprint</a> (in German)."
+        ]
+      },
+      {
+        "heading": "Hosting with GitHub Pages",
+        "paragraphs": [
+          "This website is served by GitHub Pages (GitHub Inc., 88 Colin P. Kelly Jr. Street, San Francisco, CA 94107, USA). When you open it, GitHub processes the server log data that is technically necessary, among them your IP address, the date and time of the request, the page requested and details about your browser. This data may be transferred to the USA.",
+          "The legal basis is Art. 6(1)(f) GDPR: I have a legitimate interest in providing this website securely and efficiently. More information: <a href=\"https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement\" rel=\"noopener\">GitHub's privacy statement</a>."
+        ]
+      },
+      {
+        "heading": "Domain name service",
+        "paragraphs": [
+          "The domain breakbar.cc is managed with the DNS service of Cloudflare, Inc. (101 Townsend St, San Francisco, CA 94107, USA). Cloudflare only answers the question which address belongs to “launcher.breakbar.cc”. The traffic of this website does not pass through Cloudflare. More information: <a href=\"https://www.cloudflare.com/privacypolicy/\" rel=\"noopener\">Cloudflare's privacy policy</a>."
+        ]
+      },
+      {
+        "heading": "Cookies, local storage and tracking",
+        "paragraphs": [
+          "This website sets no cookies and uses no analytics or tracking services. Fonts, scripts and images are served by this website itself; nothing is loaded from third-party servers.",
+          "If you switch between the light and the dark theme, your choice is kept under the key “breakbar-theme” in your browser's local storage (localStorage) so that it is still there on your next visit. The value never leaves your browser, is only set at your explicit request (section 25(2) no. 2 TDDDG) and can be deleted in your browser settings at any time."
+        ]
+      },
+      {
+        "heading": "Download and external links",
+        "paragraphs": [
+          "The download button and the links to the changelog, the license, the source code and problem reports lead to GitHub (github.com). As soon as you click one, GitHub processes your request, including your IP address, under its own privacy statement. The same applies to the links to breakbar.cc and slint.dev. I have no influence on the data processing there."
+        ]
+      },
+      {
+        "heading": "The Breakbar Launcher program",
+        "paragraphs": [
+          "The program runs locally on your computer. It stores its settings, the accounts (names and paths) and a small log file with error messages in the folders <code>%APPDATA%\\Breakbar</code> and <code>%LOCALAPPDATA%\\Breakbar</code>. It does not store passwords or email addresses; a saved login is kept by the game itself in its own file.",
+          "The current version does not open any internet connection on its own and sends no data to me or to third parties. Should that change, for example with a check for new versions, this policy will be updated."
+        ]
+      },
+      {
+        "heading": "Your rights",
+        "paragraphs": [
+          "You have the right of access (Art. 15 GDPR), rectification (Art. 16), erasure (Art. 17), restriction of processing (Art. 18) and data portability (Art. 20). Where data is processed on the basis of legitimate interests, you can object to it (Art. 21). You can also lodge a complaint with a data protection supervisory authority (Art. 77), for example the State Commissioner for Data Protection and Freedom of Information of Baden-Württemberg.",
+          "If you have questions, write to info@breakbar.cc. The server logs of the hosting are held by GitHub; please address requests for access or erasure of those to GitHub."
+        ]
+      }
+    ],
+    "updated": "As of September 2026"
   }
 }

@@ -12,7 +12,7 @@ distributed through GitHub releases (see the release workflow and CONTRIBUTING.m
 | Hosting | GitHub Pages (free, HTTPS, no server), deployed by a GitHub Actions workflow. |
 | Technology | Eleventy (Nunjucks templates, JSON text files per language, no client framework) in `site/`; English at `/`, German at `/de/`. Chosen over plain HTML because of the second language (one template, two text files) and over Vite + React because the site is content only. See `site/README.md`. |
 | Version on the page | Passed to the build as `SITE_VERSION` from the latest GitHub release at deploy time, not fetched in the browser. Works without JavaScript and needs no cross-origin request. |
-| Legal pages | None of its own: the footer links to the imprint and privacy pages of the main site (https://www.breakbar.cc/impressum and /datenschutz), the same operator. Those pages must cover this site too: it is hosted by GitHub Pages (server logs with IP addresses), the download comes from GitHub, and the page keeps the theme choice in the browser (localStorage, no cookies). The privacy page of the main site currently says that subdomains have their own notices, so it needs a paragraph for launcher.breakbar.cc. Not legal advice. |
+| Legal pages | The imprint is the one of the main site (https://www.breakbar.cc/impressum, same operator), linked from the footer. The privacy policy is its own page in German and English (`/privacy/`, `/de/datenschutz/`), because the hosting (GitHub Pages), the DNS service (Cloudflare), the downloads (GitHub) and the browser storage (theme) differ from the main site's. Keep it in step with the site and the program. Not legal advice. |
 | Analytics | None. No cookies, no third-party scripts (keeps the privacy page short). |
 
 ## 2. Steps in order
@@ -21,7 +21,7 @@ distributed through GitHub releases (see the release workflow and CONTRIBUTING.m
    converted into Eleventy templates (phase 1), the images live in `site/src/assets/`.
 2. **Add the site to the repository** as `site/`, with `site/src/CNAME` containing
    `launcher.breakbar.cc`. Done, including the German version and screenshots. The legal pages are
-   those of the main site (see "Legal pages" above).
+   the imprint of the main site and the site's own privacy policy (see "Legal pages" above).
 3. **Add the deploy workflow** `.github/workflows/site.yml` (done, see "Website" in CONTRIBUTING.md):
    - Triggers: push to `release` that changes `site/**` (so the site never runs ahead of the
      released program), pull requests (build only), `workflow_dispatch`.
@@ -65,7 +65,8 @@ distributed through GitHub releases (see the release workflow and CONTRIBUTING.m
 | Footer | License (MIT) | https://github.com/breakbarcc/breakbar-launcher/blob/main/LICENSE |
 | Footer, download card | Report a problem | https://github.com/breakbarcc/breakbar-launcher/issues/new |
 | Footer | Made with Slint (badge) | https://slint.dev |
-| Footer | Imprint / Privacy | https://www.breakbar.cc/impressum, https://www.breakbar.cc/datenschutz |
+| Footer | Imprint | https://www.breakbar.cc/impressum |
+| Footer | Privacy | `/privacy/`, `/de/datenschutz/` |
 | Not linked, used by the program | update manifest | https://github.com/breakbarcc/breakbar-launcher/releases/latest/download/latest.json |
 
 Links that go back to the site:
@@ -84,14 +85,14 @@ Links that go back to the site:
 - [ ] Every link in the table above works (check by hand once, or with a link checker in CI).
 - [ ] `https://launcher.breakbar.cc` opens with a valid certificate, `http://` redirects to `https://`.
 - [ ] Light and dark theme, phone width (375 px), keyboard only, no horizontal scrolling.
-- [ ] The imprint and privacy pages of the main site cover this site (hosting at GitHub, no analytics, theme in localStorage).
+- [ ] The privacy policy is read once against the site as it is (hosting, external links, storage) and against the program (no network access of its own).
 - [ ] Open Graph preview looks right (paste the URL into a chat to see the preview).
 - [ ] The disclaimer text is in the footer, the Slint badge is shown, no game logos or artwork.
 - [ ] The FAQ answer on "Is it allowed?" is the reviewed one.
 
 ## 5. Open points that need you
 
-- The paragraph for launcher.breakbar.cc on the privacy page of the main site.
+- Whether the privacy policy is right for you (a legal review is up to you; the text is a draft).
 - The exact wording of the FAQ answer about permission and risk.
 - DNS access for breakbar.cc and the change on the main site.
 - Whether the site source stays in this repository (recommended) or moves out.
