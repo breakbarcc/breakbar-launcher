@@ -73,12 +73,15 @@ fn watch(window: &MainWindow, gw2_path: PathBuf) {
 }
 
 /// Waits for the patch client to finish and go away. Once `Gw2.dat` has stopped changing for
-/// `PATCH_IDLE_GRACE` while a client is still running, the download is done and the client is
-/// closed automatically instead of left for the user to notice and close by hand. A gap with no
-/// client running at all still gets `RESTART_GRACE` first, in case it is mid self-restart.
+/// `PATCH_IDLE_GRACE` while a client is still running, the download is done and closing it is
+/// attempted once (`close_patch_client`) — but this loop is what actually decides the client is
+/// gone, by seeing `running_clients` become empty, exactly like a manual close. Closing is only
+/// ever attempted once per launch, so a client that doesn't react to it (or a companion process
+/// that restarts after it) still gets noticed once it eventually goes away, just not re-closed.
 fn wait_for_patch_to_finish(gw2_path: &Path) {
     let mut last_stamp = archive_stamp(gw2_path);
     let mut stable_since = Instant::now();
+    let mut close_attempted = false;
     loop {
         if launcher::running_clients(gw2_path).is_empty() {
             thread::sleep(RESTART_GRACE);
@@ -90,9 +93,9 @@ fn wait_for_patch_to_finish(gw2_path: &Path) {
 
         let stamp = archive_stamp(gw2_path);
         if stamp == last_stamp {
-            if stable_since.elapsed() >= PATCH_IDLE_GRACE {
+            if !close_attempted && stable_since.elapsed() >= PATCH_IDLE_GRACE {
                 close_patch_client(gw2_path);
-                return;
+                close_attempted = true;
             }
         } else {
             last_stamp = stamp;
@@ -109,23 +112,46 @@ fn archive_stamp(gw2_path: &Path) -> Option<(u64, std::time::SystemTime)> {
     Some((metadata.len(), metadata.modified().ok()?))
 }
 
-/// Closes every remaining client of `gw2_path`: `WM_CLOSE` first, `CLOSE_GRACE` to react, then
-/// terminated if still running — `companions::close_all`'s escalation, minus its first "let it
-/// exit on its own" step, since Breakbar itself is the one asking here.
+/// Attempts to close every remaining client of `gw2_path` once: `WM_CLOSE` first, `CLOSE_GRACE` to
+/// react, then terminated if still running — `companions::close_all`'s escalation, minus its first
+/// "let it exit on its own" step, since Breakbar itself is the one asking here. Every step is
+/// logged (not just the outcome) so a client that doesn't actually close can be diagnosed from
+/// `breakbar.log` — whether it ignored `WM_CLOSE`, or `terminate` itself failed, is otherwise
+/// invisible from outside.
 fn close_patch_client(gw2_path: &Path) {
-    for pid in launcher::running_clients(gw2_path) {
-        let _ = bb_win::window::request_close(pid);
+    let pids = launcher::running_clients(gw2_path);
+    crate::log::write(format!("update finished, asking {pids:?} to close"));
+    for pid in &pids {
+        match bb_win::window::request_close(*pid) {
+            Ok(count) => crate::log::write(format!("asked {count} window(s) of {pid} to close")),
+            Err(error) => crate::log::write(format!("could not ask {pid} to close: {error}")),
+        }
     }
+
     let deadline = Instant::now() + CLOSE_GRACE;
     while Instant::now() < deadline && !launcher::running_clients(gw2_path).is_empty() {
         thread::sleep(POLL_INTERVAL);
     }
-    for pid in launcher::running_clients(gw2_path) {
-        if let Ok(process) = bb_win::process::Process::open(pid) {
-            let _ = bb_win::process::terminate(process.raw_handle());
+
+    let remaining = launcher::running_clients(gw2_path);
+    if remaining.is_empty() {
+        crate::log::write("update client closed on its own".to_owned());
+        return;
+    }
+    crate::log::write(format!(
+        "{remaining:?} still running after {CLOSE_GRACE:?}, terminating"
+    ));
+    for pid in remaining {
+        match bb_win::process::Process::open(pid) {
+            Ok(process) => match bb_win::process::terminate(process.raw_handle()) {
+                Ok(()) => crate::log::write(format!("terminated {pid}")),
+                Err(error) => crate::log::write(format!("could not terminate {pid}: {error}")),
+            },
+            Err(error) => {
+                crate::log::write(format!("could not open {pid} to terminate it: {error}"));
+            }
         }
     }
-    crate::log::write("closed the update client automatically".to_owned());
 }
 
 /// Tells the user whether the update landed: the client only ever patches on a normal start, so
