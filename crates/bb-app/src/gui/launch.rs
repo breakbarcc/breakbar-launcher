@@ -415,6 +415,7 @@ pub(super) fn launch_failure(error: &LaunchError) -> (LaunchFailure, SharedStrin
         LaunchError::SteamInstallMissing(_) => (LaunchFailure::SteamInstallMissing, String::new()),
         LaunchError::SetupNeedsExclusive(_) => (LaunchFailure::SetupNeedsExclusive, String::new()),
         LaunchError::SetupClientRunning => (LaunchFailure::SetupClientRunning, String::new()),
+        LaunchError::PatchNeedsExclusive => (LaunchFailure::PatchNeedsExclusive, String::new()),
         LaunchError::AlreadyRunning(_) => (LaunchFailure::AlreadyRunning, String::new()),
         LaunchError::Profile(error) => (LaunchFailure::Profile, error.to_string()),
         LaunchError::ProfileLink(error) => (LaunchFailure::ProfileLink, error.to_string()),

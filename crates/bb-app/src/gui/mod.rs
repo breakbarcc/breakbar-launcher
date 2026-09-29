@@ -27,6 +27,7 @@ mod convert;
 mod launch;
 mod list;
 mod login;
+mod patch;
 #[cfg(test)]
 mod preview;
 mod settings;
@@ -304,6 +305,7 @@ pub fn run() -> Result<(), slint::PlatformError> {
 
     launch::wire(&window, &app, &queue);
     login::wire(&window, &app, &queue);
+    patch::wire(&window, &app);
     steam_dialog::wire(&window, &app);
     list::wire(&window);
     accounts::wire(&window, &app);
@@ -458,8 +460,8 @@ fn start_patch_check(window: &MainWindow, app: &Rc<RefCell<App>>) -> slint::Time
 }
 
 /// One tick of the patch check: does nothing if the setting is off or no game path is known yet,
-/// otherwise fetches the local build stamp and the server's current build on a background thread
-/// and reports the result back to the window.
+/// otherwise runs `check_for_patch` on a background thread and reports the result back to the
+/// window.
 fn run_patch_check(window: &MainWindow, app: &Rc<RefCell<App>>) {
     let (enabled, gw2_path) = {
         let app = app.borrow();
@@ -473,20 +475,27 @@ fn run_patch_check(window: &MainWindow, app: &Rc<RefCell<App>>) {
     let _ = thread::Builder::new()
         .name("patch-check".to_owned())
         .spawn(move || {
-            let (Some(local_mtime), Some(server_build)) = (
-                game::game_build(&gw2_path),
-                crate::gw2_build::fetch_current_build(),
-            ) else {
-                return;
-            };
-            let baseline = bb_store::known_server_build();
-            let result = crate::gw2_build::check(local_mtime, server_build, baseline);
-            let (build, mtime) = result.new_baseline;
-            let _ = bb_store::set_known_server_build(build, mtime);
-            let _ = weak.upgrade_in_event_loop(move |window| {
-                window.set_patch_available(result.update_available);
-            });
+            if let Some(available) = check_for_patch(&gw2_path) {
+                let _ = weak.upgrade_in_event_loop(move |window| {
+                    window.set_patch_available(available);
+                });
+            }
         });
+}
+
+/// Fetches the current local build stamp and the server's current build, compares them against
+/// the stored baseline (see `gw2_build::check`), persists the new one, and returns whether an
+/// update is available. `None` if either fetch failed. Blocking network I/O — call off the UI
+/// thread. Also used directly by `patch::watch` once a manually started patch client exits, since
+/// that already runs on a background thread and needs the result synchronously for its toast.
+pub(super) fn check_for_patch(gw2_path: &Path) -> Option<bool> {
+    let local_mtime = game::game_build(gw2_path)?;
+    let server_build = crate::gw2_build::fetch_current_build()?;
+    let baseline = bb_store::known_server_build();
+    let result = crate::gw2_build::check(local_mtime, server_build, baseline);
+    let (build, mtime) = result.new_baseline;
+    let _ = bb_store::set_known_server_build(build, mtime);
+    Some(result.update_available)
 }
 
 /// Opens the instance switcher overlay in the theme of the main window. `None` (with a toast) if

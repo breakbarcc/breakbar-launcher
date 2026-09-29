@@ -6,6 +6,17 @@ All notable changes to Breakbar Launcher. The format follows
 
 Everything before 0.2.0 is in the git history and in [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
 
+## [0.11.0] - 2026-09-30
+
+### Added
+
+- The "a Guild Wars 2 update is available" banner has a "Start now" button: it starts the game
+  directly (no account, the same as starting it outside Breakbar) so it can download the patch,
+  then closes the client on its own once `Gw2.dat` has stopped changing for a few seconds (asked
+  nicely first, then closed by force if it doesn't react), instead of leaving it open at the login
+  screen for you to close by hand. Refused while another client is running, since patching needs
+  exclusive access to the game archive, just like setting up a login does.
+
 ## [0.10.0] - 2026-09-29
 
 ### Added

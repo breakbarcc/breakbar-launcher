@@ -46,6 +46,8 @@ pub enum LaunchError {
     SteamInstallMissing(String),
     #[error("Setting up the login of {0} needs all other Guild Wars 2 clients to be closed first.")]
     SetupNeedsExclusive(String),
+    #[error("Close all running Guild Wars 2 clients first, then start the update again.")]
+    PatchNeedsExclusive,
     #[error("An account is currently being set up. Close that client before starting another one.")]
     SetupClientRunning,
     #[error("{0} is already running.")]
@@ -231,6 +233,36 @@ pub fn launch(
     })
 }
 
+/// Starts `gw2_path` directly: no `-shareArchive`, no account, exactly like starting the game
+/// outside Breakbar. `Gw2.dat` (what a patch updates) lives next to the client, entirely outside
+/// the per-account profile machinery, so patching needs neither a login nor
+/// `profile_link::point_to_account` — the account-profile junction is left exactly as it is.
+///
+/// Refused while another client runs, for the same reason a "Set up login" launch is: patching
+/// needs exclusive, non-`-shareArchive` access to `Gw2.dat`.
+pub fn launch_to_patch(gw2_path: &Path) -> Result<(), LaunchError> {
+    if !gw2_path.is_file() {
+        return Err(LaunchError::NoGamePath);
+    }
+
+    let _lock = bb_win::mutex::OwnedMutex::acquire(LAUNCH_LOCK).inspect_err(|error| {
+        crate::log::write(format!(
+            "could not take the launch lock, starting the update anyway: {error}"
+        ));
+    });
+    if !running_clients(gw2_path).is_empty() {
+        return Err(LaunchError::PatchNeedsExclusive);
+    }
+
+    ensure_mutex_clear(gw2_path);
+    let working_dir = gw2_path.parent().unwrap_or(gw2_path);
+    Command::new(gw2_path)
+        .current_dir(working_dir)
+        .spawn()
+        .map_err(LaunchError::Spawn)?;
+    Ok(())
+}
+
 /// Undoes a launch that never finished: if Breakbar crashed or was killed while
 /// `%APPDATA%\Guild Wars 2` pointed at an account, a client started outside Breakbar would use that
 /// account's `Local.dat`. Call once at startup; it waits for a launch running in another Breakbar
@@ -414,7 +446,8 @@ fn steam_running() -> bool {
     bb_win::process::find_processes_by_name("steam.exe").map_or(true, |pids| !pids.is_empty())
 }
 
-fn running_clients(gw2_path: &Path) -> Vec<u32> {
+/// The PIDs of every currently running client of `gw2_path`'s executable, Breakbar-started or not.
+pub(crate) fn running_clients(gw2_path: &Path) -> Vec<u32> {
     let exe_name = gw2_path
         .file_name()
         .and_then(|name| name.to_str())
@@ -474,6 +507,40 @@ mod tests {
             None,
         );
         assert!(matches!(result, Err(LaunchError::NoGamePath)));
+    }
+
+    #[test]
+    fn launch_to_patch_missing_game_path_is_rejected() {
+        let result = launch_to_patch(Path::new(r"C:\does\not\exist\Gw2-64.exe"));
+        assert!(matches!(result, Err(LaunchError::NoGamePath)));
+    }
+
+    /// Stands in for a running Guild Wars 2 client with a renamed copy of `ping.exe` (its own
+    /// name, like `a_restarted_client_is_adopted`'s, so the other tests using plain `ping.exe`
+    /// don't see it running), which `running_clients` matches purely by executable name.
+    #[test]
+    fn launch_to_patch_is_refused_while_another_client_runs() {
+        let windir = std::env::var_os("SystemRoot").expect("SystemRoot is set");
+        let name = format!("breakbar-patch-{}.exe", std::process::id());
+        let stand_in = std::env::temp_dir().join(&name);
+        fs::copy(
+            PathBuf::from(windir).join("System32").join("ping.exe"),
+            &stand_in,
+        )
+        .unwrap();
+
+        let mut running = Command::new(&stand_in)
+            .args(["-n", "30", "127.0.0.1"])
+            .stdout(std::process::Stdio::null())
+            .spawn()
+            .unwrap();
+
+        let result = launch_to_patch(&stand_in);
+
+        let _ = running.kill();
+        let _ = running.wait();
+        let _ = fs::remove_file(&stand_in);
+        assert!(matches!(result, Err(LaunchError::PatchNeedsExclusive)));
     }
 
     #[test]

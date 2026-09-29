@@ -361,10 +361,13 @@ component RefreshBanner {
 }
 
 /// Shown above the list when ArenaNet has shipped an update the local client hasn't downloaded
-/// yet. Informational only: Breakbar can't download the patch itself (a client started with
-/// `-shareArchive` can only open `Gw2.dat` read-only), so this just points at starting the game
-/// directly.
+/// yet, with a button to start the download: Breakbar can't download the patch itself (a client
+/// started with `-shareArchive` can only open `Gw2.dat` read-only), but it can start the game
+/// directly, the same as starting it outside Breakbar.
 component PatchAvailableBanner {
+    in property <bool> patching;
+    callback begin-download();
+
     height: content.preferred-height;
     accessible-role: text;
     accessible-label: @tr("A Guild Wars 2 update is available");
@@ -375,32 +378,47 @@ component PatchAvailableBanner {
         border-width: 1px;
         border-color: Theme.accent-line;
     }
-    content := HorizontalLayout {
+    content := VerticalLayout {
         padding: 12px;
         spacing: 10px;
-        VerticalLayout {
-            alignment: start;
-            padding-top: 1px;
-            Icon {
-                path: Icons.download;
-                color: Theme.accent;
+        HorizontalLayout {
+            spacing: 10px;
+            VerticalLayout {
+                alignment: start;
+                padding-top: 1px;
+                Icon {
+                    path: Icons.download;
+                    color: Theme.accent;
+                }
+            }
+            VerticalLayout {
+                horizontal-stretch: 1;
+                spacing: 4px;
+                Text {
+                    text: @tr("A Guild Wars 2 update is available");
+                    font-size: Theme.fs-body;
+                    font-weight: 600;
+                    color: Theme.text;
+                    wrap: word-wrap;
+                }
+                Text {
+                    text: root.patching
+                        ? @tr("Downloading the update — the game window will open, and this closes on its own once it's done.")
+                        : @tr("Start the game directly to download it, then accounts can be started as usual.");
+                    font-size: 12.5px;
+                    color: Theme.text-muted;
+                    wrap: word-wrap;
+                }
             }
         }
-        VerticalLayout {
-            horizontal-stretch: 1;
-            spacing: 4px;
-            Text {
-                text: @tr("A Guild Wars 2 update is available");
-                font-size: Theme.fs-body;
-                font-weight: 600;
-                color: Theme.text;
-                wrap: word-wrap;
-            }
-            Text {
-                text: @tr("Start the game directly once to download it, then accounts can be started as usual.");
-                font-size: 12.5px;
-                color: Theme.text-muted;
-                wrap: word-wrap;
+        HorizontalLayout {
+            alignment: start;
+            Button {
+                kind: ButtonKind.primary;
+                icon: Icons.download;
+                text: @tr("Start now");
+                enabled: !root.patching;
+                clicked => { root.begin-download(); }
             }
         }
     }
@@ -570,6 +588,8 @@ export component MainWindow inherits Window {
     /// A Guild Wars 2 update exists on ArenaNet's servers that the local client hasn't downloaded
     /// yet (see the online update check in the settings).
     in property <bool> patch-available;
+    /// A client started by the "Start now" button is currently running.
+    in property <bool> patching;
     in property <bool> check-for-updates;
     in property <bool> login-setup-steam;
     /// Account whose login setup is offered after creating it (0 = no dialog), its name and platform.
@@ -630,6 +650,7 @@ export component MainWindow inherits Window {
     /// Refresh the logins of the accounts in `refresh-names`, one after another.
     callback refresh-logins();
     callback set-check-for-updates(bool);
+    callback start-patch();
     /// A client exited (Rust calls this; true if it was a setup launch that finished properly).
     callback client-exited(bool);
     callback dismiss-toast(int);
@@ -762,7 +783,7 @@ export component MainWindow inherits Window {
             padding-bottom: 8px;
             RefreshBanner {
                 names: root.refresh-names;
-                enabled: root.login-setup-name == "";
+                enabled: root.login-setup-name == "" && !root.patching;
                 refresh => { root.refresh-logins(); }
             }
         }
@@ -771,7 +792,10 @@ export component MainWindow inherits Window {
             padding-left: 12px;
             padding-right: 12px;
             padding-bottom: 8px;
-            PatchAvailableBanner { }
+            PatchAvailableBanner {
+                patching: root.patching;
+                begin-download => { root.start-patch(); }
+            }
         }
 
         if root.accounts.length == 0: VerticalLayout {

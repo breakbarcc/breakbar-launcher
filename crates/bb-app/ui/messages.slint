@@ -9,6 +9,7 @@ export enum LaunchFailure {
     steam-install-missing,
     setup-needs-exclusive,
     setup-client-running,
+    patch-needs-exclusive,
     already-running,
     profile,
     profile-link,
@@ -39,6 +40,9 @@ export global Messages {
         }
         if kind == LaunchFailure.setup-client-running {
             return @tr("An account is currently being set up. Close that client before starting another one.");
+        }
+        if kind == LaunchFailure.patch-needs-exclusive {
+            return @tr("Close all running Guild Wars 2 clients first, then start the update again.");
         }
         if kind == LaunchFailure.already-running {
             return @tr("„{}“ is already running.", name);
@@ -90,6 +94,23 @@ export global Messages {
             return @tr("The login file of „{}“ did not change. Let the client finish loading before closing it, then try again.", name);
         }
         @tr("The login file of „{}“ did not change. Log in with „Remember email/password“ ticked and close the client normally, then try again.", name)
+    }
+
+    public pure function patch-done-title() -> string {
+        @tr("Update installed")
+    }
+
+    public pure function patch-done() -> string {
+        @tr("Guild Wars 2 was updated. Accounts can be started as usual again.")
+    }
+
+    public pure function patch-unchanged-title() -> string {
+        @tr("No update installed")
+    }
+
+    /// The patch client closed without the local build changing.
+    public pure function patch-unchanged() -> string {
+        @tr("The update wasn't installed. Check your connection and try again.")
     }
 
     public pure function slow-start-title() -> string {
