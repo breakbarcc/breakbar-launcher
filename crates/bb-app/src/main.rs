@@ -5,6 +5,7 @@ mod cli;
 mod companions;
 mod game;
 mod gui;
+mod gw2_build;
 mod headless;
 mod launcher;
 mod log;

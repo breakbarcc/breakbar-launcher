@@ -13,9 +13,9 @@ use bb_core::{Account, CompanionApp};
 use serde::{Deserialize, Serialize};
 
 pub use profile::{
-    delete_profile, ensure_profile_dir, is_set_up, local_dat_path, mark_build_verified,
-    profile_dir, prune_temp, remove_folder, shared_profile_dir, sweep_leftovers, trash_profile,
-    verified_build,
+    delete_profile, ensure_profile_dir, is_set_up, known_server_build, local_dat_path,
+    mark_build_verified, profile_dir, prune_temp, remove_folder, set_known_server_build,
+    shared_profile_dir, sweep_leftovers, trash_profile, verified_build,
 };
 pub use writer::ConfigWriter;
 
@@ -122,6 +122,15 @@ pub struct Config {
     /// moved, so it starts at a fixed default position.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub overlay_position: Option<OverlayPosition>,
+    /// Whether Breakbar periodically asks `ArenaNet`'s public build API whether a new game update
+    /// exists, to show a banner for it. On by default; a config written before this field existed
+    /// has no entry for it, which must still mean "on".
+    #[serde(default = "default_true")]
+    pub check_for_updates: bool,
+}
+
+fn default_true() -> bool {
+    true
 }
 
 /// How the instance-switcher overlay behaves.
@@ -182,6 +191,7 @@ impl Default for Config {
             language: LanguageChoice::default(),
             overlay: OverlaySettings::default(),
             overlay_position: None,
+            check_for_updates: true,
         }
     }
 }
@@ -312,6 +322,17 @@ mod tests {
         assert!(overlay.lock_position);
         assert!(overlay.enabled && overlay.only_when_running);
         assert_eq!(overlay.idle_opacity, 58);
+
+        fs::remove_dir_all(path.parent().unwrap()).unwrap();
+    }
+
+    #[test]
+    fn check_for_updates_defaults_to_true_for_a_config_written_before_it_existed() {
+        let path = temp_path("check-for-updates-default");
+        fs::create_dir_all(path.parent().unwrap()).unwrap();
+        fs::write(&path, "version = 1\n").unwrap();
+
+        assert!(Config::load(&path).unwrap().check_for_updates);
 
         fs::remove_dir_all(path.parent().unwrap()).unwrap();
     }

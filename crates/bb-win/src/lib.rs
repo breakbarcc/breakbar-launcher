@@ -7,6 +7,7 @@ pub mod autostart;
 mod com;
 pub mod console;
 pub mod dialog;
+pub mod http;
 pub mod junction;
 pub mod menu;
 pub mod mutex;

@@ -186,6 +186,8 @@ export component SettingsPage inherits VerticalLayout {
     in property <bool> overlay-locked;
     /// Opacity of the switcher at rest, in percent (30 to 100).
     in property <int> overlay-opacity;
+    /// Whether Breakbar periodically asks ArenaNet's servers whether a game update exists.
+    in property <bool> check-for-updates;
     /// Version of Breakbar, shown in the About section.
     in property <string> version;
     callback back();
@@ -200,6 +202,7 @@ export component SettingsPage inherits VerticalLayout {
     callback set-overlay-only-running(bool);
     callback set-overlay-locked(bool);
     callback set-overlay-opacity(int);
+    callback set-check-for-updates(bool);
     callback open-website();
     callback open-license();
     callback open-slint();
@@ -283,6 +286,12 @@ export component SettingsPage inherits VerticalLayout {
                     color: Theme.text-dim;
                     wrap: word-wrap;
                 }
+            }
+            ToggleRow {
+                text: @tr("Check for game updates online");
+                help: @tr("Asks ArenaNet's servers every few minutes whether a new patch exists, and shows a banner if the local client hasn't downloaded it yet.");
+                checked: root.check-for-updates;
+                toggled(value) => { root.set-check-for-updates(value); }
             }
 
             SectionLabel {

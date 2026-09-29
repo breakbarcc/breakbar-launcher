@@ -328,7 +328,7 @@
         "heading": "Das Programm Breakbar Launcher",
         "paragraphs": [
           "Das Programm läuft lokal auf Ihrem Rechner. Es speichert seine Einstellungen, die Konten (Namen und Pfade) und eine kleine Protokolldatei mit Fehlermeldungen in den Ordnern <code>%APPDATA%\\Breakbar</code> und <code>%LOCALAPPDATA%\\Breakbar</code>. Passwörter und E-Mail-Adressen speichert es nicht; eine gespeicherte Anmeldung legt das Spiel selbst in seiner eigenen Datei ab.",
-          "Die aktuelle Version baut von sich aus keine Internetverbindung auf und sendet keine Daten an mich oder an Dritte. Sollte sich das ändern, etwa durch eine Prüfung auf neue Versionen, wird diese Erklärung angepasst."
+          "Während es läuft, sendet das Programm in regelmäßigen Abständen (etwa alle 15 Minuten) eine unauthentifizierte Anfrage an die öffentliche Build-API von ArenaNet (api.guildwars2.com), um zu prüfen, ob ein neues Guild-Wars-2-Update existiert, damit Ihnen dafür ein Hinweis angezeigt werden kann, statt Sie mit einem fehlgeschlagenen Start allein zu lassen. Dabei wird nur die aktuelle Build-Nummer abgefragt; es werden keine Kontodaten oder andere Kennungen übermittelt, wobei die Anfrage selbst wie jede Anfrage im Internet Ihre IP-Adresse an ArenaNet weitergibt. Diese Prüfung lässt sich jederzeit in den Einstellungen abschalten („Auf Spiel-Updates online prüfen“). Rechtsgrundlage ist Art. 6 Abs. 1 lit. f DSGVO: ein berechtigtes Interesse daran, Sie auf ein Update hinzuweisen, das das Programm nicht selbst für Sie herunterladen kann. Weitere Informationen: <a href=\"https://www.arena.net/en/legal/privacy-notice\" rel=\"noopener\">ArenaNets Privacy Notice</a> (in Englisch)."
         ]
       },
       {

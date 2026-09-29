@@ -328,7 +328,7 @@
         "heading": "The Breakbar Launcher program",
         "paragraphs": [
           "The program runs locally on your computer. It stores its settings, the accounts (names and paths) and a small log file with error messages in the folders <code>%APPDATA%\\Breakbar</code> and <code>%LOCALAPPDATA%\\Breakbar</code>. It does not store passwords or email addresses; a saved login is kept by the game itself in its own file.",
-          "The current version does not open any internet connection on its own and sends no data to me or to third parties. Should that change, for example with a check for new versions, this policy will be updated."
+          "While it runs, the program periodically (about every 15 minutes) sends an unauthenticated request to ArenaNet's public game-build API (api.guildwars2.com) to check whether a new Guild Wars 2 update exists, so it can show you a banner instead of leaving you to figure out a failed start on your own. Only the current build number is asked for; no account data or other identifier is sent, though the request itself reveals your IP address to ArenaNet like any request on the internet does. This can be turned off at any time in the settings (“Check for game updates online”). The legal basis is Art. 6(1)(f) GDPR: a legitimate interest in telling you about a game update the program can't download for you. More information: <a href=\"https://www.arena.net/en/legal/privacy-notice\" rel=\"noopener\">ArenaNet's privacy notice</a>."
         ]
       },
       {

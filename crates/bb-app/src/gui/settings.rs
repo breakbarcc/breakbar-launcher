@@ -292,6 +292,24 @@ pub(super) fn wire(
         }
     });
 
+    window.on_set_check_for_updates({
+        let app = Rc::clone(app);
+        let weak = window.as_weak();
+        move |value| {
+            if let Some(window) = weak.upgrade() {
+                window.set_check_for_updates(value);
+                let mut app = app.borrow_mut();
+                app.config.check_for_updates = value;
+                app.save(&window);
+                if !value {
+                    // Nothing to show while the check is off; the next check picks up cleanly if
+                    // it's turned back on.
+                    window.set_patch_available(false);
+                }
+            }
+        }
+    });
+
     window.on_open_website(|| open_url(WEBSITE_URL));
     window.on_open_license(|| open_url(LICENSE_URL));
     window.on_open_slint(|| open_url(SLINT_URL));

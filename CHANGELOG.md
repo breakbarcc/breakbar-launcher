@@ -6,6 +6,15 @@ All notable changes to Breakbar Launcher. The format follows
 
 Everything before 0.2.0 is in the git history and in [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
 
+## [0.10.0] - 2026-09-29
+
+### Added
+
+- Online patch detection: every 15 minutes, Breakbar asks ArenaNet's public build API whether a
+  new Guild Wars 2 update exists that the local client hasn't downloaded yet, and shows a banner
+  for it (starting the game directly downloads the patch; Breakbar itself can't). Can be turned off
+  in the settings ("Check for game updates online"), on by default.
+
 ## [0.9.1] - 2026-09-26
 
 ### Changed

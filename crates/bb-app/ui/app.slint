@@ -360,6 +360,52 @@ component RefreshBanner {
     }
 }
 
+/// Shown above the list when ArenaNet has shipped an update the local client hasn't downloaded
+/// yet. Informational only: Breakbar can't download the patch itself (a client started with
+/// `-shareArchive` can only open `Gw2.dat` read-only), so this just points at starting the game
+/// directly.
+component PatchAvailableBanner {
+    height: content.preferred-height;
+    accessible-role: text;
+    accessible-label: @tr("A Guild Wars 2 update is available");
+
+    Rectangle {
+        border-radius: Theme.radius-card;
+        background: Theme.accent-soft;
+        border-width: 1px;
+        border-color: Theme.accent-line;
+    }
+    content := HorizontalLayout {
+        padding: 12px;
+        spacing: 10px;
+        VerticalLayout {
+            alignment: start;
+            padding-top: 1px;
+            Icon {
+                path: Icons.download;
+                color: Theme.accent;
+            }
+        }
+        VerticalLayout {
+            horizontal-stretch: 1;
+            spacing: 4px;
+            Text {
+                text: @tr("A Guild Wars 2 update is available");
+                font-size: Theme.fs-body;
+                font-weight: 600;
+                color: Theme.text;
+                wrap: word-wrap;
+            }
+            Text {
+                text: @tr("Start the game directly once to download it, then accounts can be started as usual.");
+                font-size: 12.5px;
+                color: Theme.text-muted;
+                wrap: word-wrap;
+            }
+        }
+    }
+}
+
 /// Steam accounts need Steam's own copy of the game: offers to link the existing installation into
 /// Steam (step `link`), then waits for the user to click Install in Steam (step `install`).
 component SteamSetupDialog {
@@ -521,6 +567,10 @@ export component MainWindow inherits Window {
     in property <string> login-setup-name;
     /// Names (joined) of the accounts whose login is older than the game; empty = none.
     in property <string> refresh-names;
+    /// A Guild Wars 2 update exists on ArenaNet's servers that the local client hasn't downloaded
+    /// yet (see the online update check in the settings).
+    in property <bool> patch-available;
+    in property <bool> check-for-updates;
     in property <bool> login-setup-steam;
     /// Account whose login setup is offered after creating it (0 = no dialog), its name and platform.
     in property <int> login-offer-id;
@@ -579,6 +629,7 @@ export component MainWindow inherits Window {
     callback login-offer-dismiss();
     /// Refresh the logins of the accounts in `refresh-names`, one after another.
     callback refresh-logins();
+    callback set-check-for-updates(bool);
     /// A client exited (Rust calls this; true if it was a setup launch that finished properly).
     callback client-exited(bool);
     callback dismiss-toast(int);
@@ -714,6 +765,13 @@ export component MainWindow inherits Window {
                 enabled: root.login-setup-name == "";
                 refresh => { root.refresh-logins(); }
             }
+        }
+
+        if root.patch-available: HorizontalLayout {
+            padding-left: 12px;
+            padding-right: 12px;
+            padding-bottom: 8px;
+            PatchAvailableBanner { }
         }
 
         if root.accounts.length == 0: VerticalLayout {
@@ -920,6 +978,7 @@ export component MainWindow inherits Window {
         overlay-only-running: root.overlay-only-running;
         overlay-locked: root.overlay-locked;
         overlay-opacity: root.overlay-opacity;
+        check-for-updates: root.check-for-updates;
         version: root.app-version;
         back => { root.page = Page.accounts; }
         choose-gw2-path => { root.choose-gw2-path(); }
@@ -933,6 +992,7 @@ export component MainWindow inherits Window {
         set-overlay-only-running(value) => { root.set-overlay-only-running(value); }
         set-overlay-locked(value) => { root.set-overlay-locked(value); }
         set-overlay-opacity(value) => { root.set-overlay-opacity(value); }
+        set-check-for-updates(value) => { root.set-check-for-updates(value); }
         open-website => { root.open-website(); }
         open-license => { root.open-license(); }
         open-slint => { root.open-slint(); }

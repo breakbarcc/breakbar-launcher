@@ -228,6 +228,53 @@ pub fn mark_build_verified(account_id: AccountId, build: u64) -> Result<(), Stor
     std::fs::write(&path, build.to_string()).map_err(|source| StoreError::Io { path, source })
 }
 
+/// The file recording the last `ArenaNet` server build the online update check saw, together with
+/// the local `Gw2.dat` write time it was captured against (see `known_server_build`). Global, not
+/// per account, so it lives next to `config.toml` rather than under a profile.
+fn known_server_build_path() -> Result<PathBuf, StoreError> {
+    Ok(crate::default_config_path()?.with_file_name("known-build.txt"))
+}
+
+/// The `ArenaNet` build id and local `Gw2.dat` write time (seconds since the epoch) the online
+/// update check last recorded as current, if any.
+///
+/// The local write time is recorded alongside the build id because the id alone can't be compared
+/// to anything read from the installed client: whenever `Gw2.dat`'s write time has moved on since
+/// this was captured, the local client has been patched in the meantime (by Breakbar or otherwise)
+/// and the pair must be treated as stale, not as "a new build is available".
+#[must_use]
+pub fn known_server_build() -> Option<(u64, u64)> {
+    read_known_build(&known_server_build_path().ok()?)
+}
+
+/// Records `server_build` as current for a local `Gw2.dat` last written at `local_mtime`.
+///
+/// # Errors
+///
+/// Returns [`StoreError`] if `%APPDATA%` is not set or the record can't be written.
+pub fn set_known_server_build(server_build: u64, local_mtime: u64) -> Result<(), StoreError> {
+    write_known_build(&known_server_build_path()?, server_build, local_mtime)
+}
+
+fn read_known_build(path: &Path) -> Option<(u64, u64)> {
+    let text = std::fs::read_to_string(path).ok()?;
+    let (build, local_mtime) = text.trim().split_once(char::is_whitespace)?;
+    Some((build.parse().ok()?, local_mtime.trim().parse().ok()?))
+}
+
+fn write_known_build(path: &Path, server_build: u64, local_mtime: u64) -> Result<(), StoreError> {
+    if let Some(dir) = path.parent() {
+        std::fs::create_dir_all(dir).map_err(|source| StoreError::Io {
+            path: dir.to_owned(),
+            source,
+        })?;
+    }
+    std::fs::write(path, format!("{server_build} {local_mtime}")).map_err(|source| StoreError::Io {
+        path: path.to_owned(),
+        source,
+    })
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -348,5 +395,31 @@ mod tests {
         let dir = ensure_profile_dir(id).unwrap();
         assert!(dir.is_dir());
         std::fs::remove_dir_all(&dir).unwrap();
+    }
+
+    #[test]
+    fn known_build_round_trips_and_missing_file_is_none() {
+        let root = scratch("known-build");
+        let path = root.join("known-build.txt");
+
+        assert_eq!(read_known_build(&path), None);
+        write_known_build(&path, 152_159, 1_000_000).unwrap();
+        assert_eq!(read_known_build(&path), Some((152_159, 1_000_000)));
+
+        write_known_build(&path, 152_200, 1_500_000).unwrap();
+        assert_eq!(read_known_build(&path), Some((152_200, 1_500_000)));
+
+        std::fs::remove_dir_all(&root).unwrap();
+    }
+
+    #[test]
+    fn known_build_ignores_a_malformed_file() {
+        let root = scratch("known-build-malformed");
+        let path = root.join("known-build.txt");
+        std::fs::write(&path, "not a build stamp").unwrap();
+
+        assert_eq!(read_known_build(&path), None);
+
+        std::fs::remove_dir_all(&root).unwrap();
     }
 }

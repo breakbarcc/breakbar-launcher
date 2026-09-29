@@ -84,6 +84,12 @@ const LIGHT_FRAME: bb_win::window::FrameColors = bb_win::window::FrameColors {
 const MAX_TOASTS: usize = 3;
 /// How often the logins are checked against the game's build (see `sync_login_states`).
 const LOGIN_CHECK_INTERVAL: Duration = Duration::from_secs(5);
+/// How often `ArenaNet`'s build API is asked whether a new update exists (see `run_patch_check`).
+/// Patches ship roughly weekly, so there is no reason to poll more eagerly than this.
+const PATCH_CHECK_INTERVAL: Duration = Duration::from_mins(15);
+/// The first patch check runs this long after startup rather than immediately, so it doesn't
+/// compete with the app's own startup work.
+const PATCH_CHECK_INITIAL_DELAY: Duration = Duration::from_secs(30);
 /// Toasts disappear after this long, unless the pointer is on them.
 const TOAST_LIFETIME: Duration = Duration::from_secs(6);
 
@@ -292,6 +298,7 @@ pub fn run() -> Result<(), slint::PlatformError> {
     let app = Rc::new(RefCell::new(app));
     sync_login_states(&window, &app);
     let _login_check = start_login_check(&window, &app);
+    let _patch_check = start_patch_check(&window, &app);
     let queue = Rc::new(LaunchQueue::start(window.as_weak()));
     let overlay = start_overlay(&window, &app, &queue);
 
@@ -397,6 +404,7 @@ fn show_initial_state(window: &MainWindow, app: &App) {
     window.set_fps_limit(to_ui_fps_limit(app.config.fps_limit));
     window.set_app_version(env!("CARGO_PKG_VERSION").into());
     window.set_language(to_ui_language(app.config.language));
+    window.set_check_for_updates(app.config.check_for_updates);
     show_overlay_settings(window, app.config.overlay);
     window
         .global::<Theme>()
@@ -419,6 +427,66 @@ fn start_login_check(window: &MainWindow, app: &Rc<RefCell<App>>) -> slint::Time
         }
     });
     timer
+}
+
+/// Periodically asks `ArenaNet`'s build API whether a new update exists that the local client
+/// hasn't downloaded yet (see `gw2_build`), and shows the result as a banner. Unlike the login
+/// check, this needs the network, so each tick runs on a thread of its own rather than the UI
+/// thread; only `patch_available` is written back to the window. Runs once shortly after startup
+/// and then on `PATCH_CHECK_INTERVAL`, as long as the returned timer lives.
+fn start_patch_check(window: &MainWindow, app: &Rc<RefCell<App>>) -> slint::Timer {
+    let timer = slint::Timer::default();
+    timer.start(slint::TimerMode::Repeated, PATCH_CHECK_INTERVAL, {
+        let app = Rc::clone(app);
+        let weak = window.as_weak();
+        move || {
+            if let Some(window) = weak.upgrade() {
+                run_patch_check(&window, &app);
+            }
+        }
+    });
+    slint::Timer::single_shot(PATCH_CHECK_INITIAL_DELAY, {
+        let app = Rc::clone(app);
+        let weak = window.as_weak();
+        move || {
+            if let Some(window) = weak.upgrade() {
+                run_patch_check(&window, &app);
+            }
+        }
+    });
+    timer
+}
+
+/// One tick of the patch check: does nothing if the setting is off or no game path is known yet,
+/// otherwise fetches the local build stamp and the server's current build on a background thread
+/// and reports the result back to the window.
+fn run_patch_check(window: &MainWindow, app: &Rc<RefCell<App>>) {
+    let (enabled, gw2_path) = {
+        let app = app.borrow();
+        (app.config.check_for_updates, app.config.gw2_path.clone())
+    };
+    let Some(gw2_path) = enabled.then_some(gw2_path).flatten() else {
+        return;
+    };
+
+    let weak = window.as_weak();
+    let _ = thread::Builder::new()
+        .name("patch-check".to_owned())
+        .spawn(move || {
+            let (Some(local_mtime), Some(server_build)) = (
+                game::game_build(&gw2_path),
+                crate::gw2_build::fetch_current_build(),
+            ) else {
+                return;
+            };
+            let baseline = bb_store::known_server_build();
+            let result = crate::gw2_build::check(local_mtime, server_build, baseline);
+            let (build, mtime) = result.new_baseline;
+            let _ = bb_store::set_known_server_build(build, mtime);
+            let _ = weak.upgrade_in_event_loop(move |window| {
+                window.set_patch_available(result.update_available);
+            });
+        });
 }
 
 /// Opens the instance switcher overlay in the theme of the main window. `None` (with a toast) if

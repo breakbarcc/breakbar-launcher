@@ -96,8 +96,18 @@ account). Breakbar detects that locally and guides the user instead of failing:
 - *"Set up one after another":* starts the first account's setup launch and, whenever one finishes
   properly, offers the next in the login dialog (Later / Set up now), so no client starts without
   a click. The queue lives in `App::refresh_queue`.
-- *Not done:* "update required" (screen 06), i.e. noticing that the game itself is behind the
-  current build, needs the network or the client's error dialog and is not part of this.
+- *"Update required"* (screen 06), i.e. the game itself being behind the current build, is a
+  separate, network-based check (`gw2_build`): every 15 minutes (plus once ~30 s after startup),
+  a background thread asks ArenaNet's public build API (`https://api.guildwars2.com/v2/build`) for
+  the current build id and compares it against a stored baseline — the last server build id seen,
+  paired with the local `Gw2.dat` write time it was captured against, since the id itself has no
+  local counterpart to read. Whenever the local write time has moved on since the baseline was
+  captured, the client was patched (by Breakbar or otherwise) and the check re-baselines instead of
+  reporting a stale mismatch; a mismatch otherwise shows a second, purely informational banner
+  ("A Guild Wars 2 update is available"), since Breakbar can't download the patch itself (only a
+  normal, non-`-shareArchive` start of the game can). Off by a setting
+  (`Config::check_for_updates`, on by default); the request itself goes through a small `WinHTTP`
+  wrapper (`bb_win::http`), the only network access in the program (see the privacy policy).
 
 ## Steam accounts
 
@@ -348,7 +358,7 @@ Config: `%APPDATA%\Breakbar\config.toml`, written atomically (temp file, flushed
 | 4.4 | ✅ Close behavior and tray (hide-to-tray close, tray menu, single instance, after-start setting) |
 | 4.5 | ✅ Instance switcher overlay: core (grip, numbered chips, click/context menus, position) and settings (show, only while running, lock position, opacity); hotkeys, other sizes and vertical orientation pending |
 | 4.6 | ✅ Login set-up flow: offer after creating an account, banner while the setup client runs, result check of `Local.dat` (patch detection and "set up one after another" belong to phase 5) |
-| 5.1 | ✅ Patch detection (local, `Gw2.dat` vs `Local.dat` write time) and "Set up one after another" (banner, login state, sequential refresh); the "update required" banner is not done |
+| 5.1 | ✅ Patch detection, local (`Gw2.dat` vs `Local.dat` write time) and online (`ArenaNet`'s build API, opt-out setting) and "Set up one after another" (banner, login state, sequential refresh) |
 | 5.2 | Window layout per account, priority/affinity, GFX per account |
 | 6.1 | ✅ Release workflow: a push to the `release` branch publishes the crate version as a GitHub release (`breakbar-launcher.exe`, checksum, `latest.json`); the signing job for SignPath is prepared but off and untested (see CONTRIBUTING.md) |
 | 6.2 | ✅ Website (Eleventy in `site/`, English and German, deployed with GitHub Pages by `site.yml`). Open: code signing approved and switched on, in-app update check and update, winget |
