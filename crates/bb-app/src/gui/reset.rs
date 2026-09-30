@@ -46,11 +46,11 @@ fn request(window: &MainWindow) {
 
 /// Removes every trace of Breakbar: the desktop shortcuts and the start-with-Windows entry (both
 /// best-effort, neither being critical enough to stop the rest over), then the Steam link and the
-/// real `%APPDATA%\Guild Wars 2` link (restoring its data first), then the profiles and finally the
-/// config, in that order, since a later step would otherwise delete what an earlier one still needs
-/// to find. Quits Breakbar on full success, since none of its in-memory state is valid anymore;
-/// reports what went wrong and leaves Breakbar running otherwise, so the rest can be retried or
-/// cleaned up by hand.
+/// real `%APPDATA%\Guild Wars 2` link (restoring its data first), then the profiles, the log and
+/// finally the config, in that order, since a later step would otherwise delete what an earlier one
+/// still needs to find. Quits Breakbar on full success, since none of its in-memory state is valid
+/// anymore; reports what went wrong and leaves Breakbar running otherwise, so the rest can be
+/// retried or cleaned up by hand.
 fn delete_all_data(window: &MainWindow, app: &RefCell<App>) {
     let (gw2_path, accounts) = {
         let app = app.borrow();
@@ -84,6 +84,7 @@ fn delete_all_data(window: &MainWindow, app: &RefCell<App>) {
     if let Err(error) = bb_store::delete_all_profiles() {
         errors.push(error.to_string());
     }
+    crate::log::delete();
     if let Err(error) = bb_store::delete_all_config() {
         errors.push(error.to_string());
     }

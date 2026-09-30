@@ -27,6 +27,16 @@ pub fn write(message: impl Display) {
     let _ = append(&path, &line, MAX_BYTES);
 }
 
+/// Removes the log and the rotated-out `.old` copy, if either exists. Nothing else in the app ever
+/// deletes this; "Delete all data" is the only caller.
+pub fn delete() {
+    let Some(path) = log_path() else {
+        return;
+    };
+    let _ = fs::remove_file(&path);
+    let _ = fs::remove_file(path.with_extension("log.old"));
+}
+
 fn log_path() -> Option<PathBuf> {
     let local_app_data = std::env::var_os("LOCALAPPDATA")?;
     Some(
