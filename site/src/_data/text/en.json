@@ -147,6 +147,10 @@
           "text": "Always-on-top bar, one chip per account."
         },
         {
+          "name": "Discord auto-start",
+          "text": "Starts Discord with your first account, unless it's already running."
+        },
+        {
           "name": "Runs in the tray",
           "text": "Optional start with Windows; stay open, minimize or close after launch."
         },
@@ -178,6 +182,10 @@
         {
           "name": "Open source",
           "text": "MIT license."
+        },
+        {
+          "name": "Delete all data",
+          "text": "One button in Settings removes everything Breakbar ever put on disk, since there's no installer and so no uninstaller either."
         }
       ]
     }
@@ -328,7 +336,7 @@
         "heading": "The Breakbar Launcher program",
         "paragraphs": [
           "The program runs locally on your computer. It stores its settings, the accounts (names and paths) and a small log file with error messages in the folders <code>%APPDATA%\\Breakbar</code> and <code>%LOCALAPPDATA%\\Breakbar</code>. It does not store passwords or email addresses; a saved login is kept by the game itself in its own file.",
-          "While it runs, the program periodically (about every 15 minutes) sends an unauthenticated request to ArenaNet's public game-build API (api.guildwars2.com) to check whether a new Guild Wars 2 update exists, so it can show you a banner instead of leaving you to figure out a failed start on your own. Only the current build number is asked for; no account data or other identifier is sent, though the request itself reveals your IP address to ArenaNet like any request on the internet does. This can be turned off at any time in the settings (“Check for game updates online”). The legal basis is Art. 6(1)(f) GDPR: a legitimate interest in telling you about a game update the program can't download for you. More information: <a href=\"https://www.arena.net/en/legal/privacy-notice\" rel=\"noopener\">ArenaNet's privacy notice</a>."
+          "While it runs, the program periodically (about every hour) sends an unauthenticated request to ArenaNet's public game-build API (api.guildwars2.com) to check whether a new Guild Wars 2 update exists, so it can show you a banner instead of leaving you to figure out a failed start on your own. Only the current build number is asked for; no account data or other identifier is sent, though the request itself reveals your IP address to ArenaNet like any request on the internet does. This can be turned off at any time in the settings (“Check for game updates online”). The legal basis is Art. 6(1)(f) GDPR: a legitimate interest in telling you about a game update the program can't download for you. More information: <a href=\"https://www.arena.net/en/legal/privacy-notice\" rel=\"noopener\">ArenaNet's privacy notice</a>."
         ]
       },
       {

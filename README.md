@@ -54,11 +54,18 @@ client in front, the spinner is a client that is starting):
   with the game, once per client or once for all.
 - **Instance switcher:** a small always-on-top bar with a numbered chip per account to jump between
   running clients.
+- **Discord auto-start:** optionally starts Discord once the first account of a session launches,
+  unless it's already running. Breakbar never closes it again.
+- **Online update detection:** shows a banner when a new Guild Wars 2 update exists that the local
+  client hasn't downloaded yet, with a "Start now" button to fetch it and a guided refresh of the
+  logins that need it afterward.
 - **Runs in the background:** tray icon, optional start with Windows, and a choice of what the
   window does after starting an account.
 - **Desktop shortcuts** and a [command line](#command-line) to start accounts without opening the window.
 - **Dark and light theme** and **English or German**, each either fixed or following Windows.
 - **Loading screen FPS limit** (`-fps`), 60, 30 or unlimited.
+- **Delete all data:** since there is no installer, there is no uninstaller either - one button in
+  Settings removes everything Breakbar ever put on disk or in the registry.
 
 ## How multi-launching works
 

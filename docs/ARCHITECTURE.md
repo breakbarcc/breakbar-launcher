@@ -97,7 +97,7 @@ account). Breakbar detects that locally and guides the user instead of failing:
   properly, offers the next in the login dialog (Later / Set up now), so no client starts without
   a click. The queue lives in `App::refresh_queue`.
 - *"Update required"* (screen 06), i.e. the game itself being behind the current build, is a
-  separate, network-based check (`gw2_build`): every 15 minutes (plus once ~30 s after startup),
+  separate, network-based check (`gw2_build`): every hour (plus once ~3 s after startup),
   a background thread asks ArenaNet's public build API (`https://api.guildwars2.com/v2/build`) for
   the current build id and compares it against a stored baseline — the last server build id seen,
   paired with the local `Gw2.dat` write time it was captured against, since the id itself has no
