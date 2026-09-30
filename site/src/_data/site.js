@@ -21,7 +21,9 @@ export default {
     releases: `${repo}/releases`,
     changelog: `${repo}/blob/main/CHANGELOG.md`,
     license: `${repo}/blob/main/LICENSE`,
-    issues: `${repo}/issues/new`,
+    // `template` pre-selects the bug report issue form (`.github/ISSUE_TEMPLATE/bug_report.yml`)
+    // instead of GitHub's blank "choose a template" page.
+    issues: `${repo}/issues/new?template=bug_report.yml`,
     main: "https://www.breakbar.cc/",
     // The imprint is the one of the whole breakbar.cc project (one operator); this site has none of its
     // own. The privacy policy is its own page, because hosting and data differ (see privacy.njk).

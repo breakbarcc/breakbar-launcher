@@ -4,7 +4,7 @@
       <div class="brand">
         <span class="brand-icon"><img src="/assets/icon-48.png" width="24" height="24" alt="" loading="lazy" decoding="async"></span>
         <span>{{ t.common.brand }}</span>
-        <span class="mono footer-by">{{ t.common.by }}</span>
+        <span class="mono footer-by">{{ t.common.by | safe }}</span>
       </div>
       <nav class="footer-nav" aria-label="{{ t.footer.nav }}">
         <a href="{{ site.urls.repo }}" rel="noopener">{{ t.header.github }}</a>
