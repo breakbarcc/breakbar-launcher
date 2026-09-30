@@ -23,8 +23,16 @@ const RESTART_GRACE: Duration = Duration::from_secs(2);
 /// `RunningClient::wait_for_game_window` has for account launches: this launch has no account and
 /// never logs in, so the client never reaches its own game window (`GAME_WINDOW_CLASSES`) — it
 /// just sits at the login screen, in the very same `ArenaNet`-class window it patched in, once
-/// it's done. Watching `Gw2.dat` stop growing is the only signal available instead.
+/// it's done. Watching `Gw2.dat` stop growing is the only signal available instead. Only applies
+/// once real activity has actually been seen — see `NO_ACTIVITY_GRACE` for before that.
 const PATCH_IDLE_GRACE: Duration = Duration::from_secs(4);
+/// How long to wait for `Gw2.dat` to start changing at all before giving up on it ever doing so.
+/// Confirmed live: the client needs a few seconds to connect and negotiate with `ArenaNet`'s
+/// servers before it writes anything, and "hasn't started yet" looks identical to "finished and
+/// stopped" from the file alone — there being nothing to tell them apart is exactly why this
+/// needs to be far more generous than `PATCH_IDLE_GRACE`, which only applies once real activity
+/// (an actual change) has been seen at least once.
+const NO_ACTIVITY_GRACE: Duration = Duration::from_secs(20);
 /// The grace period between asking the client to close (`WM_CLOSE`) and giving up on it and
 /// terminating it instead. `companions::close_all` gives a companion app 15s here, but a real
 /// close (verified live, see `breakbar.log`) reacted in under a second, so this only needs to
@@ -75,17 +83,19 @@ fn watch(window: &MainWindow, gw2_path: PathBuf) {
         });
 }
 
-/// Waits for the patch client to finish and go away. Once `Gw2.dat` has stopped changing for
-/// `PATCH_IDLE_GRACE` while a client is still running, the download is done and closing it is
-/// attempted (`close_patch_client`) — but this loop is what actually decides the client is gone,
-/// by seeing `running_clients` become empty, exactly like a manual close. A close is only ever
-/// attempted once per distinct set of running client PIDs, so a client that doesn't react to it
-/// isn't hammered with repeated attempts every tick — but a *new* process (the client can restart
+/// Waits for the patch client to finish and go away. Once `Gw2.dat` has stopped changing (for
+/// `PATCH_IDLE_GRACE` if it had actually been changing, or `NO_ACTIVITY_GRACE` if it never
+/// started) while a client is still running, the download is done and closing it is attempted
+/// (`close_patch_client`) — but this loop is what actually decides the client is gone, by seeing
+/// `running_clients` become empty, exactly like a manual close. A close is only ever attempted
+/// once per distinct set of running client PIDs, so a client that doesn't react to it isn't
+/// hammered with repeated attempts every tick — but a *new* process (the client can restart
 /// itself, including right after being closed, not just partway through) still gets its own
 /// attempt, since it's a different PID set.
 fn wait_for_patch_to_finish(gw2_path: &Path) {
     let mut last_stamp = archive_stamp(gw2_path);
     let mut stable_since = Instant::now();
+    let mut ever_changed = false;
     let mut close_attempted_for = Vec::new();
     loop {
         let running = launcher::running_clients(gw2_path);
@@ -99,13 +109,19 @@ fn wait_for_patch_to_finish(gw2_path: &Path) {
 
         let stamp = archive_stamp(gw2_path);
         if stamp == last_stamp {
-            if stable_since.elapsed() >= PATCH_IDLE_GRACE && running != close_attempted_for {
+            let grace = if ever_changed {
+                PATCH_IDLE_GRACE
+            } else {
+                NO_ACTIVITY_GRACE
+            };
+            if stable_since.elapsed() >= grace && running != close_attempted_for {
                 close_patch_client(gw2_path);
                 close_attempted_for = running;
             }
         } else {
             last_stamp = stamp;
             stable_since = Instant::now();
+            ever_changed = true;
         }
         thread::sleep(POLL_INTERVAL);
     }
