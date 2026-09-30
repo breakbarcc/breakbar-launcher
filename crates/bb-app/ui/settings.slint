@@ -191,6 +191,8 @@ export component SettingsPage inherits VerticalLayout {
     in property <int> overlay-opacity;
     /// Whether Breakbar periodically asks ArenaNet's servers whether a game update exists.
     in property <bool> check-for-updates;
+    /// A manually started update (see `start-patch`) is currently downloading.
+    in property <bool> patching;
     /// Version of Breakbar, shown in the About section.
     in property <string> version;
     callback back();
@@ -208,6 +210,10 @@ export component SettingsPage inherits VerticalLayout {
     callback set-overlay-locked(bool);
     callback set-overlay-opacity(int);
     callback set-check-for-updates(bool);
+    /// Starts Guild Wars 2 directly so it can download a pending update - including a hotfix
+    /// ArenaNet didn't list as a new version, which the online check in `check-for-updates` can't
+    /// tell apart from no update at all.
+    callback start-patch();
     callback open-website();
     callback open-license();
     callback open-slint();
@@ -299,6 +305,32 @@ export component SettingsPage inherits VerticalLayout {
                 help: @tr("Asks ArenaNet's servers every hour whether a new patch exists, and shows a banner if the local client hasn't downloaded it yet.");
                 checked: root.check-for-updates;
                 toggled(value) => { root.set-check-for-updates(value); }
+            }
+            HorizontalLayout {
+                spacing: 12px;
+                VerticalLayout {
+                    horizontal-stretch: 1;
+                    spacing: 2px;
+                    Text {
+                        text: @tr("Update Guild Wars 2 now");
+                        font-size: Theme.fs-body;
+                        color: Theme.text;
+                    }
+                    Text {
+                        text: root.patching
+                            ? @tr("Downloading the update — the game window will open, and this closes on its own once it's done.")
+                            : @tr("Starts the game directly to download any pending update, even a small hotfix ArenaNet didn't list as a new version and the check above can't tell apart from no update at all.");
+                        font-size: Theme.fs-help;
+                        color: Theme.text-dim;
+                        wrap: word-wrap;
+                    }
+                }
+                Button {
+                    icon: Icons.download;
+                    text: @tr("Update now");
+                    enabled: !root.patching;
+                    clicked => { root.start-patch(); }
+                }
             }
 
             SectionLabel {

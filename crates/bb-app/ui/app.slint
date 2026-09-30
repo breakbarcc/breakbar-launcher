@@ -1103,6 +1103,7 @@ export component MainWindow inherits Window {
         overlay-locked: root.overlay-locked;
         overlay-opacity: root.overlay-opacity;
         check-for-updates: root.check-for-updates;
+        patching: root.patching;
         version: root.app-version;
         back => { root.page = Page.accounts; }
         choose-gw2-path => { root.choose-gw2-path(); }
@@ -1119,6 +1120,7 @@ export component MainWindow inherits Window {
         set-overlay-locked(value) => { root.set-overlay-locked(value); }
         set-overlay-opacity(value) => { root.set-overlay-opacity(value); }
         set-check-for-updates(value) => { root.set-check-for-updates(value); }
+        start-patch => { root.start-patch(); }
         open-website => { root.open-website(); }
         open-license => { root.open-license(); }
         open-slint => { root.open-slint(); }
