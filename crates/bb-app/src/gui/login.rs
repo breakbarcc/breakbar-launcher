@@ -66,6 +66,14 @@ pub(super) fn outdated_accounts(window: &MainWindow, app: &RefCell<App>) -> Vec<
 /// after a game update. A game update makes every `Local.dat` older than `Gw2.dat`, see
 /// [`game::login_outdated`].
 pub(super) fn sync_login_states(window: &MainWindow, app: &RefCell<App>) {
+    // While "Start now" is downloading a patch, Gw2.dat's write time moves continuously instead
+    // of once atomically (the assumption `login_outdated` is built on), which would otherwise
+    // flag every account as outdated the moment the download's very first byte lands. Skip this
+    // until the download is confirmed finished (`gui::patch` sets this back to `false` then), at
+    // which point `Gw2.dat`'s write time is final and this behaves exactly as it always has.
+    if window.get_patching() {
+        return;
+    }
     let gw2_path = app.borrow().config.gw2_path.clone();
     let mut outdated_names = Vec::new();
     for row in rows(window) {
