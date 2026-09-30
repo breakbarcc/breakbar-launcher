@@ -87,7 +87,7 @@ const MAX_TOASTS: usize = 3;
 const LOGIN_CHECK_INTERVAL: Duration = Duration::from_secs(5);
 /// How often `ArenaNet`'s build API is asked whether a new update exists (see `run_patch_check`).
 /// Patches ship roughly weekly, so there is no reason to poll more eagerly than this.
-const PATCH_CHECK_INTERVAL: Duration = Duration::from_mins(15);
+const PATCH_CHECK_INTERVAL: Duration = Duration::from_hours(1);
 /// The first patch check runs this long after startup rather than immediately, so it doesn't
 /// compete with the app's own startup work.
 const PATCH_CHECK_INITIAL_DELAY: Duration = Duration::from_secs(30);
