@@ -16,7 +16,7 @@ desktop.ini
 .DS_Store
 
 # Agents
-claude/
+.claude/
 
 # Local test data – never commit login files
 *.dat
