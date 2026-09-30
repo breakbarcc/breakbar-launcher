@@ -17,8 +17,8 @@
 </div>
 
 Breakbar Launcher starts several Guild Wars 2 clients side by side, each with its own account, and
-keeps them organized. It is a native Rust program that reacts to events instead of polling, so it
-uses almost no CPU while idle.
+keeps them organized. It is a native Rust program built with a small native UI toolkit (Slint)
+instead of a bundled browser, so it stays lightweight.
 
 > [!NOTE]
 > Breakbar Launcher is in early development (version 0.x). Things may change between versions, see
