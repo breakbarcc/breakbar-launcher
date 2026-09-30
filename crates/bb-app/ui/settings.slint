@@ -206,6 +206,7 @@ export component SettingsPage inherits VerticalLayout {
     callback open-website();
     callback open-license();
     callback open-slint();
+    callback open-issues();
 
     // Header: back arrow, title (matches the account editor's).
     HorizontalLayout {
@@ -503,6 +504,10 @@ export component SettingsPage inherits VerticalLayout {
                         LinkButton {
                             text: @tr("License");
                             clicked => { root.open-license(); }
+                        }
+                        LinkButton {
+                            text: @tr("Report a problem");
+                            clicked => { root.open-issues(); }
                         }
                     }
                     // The official "Made with Slint" badge (Slint's license asks for it), in the variant

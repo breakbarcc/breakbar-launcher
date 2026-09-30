@@ -107,6 +107,13 @@ const WEBSITE_URL: &str = "https://launcher.breakbar.cc/";
 const SLINT_URL: &str = "https://slint.dev/";
 /// The license text in the repository (`repository` of the workspace manifest).
 const LICENSE_URL: &str = concat!(env!("CARGO_PKG_REPOSITORY"), "/blob/main/LICENSE");
+/// New GitHub issue, opened from the About section. `template` pre-selects the bug report form
+/// (`.github/ISSUE_TEMPLATE/bug_report.yml`), the same one the website's "Report a problem" links
+/// to, instead of GitHub's blank "choose a template" page.
+const ISSUES_URL: &str = concat!(
+    env!("CARGO_PKG_REPOSITORY"),
+    "/issues/new?template=bug_report.yml"
+);
 
 /// Application state shared between UI callbacks.
 ///

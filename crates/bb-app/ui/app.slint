@@ -623,6 +623,7 @@ export component MainWindow inherits Window {
     callback open-website();
     callback open-license();
     callback open-slint();
+    callback open-issues();
     /// Open the editor for an account (0 = a new one).
     callback edit-account(int);
     /// Editor: switch a companion app for the account being edited.
@@ -1023,6 +1024,7 @@ export component MainWindow inherits Window {
         open-website => { root.open-website(); }
         open-license => { root.open-license(); }
         open-slint => { root.open-slint(); }
+        open-issues => { root.open-issues(); }
     }
 
     // ── Toasts ───────────────────────────────────────────────────────────────────────────────

@@ -58,6 +58,7 @@ msgid " · Steam running"
 msgstr " · Steam läuft"
 
 #: ui/account-card.slint:139 ui/account-card.slint:225
+#: ui/account-card.slint:139 ui/account-card.slint:225
 msgctxt "AccountCard"
 msgid "Select {}"
 msgstr "{} auswählen"
@@ -73,10 +74,12 @@ msgid "Starts with: Blish HUD"
 msgstr "Mitgestartet: Blish HUD"
 
 #: ui/account-card.slint:183 ui/account-card.slint:269
+#: ui/account-card.slint:183 ui/account-card.slint:269
 msgctxt "AccountCard"
 msgid "Retry"
 msgstr "Erneut"
 
+#: ui/account-card.slint:199 ui/account-card.slint:285
 #: ui/account-card.slint:199 ui/account-card.slint:285
 msgctxt "AccountCard"
 msgid "More actions for {}"
@@ -146,45 +149,55 @@ msgid "Cancel"
 msgstr "Abbrechen"
 
 #: ui/app.slint:257 ui/app.slint:278 ui/app.slint:247 ui/app.slint:249
+#: ui/app.slint:257 ui/app.slint:278 ui/app.slint:247 ui/app.slint:249
 msgctxt "MainWindow"
 msgid "Start · {}"
 msgstr "Starten · {}"
 
+#: ui/app.slint:257 ui/app.slint:278 ui/app.slint:247 ui/app.slint:249
 #: ui/app.slint:257 ui/app.slint:278 ui/app.slint:247 ui/app.slint:249
 msgctxt "MainWindow"
 msgid "Start selection · {}"
 msgstr "Auswahl starten · {}"
 
 #: ui/app.slint:258 ui/app.slint:279 ui/app.slint:248 ui/app.slint:250
+#: ui/app.slint:258 ui/app.slint:279 ui/app.slint:248 ui/app.slint:250
 msgctxt "MainWindow"
 msgid "All"
 msgstr "Alle"
 
+#: ui/app.slint:258 ui/app.slint:279 ui/app.slint:248 ui/app.slint:250
 #: ui/app.slint:258 ui/app.slint:279 ui/app.slint:248 ui/app.slint:250
 msgctxt "MainWindow"
 msgid "Launch all"
 msgstr "Launch all"
 
 #: ui/app.slint:267 ui/app.slint:288 ui/app.slint:257 ui/app.slint:259
+#: ui/app.slint:267 ui/app.slint:288 ui/app.slint:257 ui/app.slint:259
 msgctxt "MainWindow"
 msgid "{} of {} clients running"
 msgstr "{} von {} Clients laufen"
 
 #: ui/app.slint:286 ui/app.slint:310 ui/app.slint:279 ui/app.slint:281
+#: ui/app.slint:286 ui/app.slint:310 ui/app.slint:279 ui/app.slint:281
 msgctxt "MainWindow"
 msgid "RUNNING"
 msgstr "LAUFEN"
 
-#: ui/app.slint:308 ui/app.slint:358 ui/app.slint:332 ui/app.slint:381 ui/app.slint:606 ui/app.slint:614 ui/app.slint:686
+#: ui/app.slint:308 ui/app.slint:358 ui/app.slint:332 ui/app.slint:381
+#: ui/app.slint:308 ui/app.slint:358 ui/app.slint:332 ui/app.slint:381 ui/app.slint:614 ui/app.slint:686 ui/app.slint:762
+#: ui/app.slint:308 ui/app.slint:358 ui/app.slint:332 ui/app.slint:381 ui/app.slint:614 ui/app.slint:686 ui/app.slint:762
 msgctxt "MainWindow"
 msgid "Add account"
 msgstr "Account hinzufügen"
 
 #: ui/app.slint:338 ui/app.slint:362 ui/app.slint:340 ui/app.slint:342
+#: ui/app.slint:338 ui/app.slint:362 ui/app.slint:340 ui/app.slint:342
 msgctxt "MainWindow"
 msgid "No accounts yet"
 msgstr "Noch keine Accounts"
 
+#: ui/app.slint:346 ui/app.slint:369 ui/app.slint:345 ui/app.slint:347
 #: ui/app.slint:346 ui/app.slint:369 ui/app.slint:345 ui/app.slint:347
 msgctxt "MainWindow"
 msgid ""
@@ -195,15 +208,18 @@ msgstr ""
 "laufen parallel."
 
 #: ui/app.slint:372 ui/app.slint:396 ui/app.slint:374 ui/app.slint:376
+#: ui/app.slint:372 ui/app.slint:396 ui/app.slint:374 ui/app.slint:376
 msgctxt "MainWindow"
 msgid "// ACCOUNTS · {}"
 msgstr "// ACCOUNTS · {}"
 
 #: ui/app.slint:378 ui/app.slint:407 ui/app.slint:383 ui/app.slint:385
+#: ui/app.slint:378 ui/app.slint:407 ui/app.slint:383 ui/app.slint:385
 msgctxt "MainWindow"
 msgid "{} selected"
 msgstr "{} ausgewählt"
 
+#: ui/app.slint:385 ui/app.slint:414 ui/app.slint:390 ui/app.slint:392
 #: ui/app.slint:385 ui/app.slint:414 ui/app.slint:390 ui/app.slint:392
 msgctxt "MainWindow"
 msgid "Clear"
@@ -234,16 +250,19 @@ msgctxt "Toast"
 msgid "Dismiss"
 msgstr "Hinweis schließen"
 
-#: ui/messages.slint:20 ui/messages.slint:66 ui/messages.slint:21 ui/messages.slint:72
+#: ui/messages.slint:20 ui/messages.slint:66 ui/messages.slint:21
+#: ui/messages.slint:20 ui/messages.slint:66 ui/messages.slint:21 ui/messages.slint:24 ui/messages.slint:76
 msgctxt "Messages"
 msgid "Start failed"
 msgstr "Start fehlgeschlagen"
 
 #: ui/messages.slint:26 ui/messages.slint:27 ui/messages.slint:29
+#: ui/messages.slint:26 ui/messages.slint:27 ui/messages.slint:29
 msgctxt "Messages"
 msgid "Guild Wars 2 is not configured yet."
 msgstr "Guild Wars 2 ist noch nicht eingerichtet."
 
+#: ui/messages.slint:29 ui/messages.slint:30 ui/messages.slint:32
 #: ui/messages.slint:29 ui/messages.slint:30 ui/messages.slint:32
 msgctxt "Messages"
 msgid ""
@@ -253,6 +272,7 @@ msgstr ""
 "„{}“ ist ein Steam-Account: Starte zuerst Steam und melde dich mit dem "
 "verknüpften Steam-Nutzer an."
 
+#: ui/messages.slint:32 ui/messages.slint:33 ui/messages.slint:35
 #: ui/messages.slint:32 ui/messages.slint:33 ui/messages.slint:35
 msgctxt "Messages"
 msgid ""
@@ -265,6 +285,7 @@ msgstr ""
 "über Steam; diese Installation kann für alle Accounts genutzt werden."
 
 #: ui/messages.slint:35 ui/messages.slint:36 ui/messages.slint:38
+#: ui/messages.slint:35 ui/messages.slint:36 ui/messages.slint:38
 msgctxt "Messages"
 msgid ""
 "Setting up the login of „{}“ needs all other Guild Wars 2 clients to be "
@@ -273,6 +294,7 @@ msgstr ""
 "Zum Einrichten des Logins von „{}“ müssen erst alle anderen Guild-"
 "Wars-2-Clients geschlossen werden."
 
+#: ui/messages.slint:38 ui/messages.slint:39 ui/messages.slint:41
 #: ui/messages.slint:38 ui/messages.slint:39 ui/messages.slint:41
 msgctxt "Messages"
 msgid ""
@@ -283,10 +305,12 @@ msgstr ""
 "einen weiteren startest."
 
 #: ui/messages.slint:41 ui/messages.slint:45 ui/messages.slint:47
+#: ui/messages.slint:41 ui/messages.slint:45 ui/messages.slint:47
 msgctxt "Messages"
 msgid "„{}“: the profile folder could not be prepared: {}"
 msgstr "„{}“: Der Profilordner konnte nicht vorbereitet werden: {}"
 
+#: ui/messages.slint:44 ui/messages.slint:48 ui/messages.slint:50
 #: ui/messages.slint:44 ui/messages.slint:48 ui/messages.slint:50
 msgctxt "Messages"
 msgid "„{}“: Guild Wars 2 could not be switched to this account's profile: {}"
@@ -295,35 +319,42 @@ msgstr ""
 "umgestellt werden: {}"
 
 #: ui/messages.slint:47 ui/messages.slint:51 ui/messages.slint:53
+#: ui/messages.slint:47 ui/messages.slint:51 ui/messages.slint:53
 msgctxt "Messages"
 msgid "„{}“: Gw2-64.exe could not be started: {}"
 msgstr "„{}“: Gw2-64.exe konnte nicht gestartet werden: {}"
 
+#: ui/messages.slint:49 ui/messages.slint:53 ui/messages.slint:55
 #: ui/messages.slint:49 ui/messages.slint:53 ui/messages.slint:55
 msgctxt "Messages"
 msgid "„{}“: Gw2-64.exe closed during startup (code {})."
 msgstr "„{}“: Gw2-64.exe wurde beim Start beendet (Code {})."
 
 #: ui/messages.slint:53 ui/messages.slint:57 ui/messages.slint:59
+#: ui/messages.slint:53 ui/messages.slint:57 ui/messages.slint:59
 msgctxt "Messages"
 msgid "Client exited"
 msgstr "Client beendet"
 
+#: ui/messages.slint:57 ui/messages.slint:61 ui/messages.slint:63
 #: ui/messages.slint:57 ui/messages.slint:61 ui/messages.slint:63
 msgctxt "Messages"
 msgid "„{}“: Gw2-64.exe exited (code {})."
 msgstr "„{}“: Gw2-64.exe wurde beendet (Code {})."
 
 #: ui/messages.slint:62 ui/messages.slint:66 ui/messages.slint:68
+#: ui/messages.slint:62 ui/messages.slint:66 ui/messages.slint:68
 msgctxt "Messages"
 msgid "Exited (code {})"
 msgstr "Beendet (Code {})"
 
 #: ui/messages.slint:78 ui/messages.slint:82 ui/messages.slint:84
+#: ui/messages.slint:78 ui/messages.slint:82 ui/messages.slint:84
 msgctxt "Messages"
 msgid "Unusually slow start"
 msgstr "Ungewöhnlich langsamer Start"
 
+#: ui/messages.slint:82 ui/messages.slint:86 ui/messages.slint:88
 #: ui/messages.slint:82 ui/messages.slint:86 ui/messages.slint:88
 msgctxt "Messages"
 msgid ""
@@ -334,10 +365,12 @@ msgstr ""
 "falschen Account einloggt, schließe ihn und starte ihn erneut."
 
 #: ui/messages.slint:86 ui/messages.slint:90 ui/messages.slint:92
+#: ui/messages.slint:86 ui/messages.slint:90 ui/messages.slint:92
 msgctxt "Messages"
 msgid "Profile not switched back"
 msgstr "Profil nicht zurückgestellt"
 
+#: ui/messages.slint:90 ui/messages.slint:94 ui/messages.slint:96
 #: ui/messages.slint:90 ui/messages.slint:94 ui/messages.slint:96
 msgctxt "Messages"
 msgid ""
@@ -348,25 +381,30 @@ msgstr ""
 "zurückgestellt werden: {}"
 
 #: ui/messages.slint:94 ui/messages.slint:98 ui/messages.slint:100
+#: ui/messages.slint:94 ui/messages.slint:98 ui/messages.slint:100
 msgctxt "Messages"
 msgid "{} could not be started"
 msgstr "{} konnte nicht gestartet werden"
 
+#: ui/messages.slint:98 ui/messages.slint:102 ui/messages.slint:104
 #: ui/messages.slint:98 ui/messages.slint:102 ui/messages.slint:104
 msgctxt "Messages"
 msgid "Steam account already running"
 msgstr "Steam-Account läuft bereits"
 
 #: ui/messages.slint:102 ui/messages.slint:106 ui/messages.slint:108
+#: ui/messages.slint:102 ui/messages.slint:106 ui/messages.slint:108
 msgctxt "Messages"
 msgid "„{}“ is locked until „{}“ has exited."
 msgstr "„{}“ ist gesperrt, bis „{}“ beendet ist."
 
 #: ui/messages.slint:106 ui/messages.slint:110 ui/messages.slint:112
+#: ui/messages.slint:106 ui/messages.slint:110 ui/messages.slint:112
 msgctxt "Messages"
 msgid "Client could not be stopped"
 msgstr "Client konnte nicht beendet werden"
 
+#: ui/messages.slint:110 ui/messages.slint:114 ui/messages.slint:116
 #: ui/messages.slint:110 ui/messages.slint:114 ui/messages.slint:116
 msgctxt "Messages"
 msgid "Settings could not be loaded, changes won't be saved: {}"
@@ -375,110 +413,132 @@ msgstr ""
 "gespeichert: {}"
 
 #: ui/messages.slint:114 ui/messages.slint:118 ui/messages.slint:120
+#: ui/messages.slint:114 ui/messages.slint:118 ui/messages.slint:120
 msgctxt "Messages"
 msgid "Settings could not be saved: {}"
 msgstr "Einstellungen konnten nicht gespeichert werden: {}"
 
+#: ui/messages.slint:118 ui/messages.slint:122 ui/messages.slint:124
 #: ui/messages.slint:118 ui/messages.slint:122 ui/messages.slint:124
 msgctxt "Messages"
 msgid "Settings"
 msgstr "Einstellungen"
 
 #: ui/messages.slint:122 ui/messages.slint:126 ui/messages.slint:134
+#: ui/messages.slint:122 ui/messages.slint:126 ui/messages.slint:134
 msgctxt "Messages"
 msgid "The file dialog could not be opened: {}"
 msgstr "Der Dateidialog konnte nicht geöffnet werden: {}"
 
+#: ui/messages.slint:126 ui/messages.slint:130 ui/messages.slint:138
 #: ui/messages.slint:126 ui/messages.slint:130 ui/messages.slint:138
 msgctxt "Messages"
 msgid "Choose the Guild Wars 2 client first."
 msgstr "Wähle zuerst den Guild-Wars-2-Client."
 
 #: ui/messages.slint:130 ui/messages.slint:134 ui/messages.slint:142
+#: ui/messages.slint:130 ui/messages.slint:134 ui/messages.slint:142
 msgctxt "Messages"
 msgid "Not the Guild Wars 2 client"
 msgstr "Nicht der Guild-Wars-2-Client"
 
+#: ui/messages.slint:134 ui/messages.slint:138 ui/messages.slint:146
 #: ui/messages.slint:134 ui/messages.slint:138 ui/messages.slint:146
 msgctxt "Messages"
 msgid "Guild Wars 2 client not usable"
 msgstr "Guild-Wars-2-Client nicht nutzbar"
 
 #: ui/messages.slint:139 ui/messages.slint:186 ui/messages.slint:194
+#: ui/messages.slint:139 ui/messages.slint:186 ui/messages.slint:194
 msgctxt "Messages"
 msgid "The file does not exist."
 msgstr "Die Datei existiert nicht."
 
+#: ui/messages.slint:142 ui/messages.slint:189 ui/messages.slint:197
 #: ui/messages.slint:142 ui/messages.slint:189 ui/messages.slint:197
 msgctxt "Messages"
 msgid "The file could not be read: {}"
 msgstr "Die Datei konnte nicht gelesen werden: {}"
 
 #: ui/messages.slint:145 ui/messages.slint:192 ui/messages.slint:200
+#: ui/messages.slint:145 ui/messages.slint:192 ui/messages.slint:200
 msgctxt "Messages"
 msgid "The file is not a Windows program."
 msgstr "Die Datei ist kein Windows-Programm."
 
+#: ui/messages.slint:148 ui/messages.slint:195 ui/messages.slint:203
 #: ui/messages.slint:148 ui/messages.slint:195 ui/messages.slint:203
 msgctxt "Messages"
 msgid "Only the 64-bit client (Gw2-64.exe) is supported."
 msgstr "Nur der 64-Bit-Client (Gw2-64.exe) wird unterstützt."
 
 #: ui/messages.slint:150 ui/messages.slint:197 ui/messages.slint:205
+#: ui/messages.slint:150 ui/messages.slint:197 ui/messages.slint:205
 msgctxt "Messages"
 msgid "The file is not the Guild Wars 2 client."
 msgstr "Die Datei ist nicht der Guild-Wars-2-Client."
 
+#: ui/account-card.slint:259 ui/account-card.slint:287
 #: ui/account-card.slint:259 ui/account-card.slint:287
 msgctxt "AccountCard"
 msgid "Companion app running"
 msgstr "Mitgestartetes Programm läuft"
 
 #: ui/account-card.slint:259 ui/account-card.slint:287
+#: ui/account-card.slint:259 ui/account-card.slint:287
 msgctxt "AccountCard"
 msgid "Companion apps start with it"
 msgstr "Mit Programmen, die mitstarten"
 
+#: ui/account-card.slint:341 ui/account-card.slint:348
 #: ui/account-card.slint:341 ui/account-card.slint:348
 msgctxt "AccountCard"
 msgid "Edit"
 msgstr "Bearbeiten"
 
 #: ui/account-card.slint:350 ui/account-card.slint:357
+#: ui/account-card.slint:350 ui/account-card.slint:357
 msgctxt "AccountCard"
 msgid "Duplicate"
 msgstr "Duplizieren"
 
+#: ui/account-card.slint:352 ui/account-card.slint:359
 #: ui/account-card.slint:352 ui/account-card.slint:359
 msgctxt "AccountCard"
 msgid "Ctrl+D"
 msgstr "Strg+D"
 
 #: ui/account-card.slint:359 ui/account-card.slint:366
+#: ui/account-card.slint:359 ui/account-card.slint:366
 msgctxt "AccountCard"
 msgid "Create desktop shortcut"
 msgstr "Desktop-Verknüpfung erstellen"
 
+#: ui/account-card.slint:367 ui/account-card.slint:374
 #: ui/account-card.slint:367 ui/account-card.slint:374
 msgctxt "AccountCard"
 msgid "Open profile folder"
 msgstr "Profilordner öffnen"
 
 #: ui/account-card.slint:382 ui/account-card.slint:389
+#: ui/account-card.slint:382 ui/account-card.slint:389
 msgctxt "AccountCard"
 msgid "Delete"
 msgstr "Löschen"
 
 #: ui/account-card.slint:384 ui/account-card.slint:391
+#: ui/account-card.slint:384 ui/account-card.slint:391
 msgctxt "AccountCard"
 msgid "Del"
 msgstr "Entf"
 
-#: ui/app.slint:124 ui/app.slint:140 ui/app.slint:92 ui/app.slint:108 ui/app.slint:113
+#: ui/app.slint:124 ui/app.slint:140 ui/app.slint:92 ui/app.slint:108
+#: ui/app.slint:124 ui/app.slint:140 ui/app.slint:92 ui/app.slint:108 ui/app.slint:97
 msgctxt "ConfirmDelete"
 msgid "Delete „{}“?"
 msgstr "„{}“ löschen?"
 
+#: ui/app.slint:148 ui/app.slint:116 ui/app.slint:118 ui/app.slint:117
 #: ui/app.slint:148 ui/app.slint:116 ui/app.slint:118 ui/app.slint:117
 msgctxt "ConfirmDelete"
 msgid ""
@@ -489,25 +549,30 @@ msgstr ""
 "endgültig gelöscht. Das lässt sich nicht rückgängig machen."
 
 #: ui/app.slint:159 ui/app.slint:127 ui/app.slint:129 ui/app.slint:128
+#: ui/app.slint:159 ui/app.slint:127 ui/app.slint:129 ui/app.slint:128
 msgctxt "ConfirmDelete"
 msgid "Cancel"
 msgstr "Abbrechen"
 
+#: ui/app.slint:165 ui/app.slint:133 ui/app.slint:135 ui/app.slint:134
 #: ui/app.slint:165 ui/app.slint:133 ui/app.slint:135 ui/app.slint:134
 msgctxt "ConfirmDelete"
 msgid "Delete"
 msgstr "Löschen"
 
 #: ui/app.slint:176 ui/app.slint:144 ui/app.slint:146 ui/app.slint:145
+#: ui/app.slint:176 ui/app.slint:144 ui/app.slint:146 ui/app.slint:145
 msgctxt "MainWindow"
 msgid "Breakbar Launcher – Setup"
 msgstr "Breakbar Launcher – Einrichtung"
 
 #: ui/app.slint:400 ui/app.slint:376 ui/app.slint:378 ui/app.slint:380
+#: ui/app.slint:400 ui/app.slint:376 ui/app.slint:378 ui/app.slint:380
 msgctxt "MainWindow"
 msgid "POS {}/{}"
 msgstr "POS {}/{}"
 
+#: ui/app.slint:419 ui/app.slint:395 ui/app.slint:397 ui/app.slint:399
 #: ui/app.slint:419 ui/app.slint:395 ui/app.slint:397 ui/app.slint:399
 msgctxt "MainWindow"
 msgid "Drag to sort"
@@ -679,56 +744,66 @@ msgctxt "AccountEditor"
 msgid "Save"
 msgstr "Speichern"
 
-#: ui/messages.slint:42 ui/messages.slint:44
+#: ui/messages.slint:42 ui/messages.slint:44 ui/messages.slint:48
 msgctxt "Messages"
 msgid "„{}“ is already running."
 msgstr "„{}“ läuft bereits."
 
+#: ui/messages.slint:143 ui/messages.slint:151 ui/messages.slint:193
 #: ui/messages.slint:143 ui/messages.slint:151 ui/messages.slint:193
 msgctxt "Messages"
 msgid "{} (copy)"
 msgstr "{} (Kopie)"
 
 #: ui/messages.slint:147 ui/messages.slint:155 ui/messages.slint:197
+#: ui/messages.slint:147 ui/messages.slint:155 ui/messages.slint:197
 msgctxt "Messages"
 msgid "Desktop shortcut created"
 msgstr "Desktop-Verknüpfung erstellt"
 
+#: ui/messages.slint:151 ui/messages.slint:159 ui/messages.slint:201
 #: ui/messages.slint:151 ui/messages.slint:159 ui/messages.slint:201
 msgctxt "Messages"
 msgid "„{}“ starts the account without opening the launcher."
 msgstr "„{}“ startet den Account, ohne den Launcher zu öffnen."
 
 #: ui/messages.slint:155 ui/messages.slint:163 ui/messages.slint:205
+#: ui/messages.slint:155 ui/messages.slint:163 ui/messages.slint:205
 msgctxt "Messages"
 msgid "Shortcut could not be created"
 msgstr "Verknüpfung konnte nicht erstellt werden"
 
+#: ui/messages.slint:160 ui/messages.slint:168 ui/messages.slint:210
 #: ui/messages.slint:160 ui/messages.slint:168 ui/messages.slint:210
 msgctxt "Messages"
 msgid "Start „{}“ with Breakbar"
 msgstr "„{}“ mit Breakbar starten"
 
 #: ui/messages.slint:164 ui/messages.slint:172 ui/messages.slint:214
+#: ui/messages.slint:164 ui/messages.slint:172 ui/messages.slint:214
 msgctxt "Messages"
 msgid "„{}“ deleted"
 msgstr "„{}“ gelöscht"
 
+#: ui/messages.slint:168 ui/messages.slint:176 ui/messages.slint:218
 #: ui/messages.slint:168 ui/messages.slint:176 ui/messages.slint:218
 msgctxt "Messages"
 msgid "Profile folder could not be deleted"
 msgstr "Profilordner konnte nicht gelöscht werden"
 
 #: ui/messages.slint:172 ui/messages.slint:180 ui/messages.slint:222
+#: ui/messages.slint:172 ui/messages.slint:180 ui/messages.slint:222
 msgctxt "Messages"
 msgid "„{}“ is running. Stop it before deleting it."
 msgstr "„{}“ läuft. Beende den Client, bevor du den Account löschst."
 
 #: ui/messages.slint:176 ui/messages.slint:184 ui/messages.slint:226
+#: ui/messages.slint:176 ui/messages.slint:184 ui/messages.slint:226
 msgctxt "Messages"
 msgid "Profile folder could not be opened"
 msgstr "Profilordner konnte nicht geöffnet werden"
 
+#: ui/messages.slint:181 ui/messages.slint:189 ui/messages.slint:231
 #: ui/messages.slint:181 ui/messages.slint:189 ui/messages.slint:231
 msgctxt "Messages"
 msgid "There is no account „{}“."
@@ -848,145 +923,176 @@ msgid "Create account"
 msgstr "Account anlegen"
 
 #: ui/app.slint:308 ui/app.slint:310 ui/app.slint:312 ui/app.slint:314
+#: ui/app.slint:308 ui/app.slint:310 ui/app.slint:312 ui/app.slint:314
 msgctxt "MainWindow"
 msgid "Settings"
 msgstr "Einstellungen"
 
+#: ui/settings.slint:51 ui/settings.slint:110 ui/settings.slint:113
 #: ui/settings.slint:51 ui/settings.slint:110 ui/settings.slint:113
 msgctxt "PathField"
 msgid "Browse…"
 msgstr "Durchsuchen…"
 
 #: ui/settings.slint:94 ui/settings.slint:96 ui/settings.slint:157
+#: ui/settings.slint:94 ui/settings.slint:96 ui/settings.slint:157
 msgctxt "SettingsPage"
 msgid "Back"
 msgstr "Zurück"
 
+#: ui/settings.slint:98 ui/settings.slint:100 ui/settings.slint:161
 #: ui/settings.slint:98 ui/settings.slint:100 ui/settings.slint:161
 msgctxt "SettingsPage"
 msgid "Settings"
 msgstr "Einstellungen"
 
 #: ui/settings.slint:120 ui/settings.slint:122 ui/settings.slint:183
+#: ui/settings.slint:120 ui/settings.slint:122 ui/settings.slint:183
 msgctxt "SettingsPage"
 msgid "// PATHS"
 msgstr "// PFADE"
 
 #: ui/settings.slint:126 ui/settings.slint:128 ui/settings.slint:189
+#: ui/settings.slint:126 ui/settings.slint:128 ui/settings.slint:189
 msgctxt "SettingsPage"
 msgid "Gw2-64.exe found"
 msgstr "Gw2-64.exe gefunden"
 
-#: ui/settings.slint:127 ui/settings.slint:135 ui/settings.slint:129 ui/settings.slint:249 ui/settings.slint:250
+#: ui/settings.slint:127 ui/settings.slint:135 ui/settings.slint:129
+#: ui/settings.slint:127 ui/settings.slint:135 ui/settings.slint:129 ui/settings.slint:250 ui/settings.slint:254
+#: ui/settings.slint:127 ui/settings.slint:135 ui/settings.slint:129 ui/settings.slint:250 ui/settings.slint:254
 msgctxt "SettingsPage"
 msgid "File not found. Check the path."
 msgstr "Datei nicht gefunden. Prüfe den Pfad."
 
+#: ui/settings.slint:134 ui/settings.slint:136 ui/settings.slint:197
 #: ui/settings.slint:134 ui/settings.slint:136 ui/settings.slint:197
 msgctxt "SettingsPage"
 msgid "Blish HUD.exe found"
 msgstr "Blish HUD.exe gefunden"
 
 #: ui/messages.slint:126 ui/messages.slint:128 ui/messages.slint:133
+#: ui/messages.slint:126 ui/messages.slint:128 ui/messages.slint:133
 msgctxt "Messages"
 msgid "Could not change the Windows startup setting"
 msgstr "Windows-Start-Einstellung konnte nicht geändert werden"
 
+#: ui/messages.slint:130 ui/messages.slint:132 ui/messages.slint:137
 #: ui/messages.slint:130 ui/messages.slint:132 ui/messages.slint:137
 msgctxt "Messages"
 msgid "{}"
 msgstr "{}"
 
 #: ui/settings.slint:142 ui/settings.slint:203 ui/settings.slint:234
+#: ui/settings.slint:142 ui/settings.slint:203 ui/settings.slint:234
 msgctxt "SettingsPage"
 msgid "// BEHAVIOR"
 msgstr "// VERHALTEN"
 
-#: ui/settings.slint:150 ui/settings.slint:164 ui/settings.slint:239 ui/settings.slint:324 ui/settings.slint:325
+#: ui/settings.slint:150 ui/settings.slint:164 ui/settings.slint:239
+#: ui/settings.slint:150 ui/settings.slint:164 ui/settings.slint:239 ui/settings.slint:325 ui/settings.slint:335
+#: ui/settings.slint:150 ui/settings.slint:164 ui/settings.slint:239 ui/settings.slint:325 ui/settings.slint:335
 msgctxt "SettingsPage"
 msgid "Start with Windows"
 msgstr "Mit Windows starten"
 
+#: ui/settings.slint:155 ui/settings.slint:244 ui/settings.slint:275
 #: ui/settings.slint:155 ui/settings.slint:244 ui/settings.slint:275
 msgctxt "SettingsPage"
 msgid "Opens the launcher when you sign in."
 msgstr "Öffnet den Launcher bei der Anmeldung."
 
 #: ui/messages.slint:137 ui/messages.slint:142 ui/messages.slint:149
+#: ui/messages.slint:137 ui/messages.slint:142 ui/messages.slint:149
 msgctxt "Messages"
 msgid "Launch all ({})"
 msgstr "Alle starten ({})"
 
+#: ui/messages.slint:143 ui/messages.slint:148 ui/messages.slint:155
 #: ui/messages.slint:143 ui/messages.slint:148 ui/messages.slint:155
 msgctxt "Messages"
 msgid "{} · Login required"
 msgstr "{} · Login nötig"
 
 #: ui/messages.slint:146 ui/messages.slint:151 ui/messages.slint:158
+#: ui/messages.slint:146 ui/messages.slint:151 ui/messages.slint:158
 msgctxt "Messages"
 msgid "{} · Starting…"
 msgstr "{} · Startet…"
 
+#: ui/messages.slint:149 ui/messages.slint:154 ui/messages.slint:161
 #: ui/messages.slint:149 ui/messages.slint:154 ui/messages.slint:161
 msgctxt "Messages"
 msgid "{} · Running"
 msgstr "{} · Läuft"
 
 #: ui/messages.slint:152 ui/messages.slint:157 ui/messages.slint:164
+#: ui/messages.slint:152 ui/messages.slint:157 ui/messages.slint:164
 msgctxt "Messages"
 msgid "{} · Stopping…"
 msgstr "{} · Stoppt…"
 
+#: ui/messages.slint:155 ui/messages.slint:160 ui/messages.slint:167
 #: ui/messages.slint:155 ui/messages.slint:160 ui/messages.slint:167
 msgctxt "Messages"
 msgid "{} · Locked"
 msgstr "{} · Gesperrt"
 
 #: ui/messages.slint:158 ui/messages.slint:163 ui/messages.slint:170
+#: ui/messages.slint:158 ui/messages.slint:163 ui/messages.slint:170
 msgctxt "Messages"
 msgid "{} · Error"
 msgstr "{} · Fehler"
 
+#: ui/messages.slint:160 ui/messages.slint:165 ui/messages.slint:172
 #: ui/messages.slint:160 ui/messages.slint:165 ui/messages.slint:172
 msgctxt "Messages"
 msgid "{} · Ready"
 msgstr "{} · Bereit"
 
 #: ui/messages.slint:164 ui/messages.slint:169 ui/messages.slint:176
+#: ui/messages.slint:164 ui/messages.slint:169 ui/messages.slint:176
 msgctxt "Messages"
 msgid "Open window"
 msgstr "Fenster öffnen"
 
+#: ui/messages.slint:168 ui/messages.slint:173 ui/messages.slint:180
 #: ui/messages.slint:168 ui/messages.slint:173 ui/messages.slint:180
 msgctxt "Messages"
 msgid "Quit"
 msgstr "Beenden"
 
 #: ui/messages.slint:172 ui/messages.slint:177 ui/messages.slint:184
+#: ui/messages.slint:172 ui/messages.slint:177 ui/messages.slint:184
 msgctxt "Messages"
 msgid "Tray icon could not be created"
 msgstr "Tray-Symbol konnte nicht erstellt werden"
 
+#: ui/settings.slint:208 ui/settings.slint:239 ui/settings.slint:240
 #: ui/settings.slint:208 ui/settings.slint:239 ui/settings.slint:240
 msgctxt "SettingsPage"
 msgid "After starting an account"
 msgstr "Nach dem Start"
 
 #: ui/settings.slint:214 ui/settings.slint:245 ui/settings.slint:246
+#: ui/settings.slint:214 ui/settings.slint:245 ui/settings.slint:246
 msgctxt "SettingsPage"
 msgid "Keep the window open"
 msgstr "Fenster geöffnet lassen"
 
+#: ui/settings.slint:219 ui/settings.slint:250 ui/settings.slint:251
 #: ui/settings.slint:219 ui/settings.slint:250 ui/settings.slint:251
 msgctxt "SettingsPage"
 msgid "Minimize to the tray"
 msgstr "In den Tray minimieren"
 
 #: ui/settings.slint:224 ui/settings.slint:255 ui/settings.slint:256
+#: ui/settings.slint:224 ui/settings.slint:255 ui/settings.slint:256
 msgctxt "SettingsPage"
 msgid "Close the launcher"
 msgstr "Launcher schließen"
 
+#: ui/messages.slint:176 ui/messages.slint:188 ui/messages.slint:184
 #: ui/messages.slint:176 ui/messages.slint:188 ui/messages.slint:184
 msgctxt "Messages"
 msgid "Switcher overlay could not be created"
@@ -998,6 +1104,7 @@ msgid "Show in launcher"
 msgstr "Im Launcher zeigen"
 
 #: ui/messages.slint:180 ui/messages.slint:185 ui/messages.slint:192
+#: ui/messages.slint:180 ui/messages.slint:185 ui/messages.slint:192
 msgctxt "Messages"
 msgid "Stop"
 msgstr "Beenden"
@@ -1008,20 +1115,24 @@ msgid "Open launcher"
 msgstr "Launcher öffnen"
 
 #: ui/messages.slint:176 ui/messages.slint:181 ui/messages.slint:188
+#: ui/messages.slint:176 ui/messages.slint:181 ui/messages.slint:188
 msgctxt "Messages"
 msgid "Start"
 msgstr "Starten"
 
+#: ui/app.slint:160 ui/app.slint:311 ui/app.slint:312 ui/app.slint:377
 #: ui/app.slint:160 ui/app.slint:311 ui/app.slint:312 ui/app.slint:377
 msgctxt "SteamSetupDialog"
 msgid "Steam needs a copy of Guild Wars 2"
 msgstr "Steam braucht eine Kopie von Guild Wars 2"
 
 #: ui/app.slint:161 ui/app.slint:312 ui/app.slint:313 ui/app.slint:378
+#: ui/app.slint:161 ui/app.slint:312 ui/app.slint:313 ui/app.slint:378
 msgctxt "SteamSetupDialog"
 msgid "Finish the installation in Steam"
 msgstr "Installation in Steam abschließen"
 
+#: ui/app.slint:206 ui/app.slint:357 ui/app.slint:358 ui/app.slint:423
 #: ui/app.slint:206 ui/app.slint:357 ui/app.slint:358 ui/app.slint:423
 msgctxt "SteamSetupDialog"
 msgid ""
@@ -1034,10 +1145,12 @@ msgstr ""
 "mit Steam verknüpfen, sodass nichts erneut heruntergeladen werden muss."
 
 #: ui/app.slint:212 ui/app.slint:363 ui/app.slint:364 ui/app.slint:429
+#: ui/app.slint:212 ui/app.slint:363 ui/app.slint:364 ui/app.slint:429
 msgctxt "SteamSetupDialog"
 msgid "A link will be created:"
 msgstr "Es wird eine Verknüpfung angelegt:"
 
+#: ui/app.slint:225 ui/app.slint:376 ui/app.slint:377 ui/app.slint:442
 #: ui/app.slint:225 ui/app.slint:376 ui/app.slint:377 ui/app.slint:442
 msgctxt "SteamSetupDialog"
 msgid ""
@@ -1051,6 +1164,7 @@ msgstr ""
 "Bestätige hier, sobald es fertig ist."
 
 #: ui/app.slint:231 ui/app.slint:382 ui/app.slint:383 ui/app.slint:448
+#: ui/app.slint:231 ui/app.slint:382 ui/app.slint:383 ui/app.slint:448
 msgctxt "SteamSetupDialog"
 msgid ""
 "Steam's installation was not found yet. Wait until Steam has finished and "
@@ -1060,40 +1174,48 @@ msgstr ""
 "ist, und versuche es erneut."
 
 #: ui/app.slint:242 ui/app.slint:393 ui/app.slint:394 ui/app.slint:459
+#: ui/app.slint:242 ui/app.slint:393 ui/app.slint:394 ui/app.slint:459
 msgctxt "SteamSetupDialog"
 msgid "Cancel"
 msgstr "Abbrechen"
 
+#: ui/app.slint:242 ui/app.slint:393 ui/app.slint:394 ui/app.slint:459
 #: ui/app.slint:242 ui/app.slint:393 ui/app.slint:394 ui/app.slint:459
 msgctxt "SteamSetupDialog"
 msgid "Later"
 msgstr "Später"
 
 #: ui/app.slint:248 ui/app.slint:399 ui/app.slint:400 ui/app.slint:465
+#: ui/app.slint:248 ui/app.slint:399 ui/app.slint:400 ui/app.slint:465
 msgctxt "SteamSetupDialog"
 msgid "Create link"
 msgstr "Verknüpfung erstellen"
 
+#: ui/app.slint:254 ui/app.slint:405 ui/app.slint:406 ui/app.slint:471
 #: ui/app.slint:254 ui/app.slint:405 ui/app.slint:406 ui/app.slint:471
 msgctxt "SteamSetupDialog"
 msgid "Download finished"
 msgstr "Download fertig"
 
 #: ui/messages.slint:188 ui/messages.slint:193 ui/messages.slint:200
+#: ui/messages.slint:188 ui/messages.slint:193 ui/messages.slint:200
 msgctxt "Messages"
 msgid "Steam is ready"
 msgstr "Steam ist bereit"
 
+#: ui/messages.slint:192 ui/messages.slint:197 ui/messages.slint:204
 #: ui/messages.slint:192 ui/messages.slint:197 ui/messages.slint:204
 msgctxt "Messages"
 msgid "You can start „{}“ now."
 msgstr "„{}“ kann jetzt gestartet werden."
 
 #: ui/messages.slint:196 ui/messages.slint:201 ui/messages.slint:208
+#: ui/messages.slint:196 ui/messages.slint:201 ui/messages.slint:208
 msgctxt "Messages"
 msgid "The link to Steam could not be created"
 msgstr "Die Verknüpfung zu Steam konnte nicht erstellt werden"
 
+#: ui/messages.slint:200 ui/messages.slint:205 ui/messages.slint:212
 #: ui/messages.slint:200 ui/messages.slint:205 ui/messages.slint:212
 msgctxt "Messages"
 msgid ""
@@ -1186,22 +1308,22 @@ msgstr ""
 "Client dann normal, damit der Login gespeichert wird. Danach können andere "
 "Accounts gestartet werden."
 
-#: ui/messages.slint:76
+#: ui/messages.slint:76 ui/messages.slint:80
 msgctxt "Messages"
 msgid "Login set up"
 msgstr "Login eingerichtet"
 
-#: ui/messages.slint:80
+#: ui/messages.slint:80 ui/messages.slint:84
 msgctxt "Messages"
 msgid "„{}“ is ready to start."
 msgstr "„{}“ ist startbereit."
 
-#: ui/messages.slint:84
+#: ui/messages.slint:84 ui/messages.slint:88
 msgctxt "Messages"
 msgid "Login not saved"
 msgstr "Login nicht gespeichert"
 
-#: ui/messages.slint:90
+#: ui/messages.slint:90 ui/messages.slint:94
 msgctxt "Messages"
 msgid ""
 "The login file of „{}“ did not change. Let the client finish loading "
@@ -1210,7 +1332,7 @@ msgstr ""
 "Die Login-Datei von „{}“ hat sich nicht geändert. Lass den Client "
 "fertig laden, bevor du ihn schließt, und versuche es erneut."
 
-#: ui/messages.slint:92
+#: ui/messages.slint:92 ui/messages.slint:96
 msgctxt "Messages"
 msgid ""
 "The login file of „{}“ did not change. Log in with „Remember email/"
@@ -1221,30 +1343,36 @@ msgstr ""
 "versuche es erneut."
 
 #: ui/settings.slint:208 ui/settings.slint:209 ui/settings.slint:213
+#: ui/settings.slint:208 ui/settings.slint:209 ui/settings.slint:213
 msgctxt "SettingsPage"
 msgid "// GAME"
 msgstr "// SPIEL"
 
+#: ui/settings.slint:213 ui/settings.slint:214 ui/settings.slint:218
 #: ui/settings.slint:213 ui/settings.slint:214 ui/settings.slint:218
 msgctxt "SettingsPage"
 msgid "Frame rate limit for loading screens"
 msgstr "Bildratenbegrenzung für Ladebildschirme"
 
 #: ui/settings.slint:219 ui/settings.slint:220 ui/settings.slint:224
+#: ui/settings.slint:219 ui/settings.slint:220 ui/settings.slint:224
 msgctxt "SettingsPage"
 msgid "60 FPS"
 msgstr "60 FPS"
 
+#: ui/settings.slint:219 ui/settings.slint:220 ui/settings.slint:224
 #: ui/settings.slint:219 ui/settings.slint:220 ui/settings.slint:224
 msgctxt "SettingsPage"
 msgid "30 FPS"
 msgstr "30 FPS"
 
 #: ui/settings.slint:219 ui/settings.slint:220 ui/settings.slint:224
+#: ui/settings.slint:219 ui/settings.slint:220 ui/settings.slint:224
 msgctxt "SettingsPage"
 msgid "Unlimited"
 msgstr "Unbegrenzt"
 
+#: ui/settings.slint:226 ui/settings.slint:227 ui/settings.slint:231
 #: ui/settings.slint:226 ui/settings.slint:227 ui/settings.slint:231
 msgctxt "SettingsPage"
 msgid ""
@@ -1257,51 +1385,62 @@ msgstr ""
 "Grafikoptionen des Spiels zu tun."
 
 #: ui/settings.slint:291 ui/settings.slint:295 ui/settings.slint:300
+#: ui/settings.slint:291 ui/settings.slint:295 ui/settings.slint:300
 msgctxt "SettingsPage"
 msgid "// APPEARANCE"
 msgstr "// DARSTELLUNG"
 
 #: ui/settings.slint:296 ui/settings.slint:300 ui/settings.slint:305
+#: ui/settings.slint:296 ui/settings.slint:300 ui/settings.slint:305
 msgctxt "SettingsPage"
 msgid "Theme"
 msgstr "Farbschema"
 
-#: ui/settings.slint:302 ui/settings.slint:306 ui/settings.slint:311 ui/settings.slint:413 ui/settings.slint:436
 #. The language names are shown in their own language on purpose.
+#: ui/settings.slint:302 ui/settings.slint:306 ui/settings.slint:311
+#: ui/settings.slint:302 ui/settings.slint:306 ui/settings.slint:311 ui/settings.slint:436 ui/settings.slint:423
+#: ui/settings.slint:302 ui/settings.slint:306 ui/settings.slint:311 ui/settings.slint:436 ui/settings.slint:423
 msgctxt "SettingsPage"
 msgid "System"
 msgstr "System"
 
+#: ui/settings.slint:302 ui/settings.slint:306 ui/settings.slint:311
 #: ui/settings.slint:302 ui/settings.slint:306 ui/settings.slint:311
 msgctxt "SettingsPage"
 msgid "Light"
 msgstr "Hell"
 
 #: ui/settings.slint:302 ui/settings.slint:306 ui/settings.slint:311
+#: ui/settings.slint:302 ui/settings.slint:306 ui/settings.slint:311
 msgctxt "SettingsPage"
 msgid "Dark"
 msgstr "Dunkel"
 
+#: ui/settings.slint:309 ui/settings.slint:313 ui/settings.slint:318
 #: ui/settings.slint:309 ui/settings.slint:313 ui/settings.slint:318
 msgctxt "SettingsPage"
 msgid "System follows the Windows app theme."
 msgstr "System folgt dem Windows-App-Design."
 
 #: ui/settings.slint:321 ui/settings.slint:349 ui/settings.slint:450
+#: ui/settings.slint:321 ui/settings.slint:349 ui/settings.slint:450
 msgctxt "SettingsPage"
 msgid "// ABOUT"
 msgstr "// ÜBER"
 
+#: ui/settings.slint:350 ui/settings.slint:378 ui/settings.slint:479
 #: ui/settings.slint:350 ui/settings.slint:378 ui/settings.slint:479
 msgctxt "SettingsPage"
 msgid "Version {} · breakbar.cc"
 msgstr "Version {} · breakbar.cc"
 
 #: ui/settings.slint:365 ui/settings.slint:393 ui/settings.slint:494
+#: ui/settings.slint:365 ui/settings.slint:393 ui/settings.slint:494
 msgctxt "SettingsPage"
 msgid "License"
 msgstr "Lizenz"
 
+#: ui/settings.slint:396 ui/settings.slint:424 ui/settings.slint:525
 #: ui/settings.slint:396 ui/settings.slint:424 ui/settings.slint:525
 msgctxt "SettingsPage"
 msgid ""
@@ -1312,56 +1451,59 @@ msgstr ""
 "Wars 2 ist eine Marke von ArenaNet."
 
 #: ui/settings.slint:327 ui/settings.slint:428 ui/settings.slint:429
+#: ui/settings.slint:327 ui/settings.slint:428 ui/settings.slint:429
 msgctxt "SettingsPage"
 msgid "Language"
 msgstr "Sprache"
 
 #: ui/settings.slint:341 ui/settings.slint:442 ui/settings.slint:443
+#: ui/settings.slint:341 ui/settings.slint:442 ui/settings.slint:443
 msgctxt "SettingsPage"
 msgid "System follows the Windows display language."
 msgstr "System folgt der Anzeigesprache von Windows."
 
-#: ui/settings.slint:344 ui/settings.slint:345
+#: ui/settings.slint:344 ui/settings.slint:345 ui/settings.slint:355
 msgctxt "SettingsPage"
 msgid "// SWITCHER"
 msgstr "// SWITCHER"
 
-#: ui/settings.slint:347 ui/settings.slint:348
+#: ui/settings.slint:347 ui/settings.slint:348 ui/settings.slint:358
 msgctxt "SettingsPage"
 msgid "Show the switcher"
 msgstr "Switcher anzeigen"
 
-#: ui/settings.slint:348 ui/settings.slint:349
+#: ui/settings.slint:348 ui/settings.slint:349 ui/settings.slint:359
 msgctxt "SettingsPage"
 msgid "A small bar over the game to jump between clients."
 msgstr "Eine kleine Leiste über dem Spiel, um zwischen Clients zu wechseln."
 
-#: ui/settings.slint:353 ui/settings.slint:354
+#: ui/settings.slint:353 ui/settings.slint:354 ui/settings.slint:364
 msgctxt "SettingsPage"
 msgid "Only while a client is running"
 msgstr "Nur wenn ein Client läuft"
 
-#: ui/settings.slint:354 ui/settings.slint:355
+#: ui/settings.slint:354 ui/settings.slint:355 ui/settings.slint:365
 msgctxt "SettingsPage"
 msgid "Otherwise it stays on screen as long as Breakbar runs."
 msgstr "Sonst bleibt sie sichtbar, solange Breakbar läuft."
 
-#: ui/settings.slint:360 ui/settings.slint:361
+#: ui/settings.slint:360 ui/settings.slint:361 ui/settings.slint:371
 msgctxt "SettingsPage"
 msgid "Lock the position"
 msgstr "Position sperren"
 
-#: ui/settings.slint:361 ui/settings.slint:362
+#: ui/settings.slint:361 ui/settings.slint:362 ui/settings.slint:372
 msgctxt "SettingsPage"
 msgid "The bar can no longer be dragged."
 msgstr "Die Leiste lässt sich nicht mehr verschieben."
 
 #: ui/settings.slint:372 ui/settings.slint:386 ui/settings.slint:373
+#: ui/settings.slint:372 ui/settings.slint:386 ui/settings.slint:373 ui/settings.slint:397
 msgctxt "SettingsPage"
 msgid "Opacity at rest"
 msgstr "Deckkraft im Ruhezustand"
 
-#: ui/settings.slint:393 ui/settings.slint:394
+#: ui/settings.slint:393 ui/settings.slint:394 ui/settings.slint:404
 msgctxt "SettingsPage"
 msgid ""
 "Under the pointer the bar is always fully opaque. It is visible over windows "
@@ -1379,9 +1521,78 @@ msgstr "Das Spiel wurde aktualisiert"
 msgctxt "RefreshBanner"
 msgid ""
 "These accounts have to refresh their login once, which needs one start each:"
-msgstr "Diese Accounts müssen ihren Login einmal auffrischen, dafür ist je ein Start nötig:"
+msgstr ""
+"Diese Accounts müssen ihren Login einmal auffrischen, dafür ist je ein "
+"Start nötig:"
 
 #: ui/app.slint:355
 msgctxt "RefreshBanner"
 msgid "Set up one after another"
 msgstr "Nacheinander einrichten"
+
+#: ui/app.slint:373 ui/app.slint:398
+msgctxt "PatchAvailableBanner"
+msgid "A Guild Wars 2 update is available"
+msgstr ""
+
+#: ui/app.slint:406
+msgctxt "PatchAvailableBanner"
+msgid ""
+"Downloading the update — the game window will open, and this closes on its "
+"own once it's done."
+msgstr ""
+
+#: ui/app.slint:407
+msgctxt "PatchAvailableBanner"
+msgid ""
+"Start the game directly to download it, then accounts can be started as "
+"usual."
+msgstr ""
+
+#: ui/app.slint:419
+msgctxt "PatchAvailableBanner"
+msgid "Start now"
+msgstr ""
+
+#: ui/messages.slint:45
+msgctxt "Messages"
+msgid ""
+"Close all running Guild Wars 2 clients first, then start the update again."
+msgstr ""
+
+#: ui/messages.slint:100
+msgctxt "Messages"
+msgid "Update installed"
+msgstr ""
+
+#: ui/messages.slint:104
+msgctxt "Messages"
+msgid "Guild Wars 2 was updated. Accounts can be started as usual again."
+msgstr ""
+
+#: ui/messages.slint:108
+msgctxt "Messages"
+msgid "No update installed"
+msgstr ""
+
+#: ui/messages.slint:113
+msgctxt "Messages"
+msgid "The update wasn't installed. Check your connection and try again."
+msgstr ""
+
+#: ui/settings.slint:292
+msgctxt "SettingsPage"
+msgid "Check for game updates online"
+msgstr ""
+
+#: ui/settings.slint:293
+msgctxt "SettingsPage"
+msgid ""
+"Asks ArenaNet's servers every few minutes whether a new patch exists, and "
+"shows a banner if the local client hasn't downloaded it yet."
+msgstr ""
+
+#: ui/settings.slint:509
+msgctxt "SettingsPage"
+msgid "Report a problem"
+msgstr "Problem melden"
