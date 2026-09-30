@@ -166,7 +166,7 @@ impl Default for OverlaySettings {
             enabled: true,
             only_when_running: true,
             lock_position: false,
-            idle_opacity: 58,
+            idle_opacity: 75,
         }
     }
 }
@@ -332,7 +332,7 @@ mod tests {
         let overlay = Config::load(&path).unwrap().overlay;
         assert!(overlay.lock_position);
         assert!(overlay.enabled && overlay.only_when_running);
-        assert_eq!(overlay.idle_opacity, 58);
+        assert_eq!(overlay.idle_opacity, 75);
 
         fs::remove_dir_all(path.parent().unwrap()).unwrap();
     }

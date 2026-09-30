@@ -23,6 +23,11 @@ const MAX_CHIPS: usize = 4;
 /// (the foreground window has no change notification here, and the rows are a handful).
 const POLL_INTERVAL: Duration = Duration::from_millis(500);
 
+/// Where the bar starts before it has ever been dragged. Just a reasonable starting point, not
+/// tied to any particular monitor layout: [`on_screen`] falls back to Slint's own placement
+/// whenever this does not land on the current one.
+const DEFAULT_POSITION: OverlayPosition = OverlayPosition { x: -1, y: 1151 };
+
 thread_local! {
     /// The timer that drives the overlay, so that [`wake`] can start it again from anywhere.
     static POLL: RefCell<Weak<Timer>> = const { RefCell::new(Weak::new()) };
@@ -73,12 +78,12 @@ impl Overlay {
 
         // A position that is not on any monitor any more (a monitor was unplugged, or Windows
         // parked a hidden window at -32000) would leave the bar unreachable.
-        if let Some(position) = app
+        let position = app
             .borrow()
             .config
             .overlay_position
-            .filter(|position| on_screen(position.x, position.y))
-        {
+            .unwrap_or(DEFAULT_POSITION);
+        if on_screen(position.x, position.y) {
             window
                 .window()
                 .set_position(PhysicalPosition::new(position.x, position.y));
