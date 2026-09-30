@@ -1,0 +1,72 @@
+name: Bug report
+description: Something doesn't work the way it should.
+labels: [bug]
+body:
+  - type: textarea
+    id: description
+    attributes:
+      label: What happened?
+      description: What did you do, what did you expect, and what happened instead?
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      description: As exact as you can, so it can be reproduced.
+      placeholder: |
+        1. ...
+        2. ...
+        3. ...
+    validations:
+      required: false
+
+  - type: input
+    id: version
+    attributes:
+      label: Breakbar Launcher version
+      description: Settings, About section.
+      placeholder: "0.11.1"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: account-type
+    attributes:
+      label: Account type involved
+      multiple: true
+      options:
+        - ArenaNet
+        - Steam
+        - Not account-related
+    validations:
+      required: false
+
+  - type: textarea
+    id: log
+    attributes:
+      label: Log file
+      description: >
+        If the problem could have logged something, paste the relevant lines (or the whole file)
+        from `%LOCALAPPDATA%\Breakbar\breakbar.log`. It never contains logins.
+      render: text
+    validations:
+      required: false
+
+  - type: input
+    id: windows-version
+    attributes:
+      label: Windows version
+      description: Settings, System, About ("Windows specifications").
+      placeholder: "Windows 11 24H2"
+    validations:
+      required: false
+
+  - type: textarea
+    id: screenshots
+    attributes:
+      label: Screenshots
+      description: If it's something visual, a screenshot says more than a description.
+    validations:
+      required: false
