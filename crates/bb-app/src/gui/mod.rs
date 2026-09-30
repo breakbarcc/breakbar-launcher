@@ -30,6 +30,7 @@ mod login;
 mod patch;
 #[cfg(test)]
 mod preview;
+mod reset;
 mod settings;
 mod steam_dialog;
 #[cfg(test)]
@@ -314,6 +315,7 @@ pub fn run() -> Result<(), slint::PlatformError> {
     launch::wire(&window, &app, &queue);
     login::wire(&window, &app, &queue);
     patch::wire(&window, &app);
+    reset::wire(&window, &app);
     steam_dialog::wire(&window, &app);
     list::wire(&window);
     accounts::wire(&window, &app);

@@ -283,6 +283,14 @@ export global Messages {
         @tr("„{}“ is running. Stop it before deleting it.", name)
     }
 
+    public pure function reset-running() -> string {
+        @tr("Stop every running account first.")
+    }
+
+    public pure function reset-failed-title() -> string {
+        @tr("Not everything could be deleted")
+    }
+
     public pure function folder-failed-title() -> string {
         @tr("Profile folder could not be opened")
     }

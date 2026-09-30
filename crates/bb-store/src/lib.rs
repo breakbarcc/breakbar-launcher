@@ -13,9 +13,9 @@ use bb_core::{Account, CompanionApp};
 use serde::{Deserialize, Serialize};
 
 pub use profile::{
-    delete_profile, ensure_profile_dir, is_set_up, known_server_build, local_dat_path,
-    mark_build_verified, profile_dir, prune_temp, remove_folder, set_known_server_build,
-    shared_profile_dir, sweep_leftovers, trash_profile, verified_build,
+    delete_all_profiles, delete_profile, ensure_profile_dir, is_set_up, known_server_build,
+    local_dat_path, mark_build_verified, profile_dir, prune_temp, remove_folder,
+    set_known_server_build, shared_profile_dir, sweep_leftovers, trash_profile, verified_build,
 };
 pub use writer::ConfigWriter;
 
@@ -204,6 +204,17 @@ impl Default for Config {
 pub fn default_config_path() -> Result<PathBuf, StoreError> {
     let app_data = std::env::var_os("APPDATA").ok_or(StoreError::NoAppData)?;
     Ok(PathBuf::from(app_data).join("Breakbar").join("config.toml"))
+}
+
+/// Removes `config.toml` and everything next to it (`known-build.txt`): the whole
+/// `%APPDATA%\Breakbar` folder. A missing folder is not an error.
+///
+/// # Errors
+///
+/// Returns [`StoreError`] if `%APPDATA%` is not set or the folder can't be removed.
+pub fn delete_all_config() -> Result<(), StoreError> {
+    let app_data = std::env::var_os("APPDATA").ok_or(StoreError::NoAppData)?;
+    remove_folder(&PathBuf::from(app_data).join("Breakbar"))
 }
 
 impl Config {

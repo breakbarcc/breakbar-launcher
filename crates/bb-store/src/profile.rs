@@ -34,6 +34,19 @@ pub fn shared_profile_dir() -> Result<PathBuf, StoreError> {
     Ok(profiles_root()?.join("shared"))
 }
 
+/// Removes every profile folder at once, including the shared one: `%LOCALAPPDATA%\Breakbar\profiles`
+/// itself. A missing folder is not an error. Used to fully undo what Breakbar put on disk, since it
+/// has no installer/uninstaller to do that. Call it only while no client runs and after the shared
+/// profile's `Guild Wars 2` data has been moved back out (see `profile_link::unlink` in the app),
+/// or that data is lost along with the rest.
+///
+/// # Errors
+///
+/// Returns [`StoreError`] if `%LOCALAPPDATA%` is not set or the folder can't be removed.
+pub fn delete_all_profiles() -> Result<(), StoreError> {
+    remove_folder(&profiles_root()?)
+}
+
 fn profiles_root() -> Result<PathBuf, StoreError> {
     let local_app_data = std::env::var_os("LOCALAPPDATA").ok_or(StoreError::NoLocalAppData)?;
     Ok(PathBuf::from(local_app_data)

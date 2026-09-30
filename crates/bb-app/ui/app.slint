@@ -144,6 +144,86 @@ component ConfirmDelete {
     }
 }
 
+/// Asks before "Delete all data" wipes everything Breakbar ever put on disk.
+component ConfirmResetAll {
+    callback confirmed();
+    callback cancelled();
+
+    init => {
+        cancel.focus();
+    }
+
+    // Scrim: dims the window and swallows clicks.
+    Rectangle {
+        background: Theme.bg.with-alpha(0.72);
+        TouchArea {
+            clicked => { root.cancelled(); }
+        }
+    }
+    FocusScope {
+        key-pressed(event) => {
+            if event.text == Key.Escape {
+                root.cancelled();
+                return accept;
+            }
+            reject
+        }
+        Elevated {
+            x: (root.width - self.width) / 2;
+            y: (root.height - self.height) / 2;
+            width: min(root.width - 32px, 360px);
+            height: dialog.preferred-height;
+            accessible-role: groupbox;
+            accessible-label: @tr("Delete all data?");
+            // Keeps clicks on the dialog from reaching the scrim.
+            TouchArea { }
+            dialog := VerticalLayout {
+                padding: 16px;
+                spacing: 12px;
+                HorizontalLayout {
+                    spacing: 10px;
+                    Icon {
+                        y: (parent.height - self.height) / 2;
+                        path: Icons.trash;
+                        color: Theme.error;
+                        size: 17px;
+                    }
+                    Text {
+                        horizontal-stretch: 1;
+                        text: @tr("Delete all data?");
+                        font-size: Theme.fs-page-title;
+                        font-weight: 600;
+                        color: Theme.text;
+                        wrap: word-wrap;
+                    }
+                }
+                Text {
+                    text: @tr("Every account's saved login, the settings, the link to your Guild Wars 2 folder, its Steam link, desktop shortcuts and the start-with-Windows entry are removed for good. Breakbar closes afterward. This cannot be undone.");
+                    font-size: 12.5px;
+                    color: Theme.text-muted;
+                    wrap: word-wrap;
+                }
+                HorizontalLayout {
+                    padding-top: 4px;
+                    spacing: 8px;
+                    alignment: end;
+                    cancel := Button {
+                        kind: ButtonKind.ghost;
+                        text: @tr("Cancel");
+                        clicked => { root.cancelled(); }
+                    }
+                    Button {
+                        kind: ButtonKind.danger;
+                        icon: Icons.trash;
+                        text: @tr("Delete all data");
+                        clicked => { root.confirmed(); }
+                    }
+                }
+            }
+        }
+    }
+}
+
 /// Asks whether to set up an account's login right after it was created.
 component LoginOfferDialog {
     in property <string> name;
@@ -624,6 +704,13 @@ export component MainWindow inherits Window {
     callback open-license();
     callback open-slint();
     callback open-issues();
+    /// Settings: "Delete all data" was clicked. Shown as a confirmation dialog if accepted (see
+    /// `confirm-delete-all-open`), or refused with a toast if an account is still active.
+    callback request-delete-all-data();
+    /// The "Delete all data" confirmation was accepted.
+    callback confirm-delete-all();
+    /// Whether the "Delete all data" confirmation dialog is open.
+    in-out property <bool> confirm-delete-all-open: false;
     /// Open the editor for an account (0 = a new one).
     callback edit-account(int);
     /// Editor: switch a companion app for the account being edited.
@@ -1025,6 +1112,7 @@ export component MainWindow inherits Window {
         open-license => { root.open-license(); }
         open-slint => { root.open-slint(); }
         open-issues => { root.open-issues(); }
+        request-delete-all-data => { root.request-delete-all-data(); }
     }
 
     // ── Toasts ───────────────────────────────────────────────────────────────────────────────
@@ -1062,6 +1150,18 @@ export component MainWindow inherits Window {
             root.confirm-delete-id = 0;
         }
         cancelled => { root.confirm-delete-id = 0; }
+    }
+
+    if root.confirm-delete-all-open: ConfirmResetAll {
+        x: 0;
+        y: 0;
+        width: root.width;
+        height: root.height;
+        confirmed => {
+            root.confirm-delete-all();
+            root.confirm-delete-all-open = false;
+        }
+        cancelled => { root.confirm-delete-all-open = false; }
     }
 
     // ── Login offer ──────────────────────────────────────────────────────────────────────────

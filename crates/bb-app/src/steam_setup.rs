@@ -101,6 +101,23 @@ pub fn create_link(link: &Link) -> io::Result<()> {
     }
 }
 
+/// Removes the junction this module created, if Steam hasn't adopted it (installed over it) yet:
+/// only [`Plan::AwaitInstall`] means the link exists, still points where Breakbar put it, and
+/// nothing has come to depend on it. Once Steam has installed over it, removing it would break that
+/// Steam library entry, so it is left alone; the same goes for a link Breakbar didn't create
+/// ([`Plan::Blocked`]) or when there is nothing to remove ([`Plan::CreateLink`], [`Plan::NoSteam`]
+/// or no plan at all).
+///
+/// # Errors
+///
+/// Returns the OS error if the junction can't be removed.
+pub fn remove_link(gw2_exe: &Path) -> io::Result<()> {
+    if let Some(Plan::AwaitInstall(link)) = plan(gw2_exe) {
+        std::fs::remove_dir(&link.link)?;
+    }
+    Ok(())
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

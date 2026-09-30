@@ -81,6 +81,37 @@ pub fn restore_shared_if_stranded() -> Result<bool, ProfileLinkError> {
     Ok(true)
 }
 
+/// Undoes what Breakbar ever did to `%APPDATA%\Guild Wars 2`: removes the junction and, if the
+/// shared profile still holds data (the common case), moves it back into the real folder, exactly
+/// restoring the layout Guild Wars 2 had before Breakbar's first start ([`ensure_linked`] in
+/// reverse). Per-account profiles are untouched; only the shared one is ever moved in or out of the
+/// real folder. Does nothing if the real folder was never linked.
+///
+/// Call this only while no launch is in progress and no client runs (same requirement as
+/// [`restore_shared_if_stranded`]).
+///
+/// # Errors
+///
+/// Returns [`ProfileLinkError`] if `%APPDATA%` is not set or the folder can't be removed or moved.
+pub fn unlink() -> Result<(), ProfileLinkError> {
+    let real = real_gw2_dir()?;
+    if !is_reparse_point(&real)? {
+        return Ok(());
+    }
+    fs::remove_dir(&real).map_err(|source| ProfileLinkError::Io {
+        path: real.clone(),
+        source,
+    })?;
+    let shared = shared_gw2_dir()?;
+    if shared.exists() {
+        fs::rename(&shared, &real).map_err(|source| ProfileLinkError::Io {
+            path: shared,
+            source,
+        })?;
+    }
+    Ok(())
+}
+
 fn point_to(target: &Path) -> Result<(), ProfileLinkError> {
     let real = real_gw2_dir()?;
     ensure_linked(&real)?;
@@ -274,6 +305,33 @@ mod tests {
             fs::create_dir_all(real(root)).unwrap();
             assert!(!restore_shared_if_stranded().unwrap());
             assert!(!is_reparse_point(&real(root)).unwrap());
+        });
+    }
+
+    #[test]
+    fn unlink_restores_the_pre_breakbar_layout() {
+        with_isolated_appdata("unlink", |root| {
+            fs::create_dir_all(real(root)).unwrap();
+            fs::write(real(root).join("Local.dat"), b"existing data").unwrap();
+            point_to_shared().unwrap();
+            assert!(is_reparse_point(&real(root)).unwrap());
+
+            unlink().unwrap();
+
+            assert!(!is_reparse_point(&real(root)).unwrap());
+            assert_eq!(
+                fs::read(real(root).join("Local.dat")).unwrap(),
+                b"existing data"
+            );
+            assert!(!profile(root, "shared").exists());
+        });
+    }
+
+    #[test]
+    fn unlink_does_nothing_if_never_linked() {
+        with_isolated_appdata("unlink-fresh", |root| {
+            assert!(unlink().is_ok());
+            assert!(!real(root).exists());
         });
     }
 

@@ -3,7 +3,7 @@
 
 import { Theme, ThemeChoice } from "theme.slint";
 import { Icons } from "icons.slint";
-import { Activation, Icon, Button, FocusRing, IconButton, SectionLabel, FieldLabel, Toggle, Segmented, LinkButton, Slider } from "components.slint";
+import { Activation, Icon, Button, ButtonKind, FocusRing, IconButton, SectionLabel, FieldLabel, Toggle, Segmented, LinkButton, Slider } from "components.slint";
 
 /// What happens to the main window right after starting an account (not on setup or a manual
 /// stop). Mirrors `bb_store::AfterStart`.
@@ -207,6 +207,7 @@ export component SettingsPage inherits VerticalLayout {
     callback open-license();
     callback open-slint();
     callback open-issues();
+    callback request-delete-all-data();
 
     // Header: back arrow, title (matches the account editor's).
     HorizontalLayout {
@@ -536,6 +537,42 @@ export component SettingsPage inherits VerticalLayout {
                         font-size: Theme.fs-help;
                         color: Theme.text-dim;
                         wrap: word-wrap;
+                    }
+                }
+            }
+
+            SectionLabel {
+                text: @tr("// DANGER ZONE");
+            }
+            Rectangle {
+                border-radius: Theme.radius-card;
+                background: Theme.surface;
+                border-width: 1px;
+                border-color: Theme.error-line;
+                VerticalLayout {
+                    padding: 16px;
+                    spacing: 10px;
+                    Text {
+                        text: @tr("Delete all data");
+                        font-size: Theme.fs-page-title;
+                        font-weight: 600;
+                        color: Theme.text;
+                    }
+                    Text {
+                        text: @tr("There is no installer, so there is no uninstaller either: this removes everything Breakbar ever put on disk instead - every account's saved login, the settings, the link to your Guild Wars 2 folder, its Steam link, desktop shortcuts and the start-with-Windows entry - and then closes Breakbar. Guild Wars 2 itself is never touched.");
+                        font-size: Theme.fs-help;
+                        color: Theme.text-dim;
+                        wrap: word-wrap;
+                    }
+                    HorizontalLayout {
+                        padding-top: 4px;
+                        alignment: start;
+                        Button {
+                            kind: ButtonKind.danger;
+                            icon: Icons.trash;
+                            text: @tr("Delete all data");
+                            clicked => { root.request-delete-all-data(); }
+                        }
                     }
                 }
             }
