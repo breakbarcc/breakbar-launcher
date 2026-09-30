@@ -6,6 +6,35 @@ All notable changes to Breakbar Launcher. The format follows
 
 Everything before 0.2.0 is in the git history and in [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
 
+## [0.12.0] - 2026-09-30
+
+### Added
+
+- A "Delete all data" button in Settings: since there is no installer, there is no uninstaller
+  either, so this removes everything Breakbar ever put on disk or in the registry - every
+  account's saved login, the settings, the link to your Guild Wars 2 folder, its Steam link,
+  desktop shortcuts and the start-with-Windows entry - and then closes Breakbar.
+- A "Start Discord automatically" setting: starts Discord once the first account of a session
+  launches, unless it's already running. Off by default; turning it on looks for Discord through
+  its installation registry entry, or asks you to pick its `.exe` by hand if that fails. Breakbar
+  never closes Discord again - that's up to you.
+- A "Report a problem" link in the About section of Settings, next to the existing website and
+  license links, opening a pre-filled GitHub bug report.
+
+### Changed
+
+- The instance switcher's default position and opacity, for anyone who hasn't dragged or adjusted
+  it yet, now match the values that testing settled on (75% opacity) instead of the previous
+  placeholder defaults.
+- The "not an official product" disclaimer in Settings' About section now also notes that some
+  content in the program was created with AI assistance.
+
+### Fixed
+
+- "Check for game updates online" and its help text had no German translation; the help text also
+  still said the check runs "every few minutes" after it had already been slowed down to once an
+  hour.
+
 ## [0.11.1] - 2026-09-30
 
 ### Changed
