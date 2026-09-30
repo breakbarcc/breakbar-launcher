@@ -54,7 +54,7 @@ use settings::{
     show_overlay_settings,
 };
 use steam_dialog::steam_ready;
-use tray::{tray_activate, tray_menu};
+use tray::{tray_activate, tray_launch, tray_menu};
 
 pub(crate) use launch::{LaunchQueue, start_account, stop_account};
 pub(crate) use list::{is_active, native_handle, rows};
@@ -97,8 +97,9 @@ const TOAST_LIFETIME: Duration = Duration::from_secs(6);
 /// Shown in the tray icon's tooltip and used as the `Run` key entry name for starting Breakbar
 /// with Windows.
 const APP_NAME: &str = "Breakbar Launcher";
-/// Named mutex marking a Breakbar GUI as already running (see [`run`]).
-const INSTANCE_MUTEX_NAME: &str = "Breakbar-Instance";
+/// Named mutex marking a Breakbar GUI as already running (see [`run`] and `headless::run`, which
+/// forwards launches to it instead of starting them from a second, invisible process).
+pub(crate) const INSTANCE_MUTEX_NAME: &str = "Breakbar-Instance";
 
 /// Breakbar Launcher's website, opened from the About section.
 const WEBSITE_URL: &str = "https://launcher.breakbar.cc/";
@@ -536,6 +537,7 @@ fn start_tray(
         APP_NAME,
         tray_activate(window),
         tray_menu(app, queue, window),
+        tray_launch(window, app, queue),
     ) {
         Ok(tray) => Some(tray),
         Err(error) => {

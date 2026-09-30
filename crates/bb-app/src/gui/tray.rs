@@ -15,6 +15,26 @@ pub(super) fn tray_activate(window: &MainWindow) -> impl FnMut() + 'static {
     }
 }
 
+/// A desktop shortcut (or `breakbar-launcher --launch`/`--launch-id`) was used while this instance
+/// was already running (see `bb_win::tray::request_launch`): starts that account exactly as its
+/// row's own Play button would, so the launch is visible here instead of a second, headless
+/// process handling it invisibly. Not shown, but not started twice either, if the account no
+/// longer exists or isn't startable right now (`toggle_account` already covers both silently).
+pub(super) fn tray_launch(
+    window: &MainWindow,
+    app: &Rc<RefCell<App>>,
+    queue: &Rc<LaunchQueue>,
+) -> impl FnMut(u32) + 'static {
+    let app = Rc::clone(app);
+    let queue = Rc::clone(queue);
+    let weak = window.as_weak();
+    move |id| {
+        if let Some(window) = weak.upgrade() {
+            toggle_account(&window, &app, &queue, AccountId(id));
+        }
+    }
+}
+
 /// Builds the tray's right-click menu fresh on every open, so it reflects current account state
 /// (design hand-off screen 05): "Launch all" with a counter, one entry per account (locked ones
 /// disabled), then "Open window" and "Quit".

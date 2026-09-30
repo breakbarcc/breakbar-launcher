@@ -36,14 +36,20 @@ const CALLBACK_MESSAGE: u32 = WM_APP + 1;
 /// Sent by [`request_show`] (a second Breakbar process asking the running one to show itself);
 /// handled the same as a left click.
 const SHOW_REQUEST_MESSAGE: u32 = WM_APP + 2;
+/// Sent by [`request_launch`] (a second Breakbar process — a desktop shortcut or `--launch-id`,
+/// started while this one is already running — asking it to start an account instead); carries
+/// the account id in `wparam`.
+const LAUNCH_REQUEST_MESSAGE: u32 = WM_APP + 3;
 /// Resource id of the icon embedded via `assets/breakbar.rc`.
 const APP_ICON_ID: u16 = 1;
 
 type MenuBuilder = Box<dyn FnMut() -> Vec<MenuItem>>;
+type LaunchHandler = Box<dyn FnMut(u32)>;
 
 thread_local! {
     static ON_ACTIVATE: RefCell<Option<Box<dyn FnMut()>>> = const { RefCell::new(None) };
     static ON_MENU: RefCell<Option<MenuBuilder>> = const { RefCell::new(None) };
+    static ON_LAUNCH: RefCell<Option<LaunchHandler>> = const { RefCell::new(None) };
 }
 
 /// The tray icon. Dropping it removes the icon and destroys its hidden window.
@@ -58,7 +64,8 @@ impl Tray {
     /// `on_activate` fires for a left click or double-click (conventionally: show the window).
     /// `on_menu` is asked to build a fresh menu every time the icon is right-clicked or the
     /// context-menu key is pressed on it, so it can reflect current state; the chosen entry's
-    /// `action` runs right after the menu closes.
+    /// `action` runs right after the menu closes. `on_launch` fires with an account id when
+    /// [`request_launch`] asks this instance to start that account (see there).
     ///
     /// # Errors
     ///
@@ -67,9 +74,11 @@ impl Tray {
         tooltip: &str,
         on_activate: impl FnMut() + 'static,
         on_menu: impl FnMut() -> Vec<MenuItem> + 'static,
+        on_launch: impl FnMut(u32) + 'static,
     ) -> io::Result<Self> {
         ON_ACTIVATE.with(|cell| *cell.borrow_mut() = Some(Box::new(on_activate)));
         ON_MENU.with(|cell| *cell.borrow_mut() = Some(Box::new(on_menu)));
+        ON_LAUNCH.with(|cell| *cell.borrow_mut() = Some(Box::new(on_launch)));
 
         let hwnd = create_hidden_window()?;
         if let Err(error) = add_icon(hwnd, tooltip) {
@@ -153,6 +162,32 @@ pub fn request_show() -> io::Result<()> {
         .map_err(io::Error::other)
 }
 
+/// Asks an already-running Breakbar instance (found the same way as [`request_show`]) to start
+/// the account with this id, exactly as if its row's own Play button had been clicked — for a
+/// desktop shortcut (or `breakbar-launcher --launch`/`--launch-id`) used while Breakbar is already
+/// open, so the launch shows up in the running window (state, toasts, instance switcher) instead
+/// of a second, invisible process starting the game on its own. Returns an error (and asks
+/// nothing) if no instance is found running.
+///
+/// # Errors
+///
+/// Returns the Windows error if the underlying call fails.
+pub fn request_launch(id: u32) -> io::Result<()> {
+    let class_name = HSTRING::from(CLASS_NAME);
+    // SAFETY: `class_name` outlives this call; no window name filter is applied.
+    let hwnd = unsafe { FindWindowW(&class_name, PCWSTR::null()) }.map_err(io::Error::other)?;
+    // SAFETY: `hwnd` was just found above and the message carries no pointers.
+    unsafe {
+        PostMessageW(
+            Some(hwnd),
+            LAUNCH_REQUEST_MESSAGE,
+            WPARAM(id as usize),
+            LPARAM(0),
+        )
+    }
+    .map_err(io::Error::other)
+}
+
 fn app_icon() -> HICON {
     // SAFETY: `GetModuleHandleW(None)` returns the current module; no pointers are stored.
     let Ok(instance) = (unsafe { GetModuleHandleW(None) }) else {
@@ -234,9 +269,21 @@ fn activate() {
     });
 }
 
+fn launch(id: u32) {
+    ON_LAUNCH.with(|cell| {
+        if let Some(callback) = cell.borrow_mut().as_mut() {
+            callback(id);
+        }
+    });
+}
+
 unsafe extern "system" fn wndproc(hwnd: HWND, msg: u32, wparam: WPARAM, lparam: LPARAM) -> LRESULT {
     if msg == SHOW_REQUEST_MESSAGE {
         activate();
+        return LRESULT(0);
+    }
+    if msg == LAUNCH_REQUEST_MESSAGE {
+        launch(wparam.0 as u32);
         return LRESULT(0);
     }
     if msg == CALLBACK_MESSAGE {

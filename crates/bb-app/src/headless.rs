@@ -49,6 +49,14 @@ pub fn run(targets: &[LaunchTarget]) -> ExitCode {
         }
     }
 
+    if !accounts.is_empty() && forward_to_running_instance(&accounts) {
+        if !errors.is_empty() {
+            show_errors(texts.as_ref(), &errors);
+            return ExitCode::FAILURE;
+        }
+        return ExitCode::SUCCESS;
+    }
+
     let Some(gw2_path) = config.gw2_path.clone() else {
         errors.push(text(
             &|texts| texts.launch_failure(&launcher::LaunchError::NoGamePath, ""),
@@ -118,6 +126,22 @@ pub fn run(targets: &[LaunchTarget]) -> ExitCode {
     } else {
         ExitCode::SUCCESS
     }
+}
+
+/// Hands every resolved account off to an already-running Breakbar window (see
+/// `bb_win::tray::request_launch`) instead of starting them from this, otherwise invisible,
+/// process, so the launch is visible there (state, toasts, instance switcher) exactly like any
+/// other. Returns `false` (the caller then falls back to starting them here itself) if no running
+/// instance can be found — best-effort, same as the equivalent check `gui::run` does for a second
+/// GUI start; a failure here just means this shortcut behaves as if Breakbar wasn't running yet.
+fn forward_to_running_instance(accounts: &[&Account]) -> bool {
+    if !bb_win::mutex::mutex_exists(crate::gui::INSTANCE_MUTEX_NAME).unwrap_or(false) {
+        return false;
+    }
+    for account in accounts {
+        let _ = bb_win::tray::request_launch(account.id.0);
+    }
+    true
 }
 
 fn resolve<'a>(config: &'a Config, target: &LaunchTarget) -> Option<&'a Account> {
