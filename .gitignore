@@ -15,6 +15,9 @@ Thumbs.db
 desktop.ini
 .DS_Store
 
+# Agents
+claude/
+
 # Local test data – never commit login files
 *.dat
 profiles/
