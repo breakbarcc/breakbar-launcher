@@ -77,16 +77,19 @@ fn watch(window: &MainWindow, gw2_path: PathBuf) {
 
 /// Waits for the patch client to finish and go away. Once `Gw2.dat` has stopped changing for
 /// `PATCH_IDLE_GRACE` while a client is still running, the download is done and closing it is
-/// attempted once (`close_patch_client`) — but this loop is what actually decides the client is
-/// gone, by seeing `running_clients` become empty, exactly like a manual close. Closing is only
-/// ever attempted once per launch, so a client that doesn't react to it (or a companion process
-/// that restarts after it) still gets noticed once it eventually goes away, just not re-closed.
+/// attempted (`close_patch_client`) — but this loop is what actually decides the client is gone,
+/// by seeing `running_clients` become empty, exactly like a manual close. A close is only ever
+/// attempted once per distinct set of running client PIDs, so a client that doesn't react to it
+/// isn't hammered with repeated attempts every tick — but a *new* process (the client can restart
+/// itself, including right after being closed, not just partway through) still gets its own
+/// attempt, since it's a different PID set.
 fn wait_for_patch_to_finish(gw2_path: &Path) {
     let mut last_stamp = archive_stamp(gw2_path);
     let mut stable_since = Instant::now();
-    let mut close_attempted = false;
+    let mut close_attempted_for = Vec::new();
     loop {
-        if launcher::running_clients(gw2_path).is_empty() {
+        let running = launcher::running_clients(gw2_path);
+        if running.is_empty() {
             thread::sleep(RESTART_GRACE);
             if launcher::running_clients(gw2_path).is_empty() {
                 return;
@@ -96,9 +99,9 @@ fn wait_for_patch_to_finish(gw2_path: &Path) {
 
         let stamp = archive_stamp(gw2_path);
         if stamp == last_stamp {
-            if !close_attempted && stable_since.elapsed() >= PATCH_IDLE_GRACE {
+            if stable_since.elapsed() >= PATCH_IDLE_GRACE && running != close_attempted_for {
                 close_patch_client(gw2_path);
-                close_attempted = true;
+                close_attempted_for = running;
             }
         } else {
             last_stamp = stamp;
