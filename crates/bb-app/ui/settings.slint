@@ -296,7 +296,7 @@ export component SettingsPage inherits VerticalLayout {
             }
             ToggleRow {
                 text: @tr("Check for game updates online");
-                help: @tr("Asks ArenaNet's servers every few minutes whether a new patch exists, and shows a banner if the local client hasn't downloaded it yet.");
+                help: @tr("Asks ArenaNet's servers every hour whether a new patch exists, and shows a banner if the local client hasn't downloaded it yet.");
                 checked: root.check-for-updates;
                 toggled(value) => { root.set-check-for-updates(value); }
             }
