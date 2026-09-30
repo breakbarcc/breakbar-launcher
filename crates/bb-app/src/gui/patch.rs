@@ -11,22 +11,25 @@ use crate::launcher;
 
 /// How often the background monitor checks whether the patch client is still running or whether
 /// `Gw2.dat` has changed.
-const POLL_INTERVAL: Duration = Duration::from_secs(1);
+const POLL_INTERVAL: Duration = Duration::from_millis(500);
 /// The client can restart itself partway through applying a patch (briefly exiting before a new
 /// process appears — the same behavior `launcher::RunningClient` handles for account launches).
 /// When no client is found running, this much time is given for a successor to show up before
-/// the patch is considered finished, so that gap doesn't get reported as an early close.
-const RESTART_GRACE: Duration = Duration::from_secs(5);
+/// the patch is considered finished, so that gap doesn't get reported as an early close. A
+/// self-restart happens near-instantly when it happens at all, so this only needs to be short.
+const RESTART_GRACE: Duration = Duration::from_secs(2);
 /// How long `Gw2.dat` must stay unchanged, while a client is still running, before the patch
 /// counts as finished. There is no window-based "done" signal to wait for here the way
 /// `RunningClient::wait_for_game_window` has for account launches: this launch has no account and
 /// never logs in, so the client never reaches its own game window (`GAME_WINDOW_CLASSES`) — it
 /// just sits at the login screen, in the very same `ArenaNet`-class window it patched in, once
 /// it's done. Watching `Gw2.dat` stop growing is the only signal available instead.
-const PATCH_IDLE_GRACE: Duration = Duration::from_secs(8);
+const PATCH_IDLE_GRACE: Duration = Duration::from_secs(4);
 /// The grace period between asking the client to close (`WM_CLOSE`) and giving up on it and
-/// terminating it instead — the same duration `companions::close_all` gives a companion app.
-const CLOSE_GRACE: Duration = Duration::from_secs(15);
+/// terminating it instead. `companions::close_all` gives a companion app 15s here, but a real
+/// close (verified live, see `breakbar.log`) reacted in under a second, so this only needs to
+/// cover a genuinely unresponsive client, not the normal case.
+const CLOSE_GRACE: Duration = Duration::from_secs(5);
 
 /// Starts the game directly (see `launcher::launch_to_patch`) and, once it's running, hands off
 /// to `watch` to notice when it closes again.
