@@ -3,7 +3,7 @@
 use super::{
     APP_NAME, AfterStart, App, BLISH_HUD, CompanionApp, CompanionId, ComponentHandle, ISSUES_URL,
     LICENSE_URL, MainWindow, Messages, Path, PathBuf, PathProblem, Rc, RefCell, SLINT_URL,
-    SharedString, Theme, ToastKind, WEBSITE_URL, apply_language, from_ui_after_start,
+    SharedString, Theme, ToastKind, WEBSITE_URL, apply_language, discord, from_ui_after_start,
     from_ui_fps_limit, from_ui_language, from_ui_theme, game, native_handle, push_toast, ui,
 };
 
@@ -173,6 +173,57 @@ pub(super) fn choose_blish_path(window: &MainWindow, app: &RefCell<App>) {
     app.save(window);
 }
 
+pub(super) fn choose_discord_path(window: &MainWindow, app: &RefCell<App>) {
+    let initial_dir = app
+        .borrow()
+        .config
+        .discord_path
+        .as_deref()
+        .and_then(Path::parent)
+        .map(Path::to_path_buf);
+    let Some(path) = pick_exe(
+        window,
+        "Discord",
+        ("Discord", discord::EXE_NAME),
+        initial_dir.as_deref(),
+    ) else {
+        return;
+    };
+
+    show_discord_path(window, Some(&path));
+    let mut app = app.borrow_mut();
+    app.config.discord_path = Some(path);
+    app.save(window);
+}
+
+/// Turns Discord auto-start on or off. Turning it on needs a path: the existing one if there is
+/// one, otherwise auto-detection, otherwise the user has to pick `Discord.exe` by hand - turning
+/// it back off if they cancel that, since a setting that can't act on anything would be confusing.
+pub(super) fn set_discord_autostart(window: &MainWindow, app: &RefCell<App>, enabled: bool) {
+    if enabled {
+        let has_path = app
+            .borrow()
+            .config
+            .discord_path
+            .as_deref()
+            .is_some_and(Path::is_file);
+        if !has_path {
+            let Some(path) = discord::detect()
+                .or_else(|| pick_exe(window, "Discord", ("Discord", discord::EXE_NAME), None))
+            else {
+                window.set_discord_autostart(false);
+                return;
+            };
+            show_discord_path(window, Some(&path));
+            app.borrow_mut().config.discord_path = Some(path);
+        }
+    }
+    window.set_discord_autostart(enabled);
+    let mut app = app.borrow_mut();
+    app.config.discord_autostart = enabled;
+    app.save(window);
+}
+
 /// Flips the `Run` key entry that starts Breakbar with Windows. The registry is the source of
 /// truth (like the path fields above), not the config file, so this stays correct even if the
 /// install is moved without opening Breakbar in between.
@@ -208,6 +259,13 @@ pub(super) fn show_gw2_path(window: &MainWindow, path: Option<&Path>) {
 pub(super) fn show_blish_path(window: &MainWindow, path: Option<&Path>) {
     window.set_blish_path(display_path(path).into());
     window.set_blish_path_ok(path.is_some_and(Path::is_file));
+}
+
+/// Discord isn't validated the way the game client is; the settings page just shows whether the
+/// configured file still exists.
+pub(super) fn show_discord_path(window: &MainWindow, path: Option<&Path>) {
+    window.set_discord_path(display_path(path).into());
+    window.set_discord_path_ok(path.is_some_and(Path::is_file));
 }
 
 pub(super) fn display_path(path: Option<&Path>) -> String {
@@ -266,6 +324,26 @@ pub(super) fn wire(
         move || {
             if let Some(window) = weak.upgrade() {
                 choose_blish_path(&window, &app);
+            }
+        }
+    });
+
+    window.on_choose_discord_path({
+        let app = Rc::clone(app);
+        let weak = window.as_weak();
+        move || {
+            if let Some(window) = weak.upgrade() {
+                choose_discord_path(&window, &app);
+            }
+        }
+    });
+
+    window.on_set_discord_autostart({
+        let app = Rc::clone(app);
+        let weak = window.as_weak();
+        move |value| {
+            if let Some(window) = weak.upgrade() {
+                set_discord_autostart(&window, &app, value);
             }
         }
     });

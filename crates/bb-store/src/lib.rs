@@ -127,6 +127,14 @@ pub struct Config {
     /// has no entry for it, which must still mean "on".
     #[serde(default = "default_true")]
     pub check_for_updates: bool,
+    /// Starts Discord once the first account of a session launches, unless it is already running.
+    /// Off by default: not everyone runs Discord alongside the game, and turning it on requires
+    /// [`discord_path`](Self::discord_path) to be set.
+    #[serde(default)]
+    pub discord_autostart: bool,
+    /// Path to Discord's launcher `.exe`.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub discord_path: Option<PathBuf>,
 }
 
 fn default_true() -> bool {
@@ -192,6 +200,8 @@ impl Default for Config {
             overlay: OverlaySettings::default(),
             overlay_position: None,
             check_for_updates: true,
+            discord_autostart: false,
+            discord_path: None,
         }
     }
 }

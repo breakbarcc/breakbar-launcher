@@ -3,6 +3,7 @@
 
 mod cli;
 mod companions;
+mod discord;
 mod game;
 mod gui;
 mod gw2_build;

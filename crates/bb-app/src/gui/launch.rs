@@ -3,9 +3,9 @@
 use super::{
     Account, AccountId, AccountState, App, Arc, CompanionApp, ComponentHandle, LaunchError,
     LaunchFailure, LaunchMode, LaunchWarning, MainWindow, Messages, PathBuf, Provider, Rc, RefCell,
-    SharedInstances, SharedString, ToastKind, apply_after_start, clear_selection, companions, game,
-    idle_state, is_active, is_startable, launcher, login_file_stamp, mpsc, push_toast,
-    report_login_setup, row, rows, steam_ready, thread, update_row,
+    SharedInstances, SharedString, ToastKind, apply_after_start, clear_selection, companions,
+    discord, game, idle_state, is_active, is_startable, launcher, login_file_stamp, mpsc,
+    push_toast, report_login_setup, row, rows, steam_ready, thread, update_row,
 };
 
 /// Starts `id` if idle, or requests that its running client stop.
@@ -121,6 +121,8 @@ pub(crate) fn start_account(
         return;
     }
 
+    maybe_start_discord(window, app);
+
     update_row(window, id, |row| {
         row.state = AccountState::Starting;
         row.handle = 0;
@@ -136,6 +138,29 @@ pub(crate) fn start_account(
 
     if mode == LaunchMode::Play {
         apply_after_start(window);
+    }
+}
+
+/// Starts Discord alongside the very first account of a session, if the user turned that on in
+/// Settings and it isn't already running. Fires once a launch is actually going ahead (all the
+/// checks above `start_account`'s call site have passed), not on every click. Best-effort and
+/// silent: a failure here must never block the account launch it's piggybacking on.
+fn maybe_start_discord(window: &MainWindow, app: &RefCell<App>) {
+    if rows(window).iter().any(|row| is_active(row.state)) {
+        return;
+    }
+    let path = {
+        let app = app.borrow();
+        app.config
+            .discord_autostart
+            .then(|| app.config.discord_path.clone())
+            .flatten()
+    };
+    let Some(path) = path else {
+        return;
+    };
+    if let Err(error) = discord::start_if_not_running(&path) {
+        crate::log::write(format!("could not start Discord: {error}"));
     }
 }
 

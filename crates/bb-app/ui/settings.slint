@@ -177,6 +177,9 @@ export component SettingsPage inherits VerticalLayout {
     in property <bool> gw2-path-ok;
     in property <string> blish-path;
     in property <bool> blish-path-ok;
+    in property <bool> discord-autostart;
+    in property <string> discord-path;
+    in property <bool> discord-path-ok;
     in property <bool> autostart;
     in property <AfterStart> after-start;
     in property <FpsLimit> fps-limit;
@@ -193,6 +196,8 @@ export component SettingsPage inherits VerticalLayout {
     callback back();
     callback choose-gw2-path();
     callback choose-blish-path();
+    callback set-discord-autostart(bool);
+    callback choose-discord-path();
     callback toggle-autostart();
     callback set-after-start(AfterStart);
     callback set-fps-limit(FpsLimit);
@@ -407,6 +412,24 @@ export component SettingsPage inherits VerticalLayout {
                     color: Theme.text-dim;
                     wrap: word-wrap;
                 }
+            }
+
+            SectionLabel {
+                text: @tr("// DISCORD");
+            }
+            ToggleRow {
+                text: @tr("Start Discord automatically");
+                help: @tr("Starts Discord once the first account launches, unless it's already running. Breakbar never closes it again - that's up to you.");
+                checked: root.discord-autostart;
+                toggled(value) => { root.set-discord-autostart(value); }
+            }
+            if root.discord-autostart: PathField {
+                label: "Discord";
+                path: root.discord-path;
+                ok: root.discord-path-ok;
+                ok-text: @tr("Discord.exe found");
+                error-text: @tr("File not found. Check the path.");
+                browse => { root.choose-discord-path(); }
             }
 
             SectionLabel {

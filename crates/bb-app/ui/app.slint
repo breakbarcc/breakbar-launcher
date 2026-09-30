@@ -642,6 +642,10 @@ export component MainWindow inherits Window {
     /// Path to `Blish HUD.exe`; empty if not configured.
     in property <string> blish-path;
     in property <bool> blish-path-ok;
+    /// Starts Discord alongside the first account of a session.
+    in property <bool> discord-autostart;
+    in property <string> discord-path;
+    in property <bool> discord-path-ok;
     in property <bool> autostart;
     in property <AfterStart> after-start;
     in property <FpsLimit> fps-limit;
@@ -691,6 +695,8 @@ export component MainWindow inherits Window {
     callback clear-selection();
     callback choose-gw2-path();
     callback choose-blish-path();
+    callback set-discord-autostart(bool);
+    callback choose-discord-path();
     callback toggle-autostart();
     callback set-after-start(AfterStart);
     callback set-fps-limit(FpsLimit);
@@ -1085,6 +1091,9 @@ export component MainWindow inherits Window {
         gw2-path-ok: root.gw2-path-ok;
         blish-path: root.blish-path;
         blish-path-ok: root.blish-path-ok;
+        discord-autostart: root.discord-autostart;
+        discord-path: root.discord-path;
+        discord-path-ok: root.discord-path-ok;
         autostart: root.autostart;
         after-start: root.after-start;
         fps-limit: root.fps-limit;
@@ -1098,6 +1107,8 @@ export component MainWindow inherits Window {
         back => { root.page = Page.accounts; }
         choose-gw2-path => { root.choose-gw2-path(); }
         choose-blish-path => { root.choose-blish-path(); }
+        set-discord-autostart(value) => { root.set-discord-autostart(value); }
+        choose-discord-path => { root.choose-discord-path(); }
         toggle-autostart => { root.toggle-autostart(); }
         set-after-start(value) => { root.set-after-start(value); }
         set-fps-limit(value) => { root.set-fps-limit(value); }

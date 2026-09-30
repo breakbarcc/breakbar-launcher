@@ -20,7 +20,7 @@ use ui::{
 
 use crate::companions::{self, SharedInstances};
 use crate::launcher::{LaunchError, LaunchMode, LaunchWarning};
-use crate::{game, launcher, steam_setup};
+use crate::{discord, game, launcher, steam_setup};
 
 mod accounts;
 mod convert;
@@ -51,8 +51,8 @@ use login::{
     idle_state, login_file_stamp, offer_login_setup, report_login_setup, sync_login_states,
 };
 use settings::{
-    apply_after_start, display_path, path_problem, show_blish_path, show_gw2_path,
-    show_overlay_settings,
+    apply_after_start, display_path, path_problem, show_blish_path, show_discord_path,
+    show_gw2_path, show_overlay_settings,
 };
 use steam_dialog::steam_ready;
 use tray::{tray_activate, tray_launch, tray_menu};
@@ -411,6 +411,8 @@ fn show_initial_state(window: &MainWindow, app: &App) {
     set_rows(window, account_rows(&app.config));
     show_gw2_path(window, app.config.gw2_path.as_deref());
     show_blish_path(window, app.blish_hud().map(|app| app.exe.as_path()));
+    show_discord_path(window, app.config.discord_path.as_deref());
+    window.set_discord_autostart(app.config.discord_autostart);
     window.set_autostart(bb_win::autostart::is_enabled(APP_NAME));
     window.set_after_start(to_ui_after_start(app.config.after_start));
     window.set_fps_limit(to_ui_fps_limit(app.config.fps_limit));
