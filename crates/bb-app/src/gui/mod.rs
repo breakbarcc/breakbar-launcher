@@ -90,7 +90,7 @@ const LOGIN_CHECK_INTERVAL: Duration = Duration::from_secs(5);
 const PATCH_CHECK_INTERVAL: Duration = Duration::from_hours(1);
 /// The first patch check runs this long after startup rather than immediately, so it doesn't
 /// compete with the app's own startup work.
-const PATCH_CHECK_INITIAL_DELAY: Duration = Duration::from_secs(30);
+const PATCH_CHECK_INITIAL_DELAY: Duration = Duration::from_secs(3);
 /// Toasts disappear after this long, unless the pointer is on them.
 const TOAST_LIFETIME: Duration = Duration::from_secs(6);
 
