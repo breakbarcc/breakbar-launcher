@@ -674,6 +674,9 @@ export component MainWindow inherits Window {
     property <length> drag-pointer;
     /// Height of a row plus the gap to the next one.
     property <length> row-pitch: Theme.row-height + 4px;
+    /// Room above the first row so its focus ring (which extends 4px above the card) isn't
+    /// clipped by the Flickable's own top edge.
+    property <length> row-top-pad: 4px;
     property <length> drag-top: root.drag-pointer - root.drag-grab;
     property <int> drag-target: max(0, min(root.accounts.length - 1, round(root.drag-top / root.row-pitch)));
 
@@ -894,11 +897,11 @@ export component MainWindow inherits Window {
             content-height: list.height;
 
             list := Rectangle {
-                height: root.accounts.length * root.row-pitch + 6px;
+                height: root.row-top-pad + root.accounts.length * root.row-pitch + 6px;
 
                 for account[index] in root.accounts: AccountCard {
                     x: 10px;
-                    y: index * root.row-pitch;
+                    y: root.row-top-pad + index * root.row-pitch;
                     width: parent.width - 20px;
                     account: account;
                     compact: root.compact;
@@ -930,9 +933,9 @@ export component MainWindow inherits Window {
                 // Insertion line: 2 px accent with a ring at its start.
                 if root.drag-index >= 0 && root.drag-target != root.drag-index: Rectangle {
                     x: 4px;
-                    y: root.drag-target < root.drag-index
+                    y: root.row-top-pad + (root.drag-target < root.drag-index
                         ? root.drag-target * root.row-pitch - 3px
-                        : root.drag-target * root.row-pitch + Theme.row-height + 1px;
+                        : root.drag-target * root.row-pitch + Theme.row-height + 1px);
                     width: parent.width - 14px;
                     height: 2px;
                     background: Theme.accent;
@@ -951,7 +954,7 @@ export component MainWindow inherits Window {
                 // The dragged row follows the pointer, slightly turned.
                 if root.drag-index >= 0: AccountCard {
                     x: 18px;
-                    y: max(-8px, min(parent.height - Theme.row-height, root.drag-top));
+                    y: root.row-top-pad + max(-8px, min(parent.height - Theme.row-height, root.drag-top));
                     width: parent.width - 28px;
                     transform-rotation: -1deg;
                     account: root.accounts[root.drag-index];
