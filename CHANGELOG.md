@@ -6,6 +6,24 @@ All notable changes to Breakbar Launcher. The format follows
 
 Everything before 0.2.0 is in the git history and in [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
 
+## [0.11.1] - 2026-09-30
+
+### Changed
+
+- The online update check now runs every hour instead of every 15 minutes, and the first check
+  after startup runs after 3 seconds instead of 30.
+
+### Fixed
+
+- "Start now" now reliably notices that the update actually finished before closing the client: it
+  no longer closes the client before it started patching, no longer gives up on closing it for good
+  after the client restarts itself partway through, and Breakbar's own "game was updated" banner no
+  longer appears while a patch is still downloading.
+- A desktop shortcut (or `breakbar-launcher --launch`) used while Breakbar is already open now
+  starts the account in the already-open window instead of an invisible second process the window
+  never learns about.
+- The selected account's highlight border was cut off at the top of the list.
+
 ## [0.11.0] - 2026-09-30
 
 ### Added
