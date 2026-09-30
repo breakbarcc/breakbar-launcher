@@ -105,6 +105,11 @@ a:hover { text-decoration: underline; text-underline-offset: 3px; }
   flex-shrink: 0;
 }
 
+/* icon-48.png's play mark isn't centered within its own square (its brightest stripe sits about
+   9% above the square's true center), so a perfectly box-centered icon still reads as floating
+   above the text next to it; nudged down by that same fraction to compensate. */
+.brand-icon img { transform: translateY(8%); }
+
 .footer-top .brand-icon { width: 24px; height: 24px; border-radius: 6px; }
 
 .main-nav {
