@@ -14,6 +14,7 @@ pub mod mutex;
 mod nt;
 pub mod process;
 pub mod registry;
+pub mod shell;
 pub mod shortcut;
 pub mod time;
 pub mod tray;

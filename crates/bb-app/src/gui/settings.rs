@@ -275,7 +275,9 @@ pub(super) fn display_path(path: Option<&Path>) -> String {
 
 /// Opens `url` in the default browser. Best-effort: a failure has nothing useful to tell the user.
 pub(super) fn open_url(url: &str) {
-    let _ = std::process::Command::new("explorer.exe").arg(url).spawn();
+    if let Err(error) = bb_win::shell::open_url(url) {
+        crate::log::write(format!("could not open {url}: {error}"));
+    }
 }
 
 /// Connects the window's callbacks for this area.
