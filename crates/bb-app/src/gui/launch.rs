@@ -124,6 +124,10 @@ pub(crate) fn start_account(
 
     maybe_start_discord(window, app);
 
+    // An account that needs its login set up is started once for that, and the user has to start
+    // it again right after: keep the window open for that, as for the other setup launches.
+    let needs_login = row(window, id).is_some_and(|row| row.state == AccountState::NeedsLogin);
+
     update_row(window, id, |row| {
         row.state = AccountState::Starting;
         row.handle = 0;
@@ -137,7 +141,7 @@ pub(crate) fn start_account(
         companions,
     });
 
-    if mode == LaunchMode::Play {
+    if mode == LaunchMode::Play && !needs_login {
         apply_after_start(window);
     }
 }
