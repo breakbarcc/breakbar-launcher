@@ -6,6 +6,27 @@ All notable changes to Breakbar Launcher. The format follows
 
 Everything before 0.2.0 is in the git history and in [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
 
+## [0.13.0] - 2026-10-02
+
+### Added
+
+- A "Configure graphics & sound" action in each account's menu. Guild Wars 2 keeps these settings
+  per account, but a normal start can't save them, so they were lost or ended up with the wrong
+  account. This starts the account on its own (no other client may run), keeps its settings
+  folder linked for the whole session, and saves everything once you close the game. Set up each
+  account once this way; normal starts then use its settings.
+- An "Update Guild Wars 2 now" button in Settings that starts the game directly to download a
+  pending update, for a hotfix the online check can't tell apart from no update at all.
+
+### Fixed
+
+- A "Start now" that downloads nothing (the game is already up to date) now clears the "update
+  available" banner instead of leaving it, with a misleading "no update installed" warning, until
+  the next real patch. Build ids also change for server-only updates, so the banner can still
+  appear for those; starting the game once clears it.
+- Starting an account that shows "Login required" no longer minimizes Breakbar to the tray (or
+  closes it) afterward, since that account has to be started again right away.
+
 ## [0.12.0] - 2026-09-30
 
 ### Added
