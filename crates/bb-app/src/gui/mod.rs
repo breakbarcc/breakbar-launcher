@@ -318,7 +318,7 @@ pub fn run() -> Result<(), slint::PlatformError> {
     reset::wire(&window, &app);
     steam_dialog::wire(&window, &app);
     list::wire(&window);
-    accounts::wire(&window, &app);
+    accounts::wire(&window, &app, &queue);
     settings::wire(&window, &app, overlay.as_ref());
 
     // Closing the window never quits Breakbar (it would stop monitoring running clients); it

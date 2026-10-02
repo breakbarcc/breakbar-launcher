@@ -224,6 +224,88 @@ component ConfirmResetAll {
     }
 }
 
+/// Asks before an account's graphics/sound settings overwrite every other account's.
+component ConfirmSyncSettings {
+    in property <string> name;
+    in property <string> targets;
+    callback confirmed();
+    callback cancelled();
+
+    init => {
+        cancel.focus();
+    }
+
+    // Scrim: dims the window and swallows clicks.
+    Rectangle {
+        background: Theme.bg.with-alpha(0.72);
+        TouchArea {
+            clicked => { root.cancelled(); }
+        }
+    }
+    FocusScope {
+        key-pressed(event) => {
+            if event.text == Key.Escape {
+                root.cancelled();
+                return accept;
+            }
+            reject
+        }
+        Elevated {
+            x: (root.width - self.width) / 2;
+            y: (root.height - self.height) / 2;
+            width: min(root.width - 32px, 360px);
+            height: dialog.preferred-height;
+            accessible-role: groupbox;
+            accessible-label: @tr("Use „{}“'s settings for every other account?", root.name);
+            // Keeps clicks on the dialog from reaching the scrim.
+            TouchArea { }
+            dialog := VerticalLayout {
+                padding: 16px;
+                spacing: 12px;
+                HorizontalLayout {
+                    spacing: 10px;
+                    Icon {
+                        y: (parent.height - self.height) / 2;
+                        path: Icons.layers;
+                        color: Theme.warn;
+                        size: 17px;
+                    }
+                    Text {
+                        horizontal-stretch: 1;
+                        text: @tr("Use „{}“'s settings for every other account?", root.name);
+                        font-size: Theme.fs-page-title;
+                        font-weight: 600;
+                        color: Theme.text;
+                        wrap: word-wrap;
+                    }
+                }
+                Text {
+                    text: @tr("„{}“'s saved graphics and sound settings replace the current ones of: {}. This cannot be undone.", root.name, root.targets);
+                    font-size: 12.5px;
+                    color: Theme.text-muted;
+                    wrap: word-wrap;
+                }
+                HorizontalLayout {
+                    padding-top: 4px;
+                    spacing: 8px;
+                    alignment: end;
+                    cancel := Button {
+                        kind: ButtonKind.ghost;
+                        text: @tr("Cancel");
+                        clicked => { root.cancelled(); }
+                    }
+                    Button {
+                        kind: ButtonKind.primary;
+                        icon: Icons.layers;
+                        text: @tr("Use as template");
+                        clicked => { root.confirmed(); }
+                    }
+                }
+            }
+        }
+    }
+}
+
 /// Asks whether to set up an account's login right after it was created.
 component LoginOfferDialog {
     in property <string> name;
@@ -726,6 +808,14 @@ export component MainWindow inherits Window {
     callback duplicate-account(int);
     callback create-shortcut(int);
     callback open-profile-folder(int);
+    /// Starts the account so its graphics/sound settings are saved into its own profile instead
+    /// of the shared one, instead of the normal "Play" launch.
+    callback configure-settings(int);
+    /// Asks to use an account's settings as the template for every other one (see
+    /// `confirm-sync-id`).
+    callback request-sync-settings(int);
+    /// The "Use as template" confirmation was accepted, for this source account id.
+    callback confirm-sync-settings(int);
     /// Delete the account and its profile folder (after the user confirmed).
     callback delete-account(int);
     /// Move account `id` to list position `index`.
@@ -760,6 +850,13 @@ export component MainWindow inherits Window {
     // Delete confirmation: account id (0 = no dialog) and name.
     property <int> confirm-delete-id;
     property <string> confirm-delete-name;
+
+    // "Use as template" confirmation: account id (0 = no dialog), its name, and a comma-separated
+    // list of the other accounts' names it would overwrite. Set from Rust (`request-sync-settings`
+    // needs the account list to build `confirm-sync-targets`), unlike the delete confirmation.
+    in-out property <int> confirm-sync-id;
+    in-out property <string> confirm-sync-name;
+    in-out property <string> confirm-sync-targets;
 
     // Drag & drop: the dragged row (-1 = none), where the pointer grabbed it, and the pointer
     // position, both relative to the top of the list.
@@ -1006,6 +1103,8 @@ export component MainWindow inherits Window {
                     duplicate => { root.duplicate-account(account.id); }
                     create-shortcut => { root.create-shortcut(account.id); }
                     open-folder => { root.open-profile-folder(account.id); }
+                    configure-settings => { root.configure-settings(account.id); }
+                    sync-settings => { root.request-sync-settings(account.id); }
                     request-delete => { root.request-delete(account.id, account.name); }
                     move-by(delta) => { root.move-account(account.id, index + delta); }
                     drag-started(y) => {
@@ -1175,6 +1274,21 @@ export component MainWindow inherits Window {
             root.confirm-delete-all-open = false;
         }
         cancelled => { root.confirm-delete-all-open = false; }
+    }
+
+    // ── "Use as template" confirmation ──────────────────────────────────────────────────────
+    if root.confirm-sync-id != 0: ConfirmSyncSettings {
+        x: 0;
+        y: 0;
+        width: root.width;
+        height: root.height;
+        name: root.confirm-sync-name;
+        targets: root.confirm-sync-targets;
+        confirmed => {
+            root.confirm-sync-settings(root.confirm-sync-id);
+            root.confirm-sync-id = 0;
+        }
+        cancelled => { root.confirm-sync-id = 0; }
     }
 
     // ── Login offer ──────────────────────────────────────────────────────────────────────────

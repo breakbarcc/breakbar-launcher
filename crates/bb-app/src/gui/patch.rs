@@ -64,15 +64,21 @@ fn start_now(window: &MainWindow, app: &Rc<RefCell<App>>) {
     }
 }
 
-/// Waits for the patch client to finish and close (see `wait_for_patch_to_finish`), then
-/// re-checks whether the update landed and reports the result.
+/// Waits for the patch client to finish and close (see `wait_for_patch_to_finish`), then reports
+/// the result: if `Gw2.dat` actually changed, re-checks the normal way (`check_for_patch`); if it
+/// never did, the client itself just confirmed it has nothing to download, which settles it more
+/// reliably than comparing build ids (see `confirm_up_to_date`).
 fn watch(window: &MainWindow, gw2_path: PathBuf) {
     let weak = window.as_weak();
     let _ = thread::Builder::new()
         .name("patch-watch".to_owned())
         .spawn(move || {
-            wait_for_patch_to_finish(&gw2_path);
-            let available = check_for_patch(&gw2_path);
+            let patched = wait_for_patch_to_finish(&gw2_path);
+            let available = if patched {
+                check_for_patch(&gw2_path)
+            } else {
+                confirm_up_to_date(&gw2_path)
+            };
             let _ = weak.upgrade_in_event_loop(move |window| {
                 window.set_patching(false);
                 if let Some(available) = available {
@@ -83,16 +89,31 @@ fn watch(window: &MainWindow, gw2_path: PathBuf) {
         });
 }
 
-/// Waits for the patch client to finish and go away. Once `Gw2.dat` has stopped changing (for
-/// `PATCH_IDLE_GRACE` if it had actually been changing, or `NO_ACTIVITY_GRACE` if it never
-/// started) while a client is still running, the download is done and closing it is attempted
-/// (`close_patch_client`) — but this loop is what actually decides the client is gone, by seeing
-/// `running_clients` become empty, exactly like a manual close. A close is only ever attempted
-/// once per distinct set of running client PIDs, so a client that doesn't react to it isn't
-/// hammered with repeated attempts every tick — but a *new* process (the client can restart
+/// Accepts the freshly fetched server build as current without comparing it against the stored
+/// baseline: called after a direct launch confirmed firsthand that `Gw2.dat` never changed, i.e.
+/// the client itself found nothing to download. That is a more reliable sign of being up to date
+/// than `ArenaNet`'s build id, which also advances for server-side-only changes that need no
+/// client download at all — comparing against it forever would otherwise leave the "update
+/// available" banner stuck even though starting the game again would keep confirming the same
+/// thing. `None` if the local build or the server build can't be read right now.
+fn confirm_up_to_date(gw2_path: &Path) -> Option<bool> {
+    let local_mtime = crate::game::game_build(gw2_path)?;
+    let server_build = crate::gw2_build::fetch_current_build()?;
+    let _ = bb_store::set_known_server_build(server_build, local_mtime);
+    Some(false)
+}
+
+/// Waits for the patch client to finish and go away, and returns whether `Gw2.dat` was ever seen
+/// to actually change (i.e. whether anything was downloaded at all). Once `Gw2.dat` has stopped
+/// changing (for `PATCH_IDLE_GRACE` if it had actually been changing, or `NO_ACTIVITY_GRACE` if it
+/// never started) while a client is still running, the download is done and closing it is
+/// attempted (`close_patch_client`) — but this loop is what actually decides the client is gone, by
+/// seeing `running_clients` become empty, exactly like a manual close. A close is only ever
+/// attempted once per distinct set of running client PIDs, so a client that doesn't react to it
+/// isn't hammered with repeated attempts every tick — but a *new* process (the client can restart
 /// itself, including right after being closed, not just partway through) still gets its own
 /// attempt, since it's a different PID set.
-fn wait_for_patch_to_finish(gw2_path: &Path) {
+fn wait_for_patch_to_finish(gw2_path: &Path) -> bool {
     let mut last_stamp = archive_stamp(gw2_path);
     let mut stable_since = Instant::now();
     let mut ever_changed = false;
@@ -102,7 +123,7 @@ fn wait_for_patch_to_finish(gw2_path: &Path) {
         if running.is_empty() {
             thread::sleep(RESTART_GRACE);
             if launcher::running_clients(gw2_path).is_empty() {
-                return;
+                return ever_changed;
             }
             continue;
         }

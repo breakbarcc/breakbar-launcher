@@ -7,10 +7,11 @@ use std::os::windows::io::OwnedHandle;
 use std::os::windows::process::ExitStatusExt;
 use std::path::Path;
 use std::process::{Command, ExitStatus};
+use std::sync::Mutex;
 use std::thread;
 use std::time::{Duration, Instant};
 
-use bb_core::{Account, LaunchOptions, Provider, game_args, steam};
+use bb_core::{Account, AccountId, LaunchOptions, Provider, game_args, steam};
 use bb_win::process::Process;
 
 use crate::profile_link::{self, ProfileLinkError};
@@ -50,6 +51,13 @@ pub enum LaunchError {
     PatchNeedsExclusive,
     #[error("An account is currently being set up. Close that client before starting another one.")]
     SetupClientRunning,
+    #[error(
+        "Configuring {0}'s graphics and sound settings needs all other Guild Wars 2 clients to be \
+         closed first."
+    )]
+    ConfigureNeedsExclusive(String),
+    #[error("Another account is being configured for graphics and sound settings. Close it first.")]
+    ConfigureSessionActive,
     #[error("{0} is already running.")]
     AlreadyRunning(String),
     #[error("could not prepare the account's profile folder: {0}")]
@@ -124,6 +132,43 @@ pub enum LaunchMode {
     /// Start without `-shareArchive` so the client can write its `Local.dat` — the only way to
     /// save a remembered login. Requires that no other client runs.
     SetUpLogin,
+    /// Like [`LaunchMode::Play`] but without `-shareArchive` (so the client can write its
+    /// `Local.dat`, where the settings are kept), and `%APPDATA%\Guild Wars 2` stays pointed at this account for
+    /// its whole session instead of only the first few seconds: graphics/sound settings are
+    /// re-opened *by path* whenever the user changes them in-game, long after `Local.dat` has
+    /// already been taken, so they only end up in this account's own profile if the link is kept.
+    /// Requires that no other client runs, and blocks every other launch until this account's
+    /// client exits (see [`configure_session`]).
+    Configure,
+}
+
+/// The account currently in a [`LaunchMode::Configure`] session, if any.
+static CONFIGURE_ACCOUNT: Mutex<Option<AccountId>> = Mutex::new(None);
+
+/// The account currently holding `%APPDATA%\Guild Wars 2` for its whole session via
+/// [`LaunchMode::Configure`], if any.
+pub(crate) fn configure_session() -> Option<AccountId> {
+    *CONFIGURE_ACCOUNT
+        .lock()
+        .unwrap_or_else(std::sync::PoisonError::into_inner)
+}
+
+fn begin_configure(account_id: AccountId) {
+    *CONFIGURE_ACCOUNT
+        .lock()
+        .unwrap_or_else(std::sync::PoisonError::into_inner) = Some(account_id);
+}
+
+/// Ends `account_id`'s configure session, if it is still the one holding it (a no-op otherwise).
+/// Call once that account's client has fully exited, then point the profile back at the shared
+/// profile with [`profile_link::point_to_shared`].
+pub(crate) fn end_configure(account_id: AccountId) {
+    let mut guard = CONFIGURE_ACCOUNT
+        .lock()
+        .unwrap_or_else(std::sync::PoisonError::into_inner);
+    if *guard == Some(account_id) {
+        *guard = None;
+    }
 }
 
 /// Result of a successful [`launch`].
@@ -176,6 +221,14 @@ pub fn launch(
         return Err(LaunchError::SteamNotRunning(account.name.clone()));
     }
 
+    // A `Configure` session elsewhere owns `%APPDATA%\Guild Wars 2` for its whole run, not just
+    // the first few seconds: no other launch may touch the profile link until it ends.
+    if let Some(configuring) = configure_session()
+        && configuring != account.id
+    {
+        return Err(LaunchError::ConfigureSessionActive);
+    }
+
     // Waits while another Breakbar process launches; released when this launch returns.
     let _lock = bb_win::mutex::OwnedMutex::acquire(LAUNCH_LOCK).inspect_err(|error| {
         crate::log::write(format!(
@@ -198,12 +251,17 @@ pub fn launch(
     if setup && others_running {
         return Err(LaunchError::SetupNeedsExclusive(account.name.clone()));
     }
-    if !setup && archive_held_exclusively(gw2_path) {
+    if mode == LaunchMode::Configure && others_running {
+        return Err(LaunchError::ConfigureNeedsExclusive(account.name.clone()));
+    }
+    if !setup && mode != LaunchMode::Configure && archive_held_exclusively(gw2_path) {
         return Err(LaunchError::SetupClientRunning);
     }
 
     let options = LaunchOptions {
-        share_archive: !setup,
+        // A `-shareArchive` client opens `Local.dat` read-only, so nothing it changes (the
+        // graphics and sound settings included) is ever saved: configuring needs a writable one.
+        share_archive: !setup && mode != LaunchMode::Configure,
         autologin: !setup,
         fps_limit,
     };
@@ -216,11 +274,25 @@ pub fn launch(
 
     let started = start_and_wait(gw2_path, account, options, &temp_dir, &local_dat);
 
-    let restored = profile_link::point_to_shared();
-    let (client, mut warning) = started?;
-    if let Err(error) = restored {
-        warning = Some(LaunchWarning::ProfileNotRestored(error));
+    let mut warning = None;
+    if mode == LaunchMode::Configure && started.is_ok() {
+        // Left pointed at this account on purpose: see `LaunchMode::Configure`.
+        begin_configure(account.id);
+    } else {
+        if started.is_ok()
+            && let Err(error) = profile_link::seed_shared_with_account_settings(account.id)
+        {
+            crate::log::write(format!(
+                "could not seed the shared profile with {}'s settings: {error}",
+                account.name
+            ));
+        }
+        if let Err(error) = profile_link::point_to_shared() {
+            warning = Some(LaunchWarning::ProfileNotRestored(error));
+        }
     }
+    let (client, start_warning) = started?;
+    let warning = warning.or(start_warning);
 
     // Release this client's single-instance mutex right away, so the next launch doesn't have
     // to search for it (best-effort; the next launch checks again anyway).

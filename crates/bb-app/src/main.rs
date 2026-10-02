@@ -7,6 +7,7 @@ mod discord;
 mod game;
 mod gui;
 mod gw2_build;
+mod gw2_settings;
 mod headless;
 mod launcher;
 mod log;

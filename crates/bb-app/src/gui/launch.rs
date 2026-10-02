@@ -7,6 +7,7 @@ use super::{
     discord, game, idle_state, is_active, is_startable, launcher, login_file_stamp, mpsc,
     push_toast, report_login_setup, row, rows, steam_ready, thread, update_row,
 };
+use crate::profile_link;
 
 /// Starts `id` if idle, or requests that its running client stop.
 ///
@@ -229,6 +230,7 @@ pub(super) fn run_launch(
 
     let pid = launched.client.pid();
     let (hour, minute) = bb_win::time::local_hour_minute();
+    let configure = job.mode == LaunchMode::Configure;
     let started = Started {
         id,
         name: name.clone(),
@@ -239,6 +241,7 @@ pub(super) fn run_launch(
         setup: launched.setup,
         steam: job.account.provider == Provider::Steam,
         warning: launched.warning,
+        configure,
     };
     let (setup, steam) = (started.setup, started.steam);
     let _ = window.upgrade_in_event_loop(move |window| show_started(&window, started));
@@ -257,6 +260,24 @@ pub(super) fn run_launch(
 
         let result = client.wait_for_exit();
         session.stop();
+        if configure {
+            // The junction was deliberately left on this account for its whole session (see
+            // `LaunchMode::Configure`); now that it has exited, hand the profile back — seeded
+            // with what was just configured, so a client reading it late (see
+            // `seed_shared_with_account_settings`) still sees the right values.
+            launcher::end_configure(id);
+            if let Err(error) = profile_link::seed_shared_with_account_settings(id) {
+                crate::log::write(format!(
+                    "could not seed the shared profile with {name}'s configured settings: {error}"
+                ));
+            }
+            if let Err(error) = profile_link::point_to_shared() {
+                crate::log::write(format!(
+                    "could not point Guild Wars 2 back at the shared profile after configuring \
+                     {name}: {error}"
+                ));
+            }
+        }
         // Marshal back to the UI thread: Slint's model and window may only be touched there.
         let exited = Exited {
             id,
@@ -266,6 +287,7 @@ pub(super) fn run_launch(
             gw2_path,
             login_before,
             result,
+            configure,
         };
         let _ = window.upgrade_in_event_loop(move |window| show_exited(&window, exited));
     });
@@ -281,6 +303,8 @@ struct Started {
     setup: bool,
     steam: bool,
     warning: Option<LaunchWarning>,
+    /// Started with `LaunchMode::Configure`.
+    configure: bool,
 }
 
 /// A client that has exited.
@@ -293,6 +317,8 @@ struct Exited {
     /// The account's `Local.dat` before the client started, to tell whether it saved anything.
     login_before: Option<(u64, std::time::SystemTime)>,
     result: std::io::Result<std::process::ExitStatus>,
+    /// Started with `LaunchMode::Configure`.
+    configure: bool,
 }
 
 /// Shows that starting `name` failed.
@@ -321,6 +347,7 @@ fn show_started(window: &MainWindow, started: Started) {
         setup,
         steam,
         warning,
+        configure,
     } = started;
     let messages = window.global::<Messages>();
     update_row(window, id, |row| {
@@ -331,6 +358,14 @@ fn show_started(window: &MainWindow, started: Started) {
     if setup {
         window.set_login_setup_name(name.as_str().into());
         window.set_login_setup_steam(steam);
+    }
+    if configure {
+        push_toast(
+            window,
+            ToastKind::Info,
+            messages.invoke_configure_started_title(),
+            messages.invoke_configure_started(name.as_str().into()),
+        );
     }
     match warning {
         Some(LaunchWarning::SlowStart) => push_toast(
@@ -381,6 +416,7 @@ fn show_exited(window: &MainWindow, exited: Exited) {
         gw2_path,
         login_before,
         result,
+        configure,
     } = exited;
     let messages = window.global::<Messages>();
     let stopped = row(window, id).is_some_and(|row| row.state == AccountState::Stopping);
@@ -428,6 +464,13 @@ fn show_exited(window: &MainWindow, exited: Exited) {
             messages.invoke_exited_title(),
             messages.invoke_exited(name.as_str().into(), code.into()),
         );
+    } else if configure && !stopped {
+        push_toast(
+            window,
+            ToastKind::Success,
+            messages.invoke_configure_saved_title(),
+            messages.invoke_configure_saved(name.as_str().into()),
+        );
     }
     window.invoke_client_exited(finished);
 }
@@ -440,6 +483,12 @@ pub(super) fn launch_failure(error: &LaunchError) -> (LaunchFailure, SharedStrin
         LaunchError::SteamInstallMissing(_) => (LaunchFailure::SteamInstallMissing, String::new()),
         LaunchError::SetupNeedsExclusive(_) => (LaunchFailure::SetupNeedsExclusive, String::new()),
         LaunchError::SetupClientRunning => (LaunchFailure::SetupClientRunning, String::new()),
+        LaunchError::ConfigureNeedsExclusive(_) => {
+            (LaunchFailure::ConfigureNeedsExclusive, String::new())
+        }
+        LaunchError::ConfigureSessionActive => {
+            (LaunchFailure::ConfigureSessionActive, String::new())
+        }
         LaunchError::PatchNeedsExclusive => (LaunchFailure::PatchNeedsExclusive, String::new()),
         LaunchError::AlreadyRunning(_) => (LaunchFailure::AlreadyRunning, String::new()),
         LaunchError::Profile(error) => (LaunchFailure::Profile, error.to_string()),

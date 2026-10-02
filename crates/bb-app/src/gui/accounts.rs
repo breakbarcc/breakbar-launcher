@@ -2,10 +2,12 @@
 
 use super::{
     Account, AccountId, AccountState, App, CompanionId, CompanionToggle, ComponentHandle, Config,
-    Draft, EditorData, LoginState, MainWindow, Messages, Model, Provider, Rc, RefCell, Scope,
-    SharedString, ToastKind, Trigger, account_row, apply_account, idle_state, insert_row,
-    is_active, move_row, offer_login_setup, push_toast, refresh, remove_row, row, ui, update_row,
+    Draft, EditorData, LaunchMode, LaunchQueue, LoginState, MainWindow, Messages, Model, Provider,
+    Rc, RefCell, Scope, SharedString, ToastKind, Trigger, account_row, apply_account, idle_state,
+    insert_row, is_active, is_startable, move_row, offer_login_setup, push_toast, refresh,
+    remove_row, row, start_account, ui, update_row,
 };
+use crate::gw2_settings::{self, SyncError};
 
 /// Adds `account` to the config and the list, at `index` (the end if `None`).
 pub(super) fn insert_account(
@@ -353,8 +355,132 @@ pub(super) fn open_profile_folder(window: &MainWindow, id: AccountId) {
     }
 }
 
+/// Starts the account in `LaunchMode::Configure`: its in-game graphics/sound settings end up in
+/// its own profile instead of the shared one (see `launcher::LaunchMode::Configure`). A no-op if
+/// it can't be started right now (already running, queued, ...).
+pub(super) fn configure_settings(
+    window: &MainWindow,
+    app: &RefCell<App>,
+    queue: &LaunchQueue,
+    id: AccountId,
+) {
+    if row(window, id).is_some_and(|row| is_startable(row.state)) {
+        start_account(window, app, queue, id, LaunchMode::Configure);
+    }
+}
+
+/// Opens the "Use as template" confirmation for `id`, listing every other account it would
+/// overwrite. Shows a toast instead if there is no other account to sync to.
+pub(super) fn request_sync_settings(window: &MainWindow, app: &RefCell<App>, id: AccountId) {
+    let messages = window.global::<Messages>();
+    let app_ref = app.borrow();
+    let Some(source) = app_ref.account(id) else {
+        return;
+    };
+    let targets: Vec<&str> = app_ref
+        .config
+        .accounts
+        .iter()
+        .filter(|account| account.id != id)
+        .map(|account| account.name.as_str())
+        .collect();
+    if targets.is_empty() {
+        push_toast(
+            window,
+            ToastKind::Warning,
+            messages.invoke_sync_no_targets(),
+            SharedString::new(),
+        );
+        return;
+    }
+    window.set_confirm_sync_id(id.0 as i32);
+    window.set_confirm_sync_name(source.name.as_str().into());
+    window.set_confirm_sync_targets(targets.join(", ").into());
+}
+
+/// Copies `source`'s graphics/sound settings into every other account's profile, after the user
+/// confirmed.
+pub(super) fn confirm_sync_settings(window: &MainWindow, app: &RefCell<App>, source: AccountId) {
+    let messages = window.global::<Messages>();
+    let targets: Vec<AccountId> = app
+        .borrow()
+        .config
+        .accounts
+        .iter()
+        .map(|account| account.id)
+        .filter(|&id| id != source)
+        .collect();
+    match gw2_settings::sync_settings(source, &targets) {
+        Ok(0) => push_toast(
+            window,
+            ToastKind::Warning,
+            messages.invoke_sync_nothing_saved_yet(),
+            SharedString::new(),
+        ),
+        Ok(count) => push_toast(
+            window,
+            ToastKind::Success,
+            messages.invoke_sync_done(count as i32),
+            SharedString::new(),
+        ),
+        Err(SyncError::Running(id)) => {
+            let name = app
+                .borrow()
+                .account(id)
+                .map_or_else(SharedString::new, |account| account.name.as_str().into());
+            push_toast(
+                window,
+                ToastKind::Error,
+                messages.invoke_sync_failed_title(),
+                messages.invoke_sync_account_running(name),
+            );
+        }
+        Err(error) => push_toast(
+            window,
+            ToastKind::Error,
+            messages.invoke_sync_failed_title(),
+            error.to_string().into(),
+        ),
+    }
+}
+
+/// Connects the Configure-mode and "Use as template" callbacks (split out of [`wire`], which
+/// would otherwise run over the line limit).
+fn wire_settings(window: &MainWindow, app: &Rc<RefCell<App>>, queue: &Rc<LaunchQueue>) {
+    window.on_configure_settings({
+        let app = Rc::clone(app);
+        let queue = Rc::clone(queue);
+        let weak = window.as_weak();
+        move |id| {
+            if let Some(window) = weak.upgrade() {
+                configure_settings(&window, &app, &queue, AccountId(id as u32));
+            }
+        }
+    });
+
+    window.on_request_sync_settings({
+        let app = Rc::clone(app);
+        let weak = window.as_weak();
+        move |id| {
+            if let Some(window) = weak.upgrade() {
+                request_sync_settings(&window, &app, AccountId(id as u32));
+            }
+        }
+    });
+
+    window.on_confirm_sync_settings({
+        let app = Rc::clone(app);
+        let weak = window.as_weak();
+        move |id| {
+            if let Some(window) = weak.upgrade() {
+                confirm_sync_settings(&window, &app, AccountId(id as u32));
+            }
+        }
+    });
+}
+
 /// Connects the window's callbacks for this area.
-pub(super) fn wire(window: &MainWindow, app: &Rc<RefCell<App>>) {
+pub(super) fn wire(window: &MainWindow, app: &Rc<RefCell<App>>, queue: &Rc<LaunchQueue>) {
     window.on_edit_account({
         let app = Rc::clone(app);
         let weak = window.as_weak();
@@ -434,6 +560,8 @@ pub(super) fn wire(window: &MainWindow, app: &Rc<RefCell<App>>) {
             }
         }
     });
+
+    wire_settings(window, app, queue);
 
     window.on_setup_create_account({
         let app = Rc::clone(app);

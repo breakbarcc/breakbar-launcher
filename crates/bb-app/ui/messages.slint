@@ -9,6 +9,8 @@ export enum LaunchFailure {
     steam-install-missing,
     setup-needs-exclusive,
     setup-client-running,
+    configure-needs-exclusive,
+    configure-session-active,
     patch-needs-exclusive,
     already-running,
     profile,
@@ -40,6 +42,12 @@ export global Messages {
         }
         if kind == LaunchFailure.setup-client-running {
             return @tr("An account is currently being set up. Close that client before starting another one.");
+        }
+        if kind == LaunchFailure.configure-needs-exclusive {
+            return @tr("Configuring „{}“'s graphics and sound settings needs all other Guild Wars 2 clients to be closed first.", name);
+        }
+        if kind == LaunchFailure.configure-session-active {
+            return @tr("Another account is being configured for graphics and sound settings. Close it first.");
         }
         if kind == LaunchFailure.patch-needs-exclusive {
             return @tr("Close all running Guild Wars 2 clients first, then start the update again.");
@@ -314,5 +322,41 @@ export global Messages {
             return @tr("Only the 64-bit client (Gw2-64.exe) is supported.");
         }
         @tr("The file is not the Guild Wars 2 client.")
+    }
+
+    public pure function configure-started-title() -> string {
+        @tr("Configuring graphics & sound")
+    }
+
+    public pure function configure-started(name: string) -> string {
+        @tr("Change graphics or sound settings in „{}“, then just close the game — they'll save to this account.", name)
+    }
+
+    public pure function configure-saved-title() -> string {
+        @tr("Settings saved")
+    }
+
+    public pure function configure-saved(name: string) -> string {
+        @tr("Graphics and sound settings saved for „{}“.", name)
+    }
+
+    public pure function sync-no-targets() -> string {
+        @tr("There is no other account to copy settings to.")
+    }
+
+    public pure function sync-nothing-saved-yet() -> string {
+        @tr("This account has no saved settings yet. Use „Configure graphics & sound“ first.")
+    }
+
+    public pure function sync-done(count: int) -> string {
+        @tr("Settings copied to {} account(s).", count)
+    }
+
+    public pure function sync-failed-title() -> string {
+        @tr("Settings could not be copied")
+    }
+
+    public pure function sync-account-running(name: string) -> string {
+        @tr("„{}“ is currently running. Close it first.", name)
     }
 }

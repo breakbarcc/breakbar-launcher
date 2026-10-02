@@ -10,7 +10,10 @@
 //! 2. The client starts and opens `Local.dat` exclusively; from then on it only uses that open
 //!    handle for it (verified: it stays locked all session and in-game writes go through it).
 //! 3. [`point_to_shared`] — anything later opened by path (graphics settings) and any client
-//!    started outside Breakbar use the shared profile again.
+//!    started outside Breakbar use the shared profile again. GW2 reads those settings by path too,
+//!    at some point during its own startup that isn't tied to taking `Local.dat`, so depending on
+//!    timing it may do so before or after this step: [`seed_shared_with_account_settings`] is
+//!    called right before it to make sure either way sees this account's own settings.
 //!
 //! This mirrors Launchbuddy's approach (a `Local.dat` symlink swapped only during launch), but a
 //! junction needs no admin rights or Developer Mode, and because GW2 re-creates `Local.dat` on
@@ -61,6 +64,83 @@ pub fn point_to_account(account_id: AccountId) -> Result<(), ProfileLinkError> {
 /// Points the real `%APPDATA%\Guild Wars 2` back at the shared default profile.
 pub fn point_to_shared() -> Result<(), ProfileLinkError> {
     point_to(&shared_gw2_dir()?)
+}
+
+/// Copies `account_id`'s own `GFXSettings*.xml` files into the shared profile, overwriting
+/// whatever is there. A no-op if the account has none of its own yet (nothing was ever captured
+/// for it, e.g. via Configure mode) — the shared profile is simply left as it is.
+///
+/// Call this right before [`point_to_shared`] at the end of a launch: GW2 re-reads its
+/// graphics/audio settings *by path* at some point during startup that isn't tied to when it takes
+/// `Local.dat` (see the module doc), so depending on exact timing it may do so before or after the
+/// junction has been pointed back at the shared profile. Seeding the shared profile with this
+/// account's own settings first means it sees the same, correct values either way, instead of
+/// silently falling back to whatever the shared profile happened to hold (typically some other
+/// account's settings, from whichever one played last).
+///
+/// # Errors
+///
+/// Returns [`ProfileLinkError`] if `%LOCALAPPDATA%` is not set or a file can't be read or written.
+pub fn seed_shared_with_account_settings(account_id: AccountId) -> Result<(), ProfileLinkError> {
+    let source = account_gw2_dir(account_id)?;
+    let Ok(entries) = fs::read_dir(&source) else {
+        return Ok(());
+    };
+    let files: Vec<PathBuf> = entries
+        .filter_map(Result::ok)
+        .map(|entry| entry.path())
+        .filter(|path| is_gfx_settings_file(path))
+        .collect();
+    if files.is_empty() {
+        return Ok(());
+    }
+    let target = shared_gw2_dir()?;
+    ensure_dir(&target)?;
+    for file in files {
+        let name = file.file_name().expect("listed from read_dir");
+        copy_settings_file(&file, &target.join(name), account_id)
+            .map_err(|source| ProfileLinkError::Io { path: file, source })?;
+    }
+    Ok(())
+}
+
+/// Copies a `GFXSettings*.xml` file to `to`, rewriting the launch command line it records
+/// (`EXECCMD`) so its `-mumble Breakbar_<id>` names `account_id`. The client wrote that line
+/// for the account the file came from, and it was seen to start with default settings when the
+/// line named another account than the one starting.
+pub(crate) fn copy_settings_file(
+    from: &Path,
+    to: &Path,
+    account_id: AccountId,
+) -> std::io::Result<()> {
+    match fs::read_to_string(from) {
+        Ok(text) => fs::write(to, with_mumble_name(&text, account_id)),
+        Err(_) => fs::copy(from, to).map(drop),
+    }
+}
+
+fn with_mumble_name(text: &str, account_id: AccountId) -> String {
+    const MARKER: &str = "-mumble Breakbar_";
+    let Some(start) = text.find(MARKER).map(|at| at + MARKER.len()) else {
+        return text.to_owned();
+    };
+    let digits = text[start..].bytes().take_while(u8::is_ascii_digit).count();
+    format!(
+        "{}{}{}",
+        &text[..start],
+        account_id.0,
+        &text[start + digits..]
+    )
+}
+
+/// Whether `path` is one of GW2's `GFXSettings.<exe name>.xml` files.
+pub(crate) fn is_gfx_settings_file(path: &Path) -> bool {
+    path.file_stem()
+        .and_then(|name| name.to_str())
+        .is_some_and(|name| name.starts_with("GFXSettings"))
+        && path
+            .extension()
+            .is_some_and(|ext| ext.eq_ignore_ascii_case("xml"))
 }
 
 /// Points `%APPDATA%\Guild Wars 2` back at the shared profile if it is a junction that points
@@ -263,6 +343,60 @@ mod tests {
             assert_eq!(
                 fs::read(profile(root, "1").join("Local.dat")).unwrap(),
                 b"account one"
+            );
+        });
+    }
+
+    #[test]
+    fn seeding_copies_the_account_gfx_settings_into_the_shared_profile() {
+        with_isolated_appdata("seed", |root| {
+            fs::create_dir_all(profile(root, "1")).unwrap();
+            fs::write(
+                profile(root, "1").join("GFXSettings.Gw2-64.exe.xml"),
+                b"account settings",
+            )
+            .unwrap();
+            fs::create_dir_all(profile(root, "shared")).unwrap();
+            fs::write(
+                profile(root, "shared").join("GFXSettings.Gw2-64.exe.xml"),
+                b"stale shared settings",
+            )
+            .unwrap();
+
+            seed_shared_with_account_settings(AccountId(1)).unwrap();
+
+            assert_eq!(
+                fs::read(profile(root, "shared").join("GFXSettings.Gw2-64.exe.xml")).unwrap(),
+                b"account settings"
+            );
+        });
+    }
+
+    #[test]
+    fn copies_name_the_target_account_in_the_recorded_command_line() {
+        let xml = r#"<EXECCMD Value="Gw2-64.exe -shareArchive -mumble Breakbar_1 -fps:60"/>"#;
+        assert_eq!(
+            with_mumble_name(xml, AccountId(12)),
+            r#"<EXECCMD Value="Gw2-64.exe -shareArchive -mumble Breakbar_12 -fps:60"/>"#
+        );
+        assert_eq!(with_mumble_name("<a/>", AccountId(2)), "<a/>");
+    }
+
+    #[test]
+    fn seeding_is_a_no_op_without_an_account_settings_file() {
+        with_isolated_appdata("seed-empty", |root| {
+            fs::create_dir_all(profile(root, "shared")).unwrap();
+            fs::write(
+                profile(root, "shared").join("GFXSettings.Gw2-64.exe.xml"),
+                b"shared settings",
+            )
+            .unwrap();
+
+            seed_shared_with_account_settings(AccountId(1)).unwrap();
+
+            assert_eq!(
+                fs::read(profile(root, "shared").join("GFXSettings.Gw2-64.exe.xml")).unwrap(),
+                b"shared settings"
             );
         });
     }
