@@ -636,7 +636,7 @@ mod tests {
     #[test]
     fn only_steam_accounts_get_the_steam_app_id() {
         let arenanet = Account::new(AccountId(1), "Main");
-        assert!(provider_env(&arenanet).is_empty());
+        assert_eq!(provider_env(&arenanet), [] as [(&str, String); 0]);
 
         let mut steam_account = Account::new(AccountId(2), "Steam");
         steam_account.provider = Provider::Steam;

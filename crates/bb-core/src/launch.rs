@@ -179,7 +179,7 @@ mod tests {
 
     #[test]
     fn split_args_of_empty_string_is_empty() {
-        assert!(split_args("   ").is_empty());
+        assert_eq!(split_args("   "), [] as [String; 0]);
     }
 
     #[test]

@@ -216,6 +216,6 @@ mod tests {
     #[test]
     fn an_unused_pid_has_no_windows() {
         // PIDs are multiples of 4, so this one never exists.
-        assert!(process_windows(3).unwrap().is_empty());
+        assert_eq!(process_windows(3).unwrap(), [] as [WindowInfo; 0]);
     }
 }

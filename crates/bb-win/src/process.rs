@@ -260,7 +260,7 @@ mod tests {
         terminate(child.as_raw_handle() as isize).unwrap();
         let _ = child.wait();
         assert!(mine.contains(&child.id()));
-        assert!(other.is_empty());
+        assert_eq!(other, [] as [u32; 0]);
     }
 
     #[test]
@@ -283,6 +283,6 @@ mod tests {
     #[test]
     fn finds_no_process_for_an_unused_name() {
         let pids = find_processes_by_name("breakbar-definitely-not-running.exe").unwrap();
-        assert!(pids.is_empty());
+        assert_eq!(pids, [] as [u32; 0]);
     }
 }

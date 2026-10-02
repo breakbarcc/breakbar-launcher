@@ -85,6 +85,6 @@ mod tests {
 
     #[test]
     fn empty_input_yields_no_paths() {
-        assert!(library_folders("").is_empty());
+        assert_eq!(library_folders(""), [] as [std::path::PathBuf; 0]);
     }
 }
