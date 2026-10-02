@@ -98,43 +98,14 @@ pub fn seed_shared_with_account_settings(account_id: AccountId) -> Result<(), Pr
     ensure_dir(&target)?;
     for file in files {
         let name = file.file_name().expect("listed from read_dir");
-        copy_settings_file(&file, &target.join(name), account_id)
+        fs::copy(&file, target.join(name))
             .map_err(|source| ProfileLinkError::Io { path: file, source })?;
     }
     Ok(())
 }
 
-/// Copies a `GFXSettings*.xml` file to `to`, rewriting the launch command line it records
-/// (`EXECCMD`) so its `-mumble Breakbar_<id>` names `account_id`. The client wrote that line
-/// for the account the file came from, and it was seen to start with default settings when the
-/// line named another account than the one starting.
-pub(crate) fn copy_settings_file(
-    from: &Path,
-    to: &Path,
-    account_id: AccountId,
-) -> std::io::Result<()> {
-    match fs::read_to_string(from) {
-        Ok(text) => fs::write(to, with_mumble_name(&text, account_id)),
-        Err(_) => fs::copy(from, to).map(drop),
-    }
-}
-
-fn with_mumble_name(text: &str, account_id: AccountId) -> String {
-    const MARKER: &str = "-mumble Breakbar_";
-    let Some(start) = text.find(MARKER).map(|at| at + MARKER.len()) else {
-        return text.to_owned();
-    };
-    let digits = text[start..].bytes().take_while(u8::is_ascii_digit).count();
-    format!(
-        "{}{}{}",
-        &text[..start],
-        account_id.0,
-        &text[start + digits..]
-    )
-}
-
 /// Whether `path` is one of GW2's `GFXSettings.<exe name>.xml` files.
-pub(crate) fn is_gfx_settings_file(path: &Path) -> bool {
+fn is_gfx_settings_file(path: &Path) -> bool {
     path.file_stem()
         .and_then(|name| name.to_str())
         .is_some_and(|name| name.starts_with("GFXSettings"))
@@ -370,16 +341,6 @@ mod tests {
                 b"account settings"
             );
         });
-    }
-
-    #[test]
-    fn copies_name_the_target_account_in_the_recorded_command_line() {
-        let xml = r#"<EXECCMD Value="Gw2-64.exe -shareArchive -mumble Breakbar_1 -fps:60"/>"#;
-        assert_eq!(
-            with_mumble_name(xml, AccountId(12)),
-            r#"<EXECCMD Value="Gw2-64.exe -shareArchive -mumble Breakbar_12 -fps:60"/>"#
-        );
-        assert_eq!(with_mumble_name("<a/>", AccountId(2)), "<a/>");
     }
 
     #[test]

@@ -59,7 +59,9 @@ msgstr " · Steam läuft"
 
 #: ui/account-card.slint:139 ui/account-card.slint:225
 #: ui/account-card.slint:139 ui/account-card.slint:225 ui/account-card.slint:225
-#: ui/account-card.slint:139 ui/account-card.slint:225 ui/account-card.slint:225
+#: ui/account-card.slint:139 ui/account-card.slint:225 ui/account-card.slint:225 ui/account-card.slint:139
+#: ui/account-card.slint:139 ui/account-card.slint:225 ui/account-card.slint:225 ui/account-card.slint:139 ui/account-card.slint:225
+#: ui/account-card.slint:139 ui/account-card.slint:225 ui/account-card.slint:225 ui/account-card.slint:139 ui/account-card.slint:225
 msgctxt "AccountCard"
 msgid "Select {}"
 msgstr "{} auswählen"
@@ -76,14 +78,18 @@ msgstr "Mitgestartet: Blish HUD"
 
 #: ui/account-card.slint:183 ui/account-card.slint:269
 #: ui/account-card.slint:183 ui/account-card.slint:269 ui/account-card.slint:269
-#: ui/account-card.slint:183 ui/account-card.slint:269 ui/account-card.slint:269
+#: ui/account-card.slint:183 ui/account-card.slint:269 ui/account-card.slint:269 ui/account-card.slint:183
+#: ui/account-card.slint:183 ui/account-card.slint:269 ui/account-card.slint:269 ui/account-card.slint:183 ui/account-card.slint:269
+#: ui/account-card.slint:183 ui/account-card.slint:269 ui/account-card.slint:269 ui/account-card.slint:183 ui/account-card.slint:269
 msgctxt "AccountCard"
 msgid "Retry"
 msgstr "Erneut"
 
 #: ui/account-card.slint:199 ui/account-card.slint:285
 #: ui/account-card.slint:199 ui/account-card.slint:285 ui/account-card.slint:285
-#: ui/account-card.slint:199 ui/account-card.slint:285 ui/account-card.slint:285
+#: ui/account-card.slint:199 ui/account-card.slint:285 ui/account-card.slint:285 ui/account-card.slint:199
+#: ui/account-card.slint:199 ui/account-card.slint:285 ui/account-card.slint:285 ui/account-card.slint:199 ui/account-card.slint:285
+#: ui/account-card.slint:199 ui/account-card.slint:285 ui/account-card.slint:285 ui/account-card.slint:199 ui/account-card.slint:285
 msgctxt "AccountCard"
 msgid "More actions for {}"
 msgstr "Mehr Aktionen für {}"
@@ -153,66 +159,93 @@ msgstr "Abbrechen"
 
 #: ui/app.slint:247 ui/app.slint:249 ui/app.slint:257 ui/app.slint:278
 #: ui/app.slint:247 ui/app.slint:249 ui/app.slint:257 ui/app.slint:278 ui/app.slint:249 ui/app.slint:257 ui/app.slint:278
-#: ui/app.slint:247 ui/app.slint:249 ui/app.slint:257 ui/app.slint:278 ui/app.slint:249 ui/app.slint:257 ui/app.slint:278
+#: ui/app.slint:247 ui/app.slint:249 ui/app.slint:257 ui/app.slint:278 ui/app.slint:249 ui/app.slint:257 ui/app.slint:278 ui/app.slint:257 ui/app.slint:278 ui/app.slint:247
+#: ui/app.slint:247 ui/app.slint:249 ui/app.slint:257 ui/app.slint:278 ui/app.slint:249 ui/app.slint:257 ui/app.slint:278 ui/app.slint:257 ui/app.slint:278 ui/app.slint:247 ui/app.slint:257 ui/app.slint:278 ui/app.slint:249
+#: ui/app.slint:247 ui/app.slint:249 ui/app.slint:257 ui/app.slint:278 ui/app.slint:249 ui/app.slint:257 ui/app.slint:278 ui/app.slint:257 ui/app.slint:278 ui/app.slint:247 ui/app.slint:257 ui/app.slint:278 ui/app.slint:249 ui/app.slint:278 ui/app.slint:804
 msgctxt "MainWindow"
 msgid "Start · {}"
 msgstr "Starten · {}"
 
 #: ui/app.slint:247 ui/app.slint:249 ui/app.slint:257 ui/app.slint:278
 #: ui/app.slint:247 ui/app.slint:249 ui/app.slint:257 ui/app.slint:278 ui/app.slint:249 ui/app.slint:257 ui/app.slint:278
-#: ui/app.slint:247 ui/app.slint:249 ui/app.slint:257 ui/app.slint:278 ui/app.slint:249 ui/app.slint:257 ui/app.slint:278
+#: ui/app.slint:247 ui/app.slint:249 ui/app.slint:257 ui/app.slint:278 ui/app.slint:249 ui/app.slint:257 ui/app.slint:278 ui/app.slint:257 ui/app.slint:278 ui/app.slint:247
+#: ui/app.slint:247 ui/app.slint:249 ui/app.slint:257 ui/app.slint:278 ui/app.slint:249 ui/app.slint:257 ui/app.slint:278 ui/app.slint:257 ui/app.slint:278 ui/app.slint:247 ui/app.slint:257 ui/app.slint:278 ui/app.slint:249
+#: ui/app.slint:247 ui/app.slint:249 ui/app.slint:257 ui/app.slint:278 ui/app.slint:249 ui/app.slint:257 ui/app.slint:278 ui/app.slint:257 ui/app.slint:278 ui/app.slint:247 ui/app.slint:257 ui/app.slint:278 ui/app.slint:249 ui/app.slint:278 ui/app.slint:804
 msgctxt "MainWindow"
 msgid "Start selection · {}"
 msgstr "Auswahl starten · {}"
 
 #: ui/app.slint:248 ui/app.slint:250 ui/app.slint:258 ui/app.slint:279
 #: ui/app.slint:248 ui/app.slint:250 ui/app.slint:258 ui/app.slint:279 ui/app.slint:250 ui/app.slint:258 ui/app.slint:279
-#: ui/app.slint:248 ui/app.slint:250 ui/app.slint:258 ui/app.slint:279 ui/app.slint:250 ui/app.slint:258 ui/app.slint:279
+#: ui/app.slint:248 ui/app.slint:250 ui/app.slint:258 ui/app.slint:279 ui/app.slint:250 ui/app.slint:258 ui/app.slint:279 ui/app.slint:258 ui/app.slint:279 ui/app.slint:248
+#: ui/app.slint:248 ui/app.slint:250 ui/app.slint:258 ui/app.slint:279 ui/app.slint:250 ui/app.slint:258 ui/app.slint:279 ui/app.slint:258 ui/app.slint:279 ui/app.slint:248 ui/app.slint:258 ui/app.slint:279 ui/app.slint:250
+#: ui/app.slint:248 ui/app.slint:250 ui/app.slint:258 ui/app.slint:279 ui/app.slint:250 ui/app.slint:258 ui/app.slint:279 ui/app.slint:258 ui/app.slint:279 ui/app.slint:248 ui/app.slint:258 ui/app.slint:279 ui/app.slint:250 ui/app.slint:279 ui/app.slint:805
 msgctxt "MainWindow"
 msgid "All"
 msgstr "Alle"
 
 #: ui/app.slint:248 ui/app.slint:250 ui/app.slint:258 ui/app.slint:279
 #: ui/app.slint:248 ui/app.slint:250 ui/app.slint:258 ui/app.slint:279 ui/app.slint:250 ui/app.slint:258 ui/app.slint:279
-#: ui/app.slint:248 ui/app.slint:250 ui/app.slint:258 ui/app.slint:279 ui/app.slint:250 ui/app.slint:258 ui/app.slint:279
+#: ui/app.slint:248 ui/app.slint:250 ui/app.slint:258 ui/app.slint:279 ui/app.slint:250 ui/app.slint:258 ui/app.slint:279 ui/app.slint:258 ui/app.slint:279 ui/app.slint:248
+#: ui/app.slint:248 ui/app.slint:250 ui/app.slint:258 ui/app.slint:279 ui/app.slint:250 ui/app.slint:258 ui/app.slint:279 ui/app.slint:258 ui/app.slint:279 ui/app.slint:248 ui/app.slint:258 ui/app.slint:279 ui/app.slint:250
+#: ui/app.slint:248 ui/app.slint:250 ui/app.slint:258 ui/app.slint:279 ui/app.slint:250 ui/app.slint:258 ui/app.slint:279 ui/app.slint:258 ui/app.slint:279 ui/app.slint:248 ui/app.slint:258 ui/app.slint:279 ui/app.slint:250 ui/app.slint:279 ui/app.slint:805
 msgctxt "MainWindow"
 msgid "Launch all"
 msgstr "Launch all"
 
 #: ui/app.slint:257 ui/app.slint:259 ui/app.slint:267 ui/app.slint:288
 #: ui/app.slint:257 ui/app.slint:259 ui/app.slint:267 ui/app.slint:288 ui/app.slint:259 ui/app.slint:267 ui/app.slint:288
-#: ui/app.slint:257 ui/app.slint:259 ui/app.slint:267 ui/app.slint:288 ui/app.slint:259 ui/app.slint:267 ui/app.slint:288
+#: ui/app.slint:257 ui/app.slint:259 ui/app.slint:267 ui/app.slint:288 ui/app.slint:259 ui/app.slint:267 ui/app.slint:288 ui/app.slint:267 ui/app.slint:288 ui/app.slint:257
+#: ui/app.slint:257 ui/app.slint:259 ui/app.slint:267 ui/app.slint:288 ui/app.slint:259 ui/app.slint:267 ui/app.slint:288 ui/app.slint:267 ui/app.slint:288 ui/app.slint:257 ui/app.slint:267 ui/app.slint:288 ui/app.slint:259
+#: ui/app.slint:257 ui/app.slint:259 ui/app.slint:267 ui/app.slint:288 ui/app.slint:259 ui/app.slint:267 ui/app.slint:288 ui/app.slint:267 ui/app.slint:288 ui/app.slint:257 ui/app.slint:267 ui/app.slint:288 ui/app.slint:259 ui/app.slint:288 ui/app.slint:814
 msgctxt "MainWindow"
 msgid "{} of {} clients running"
 msgstr "{} von {} Clients laufen"
 
 #: ui/app.slint:279 ui/app.slint:281 ui/app.slint:286 ui/app.slint:310
 #: ui/app.slint:279 ui/app.slint:281 ui/app.slint:286 ui/app.slint:310 ui/app.slint:281 ui/app.slint:286 ui/app.slint:310
-#: ui/app.slint:279 ui/app.slint:281 ui/app.slint:286 ui/app.slint:310 ui/app.slint:281 ui/app.slint:286 ui/app.slint:310
+#: ui/app.slint:279 ui/app.slint:281 ui/app.slint:286 ui/app.slint:310 ui/app.slint:281 ui/app.slint:286 ui/app.slint:310 ui/app.slint:286 ui/app.slint:310 ui/app.slint:279
+#: ui/app.slint:279 ui/app.slint:281 ui/app.slint:286 ui/app.slint:310 ui/app.slint:281 ui/app.slint:286 ui/app.slint:310 ui/app.slint:286 ui/app.slint:310 ui/app.slint:279 ui/app.slint:286 ui/app.slint:310 ui/app.slint:281
+#: ui/app.slint:279 ui/app.slint:281 ui/app.slint:286 ui/app.slint:310 ui/app.slint:281 ui/app.slint:286 ui/app.slint:310 ui/app.slint:286 ui/app.slint:310 ui/app.slint:279 ui/app.slint:286 ui/app.slint:310 ui/app.slint:281 ui/app.slint:310 ui/app.slint:836
 msgctxt "MainWindow"
 msgid "RUNNING"
 msgstr "LAUFEN"
 
 #: ui/app.slint:308 ui/app.slint:332 ui/app.slint:358 ui/app.slint:381
 #: ui/app.slint:308 ui/app.slint:332 ui/app.slint:358 ui/app.slint:381 ui/app.slint:332 ui/app.slint:358 ui/app.slint:381
-#: ui/app.slint:308 ui/app.slint:332 ui/app.slint:358 ui/app.slint:381 ui/app.slint:332 ui/app.slint:358 ui/app.slint:381 ui/app.slint:762 ui/app.slint:855 ui/app.slint:308
-#: ui/app.slint:308 ui/app.slint:332 ui/app.slint:358 ui/app.slint:381 ui/app.slint:332 ui/app.slint:358 ui/app.slint:381 ui/app.slint:762 ui/app.slint:855 ui/app.slint:308 ui/app.slint:358 ui/app.slint:381 ui/app.slint:686
-#: ui/app.slint:308 ui/app.slint:332 ui/app.slint:358 ui/app.slint:381 ui/app.slint:332 ui/app.slint:358 ui/app.slint:381 ui/app.slint:762 ui/app.slint:855 ui/app.slint:308 ui/app.slint:358 ui/app.slint:381 ui/app.slint:686 ui/app.slint:855 ui/app.slint:942 ui/app.slint:952
-#: ui/app.slint:308 ui/app.slint:332 ui/app.slint:358 ui/app.slint:381 ui/app.slint:332 ui/app.slint:358 ui/app.slint:381 ui/app.slint:762 ui/app.slint:855 ui/app.slint:308 ui/app.slint:358 ui/app.slint:381 ui/app.slint:686 ui/app.slint:855 ui/app.slint:942 ui/app.slint:952
+#: ui/app.slint:308 ui/app.slint:332 ui/app.slint:358 ui/app.slint:381 ui/app.slint:332 ui/app.slint:358 ui/app.slint:381 ui/app.slint:358 ui/app.slint:381 ui/app.slint:308
+#: ui/app.slint:308 ui/app.slint:332 ui/app.slint:358 ui/app.slint:381 ui/app.slint:332 ui/app.slint:358 ui/app.slint:381 ui/app.slint:358 ui/app.slint:381 ui/app.slint:308 ui/app.slint:358 ui/app.slint:381 ui/app.slint:332
+#: ui/app.slint:308 ui/app.slint:332 ui/app.slint:358 ui/app.slint:381 ui/app.slint:332 ui/app.slint:358 ui/app.slint:381 ui/app.slint:358 ui/app.slint:381 ui/app.slint:308 ui/app.slint:358 ui/app.slint:381 ui/app.slint:332 ui/app.slint:381 ui/app.slint:762 ui/app.slint:855
+#: ui/app.slint:308 ui/app.slint:332 ui/app.slint:358 ui/app.slint:381 ui/app.slint:332 ui/app.slint:358 ui/app.slint:381 ui/app.slint:358 ui/app.slint:381 ui/app.slint:308 ui/app.slint:358 ui/app.slint:381 ui/app.slint:332 ui/app.slint:381 ui/app.slint:762 ui/app.slint:855 ui/app.slint:308 ui/app.slint:332 ui/app.slint:358
+#: ui/app.slint:308 ui/app.slint:332 ui/app.slint:358 ui/app.slint:381 ui/app.slint:332 ui/app.slint:358 ui/app.slint:381 ui/app.slint:358 ui/app.slint:381 ui/app.slint:308 ui/app.slint:358 ui/app.slint:381 ui/app.slint:332 ui/app.slint:381 ui/app.slint:762 ui/app.slint:855 ui/app.slint:308 ui/app.slint:332 ui/app.slint:358 ui/app.slint:332 ui/app.slint:358 ui/app.slint:381
+#: ui/app.slint:308 ui/app.slint:332 ui/app.slint:358 ui/app.slint:381 ui/app.slint:332 ui/app.slint:358 ui/app.slint:381 ui/app.slint:358 ui/app.slint:381 ui/app.slint:308 ui/app.slint:358 ui/app.slint:381 ui/app.slint:332 ui/app.slint:381 ui/app.slint:762 ui/app.slint:855 ui/app.slint:308 ui/app.slint:332 ui/app.slint:358 ui/app.slint:332 ui/app.slint:358 ui/app.slint:381 ui/app.slint:855 ui/app.slint:308 ui/app.slint:358
+#: ui/app.slint:308 ui/app.slint:332 ui/app.slint:358 ui/app.slint:381 ui/app.slint:332 ui/app.slint:358 ui/app.slint:381 ui/app.slint:358 ui/app.slint:381 ui/app.slint:308 ui/app.slint:358 ui/app.slint:381 ui/app.slint:332 ui/app.slint:381 ui/app.slint:762 ui/app.slint:855 ui/app.slint:308 ui/app.slint:332 ui/app.slint:358 ui/app.slint:332 ui/app.slint:358 ui/app.slint:381 ui/app.slint:855 ui/app.slint:308 ui/app.slint:358 ui/app.slint:686 ui/app.slint:308 ui/app.slint:332
+#: ui/app.slint:308 ui/app.slint:332 ui/app.slint:358 ui/app.slint:381 ui/app.slint:332 ui/app.slint:358 ui/app.slint:381 ui/app.slint:358 ui/app.slint:381 ui/app.slint:308 ui/app.slint:358 ui/app.slint:381 ui/app.slint:332 ui/app.slint:381 ui/app.slint:762 ui/app.slint:855 ui/app.slint:308 ui/app.slint:332 ui/app.slint:358 ui/app.slint:332 ui/app.slint:358 ui/app.slint:381 ui/app.slint:855 ui/app.slint:308 ui/app.slint:358 ui/app.slint:686 ui/app.slint:308 ui/app.slint:332 ui/app.slint:381 ui/app.slint:332 ui/app.slint:358
+#: ui/app.slint:308 ui/app.slint:332 ui/app.slint:358 ui/app.slint:381 ui/app.slint:332 ui/app.slint:358 ui/app.slint:381 ui/app.slint:358 ui/app.slint:381 ui/app.slint:308 ui/app.slint:358 ui/app.slint:381 ui/app.slint:332 ui/app.slint:381 ui/app.slint:762 ui/app.slint:855 ui/app.slint:308 ui/app.slint:332 ui/app.slint:358 ui/app.slint:332 ui/app.slint:358 ui/app.slint:381 ui/app.slint:855 ui/app.slint:308 ui/app.slint:358 ui/app.slint:686 ui/app.slint:308 ui/app.slint:332 ui/app.slint:381 ui/app.slint:332 ui/app.slint:358 ui/app.slint:762 ui/app.slint:855 ui/app.slint:308
+#: ui/app.slint:308 ui/app.slint:332 ui/app.slint:358 ui/app.slint:381 ui/app.slint:332 ui/app.slint:358 ui/app.slint:381 ui/app.slint:358 ui/app.slint:381 ui/app.slint:308 ui/app.slint:358 ui/app.slint:381 ui/app.slint:332 ui/app.slint:381 ui/app.slint:762 ui/app.slint:855 ui/app.slint:308 ui/app.slint:332 ui/app.slint:358 ui/app.slint:332 ui/app.slint:358 ui/app.slint:381 ui/app.slint:855 ui/app.slint:308 ui/app.slint:358 ui/app.slint:686 ui/app.slint:308 ui/app.slint:332 ui/app.slint:381 ui/app.slint:332 ui/app.slint:358 ui/app.slint:762 ui/app.slint:855 ui/app.slint:308 ui/app.slint:381 ui/app.slint:686 ui/app.slint:855
+#: ui/app.slint:308 ui/app.slint:332 ui/app.slint:358 ui/app.slint:381 ui/app.slint:332 ui/app.slint:358 ui/app.slint:381 ui/app.slint:358 ui/app.slint:381 ui/app.slint:308 ui/app.slint:358 ui/app.slint:381 ui/app.slint:332 ui/app.slint:381 ui/app.slint:762 ui/app.slint:855 ui/app.slint:308 ui/app.slint:332 ui/app.slint:358 ui/app.slint:332 ui/app.slint:358 ui/app.slint:381 ui/app.slint:855 ui/app.slint:308 ui/app.slint:358 ui/app.slint:686 ui/app.slint:308 ui/app.slint:332 ui/app.slint:381 ui/app.slint:332 ui/app.slint:358 ui/app.slint:762 ui/app.slint:855 ui/app.slint:308 ui/app.slint:381 ui/app.slint:686 ui/app.slint:855 ui/app.slint:952 ui/app.slint:308 ui/app.slint:332
+#: ui/app.slint:308 ui/app.slint:332 ui/app.slint:358 ui/app.slint:381 ui/app.slint:332 ui/app.slint:358 ui/app.slint:381 ui/app.slint:358 ui/app.slint:381 ui/app.slint:308 ui/app.slint:358 ui/app.slint:381 ui/app.slint:332 ui/app.slint:381 ui/app.slint:762 ui/app.slint:855 ui/app.slint:308 ui/app.slint:332 ui/app.slint:358 ui/app.slint:332 ui/app.slint:358 ui/app.slint:381 ui/app.slint:855 ui/app.slint:308 ui/app.slint:358 ui/app.slint:686 ui/app.slint:308 ui/app.slint:332 ui/app.slint:381 ui/app.slint:332 ui/app.slint:358 ui/app.slint:762 ui/app.slint:855 ui/app.slint:308 ui/app.slint:381 ui/app.slint:686 ui/app.slint:855 ui/app.slint:952 ui/app.slint:308 ui/app.slint:332 ui/app.slint:381 ui/app.slint:332 ui/app.slint:358
+#: ui/app.slint:308 ui/app.slint:332 ui/app.slint:358 ui/app.slint:381 ui/app.slint:332 ui/app.slint:358 ui/app.slint:381 ui/app.slint:358 ui/app.slint:381 ui/app.slint:308 ui/app.slint:358 ui/app.slint:381 ui/app.slint:332 ui/app.slint:381 ui/app.slint:762 ui/app.slint:855 ui/app.slint:308 ui/app.slint:332 ui/app.slint:358 ui/app.slint:332 ui/app.slint:358 ui/app.slint:381 ui/app.slint:855 ui/app.slint:308 ui/app.slint:358 ui/app.slint:686 ui/app.slint:308 ui/app.slint:332 ui/app.slint:381 ui/app.slint:332 ui/app.slint:358 ui/app.slint:762 ui/app.slint:855 ui/app.slint:308 ui/app.slint:381 ui/app.slint:686 ui/app.slint:855 ui/app.slint:952 ui/app.slint:308 ui/app.slint:332 ui/app.slint:381 ui/app.slint:332 ui/app.slint:358 ui/app.slint:762 ui/app.slint:855 ui/app.slint:308
+#: ui/app.slint:308 ui/app.slint:332 ui/app.slint:358 ui/app.slint:381 ui/app.slint:332 ui/app.slint:358 ui/app.slint:381 ui/app.slint:358 ui/app.slint:381 ui/app.slint:308 ui/app.slint:358 ui/app.slint:381 ui/app.slint:332 ui/app.slint:381 ui/app.slint:762 ui/app.slint:855 ui/app.slint:308 ui/app.slint:332 ui/app.slint:358 ui/app.slint:332 ui/app.slint:358 ui/app.slint:381 ui/app.slint:855 ui/app.slint:308 ui/app.slint:358 ui/app.slint:686 ui/app.slint:308 ui/app.slint:332 ui/app.slint:381 ui/app.slint:332 ui/app.slint:358 ui/app.slint:762 ui/app.slint:855 ui/app.slint:308 ui/app.slint:381 ui/app.slint:686 ui/app.slint:855 ui/app.slint:952 ui/app.slint:308 ui/app.slint:332 ui/app.slint:381 ui/app.slint:332 ui/app.slint:358 ui/app.slint:762 ui/app.slint:855 ui/app.slint:308 ui/app.slint:381 ui/app.slint:686 ui/app.slint:855
+#: ui/app.slint:308 ui/app.slint:332 ui/app.slint:358 ui/app.slint:381 ui/app.slint:332 ui/app.slint:358 ui/app.slint:381 ui/app.slint:358 ui/app.slint:381 ui/app.slint:308 ui/app.slint:358 ui/app.slint:381 ui/app.slint:332 ui/app.slint:381 ui/app.slint:762 ui/app.slint:855 ui/app.slint:308 ui/app.slint:332 ui/app.slint:358 ui/app.slint:332 ui/app.slint:358 ui/app.slint:381 ui/app.slint:855 ui/app.slint:308 ui/app.slint:358 ui/app.slint:686 ui/app.slint:308 ui/app.slint:332 ui/app.slint:381 ui/app.slint:332 ui/app.slint:358 ui/app.slint:762 ui/app.slint:855 ui/app.slint:308 ui/app.slint:381 ui/app.slint:686 ui/app.slint:855 ui/app.slint:952 ui/app.slint:308 ui/app.slint:332 ui/app.slint:381 ui/app.slint:332 ui/app.slint:358 ui/app.slint:762 ui/app.slint:855 ui/app.slint:308 ui/app.slint:381 ui/app.slint:686 ui/app.slint:855 ui/app.slint:952 ui/app.slint:858 ui/app.slint:945
 msgctxt "MainWindow"
 msgid "Add account"
 msgstr "Account hinzufügen"
 
 #: ui/app.slint:338 ui/app.slint:340 ui/app.slint:342 ui/app.slint:362
 #: ui/app.slint:338 ui/app.slint:340 ui/app.slint:342 ui/app.slint:362 ui/app.slint:340 ui/app.slint:342 ui/app.slint:362
-#: ui/app.slint:338 ui/app.slint:340 ui/app.slint:342 ui/app.slint:362 ui/app.slint:340 ui/app.slint:342 ui/app.slint:362
+#: ui/app.slint:338 ui/app.slint:340 ui/app.slint:342 ui/app.slint:362 ui/app.slint:340 ui/app.slint:342 ui/app.slint:362 ui/app.slint:342 ui/app.slint:362 ui/app.slint:338
+#: ui/app.slint:338 ui/app.slint:340 ui/app.slint:342 ui/app.slint:362 ui/app.slint:340 ui/app.slint:342 ui/app.slint:362 ui/app.slint:342 ui/app.slint:362 ui/app.slint:338 ui/app.slint:342 ui/app.slint:362 ui/app.slint:340
+#: ui/app.slint:338 ui/app.slint:340 ui/app.slint:342 ui/app.slint:362 ui/app.slint:340 ui/app.slint:342 ui/app.slint:362 ui/app.slint:342 ui/app.slint:362 ui/app.slint:338 ui/app.slint:342 ui/app.slint:362 ui/app.slint:340 ui/app.slint:362 ui/app.slint:926
 msgctxt "MainWindow"
 msgid "No accounts yet"
 msgstr "Noch keine Accounts"
 
 #: ui/app.slint:345 ui/app.slint:346 ui/app.slint:347 ui/app.slint:369
 #: ui/app.slint:345 ui/app.slint:346 ui/app.slint:347 ui/app.slint:369 ui/app.slint:346 ui/app.slint:347 ui/app.slint:369
-#: ui/app.slint:345 ui/app.slint:346 ui/app.slint:347 ui/app.slint:369 ui/app.slint:346 ui/app.slint:347 ui/app.slint:369
+#: ui/app.slint:345 ui/app.slint:346 ui/app.slint:347 ui/app.slint:369 ui/app.slint:346 ui/app.slint:347 ui/app.slint:369 ui/app.slint:347 ui/app.slint:369 ui/app.slint:345
+#: ui/app.slint:345 ui/app.slint:346 ui/app.slint:347 ui/app.slint:369 ui/app.slint:346 ui/app.slint:347 ui/app.slint:369 ui/app.slint:347 ui/app.slint:369 ui/app.slint:345 ui/app.slint:347 ui/app.slint:369 ui/app.slint:346
+#: ui/app.slint:345 ui/app.slint:346 ui/app.slint:347 ui/app.slint:369 ui/app.slint:346 ui/app.slint:347 ui/app.slint:369 ui/app.slint:347 ui/app.slint:369 ui/app.slint:345 ui/app.slint:347 ui/app.slint:369 ui/app.slint:346 ui/app.slint:369 ui/app.slint:933
 msgctxt "MainWindow"
 msgid ""
 "Add an account and start it with one click. Several accounts run side by "
@@ -223,21 +256,27 @@ msgstr ""
 
 #: ui/app.slint:372 ui/app.slint:374 ui/app.slint:376 ui/app.slint:396
 #: ui/app.slint:372 ui/app.slint:374 ui/app.slint:376 ui/app.slint:396 ui/app.slint:374 ui/app.slint:376 ui/app.slint:396
-#: ui/app.slint:372 ui/app.slint:374 ui/app.slint:376 ui/app.slint:396 ui/app.slint:374 ui/app.slint:376 ui/app.slint:396
+#: ui/app.slint:372 ui/app.slint:374 ui/app.slint:376 ui/app.slint:396 ui/app.slint:374 ui/app.slint:376 ui/app.slint:396 ui/app.slint:376 ui/app.slint:396 ui/app.slint:372
+#: ui/app.slint:372 ui/app.slint:374 ui/app.slint:376 ui/app.slint:396 ui/app.slint:374 ui/app.slint:376 ui/app.slint:396 ui/app.slint:376 ui/app.slint:396 ui/app.slint:372 ui/app.slint:376 ui/app.slint:396 ui/app.slint:374
+#: ui/app.slint:372 ui/app.slint:374 ui/app.slint:376 ui/app.slint:396 ui/app.slint:374 ui/app.slint:376 ui/app.slint:396 ui/app.slint:376 ui/app.slint:396 ui/app.slint:372 ui/app.slint:376 ui/app.slint:396 ui/app.slint:374 ui/app.slint:396 ui/app.slint:960
 msgctxt "MainWindow"
 msgid "// ACCOUNTS · {}"
 msgstr "// ACCOUNTS · {}"
 
 #: ui/app.slint:378 ui/app.slint:383 ui/app.slint:385 ui/app.slint:407
 #: ui/app.slint:378 ui/app.slint:383 ui/app.slint:385 ui/app.slint:407 ui/app.slint:383 ui/app.slint:385 ui/app.slint:407
-#: ui/app.slint:378 ui/app.slint:383 ui/app.slint:385 ui/app.slint:407 ui/app.slint:383 ui/app.slint:385 ui/app.slint:407
+#: ui/app.slint:378 ui/app.slint:383 ui/app.slint:385 ui/app.slint:407 ui/app.slint:383 ui/app.slint:385 ui/app.slint:407 ui/app.slint:385 ui/app.slint:407 ui/app.slint:378
+#: ui/app.slint:378 ui/app.slint:383 ui/app.slint:385 ui/app.slint:407 ui/app.slint:383 ui/app.slint:385 ui/app.slint:407 ui/app.slint:385 ui/app.slint:407 ui/app.slint:378 ui/app.slint:385 ui/app.slint:407 ui/app.slint:383
+#: ui/app.slint:378 ui/app.slint:383 ui/app.slint:385 ui/app.slint:407 ui/app.slint:383 ui/app.slint:385 ui/app.slint:407 ui/app.slint:385 ui/app.slint:407 ui/app.slint:378 ui/app.slint:385 ui/app.slint:407 ui/app.slint:383 ui/app.slint:407 ui/app.slint:971
 msgctxt "MainWindow"
 msgid "{} selected"
 msgstr "{} ausgewählt"
 
 #: ui/app.slint:385 ui/app.slint:390 ui/app.slint:392 ui/app.slint:414
 #: ui/app.slint:385 ui/app.slint:390 ui/app.slint:392 ui/app.slint:414 ui/app.slint:390 ui/app.slint:392 ui/app.slint:414
-#: ui/app.slint:385 ui/app.slint:390 ui/app.slint:392 ui/app.slint:414 ui/app.slint:390 ui/app.slint:392 ui/app.slint:414
+#: ui/app.slint:385 ui/app.slint:390 ui/app.slint:392 ui/app.slint:414 ui/app.slint:390 ui/app.slint:392 ui/app.slint:414 ui/app.slint:392 ui/app.slint:414 ui/app.slint:385
+#: ui/app.slint:385 ui/app.slint:390 ui/app.slint:392 ui/app.slint:414 ui/app.slint:390 ui/app.slint:392 ui/app.slint:414 ui/app.slint:392 ui/app.slint:414 ui/app.slint:385 ui/app.slint:392 ui/app.slint:414 ui/app.slint:390
+#: ui/app.slint:385 ui/app.slint:390 ui/app.slint:392 ui/app.slint:414 ui/app.slint:390 ui/app.slint:392 ui/app.slint:414 ui/app.slint:392 ui/app.slint:414 ui/app.slint:385 ui/app.slint:392 ui/app.slint:414 ui/app.slint:390 ui/app.slint:414 ui/app.slint:978
 msgctxt "MainWindow"
 msgid "Clear"
 msgstr "Aufheben"
@@ -269,21 +308,27 @@ msgstr "Hinweis schließen"
 
 #: ui/messages.slint:20 ui/messages.slint:21 ui/messages.slint:24
 #: ui/messages.slint:20 ui/messages.slint:21 ui/messages.slint:24 ui/messages.slint:21 ui/messages.slint:24
-#: ui/messages.slint:20 ui/messages.slint:21 ui/messages.slint:24 ui/messages.slint:21 ui/messages.slint:24 ui/messages.slint:26 ui/messages.slint:84
+#: ui/messages.slint:20 ui/messages.slint:21 ui/messages.slint:24 ui/messages.slint:21 ui/messages.slint:24 ui/messages.slint:24 ui/messages.slint:20
+#: ui/messages.slint:20 ui/messages.slint:21 ui/messages.slint:24 ui/messages.slint:21 ui/messages.slint:24 ui/messages.slint:24 ui/messages.slint:20 ui/messages.slint:24 ui/messages.slint:21
+#: ui/messages.slint:20 ui/messages.slint:21 ui/messages.slint:24 ui/messages.slint:21 ui/messages.slint:24 ui/messages.slint:24 ui/messages.slint:20 ui/messages.slint:24 ui/messages.slint:21 ui/messages.slint:26 ui/messages.slint:84
 msgctxt "Messages"
 msgid "Start failed"
 msgstr "Start fehlgeschlagen"
 
 #: ui/messages.slint:26 ui/messages.slint:27 ui/messages.slint:29
 #: ui/messages.slint:26 ui/messages.slint:27 ui/messages.slint:29 ui/messages.slint:27 ui/messages.slint:29
-#: ui/messages.slint:26 ui/messages.slint:27 ui/messages.slint:29 ui/messages.slint:27 ui/messages.slint:29
+#: ui/messages.slint:26 ui/messages.slint:27 ui/messages.slint:29 ui/messages.slint:27 ui/messages.slint:29 ui/messages.slint:29 ui/messages.slint:26
+#: ui/messages.slint:26 ui/messages.slint:27 ui/messages.slint:29 ui/messages.slint:27 ui/messages.slint:29 ui/messages.slint:29 ui/messages.slint:26 ui/messages.slint:29 ui/messages.slint:27
+#: ui/messages.slint:26 ui/messages.slint:27 ui/messages.slint:29 ui/messages.slint:27 ui/messages.slint:29 ui/messages.slint:29 ui/messages.slint:26 ui/messages.slint:29 ui/messages.slint:27 ui/messages.slint:32
 msgctxt "Messages"
 msgid "Guild Wars 2 is not configured yet."
 msgstr "Guild Wars 2 ist noch nicht eingerichtet."
 
 #: ui/messages.slint:29 ui/messages.slint:30 ui/messages.slint:32
 #: ui/messages.slint:29 ui/messages.slint:30 ui/messages.slint:32 ui/messages.slint:30 ui/messages.slint:32
-#: ui/messages.slint:29 ui/messages.slint:30 ui/messages.slint:32 ui/messages.slint:30 ui/messages.slint:32
+#: ui/messages.slint:29 ui/messages.slint:30 ui/messages.slint:32 ui/messages.slint:30 ui/messages.slint:32 ui/messages.slint:32 ui/messages.slint:29
+#: ui/messages.slint:29 ui/messages.slint:30 ui/messages.slint:32 ui/messages.slint:30 ui/messages.slint:32 ui/messages.slint:32 ui/messages.slint:29 ui/messages.slint:32 ui/messages.slint:30
+#: ui/messages.slint:29 ui/messages.slint:30 ui/messages.slint:32 ui/messages.slint:30 ui/messages.slint:32 ui/messages.slint:32 ui/messages.slint:29 ui/messages.slint:32 ui/messages.slint:30 ui/messages.slint:35
 msgctxt "Messages"
 msgid ""
 "„{}“ is a Steam account: start Steam and sign in with the Steam user it "
@@ -294,7 +339,9 @@ msgstr ""
 
 #: ui/messages.slint:32 ui/messages.slint:33 ui/messages.slint:35
 #: ui/messages.slint:32 ui/messages.slint:33 ui/messages.slint:35 ui/messages.slint:33 ui/messages.slint:35
-#: ui/messages.slint:32 ui/messages.slint:33 ui/messages.slint:35 ui/messages.slint:33 ui/messages.slint:35
+#: ui/messages.slint:32 ui/messages.slint:33 ui/messages.slint:35 ui/messages.slint:33 ui/messages.slint:35 ui/messages.slint:35 ui/messages.slint:32
+#: ui/messages.slint:32 ui/messages.slint:33 ui/messages.slint:35 ui/messages.slint:33 ui/messages.slint:35 ui/messages.slint:35 ui/messages.slint:32 ui/messages.slint:35 ui/messages.slint:33
+#: ui/messages.slint:32 ui/messages.slint:33 ui/messages.slint:35 ui/messages.slint:33 ui/messages.slint:35 ui/messages.slint:35 ui/messages.slint:32 ui/messages.slint:35 ui/messages.slint:33 ui/messages.slint:38
 msgctxt "Messages"
 msgid ""
 "„{}“ is a Steam account, but no Guild Wars 2 installation with Steam "
@@ -307,7 +354,9 @@ msgstr ""
 
 #: ui/messages.slint:35 ui/messages.slint:36 ui/messages.slint:38
 #: ui/messages.slint:35 ui/messages.slint:36 ui/messages.slint:38 ui/messages.slint:36 ui/messages.slint:38
-#: ui/messages.slint:35 ui/messages.slint:36 ui/messages.slint:38 ui/messages.slint:36 ui/messages.slint:38
+#: ui/messages.slint:35 ui/messages.slint:36 ui/messages.slint:38 ui/messages.slint:36 ui/messages.slint:38 ui/messages.slint:38 ui/messages.slint:35
+#: ui/messages.slint:35 ui/messages.slint:36 ui/messages.slint:38 ui/messages.slint:36 ui/messages.slint:38 ui/messages.slint:38 ui/messages.slint:35 ui/messages.slint:38 ui/messages.slint:36
+#: ui/messages.slint:35 ui/messages.slint:36 ui/messages.slint:38 ui/messages.slint:36 ui/messages.slint:38 ui/messages.slint:38 ui/messages.slint:35 ui/messages.slint:38 ui/messages.slint:36 ui/messages.slint:41
 msgctxt "Messages"
 msgid ""
 "Setting up the login of „{}“ needs all other Guild Wars 2 clients to be "
@@ -318,7 +367,9 @@ msgstr ""
 
 #: ui/messages.slint:38 ui/messages.slint:39 ui/messages.slint:41
 #: ui/messages.slint:38 ui/messages.slint:39 ui/messages.slint:41 ui/messages.slint:39 ui/messages.slint:41
-#: ui/messages.slint:38 ui/messages.slint:39 ui/messages.slint:41 ui/messages.slint:39 ui/messages.slint:41
+#: ui/messages.slint:38 ui/messages.slint:39 ui/messages.slint:41 ui/messages.slint:39 ui/messages.slint:41 ui/messages.slint:41 ui/messages.slint:38
+#: ui/messages.slint:38 ui/messages.slint:39 ui/messages.slint:41 ui/messages.slint:39 ui/messages.slint:41 ui/messages.slint:41 ui/messages.slint:38 ui/messages.slint:41 ui/messages.slint:39
+#: ui/messages.slint:38 ui/messages.slint:39 ui/messages.slint:41 ui/messages.slint:39 ui/messages.slint:41 ui/messages.slint:41 ui/messages.slint:38 ui/messages.slint:41 ui/messages.slint:39 ui/messages.slint:44
 msgctxt "Messages"
 msgid ""
 "An account is currently being set up. Close that client before starting "
@@ -329,14 +380,18 @@ msgstr ""
 
 #: ui/messages.slint:41 ui/messages.slint:45 ui/messages.slint:47
 #: ui/messages.slint:41 ui/messages.slint:45 ui/messages.slint:47 ui/messages.slint:45 ui/messages.slint:47
-#: ui/messages.slint:41 ui/messages.slint:45 ui/messages.slint:47 ui/messages.slint:45 ui/messages.slint:47
+#: ui/messages.slint:41 ui/messages.slint:45 ui/messages.slint:47 ui/messages.slint:45 ui/messages.slint:47 ui/messages.slint:47 ui/messages.slint:41
+#: ui/messages.slint:41 ui/messages.slint:45 ui/messages.slint:47 ui/messages.slint:45 ui/messages.slint:47 ui/messages.slint:47 ui/messages.slint:41 ui/messages.slint:47 ui/messages.slint:45
+#: ui/messages.slint:41 ui/messages.slint:45 ui/messages.slint:47 ui/messages.slint:45 ui/messages.slint:47 ui/messages.slint:47 ui/messages.slint:41 ui/messages.slint:47 ui/messages.slint:45 ui/messages.slint:59
 msgctxt "Messages"
 msgid "„{}“: the profile folder could not be prepared: {}"
 msgstr "„{}“: Der Profilordner konnte nicht vorbereitet werden: {}"
 
 #: ui/messages.slint:44 ui/messages.slint:48 ui/messages.slint:50
 #: ui/messages.slint:44 ui/messages.slint:48 ui/messages.slint:50 ui/messages.slint:48 ui/messages.slint:50
-#: ui/messages.slint:44 ui/messages.slint:48 ui/messages.slint:50 ui/messages.slint:48 ui/messages.slint:50
+#: ui/messages.slint:44 ui/messages.slint:48 ui/messages.slint:50 ui/messages.slint:48 ui/messages.slint:50 ui/messages.slint:50 ui/messages.slint:44
+#: ui/messages.slint:44 ui/messages.slint:48 ui/messages.slint:50 ui/messages.slint:48 ui/messages.slint:50 ui/messages.slint:50 ui/messages.slint:44 ui/messages.slint:50 ui/messages.slint:48
+#: ui/messages.slint:44 ui/messages.slint:48 ui/messages.slint:50 ui/messages.slint:48 ui/messages.slint:50 ui/messages.slint:50 ui/messages.slint:44 ui/messages.slint:50 ui/messages.slint:48 ui/messages.slint:62
 msgctxt "Messages"
 msgid "„{}“: Guild Wars 2 could not be switched to this account's profile: {}"
 msgstr ""
@@ -345,49 +400,63 @@ msgstr ""
 
 #: ui/messages.slint:47 ui/messages.slint:51 ui/messages.slint:53
 #: ui/messages.slint:47 ui/messages.slint:51 ui/messages.slint:53 ui/messages.slint:51 ui/messages.slint:53
-#: ui/messages.slint:47 ui/messages.slint:51 ui/messages.slint:53 ui/messages.slint:51 ui/messages.slint:53
+#: ui/messages.slint:47 ui/messages.slint:51 ui/messages.slint:53 ui/messages.slint:51 ui/messages.slint:53 ui/messages.slint:53 ui/messages.slint:47
+#: ui/messages.slint:47 ui/messages.slint:51 ui/messages.slint:53 ui/messages.slint:51 ui/messages.slint:53 ui/messages.slint:53 ui/messages.slint:47 ui/messages.slint:53 ui/messages.slint:51
+#: ui/messages.slint:47 ui/messages.slint:51 ui/messages.slint:53 ui/messages.slint:51 ui/messages.slint:53 ui/messages.slint:53 ui/messages.slint:47 ui/messages.slint:53 ui/messages.slint:51 ui/messages.slint:65
 msgctxt "Messages"
 msgid "„{}“: Gw2-64.exe could not be started: {}"
 msgstr "„{}“: Gw2-64.exe konnte nicht gestartet werden: {}"
 
 #: ui/messages.slint:49 ui/messages.slint:53 ui/messages.slint:55
 #: ui/messages.slint:49 ui/messages.slint:53 ui/messages.slint:55 ui/messages.slint:53 ui/messages.slint:55
-#: ui/messages.slint:49 ui/messages.slint:53 ui/messages.slint:55 ui/messages.slint:53 ui/messages.slint:55
+#: ui/messages.slint:49 ui/messages.slint:53 ui/messages.slint:55 ui/messages.slint:53 ui/messages.slint:55 ui/messages.slint:55 ui/messages.slint:49
+#: ui/messages.slint:49 ui/messages.slint:53 ui/messages.slint:55 ui/messages.slint:53 ui/messages.slint:55 ui/messages.slint:55 ui/messages.slint:49 ui/messages.slint:55 ui/messages.slint:53
+#: ui/messages.slint:49 ui/messages.slint:53 ui/messages.slint:55 ui/messages.slint:53 ui/messages.slint:55 ui/messages.slint:55 ui/messages.slint:49 ui/messages.slint:55 ui/messages.slint:53 ui/messages.slint:67
 msgctxt "Messages"
 msgid "„{}“: Gw2-64.exe closed during startup (code {})."
 msgstr "„{}“: Gw2-64.exe wurde beim Start beendet (Code {})."
 
 #: ui/messages.slint:53 ui/messages.slint:57 ui/messages.slint:59
 #: ui/messages.slint:53 ui/messages.slint:57 ui/messages.slint:59 ui/messages.slint:57 ui/messages.slint:59
-#: ui/messages.slint:53 ui/messages.slint:57 ui/messages.slint:59 ui/messages.slint:57 ui/messages.slint:59
+#: ui/messages.slint:53 ui/messages.slint:57 ui/messages.slint:59 ui/messages.slint:57 ui/messages.slint:59 ui/messages.slint:59 ui/messages.slint:53
+#: ui/messages.slint:53 ui/messages.slint:57 ui/messages.slint:59 ui/messages.slint:57 ui/messages.slint:59 ui/messages.slint:59 ui/messages.slint:53 ui/messages.slint:59 ui/messages.slint:57
+#: ui/messages.slint:53 ui/messages.slint:57 ui/messages.slint:59 ui/messages.slint:57 ui/messages.slint:59 ui/messages.slint:59 ui/messages.slint:53 ui/messages.slint:59 ui/messages.slint:57 ui/messages.slint:71
 msgctxt "Messages"
 msgid "Client exited"
 msgstr "Client beendet"
 
 #: ui/messages.slint:57 ui/messages.slint:61 ui/messages.slint:63
 #: ui/messages.slint:57 ui/messages.slint:61 ui/messages.slint:63 ui/messages.slint:61 ui/messages.slint:63
-#: ui/messages.slint:57 ui/messages.slint:61 ui/messages.slint:63 ui/messages.slint:61 ui/messages.slint:63
+#: ui/messages.slint:57 ui/messages.slint:61 ui/messages.slint:63 ui/messages.slint:61 ui/messages.slint:63 ui/messages.slint:63 ui/messages.slint:57
+#: ui/messages.slint:57 ui/messages.slint:61 ui/messages.slint:63 ui/messages.slint:61 ui/messages.slint:63 ui/messages.slint:63 ui/messages.slint:57 ui/messages.slint:63 ui/messages.slint:61
+#: ui/messages.slint:57 ui/messages.slint:61 ui/messages.slint:63 ui/messages.slint:61 ui/messages.slint:63 ui/messages.slint:63 ui/messages.slint:57 ui/messages.slint:63 ui/messages.slint:61 ui/messages.slint:75
 msgctxt "Messages"
 msgid "„{}“: Gw2-64.exe exited (code {})."
 msgstr "„{}“: Gw2-64.exe wurde beendet (Code {})."
 
 #: ui/messages.slint:62 ui/messages.slint:66 ui/messages.slint:68
 #: ui/messages.slint:62 ui/messages.slint:66 ui/messages.slint:68 ui/messages.slint:66 ui/messages.slint:68
-#: ui/messages.slint:62 ui/messages.slint:66 ui/messages.slint:68 ui/messages.slint:66 ui/messages.slint:68
+#: ui/messages.slint:62 ui/messages.slint:66 ui/messages.slint:68 ui/messages.slint:66 ui/messages.slint:68 ui/messages.slint:68 ui/messages.slint:62
+#: ui/messages.slint:62 ui/messages.slint:66 ui/messages.slint:68 ui/messages.slint:66 ui/messages.slint:68 ui/messages.slint:68 ui/messages.slint:62 ui/messages.slint:68 ui/messages.slint:66
+#: ui/messages.slint:62 ui/messages.slint:66 ui/messages.slint:68 ui/messages.slint:66 ui/messages.slint:68 ui/messages.slint:68 ui/messages.slint:62 ui/messages.slint:68 ui/messages.slint:66 ui/messages.slint:80
 msgctxt "Messages"
 msgid "Exited (code {})"
 msgstr "Beendet (Code {})"
 
 #: ui/messages.slint:117 ui/messages.slint:78 ui/messages.slint:82
 #: ui/messages.slint:117 ui/messages.slint:78 ui/messages.slint:82 ui/messages.slint:78 ui/messages.slint:82
-#: ui/messages.slint:117 ui/messages.slint:78 ui/messages.slint:82 ui/messages.slint:78 ui/messages.slint:82
+#: ui/messages.slint:117 ui/messages.slint:78 ui/messages.slint:82 ui/messages.slint:78 ui/messages.slint:82 ui/messages.slint:82 ui/messages.slint:117
+#: ui/messages.slint:117 ui/messages.slint:78 ui/messages.slint:82 ui/messages.slint:78 ui/messages.slint:82 ui/messages.slint:82 ui/messages.slint:117 ui/messages.slint:82 ui/messages.slint:78
+#: ui/messages.slint:117 ui/messages.slint:78 ui/messages.slint:82 ui/messages.slint:78 ui/messages.slint:82 ui/messages.slint:82 ui/messages.slint:117 ui/messages.slint:82 ui/messages.slint:78 ui/messages.slint:125
 msgctxt "Messages"
 msgid "Unusually slow start"
 msgstr "Ungewöhnlich langsamer Start"
 
 #: ui/messages.slint:121 ui/messages.slint:82 ui/messages.slint:86
 #: ui/messages.slint:121 ui/messages.slint:82 ui/messages.slint:86 ui/messages.slint:82 ui/messages.slint:86
-#: ui/messages.slint:121 ui/messages.slint:82 ui/messages.slint:86 ui/messages.slint:82 ui/messages.slint:86
+#: ui/messages.slint:121 ui/messages.slint:82 ui/messages.slint:86 ui/messages.slint:82 ui/messages.slint:86 ui/messages.slint:86 ui/messages.slint:121
+#: ui/messages.slint:121 ui/messages.slint:82 ui/messages.slint:86 ui/messages.slint:82 ui/messages.slint:86 ui/messages.slint:86 ui/messages.slint:121 ui/messages.slint:86 ui/messages.slint:82
+#: ui/messages.slint:121 ui/messages.slint:82 ui/messages.slint:86 ui/messages.slint:82 ui/messages.slint:86 ui/messages.slint:86 ui/messages.slint:121 ui/messages.slint:86 ui/messages.slint:82 ui/messages.slint:129
 msgctxt "Messages"
 msgid ""
 "„{}“ took unusually long to start. If it logs in with the wrong account, "
@@ -398,14 +467,18 @@ msgstr ""
 
 #: ui/messages.slint:125 ui/messages.slint:86 ui/messages.slint:90
 #: ui/messages.slint:125 ui/messages.slint:86 ui/messages.slint:90 ui/messages.slint:86 ui/messages.slint:90
-#: ui/messages.slint:125 ui/messages.slint:86 ui/messages.slint:90 ui/messages.slint:86 ui/messages.slint:90
+#: ui/messages.slint:125 ui/messages.slint:86 ui/messages.slint:90 ui/messages.slint:86 ui/messages.slint:90 ui/messages.slint:90 ui/messages.slint:125
+#: ui/messages.slint:125 ui/messages.slint:86 ui/messages.slint:90 ui/messages.slint:86 ui/messages.slint:90 ui/messages.slint:90 ui/messages.slint:125 ui/messages.slint:90 ui/messages.slint:86
+#: ui/messages.slint:125 ui/messages.slint:86 ui/messages.slint:90 ui/messages.slint:86 ui/messages.slint:90 ui/messages.slint:90 ui/messages.slint:125 ui/messages.slint:90 ui/messages.slint:86 ui/messages.slint:133
 msgctxt "Messages"
 msgid "Profile not switched back"
 msgstr "Profil nicht zurückgestellt"
 
 #: ui/messages.slint:129 ui/messages.slint:90 ui/messages.slint:94
 #: ui/messages.slint:129 ui/messages.slint:90 ui/messages.slint:94 ui/messages.slint:90 ui/messages.slint:94
-#: ui/messages.slint:129 ui/messages.slint:90 ui/messages.slint:94 ui/messages.slint:90 ui/messages.slint:94
+#: ui/messages.slint:129 ui/messages.slint:90 ui/messages.slint:94 ui/messages.slint:90 ui/messages.slint:94 ui/messages.slint:94 ui/messages.slint:129
+#: ui/messages.slint:129 ui/messages.slint:90 ui/messages.slint:94 ui/messages.slint:90 ui/messages.slint:94 ui/messages.slint:94 ui/messages.slint:129 ui/messages.slint:94 ui/messages.slint:90
+#: ui/messages.slint:129 ui/messages.slint:90 ui/messages.slint:94 ui/messages.slint:90 ui/messages.slint:94 ui/messages.slint:94 ui/messages.slint:129 ui/messages.slint:94 ui/messages.slint:90 ui/messages.slint:137
 msgctxt "Messages"
 msgid ""
 "Guild Wars 2's data folder could not be switched back to the shared profile: "
@@ -416,35 +489,45 @@ msgstr ""
 
 #: ui/messages.slint:100 ui/messages.slint:133 ui/messages.slint:94
 #: ui/messages.slint:100 ui/messages.slint:133 ui/messages.slint:94 ui/messages.slint:133 ui/messages.slint:94
-#: ui/messages.slint:100 ui/messages.slint:133 ui/messages.slint:94 ui/messages.slint:133 ui/messages.slint:94
+#: ui/messages.slint:100 ui/messages.slint:133 ui/messages.slint:94 ui/messages.slint:133 ui/messages.slint:94 ui/messages.slint:94 ui/messages.slint:100
+#: ui/messages.slint:100 ui/messages.slint:133 ui/messages.slint:94 ui/messages.slint:133 ui/messages.slint:94 ui/messages.slint:94 ui/messages.slint:100 ui/messages.slint:94 ui/messages.slint:133
+#: ui/messages.slint:100 ui/messages.slint:133 ui/messages.slint:94 ui/messages.slint:133 ui/messages.slint:94 ui/messages.slint:94 ui/messages.slint:100 ui/messages.slint:94 ui/messages.slint:133 ui/messages.slint:141
 msgctxt "Messages"
 msgid "{} could not be started"
 msgstr "{} konnte nicht gestartet werden"
 
 #: ui/messages.slint:102 ui/messages.slint:104 ui/messages.slint:137
 #: ui/messages.slint:102 ui/messages.slint:104 ui/messages.slint:137 ui/messages.slint:104 ui/messages.slint:137
-#: ui/messages.slint:102 ui/messages.slint:104 ui/messages.slint:137 ui/messages.slint:104 ui/messages.slint:137
+#: ui/messages.slint:102 ui/messages.slint:104 ui/messages.slint:137 ui/messages.slint:104 ui/messages.slint:137 ui/messages.slint:137 ui/messages.slint:102
+#: ui/messages.slint:102 ui/messages.slint:104 ui/messages.slint:137 ui/messages.slint:104 ui/messages.slint:137 ui/messages.slint:137 ui/messages.slint:102 ui/messages.slint:137 ui/messages.slint:104
+#: ui/messages.slint:102 ui/messages.slint:104 ui/messages.slint:137 ui/messages.slint:104 ui/messages.slint:137 ui/messages.slint:137 ui/messages.slint:102 ui/messages.slint:137 ui/messages.slint:104 ui/messages.slint:145
 msgctxt "Messages"
 msgid "Steam account already running"
 msgstr "Steam-Account läuft bereits"
 
 #: ui/messages.slint:102 ui/messages.slint:106 ui/messages.slint:108
 #: ui/messages.slint:102 ui/messages.slint:106 ui/messages.slint:108 ui/messages.slint:106 ui/messages.slint:108
-#: ui/messages.slint:102 ui/messages.slint:106 ui/messages.slint:108 ui/messages.slint:106 ui/messages.slint:108
+#: ui/messages.slint:102 ui/messages.slint:106 ui/messages.slint:108 ui/messages.slint:106 ui/messages.slint:108 ui/messages.slint:108 ui/messages.slint:102
+#: ui/messages.slint:102 ui/messages.slint:106 ui/messages.slint:108 ui/messages.slint:106 ui/messages.slint:108 ui/messages.slint:108 ui/messages.slint:102 ui/messages.slint:108 ui/messages.slint:106
+#: ui/messages.slint:102 ui/messages.slint:106 ui/messages.slint:108 ui/messages.slint:106 ui/messages.slint:108 ui/messages.slint:108 ui/messages.slint:102 ui/messages.slint:108 ui/messages.slint:106 ui/messages.slint:149
 msgctxt "Messages"
 msgid "„{}“ is locked until „{}“ has exited."
 msgstr "„{}“ ist gesperrt, bis „{}“ beendet ist."
 
 #: ui/messages.slint:106 ui/messages.slint:110 ui/messages.slint:112
 #: ui/messages.slint:106 ui/messages.slint:110 ui/messages.slint:112 ui/messages.slint:110 ui/messages.slint:112
-#: ui/messages.slint:106 ui/messages.slint:110 ui/messages.slint:112 ui/messages.slint:110 ui/messages.slint:112
+#: ui/messages.slint:106 ui/messages.slint:110 ui/messages.slint:112 ui/messages.slint:110 ui/messages.slint:112 ui/messages.slint:112 ui/messages.slint:106
+#: ui/messages.slint:106 ui/messages.slint:110 ui/messages.slint:112 ui/messages.slint:110 ui/messages.slint:112 ui/messages.slint:112 ui/messages.slint:106 ui/messages.slint:112 ui/messages.slint:110
+#: ui/messages.slint:106 ui/messages.slint:110 ui/messages.slint:112 ui/messages.slint:110 ui/messages.slint:112 ui/messages.slint:112 ui/messages.slint:106 ui/messages.slint:112 ui/messages.slint:110 ui/messages.slint:153
 msgctxt "Messages"
 msgid "Client could not be stopped"
 msgstr "Client konnte nicht beendet werden"
 
 #: ui/messages.slint:110 ui/messages.slint:114 ui/messages.slint:116
 #: ui/messages.slint:110 ui/messages.slint:114 ui/messages.slint:116 ui/messages.slint:114 ui/messages.slint:116
-#: ui/messages.slint:110 ui/messages.slint:114 ui/messages.slint:116 ui/messages.slint:114 ui/messages.slint:116
+#: ui/messages.slint:110 ui/messages.slint:114 ui/messages.slint:116 ui/messages.slint:114 ui/messages.slint:116 ui/messages.slint:116 ui/messages.slint:110
+#: ui/messages.slint:110 ui/messages.slint:114 ui/messages.slint:116 ui/messages.slint:114 ui/messages.slint:116 ui/messages.slint:116 ui/messages.slint:110 ui/messages.slint:116 ui/messages.slint:114
+#: ui/messages.slint:110 ui/messages.slint:114 ui/messages.slint:116 ui/messages.slint:114 ui/messages.slint:116 ui/messages.slint:116 ui/messages.slint:110 ui/messages.slint:116 ui/messages.slint:114 ui/messages.slint:157
 msgctxt "Messages"
 msgid "Settings could not be loaded, changes won't be saved: {}"
 msgstr ""
@@ -453,153 +536,196 @@ msgstr ""
 
 #: ui/messages.slint:114 ui/messages.slint:118 ui/messages.slint:120
 #: ui/messages.slint:114 ui/messages.slint:118 ui/messages.slint:120 ui/messages.slint:118 ui/messages.slint:120
-#: ui/messages.slint:114 ui/messages.slint:118 ui/messages.slint:120 ui/messages.slint:118 ui/messages.slint:120
+#: ui/messages.slint:114 ui/messages.slint:118 ui/messages.slint:120 ui/messages.slint:118 ui/messages.slint:120 ui/messages.slint:120 ui/messages.slint:114
+#: ui/messages.slint:114 ui/messages.slint:118 ui/messages.slint:120 ui/messages.slint:118 ui/messages.slint:120 ui/messages.slint:120 ui/messages.slint:114 ui/messages.slint:120 ui/messages.slint:118
+#: ui/messages.slint:114 ui/messages.slint:118 ui/messages.slint:120 ui/messages.slint:118 ui/messages.slint:120 ui/messages.slint:120 ui/messages.slint:114 ui/messages.slint:120 ui/messages.slint:118 ui/messages.slint:161
 msgctxt "Messages"
 msgid "Settings could not be saved: {}"
 msgstr "Einstellungen konnten nicht gespeichert werden: {}"
 
 #: ui/messages.slint:118 ui/messages.slint:122 ui/messages.slint:124
 #: ui/messages.slint:118 ui/messages.slint:122 ui/messages.slint:124 ui/messages.slint:122 ui/messages.slint:124
-#: ui/messages.slint:118 ui/messages.slint:122 ui/messages.slint:124 ui/messages.slint:122 ui/messages.slint:124
+#: ui/messages.slint:118 ui/messages.slint:122 ui/messages.slint:124 ui/messages.slint:122 ui/messages.slint:124 ui/messages.slint:124 ui/messages.slint:118
+#: ui/messages.slint:118 ui/messages.slint:122 ui/messages.slint:124 ui/messages.slint:122 ui/messages.slint:124 ui/messages.slint:124 ui/messages.slint:118 ui/messages.slint:124 ui/messages.slint:122
+#: ui/messages.slint:118 ui/messages.slint:122 ui/messages.slint:124 ui/messages.slint:122 ui/messages.slint:124 ui/messages.slint:124 ui/messages.slint:118 ui/messages.slint:124 ui/messages.slint:122 ui/messages.slint:165
 msgctxt "Messages"
 msgid "Settings"
 msgstr "Einstellungen"
 
 #: ui/messages.slint:122 ui/messages.slint:126 ui/messages.slint:134
 #: ui/messages.slint:122 ui/messages.slint:126 ui/messages.slint:134 ui/messages.slint:126 ui/messages.slint:134
-#: ui/messages.slint:122 ui/messages.slint:126 ui/messages.slint:134 ui/messages.slint:126 ui/messages.slint:134
+#: ui/messages.slint:122 ui/messages.slint:126 ui/messages.slint:134 ui/messages.slint:126 ui/messages.slint:134 ui/messages.slint:134 ui/messages.slint:122
+#: ui/messages.slint:122 ui/messages.slint:126 ui/messages.slint:134 ui/messages.slint:126 ui/messages.slint:134 ui/messages.slint:134 ui/messages.slint:122 ui/messages.slint:134 ui/messages.slint:126
+#: ui/messages.slint:122 ui/messages.slint:126 ui/messages.slint:134 ui/messages.slint:126 ui/messages.slint:134 ui/messages.slint:134 ui/messages.slint:122 ui/messages.slint:134 ui/messages.slint:126 ui/messages.slint:245
 msgctxt "Messages"
 msgid "The file dialog could not be opened: {}"
 msgstr "Der Dateidialog konnte nicht geöffnet werden: {}"
 
 #: ui/messages.slint:126 ui/messages.slint:130 ui/messages.slint:138
 #: ui/messages.slint:126 ui/messages.slint:130 ui/messages.slint:138 ui/messages.slint:130 ui/messages.slint:138
-#: ui/messages.slint:126 ui/messages.slint:130 ui/messages.slint:138 ui/messages.slint:130 ui/messages.slint:138
+#: ui/messages.slint:126 ui/messages.slint:130 ui/messages.slint:138 ui/messages.slint:130 ui/messages.slint:138 ui/messages.slint:138 ui/messages.slint:126
+#: ui/messages.slint:126 ui/messages.slint:130 ui/messages.slint:138 ui/messages.slint:130 ui/messages.slint:138 ui/messages.slint:138 ui/messages.slint:126 ui/messages.slint:138 ui/messages.slint:130
+#: ui/messages.slint:126 ui/messages.slint:130 ui/messages.slint:138 ui/messages.slint:130 ui/messages.slint:138 ui/messages.slint:138 ui/messages.slint:126 ui/messages.slint:138 ui/messages.slint:130 ui/messages.slint:249
 msgctxt "Messages"
 msgid "Choose the Guild Wars 2 client first."
 msgstr "Wähle zuerst den Guild-Wars-2-Client."
 
 #: ui/messages.slint:130 ui/messages.slint:134 ui/messages.slint:142
 #: ui/messages.slint:130 ui/messages.slint:134 ui/messages.slint:142 ui/messages.slint:134 ui/messages.slint:142
-#: ui/messages.slint:130 ui/messages.slint:134 ui/messages.slint:142 ui/messages.slint:134 ui/messages.slint:142
+#: ui/messages.slint:130 ui/messages.slint:134 ui/messages.slint:142 ui/messages.slint:134 ui/messages.slint:142 ui/messages.slint:142 ui/messages.slint:130
+#: ui/messages.slint:130 ui/messages.slint:134 ui/messages.slint:142 ui/messages.slint:134 ui/messages.slint:142 ui/messages.slint:142 ui/messages.slint:130 ui/messages.slint:142 ui/messages.slint:134
+#: ui/messages.slint:130 ui/messages.slint:134 ui/messages.slint:142 ui/messages.slint:134 ui/messages.slint:142 ui/messages.slint:142 ui/messages.slint:130 ui/messages.slint:142 ui/messages.slint:134 ui/messages.slint:253
 msgctxt "Messages"
 msgid "Not the Guild Wars 2 client"
 msgstr "Nicht der Guild-Wars-2-Client"
 
 #: ui/messages.slint:134 ui/messages.slint:138 ui/messages.slint:146
 #: ui/messages.slint:134 ui/messages.slint:138 ui/messages.slint:146 ui/messages.slint:138 ui/messages.slint:146
-#: ui/messages.slint:134 ui/messages.slint:138 ui/messages.slint:146 ui/messages.slint:138 ui/messages.slint:146
+#: ui/messages.slint:134 ui/messages.slint:138 ui/messages.slint:146 ui/messages.slint:138 ui/messages.slint:146 ui/messages.slint:146 ui/messages.slint:134
+#: ui/messages.slint:134 ui/messages.slint:138 ui/messages.slint:146 ui/messages.slint:138 ui/messages.slint:146 ui/messages.slint:146 ui/messages.slint:134 ui/messages.slint:146 ui/messages.slint:138
+#: ui/messages.slint:134 ui/messages.slint:138 ui/messages.slint:146 ui/messages.slint:138 ui/messages.slint:146 ui/messages.slint:146 ui/messages.slint:134 ui/messages.slint:146 ui/messages.slint:138 ui/messages.slint:257
 msgctxt "Messages"
 msgid "Guild Wars 2 client not usable"
 msgstr "Guild-Wars-2-Client nicht nutzbar"
 
 #: ui/messages.slint:139 ui/messages.slint:186 ui/messages.slint:194
 #: ui/messages.slint:139 ui/messages.slint:186 ui/messages.slint:194 ui/messages.slint:186 ui/messages.slint:194
-#: ui/messages.slint:139 ui/messages.slint:186 ui/messages.slint:194 ui/messages.slint:186 ui/messages.slint:194
+#: ui/messages.slint:139 ui/messages.slint:186 ui/messages.slint:194 ui/messages.slint:186 ui/messages.slint:194 ui/messages.slint:194 ui/messages.slint:139
+#: ui/messages.slint:139 ui/messages.slint:186 ui/messages.slint:194 ui/messages.slint:186 ui/messages.slint:194 ui/messages.slint:194 ui/messages.slint:139 ui/messages.slint:194 ui/messages.slint:186
+#: ui/messages.slint:139 ui/messages.slint:186 ui/messages.slint:194 ui/messages.slint:186 ui/messages.slint:194 ui/messages.slint:194 ui/messages.slint:139 ui/messages.slint:194 ui/messages.slint:186 ui/messages.slint:313
 msgctxt "Messages"
 msgid "The file does not exist."
 msgstr "Die Datei existiert nicht."
 
 #: ui/messages.slint:142 ui/messages.slint:189 ui/messages.slint:197
 #: ui/messages.slint:142 ui/messages.slint:189 ui/messages.slint:197 ui/messages.slint:189 ui/messages.slint:197
-#: ui/messages.slint:142 ui/messages.slint:189 ui/messages.slint:197 ui/messages.slint:189 ui/messages.slint:197
+#: ui/messages.slint:142 ui/messages.slint:189 ui/messages.slint:197 ui/messages.slint:189 ui/messages.slint:197 ui/messages.slint:197 ui/messages.slint:142
+#: ui/messages.slint:142 ui/messages.slint:189 ui/messages.slint:197 ui/messages.slint:189 ui/messages.slint:197 ui/messages.slint:197 ui/messages.slint:142 ui/messages.slint:197 ui/messages.slint:189
+#: ui/messages.slint:142 ui/messages.slint:189 ui/messages.slint:197 ui/messages.slint:189 ui/messages.slint:197 ui/messages.slint:197 ui/messages.slint:142 ui/messages.slint:197 ui/messages.slint:189 ui/messages.slint:316
 msgctxt "Messages"
 msgid "The file could not be read: {}"
 msgstr "Die Datei konnte nicht gelesen werden: {}"
 
 #: ui/messages.slint:145 ui/messages.slint:192 ui/messages.slint:200
 #: ui/messages.slint:145 ui/messages.slint:192 ui/messages.slint:200 ui/messages.slint:192 ui/messages.slint:200
-#: ui/messages.slint:145 ui/messages.slint:192 ui/messages.slint:200 ui/messages.slint:192 ui/messages.slint:200
+#: ui/messages.slint:145 ui/messages.slint:192 ui/messages.slint:200 ui/messages.slint:192 ui/messages.slint:200 ui/messages.slint:200 ui/messages.slint:145
+#: ui/messages.slint:145 ui/messages.slint:192 ui/messages.slint:200 ui/messages.slint:192 ui/messages.slint:200 ui/messages.slint:200 ui/messages.slint:145 ui/messages.slint:200 ui/messages.slint:192
+#: ui/messages.slint:145 ui/messages.slint:192 ui/messages.slint:200 ui/messages.slint:192 ui/messages.slint:200 ui/messages.slint:200 ui/messages.slint:145 ui/messages.slint:200 ui/messages.slint:192 ui/messages.slint:319
 msgctxt "Messages"
 msgid "The file is not a Windows program."
 msgstr "Die Datei ist kein Windows-Programm."
 
 #: ui/messages.slint:148 ui/messages.slint:195 ui/messages.slint:203
 #: ui/messages.slint:148 ui/messages.slint:195 ui/messages.slint:203 ui/messages.slint:195 ui/messages.slint:203
-#: ui/messages.slint:148 ui/messages.slint:195 ui/messages.slint:203 ui/messages.slint:195 ui/messages.slint:203
+#: ui/messages.slint:148 ui/messages.slint:195 ui/messages.slint:203 ui/messages.slint:195 ui/messages.slint:203 ui/messages.slint:203 ui/messages.slint:148
+#: ui/messages.slint:148 ui/messages.slint:195 ui/messages.slint:203 ui/messages.slint:195 ui/messages.slint:203 ui/messages.slint:203 ui/messages.slint:148 ui/messages.slint:203 ui/messages.slint:195
+#: ui/messages.slint:148 ui/messages.slint:195 ui/messages.slint:203 ui/messages.slint:195 ui/messages.slint:203 ui/messages.slint:203 ui/messages.slint:148 ui/messages.slint:203 ui/messages.slint:195 ui/messages.slint:322
 msgctxt "Messages"
 msgid "Only the 64-bit client (Gw2-64.exe) is supported."
 msgstr "Nur der 64-Bit-Client (Gw2-64.exe) wird unterstützt."
 
 #: ui/messages.slint:150 ui/messages.slint:197 ui/messages.slint:205
 #: ui/messages.slint:150 ui/messages.slint:197 ui/messages.slint:205 ui/messages.slint:197 ui/messages.slint:205
-#: ui/messages.slint:150 ui/messages.slint:197 ui/messages.slint:205 ui/messages.slint:197 ui/messages.slint:205
+#: ui/messages.slint:150 ui/messages.slint:197 ui/messages.slint:205 ui/messages.slint:197 ui/messages.slint:205 ui/messages.slint:205 ui/messages.slint:150
+#: ui/messages.slint:150 ui/messages.slint:197 ui/messages.slint:205 ui/messages.slint:197 ui/messages.slint:205 ui/messages.slint:205 ui/messages.slint:150 ui/messages.slint:205 ui/messages.slint:197
+#: ui/messages.slint:150 ui/messages.slint:197 ui/messages.slint:205 ui/messages.slint:197 ui/messages.slint:205 ui/messages.slint:205 ui/messages.slint:150 ui/messages.slint:205 ui/messages.slint:197 ui/messages.slint:324
 msgctxt "Messages"
 msgid "The file is not the Guild Wars 2 client."
 msgstr "Die Datei ist nicht der Guild-Wars-2-Client."
 
 #: ui/account-card.slint:259 ui/account-card.slint:287
 #: ui/account-card.slint:259 ui/account-card.slint:287 ui/account-card.slint:287
-#: ui/account-card.slint:259 ui/account-card.slint:287 ui/account-card.slint:287
+#: ui/account-card.slint:259 ui/account-card.slint:287 ui/account-card.slint:287 ui/account-card.slint:259
+#: ui/account-card.slint:259 ui/account-card.slint:287 ui/account-card.slint:287 ui/account-card.slint:259 ui/account-card.slint:287
+#: ui/account-card.slint:259 ui/account-card.slint:287 ui/account-card.slint:287 ui/account-card.slint:259 ui/account-card.slint:287
 msgctxt "AccountCard"
 msgid "Companion app running"
 msgstr "Mitgestartetes Programm läuft"
 
 #: ui/account-card.slint:259 ui/account-card.slint:287
 #: ui/account-card.slint:259 ui/account-card.slint:287 ui/account-card.slint:287
-#: ui/account-card.slint:259 ui/account-card.slint:287 ui/account-card.slint:287
+#: ui/account-card.slint:259 ui/account-card.slint:287 ui/account-card.slint:287 ui/account-card.slint:259
+#: ui/account-card.slint:259 ui/account-card.slint:287 ui/account-card.slint:287 ui/account-card.slint:259 ui/account-card.slint:287
+#: ui/account-card.slint:259 ui/account-card.slint:287 ui/account-card.slint:287 ui/account-card.slint:259 ui/account-card.slint:287
 msgctxt "AccountCard"
 msgid "Companion apps start with it"
 msgstr "Mit Programmen, die mitstarten"
 
 #: ui/account-card.slint:341 ui/account-card.slint:348
 #: ui/account-card.slint:341 ui/account-card.slint:348 ui/account-card.slint:348
-#: ui/account-card.slint:341 ui/account-card.slint:348 ui/account-card.slint:348
+#: ui/account-card.slint:341 ui/account-card.slint:348 ui/account-card.slint:348 ui/account-card.slint:341
+#: ui/account-card.slint:341 ui/account-card.slint:348 ui/account-card.slint:348 ui/account-card.slint:341 ui/account-card.slint:348
+#: ui/account-card.slint:341 ui/account-card.slint:348 ui/account-card.slint:348 ui/account-card.slint:341 ui/account-card.slint:348
 msgctxt "AccountCard"
 msgid "Edit"
 msgstr "Bearbeiten"
 
 #: ui/account-card.slint:350 ui/account-card.slint:357
 #: ui/account-card.slint:350 ui/account-card.slint:357 ui/account-card.slint:357
-#: ui/account-card.slint:350 ui/account-card.slint:357 ui/account-card.slint:357
+#: ui/account-card.slint:350 ui/account-card.slint:357 ui/account-card.slint:357 ui/account-card.slint:350
+#: ui/account-card.slint:350 ui/account-card.slint:357 ui/account-card.slint:357 ui/account-card.slint:350 ui/account-card.slint:357
+#: ui/account-card.slint:350 ui/account-card.slint:357 ui/account-card.slint:357 ui/account-card.slint:350 ui/account-card.slint:357
 msgctxt "AccountCard"
 msgid "Duplicate"
 msgstr "Duplizieren"
 
 #: ui/account-card.slint:352 ui/account-card.slint:359
 #: ui/account-card.slint:352 ui/account-card.slint:359 ui/account-card.slint:359
-#: ui/account-card.slint:352 ui/account-card.slint:359 ui/account-card.slint:359
+#: ui/account-card.slint:352 ui/account-card.slint:359 ui/account-card.slint:359 ui/account-card.slint:352
+#: ui/account-card.slint:352 ui/account-card.slint:359 ui/account-card.slint:359 ui/account-card.slint:352 ui/account-card.slint:359
+#: ui/account-card.slint:352 ui/account-card.slint:359 ui/account-card.slint:359 ui/account-card.slint:352 ui/account-card.slint:359
 msgctxt "AccountCard"
 msgid "Ctrl+D"
 msgstr "Strg+D"
 
 #: ui/account-card.slint:359 ui/account-card.slint:366
 #: ui/account-card.slint:359 ui/account-card.slint:366 ui/account-card.slint:366
-#: ui/account-card.slint:359 ui/account-card.slint:366 ui/account-card.slint:366
+#: ui/account-card.slint:359 ui/account-card.slint:366 ui/account-card.slint:366 ui/account-card.slint:359
+#: ui/account-card.slint:359 ui/account-card.slint:366 ui/account-card.slint:366 ui/account-card.slint:359 ui/account-card.slint:366
+#: ui/account-card.slint:359 ui/account-card.slint:366 ui/account-card.slint:366 ui/account-card.slint:359 ui/account-card.slint:366
 msgctxt "AccountCard"
 msgid "Create desktop shortcut"
 msgstr "Desktop-Verknüpfung erstellen"
 
 #: ui/account-card.slint:367 ui/account-card.slint:374
 #: ui/account-card.slint:367 ui/account-card.slint:374 ui/account-card.slint:374
-#: ui/account-card.slint:367 ui/account-card.slint:374 ui/account-card.slint:374
+#: ui/account-card.slint:367 ui/account-card.slint:374 ui/account-card.slint:374 ui/account-card.slint:367
+#: ui/account-card.slint:367 ui/account-card.slint:374 ui/account-card.slint:374 ui/account-card.slint:367 ui/account-card.slint:374
+#: ui/account-card.slint:367 ui/account-card.slint:374 ui/account-card.slint:374 ui/account-card.slint:367 ui/account-card.slint:374
 msgctxt "AccountCard"
 msgid "Open profile folder"
 msgstr "Profilordner öffnen"
 
 #: ui/account-card.slint:382 ui/account-card.slint:389
 #: ui/account-card.slint:382 ui/account-card.slint:389 ui/account-card.slint:389
-#: ui/account-card.slint:382 ui/account-card.slint:389 ui/account-card.slint:389
+#: ui/account-card.slint:382 ui/account-card.slint:389 ui/account-card.slint:389 ui/account-card.slint:382
+#: ui/account-card.slint:382 ui/account-card.slint:389 ui/account-card.slint:389 ui/account-card.slint:382 ui/account-card.slint:389
+#: ui/account-card.slint:382 ui/account-card.slint:389 ui/account-card.slint:389 ui/account-card.slint:382 ui/account-card.slint:389
 msgctxt "AccountCard"
 msgid "Delete"
 msgstr "Löschen"
 
 #: ui/account-card.slint:384 ui/account-card.slint:391
 #: ui/account-card.slint:384 ui/account-card.slint:391 ui/account-card.slint:391
-#: ui/account-card.slint:384 ui/account-card.slint:391 ui/account-card.slint:391
+#: ui/account-card.slint:384 ui/account-card.slint:391 ui/account-card.slint:391 ui/account-card.slint:384
+#: ui/account-card.slint:384 ui/account-card.slint:391 ui/account-card.slint:391 ui/account-card.slint:384 ui/account-card.slint:391
+#: ui/account-card.slint:384 ui/account-card.slint:391 ui/account-card.slint:391 ui/account-card.slint:384 ui/account-card.slint:391
 msgctxt "AccountCard"
 msgid "Del"
 msgstr "Entf"
 
 #: ui/app.slint:108 ui/app.slint:124 ui/app.slint:140 ui/app.slint:92
 #: ui/app.slint:108 ui/app.slint:124 ui/app.slint:140 ui/app.slint:92 ui/app.slint:124 ui/app.slint:140 ui/app.slint:92
-#: ui/app.slint:108 ui/app.slint:124 ui/app.slint:140 ui/app.slint:92 ui/app.slint:124 ui/app.slint:140 ui/app.slint:92 ui/app.slint:97
+#: ui/app.slint:108 ui/app.slint:124 ui/app.slint:140 ui/app.slint:92 ui/app.slint:124 ui/app.slint:140 ui/app.slint:92 ui/app.slint:140 ui/app.slint:92 ui/app.slint:108
+#: ui/app.slint:108 ui/app.slint:124 ui/app.slint:140 ui/app.slint:92 ui/app.slint:124 ui/app.slint:140 ui/app.slint:92 ui/app.slint:140 ui/app.slint:92 ui/app.slint:108 ui/app.slint:140 ui/app.slint:92 ui/app.slint:124
+#: ui/app.slint:108 ui/app.slint:124 ui/app.slint:140 ui/app.slint:92 ui/app.slint:124 ui/app.slint:140 ui/app.slint:92 ui/app.slint:140 ui/app.slint:92 ui/app.slint:108 ui/app.slint:140 ui/app.slint:92 ui/app.slint:124 ui/app.slint:92 ui/app.slint:97 ui/app.slint:113
 msgctxt "ConfirmDelete"
 msgid "Delete „{}“?"
 msgstr "„{}“ löschen?"
 
 #: ui/app.slint:116 ui/app.slint:117 ui/app.slint:118 ui/app.slint:121
 #: ui/app.slint:116 ui/app.slint:117 ui/app.slint:118 ui/app.slint:121 ui/app.slint:117 ui/app.slint:118 ui/app.slint:121
+#: ui/app.slint:116 ui/app.slint:117 ui/app.slint:118 ui/app.slint:121 ui/app.slint:117 ui/app.slint:118 ui/app.slint:121 ui/app.slint:118 ui/app.slint:121
 msgctxt "ConfirmDelete"
 msgid ""
 "The account and its profile folder with the saved login are deleted for "
@@ -610,33 +736,41 @@ msgstr ""
 
 #: ui/app.slint:127 ui/app.slint:128 ui/app.slint:129 ui/app.slint:132
 #: ui/app.slint:127 ui/app.slint:128 ui/app.slint:129 ui/app.slint:132 ui/app.slint:128 ui/app.slint:129 ui/app.slint:132
+#: ui/app.slint:127 ui/app.slint:128 ui/app.slint:129 ui/app.slint:132 ui/app.slint:128 ui/app.slint:129 ui/app.slint:132 ui/app.slint:129 ui/app.slint:132
 msgctxt "ConfirmDelete"
 msgid "Cancel"
 msgstr "Abbrechen"
 
 #: ui/app.slint:133 ui/app.slint:134 ui/app.slint:135 ui/app.slint:138
 #: ui/app.slint:133 ui/app.slint:134 ui/app.slint:135 ui/app.slint:138 ui/app.slint:134 ui/app.slint:135 ui/app.slint:138
+#: ui/app.slint:133 ui/app.slint:134 ui/app.slint:135 ui/app.slint:138 ui/app.slint:134 ui/app.slint:135 ui/app.slint:138 ui/app.slint:135 ui/app.slint:138
 msgctxt "ConfirmDelete"
 msgid "Delete"
 msgstr "Löschen"
 
 #: ui/app.slint:144 ui/app.slint:145 ui/app.slint:146 ui/app.slint:176
 #: ui/app.slint:144 ui/app.slint:145 ui/app.slint:146 ui/app.slint:176 ui/app.slint:145 ui/app.slint:146 ui/app.slint:176
-#: ui/app.slint:144 ui/app.slint:145 ui/app.slint:146 ui/app.slint:176 ui/app.slint:145 ui/app.slint:146 ui/app.slint:176
+#: ui/app.slint:144 ui/app.slint:145 ui/app.slint:146 ui/app.slint:176 ui/app.slint:145 ui/app.slint:146 ui/app.slint:176 ui/app.slint:146 ui/app.slint:176 ui/app.slint:144
+#: ui/app.slint:144 ui/app.slint:145 ui/app.slint:146 ui/app.slint:176 ui/app.slint:145 ui/app.slint:146 ui/app.slint:176 ui/app.slint:146 ui/app.slint:176 ui/app.slint:144 ui/app.slint:146 ui/app.slint:176 ui/app.slint:145
+#: ui/app.slint:144 ui/app.slint:145 ui/app.slint:146 ui/app.slint:176 ui/app.slint:145 ui/app.slint:146 ui/app.slint:176 ui/app.slint:146 ui/app.slint:176 ui/app.slint:144 ui/app.slint:146 ui/app.slint:176 ui/app.slint:145 ui/app.slint:176 ui/app.slint:626
 msgctxt "MainWindow"
 msgid "Breakbar Launcher – Setup"
 msgstr "Breakbar Launcher – Einrichtung"
 
 #: ui/app.slint:376 ui/app.slint:378 ui/app.slint:380 ui/app.slint:400
 #: ui/app.slint:376 ui/app.slint:378 ui/app.slint:380 ui/app.slint:400 ui/app.slint:378 ui/app.slint:380 ui/app.slint:400
-#: ui/app.slint:376 ui/app.slint:378 ui/app.slint:380 ui/app.slint:400 ui/app.slint:378 ui/app.slint:380 ui/app.slint:400
+#: ui/app.slint:376 ui/app.slint:378 ui/app.slint:380 ui/app.slint:400 ui/app.slint:378 ui/app.slint:380 ui/app.slint:400 ui/app.slint:380 ui/app.slint:400 ui/app.slint:376
+#: ui/app.slint:376 ui/app.slint:378 ui/app.slint:380 ui/app.slint:400 ui/app.slint:378 ui/app.slint:380 ui/app.slint:400 ui/app.slint:380 ui/app.slint:400 ui/app.slint:376 ui/app.slint:380 ui/app.slint:400 ui/app.slint:378
+#: ui/app.slint:376 ui/app.slint:378 ui/app.slint:380 ui/app.slint:400 ui/app.slint:378 ui/app.slint:380 ui/app.slint:400 ui/app.slint:380 ui/app.slint:400 ui/app.slint:376 ui/app.slint:380 ui/app.slint:400 ui/app.slint:378 ui/app.slint:400 ui/app.slint:964
 msgctxt "MainWindow"
 msgid "POS {}/{}"
 msgstr "POS {}/{}"
 
 #: ui/app.slint:395 ui/app.slint:397 ui/app.slint:399 ui/app.slint:419
 #: ui/app.slint:395 ui/app.slint:397 ui/app.slint:399 ui/app.slint:419 ui/app.slint:397 ui/app.slint:399 ui/app.slint:419
-#: ui/app.slint:395 ui/app.slint:397 ui/app.slint:399 ui/app.slint:419 ui/app.slint:397 ui/app.slint:399 ui/app.slint:419
+#: ui/app.slint:395 ui/app.slint:397 ui/app.slint:399 ui/app.slint:419 ui/app.slint:397 ui/app.slint:399 ui/app.slint:419 ui/app.slint:399 ui/app.slint:419 ui/app.slint:395
+#: ui/app.slint:395 ui/app.slint:397 ui/app.slint:399 ui/app.slint:419 ui/app.slint:397 ui/app.slint:399 ui/app.slint:419 ui/app.slint:399 ui/app.slint:419 ui/app.slint:395 ui/app.slint:399 ui/app.slint:419 ui/app.slint:397
+#: ui/app.slint:395 ui/app.slint:397 ui/app.slint:399 ui/app.slint:419 ui/app.slint:397 ui/app.slint:399 ui/app.slint:419 ui/app.slint:399 ui/app.slint:419 ui/app.slint:395 ui/app.slint:399 ui/app.slint:419 ui/app.slint:397 ui/app.slint:419 ui/app.slint:983
 msgctxt "MainWindow"
 msgid "Drag to sort"
 msgstr "Ziehen zum Sortieren"
@@ -808,77 +942,98 @@ msgid "Save"
 msgstr "Speichern"
 
 #: ui/messages.slint:42 ui/messages.slint:44 ui/messages.slint:48
-#: ui/messages.slint:42 ui/messages.slint:44 ui/messages.slint:48
+#: ui/messages.slint:42 ui/messages.slint:44 ui/messages.slint:48 ui/messages.slint:44 ui/messages.slint:48
+#: ui/messages.slint:42 ui/messages.slint:44 ui/messages.slint:48 ui/messages.slint:44 ui/messages.slint:48
 msgctxt "Messages"
 msgid "„{}“ is already running."
 msgstr "„{}“ läuft bereits."
 
 #: ui/messages.slint:143 ui/messages.slint:151 ui/messages.slint:193
 #: ui/messages.slint:143 ui/messages.slint:151 ui/messages.slint:193 ui/messages.slint:151 ui/messages.slint:193
-#: ui/messages.slint:143 ui/messages.slint:151 ui/messages.slint:193 ui/messages.slint:151 ui/messages.slint:193
+#: ui/messages.slint:143 ui/messages.slint:151 ui/messages.slint:193 ui/messages.slint:151 ui/messages.slint:193 ui/messages.slint:193 ui/messages.slint:143
+#: ui/messages.slint:143 ui/messages.slint:151 ui/messages.slint:193 ui/messages.slint:151 ui/messages.slint:193 ui/messages.slint:193 ui/messages.slint:143 ui/messages.slint:193 ui/messages.slint:151
+#: ui/messages.slint:143 ui/messages.slint:151 ui/messages.slint:193 ui/messages.slint:151 ui/messages.slint:193 ui/messages.slint:193 ui/messages.slint:143 ui/messages.slint:193 ui/messages.slint:151 ui/messages.slint:262
 msgctxt "Messages"
 msgid "{} (copy)"
 msgstr "{} (Kopie)"
 
 #: ui/messages.slint:147 ui/messages.slint:155 ui/messages.slint:197
 #: ui/messages.slint:147 ui/messages.slint:155 ui/messages.slint:197 ui/messages.slint:155 ui/messages.slint:197
-#: ui/messages.slint:147 ui/messages.slint:155 ui/messages.slint:197 ui/messages.slint:155 ui/messages.slint:197
+#: ui/messages.slint:147 ui/messages.slint:155 ui/messages.slint:197 ui/messages.slint:155 ui/messages.slint:197 ui/messages.slint:197 ui/messages.slint:147
+#: ui/messages.slint:147 ui/messages.slint:155 ui/messages.slint:197 ui/messages.slint:155 ui/messages.slint:197 ui/messages.slint:197 ui/messages.slint:147 ui/messages.slint:197 ui/messages.slint:155
+#: ui/messages.slint:147 ui/messages.slint:155 ui/messages.slint:197 ui/messages.slint:155 ui/messages.slint:197 ui/messages.slint:197 ui/messages.slint:147 ui/messages.slint:197 ui/messages.slint:155 ui/messages.slint:266
 msgctxt "Messages"
 msgid "Desktop shortcut created"
 msgstr "Desktop-Verknüpfung erstellt"
 
 #: ui/messages.slint:151 ui/messages.slint:159 ui/messages.slint:201
 #: ui/messages.slint:151 ui/messages.slint:159 ui/messages.slint:201 ui/messages.slint:159 ui/messages.slint:201
-#: ui/messages.slint:151 ui/messages.slint:159 ui/messages.slint:201 ui/messages.slint:159 ui/messages.slint:201
+#: ui/messages.slint:151 ui/messages.slint:159 ui/messages.slint:201 ui/messages.slint:159 ui/messages.slint:201 ui/messages.slint:201 ui/messages.slint:151
+#: ui/messages.slint:151 ui/messages.slint:159 ui/messages.slint:201 ui/messages.slint:159 ui/messages.slint:201 ui/messages.slint:201 ui/messages.slint:151 ui/messages.slint:201 ui/messages.slint:159
+#: ui/messages.slint:151 ui/messages.slint:159 ui/messages.slint:201 ui/messages.slint:159 ui/messages.slint:201 ui/messages.slint:201 ui/messages.slint:151 ui/messages.slint:201 ui/messages.slint:159 ui/messages.slint:270
 msgctxt "Messages"
 msgid "„{}“ starts the account without opening the launcher."
 msgstr "„{}“ startet den Account, ohne den Launcher zu öffnen."
 
 #: ui/messages.slint:155 ui/messages.slint:163 ui/messages.slint:205
 #: ui/messages.slint:155 ui/messages.slint:163 ui/messages.slint:205 ui/messages.slint:163 ui/messages.slint:205
-#: ui/messages.slint:155 ui/messages.slint:163 ui/messages.slint:205 ui/messages.slint:163 ui/messages.slint:205
+#: ui/messages.slint:155 ui/messages.slint:163 ui/messages.slint:205 ui/messages.slint:163 ui/messages.slint:205 ui/messages.slint:205 ui/messages.slint:155
+#: ui/messages.slint:155 ui/messages.slint:163 ui/messages.slint:205 ui/messages.slint:163 ui/messages.slint:205 ui/messages.slint:205 ui/messages.slint:155 ui/messages.slint:205 ui/messages.slint:163
+#: ui/messages.slint:155 ui/messages.slint:163 ui/messages.slint:205 ui/messages.slint:163 ui/messages.slint:205 ui/messages.slint:205 ui/messages.slint:155 ui/messages.slint:205 ui/messages.slint:163 ui/messages.slint:274
 msgctxt "Messages"
 msgid "Shortcut could not be created"
 msgstr "Verknüpfung konnte nicht erstellt werden"
 
 #: ui/messages.slint:160 ui/messages.slint:168 ui/messages.slint:210
 #: ui/messages.slint:160 ui/messages.slint:168 ui/messages.slint:210 ui/messages.slint:168 ui/messages.slint:210
-#: ui/messages.slint:160 ui/messages.slint:168 ui/messages.slint:210 ui/messages.slint:168 ui/messages.slint:210
+#: ui/messages.slint:160 ui/messages.slint:168 ui/messages.slint:210 ui/messages.slint:168 ui/messages.slint:210 ui/messages.slint:210 ui/messages.slint:160
+#: ui/messages.slint:160 ui/messages.slint:168 ui/messages.slint:210 ui/messages.slint:168 ui/messages.slint:210 ui/messages.slint:210 ui/messages.slint:160 ui/messages.slint:210 ui/messages.slint:168
+#: ui/messages.slint:160 ui/messages.slint:168 ui/messages.slint:210 ui/messages.slint:168 ui/messages.slint:210 ui/messages.slint:210 ui/messages.slint:160 ui/messages.slint:210 ui/messages.slint:168 ui/messages.slint:279
 msgctxt "Messages"
 msgid "Start „{}“ with Breakbar"
 msgstr "„{}“ mit Breakbar starten"
 
 #: ui/messages.slint:164 ui/messages.slint:172 ui/messages.slint:214
 #: ui/messages.slint:164 ui/messages.slint:172 ui/messages.slint:214 ui/messages.slint:172 ui/messages.slint:214
-#: ui/messages.slint:164 ui/messages.slint:172 ui/messages.slint:214 ui/messages.slint:172 ui/messages.slint:214
+#: ui/messages.slint:164 ui/messages.slint:172 ui/messages.slint:214 ui/messages.slint:172 ui/messages.slint:214 ui/messages.slint:214 ui/messages.slint:164
+#: ui/messages.slint:164 ui/messages.slint:172 ui/messages.slint:214 ui/messages.slint:172 ui/messages.slint:214 ui/messages.slint:214 ui/messages.slint:164 ui/messages.slint:214 ui/messages.slint:172
+#: ui/messages.slint:164 ui/messages.slint:172 ui/messages.slint:214 ui/messages.slint:172 ui/messages.slint:214 ui/messages.slint:214 ui/messages.slint:164 ui/messages.slint:214 ui/messages.slint:172 ui/messages.slint:283
 msgctxt "Messages"
 msgid "„{}“ deleted"
 msgstr "„{}“ gelöscht"
 
 #: ui/messages.slint:168 ui/messages.slint:176 ui/messages.slint:218
 #: ui/messages.slint:168 ui/messages.slint:176 ui/messages.slint:218 ui/messages.slint:176 ui/messages.slint:218
-#: ui/messages.slint:168 ui/messages.slint:176 ui/messages.slint:218 ui/messages.slint:176 ui/messages.slint:218
+#: ui/messages.slint:168 ui/messages.slint:176 ui/messages.slint:218 ui/messages.slint:176 ui/messages.slint:218 ui/messages.slint:218 ui/messages.slint:168
+#: ui/messages.slint:168 ui/messages.slint:176 ui/messages.slint:218 ui/messages.slint:176 ui/messages.slint:218 ui/messages.slint:218 ui/messages.slint:168 ui/messages.slint:218 ui/messages.slint:176
+#: ui/messages.slint:168 ui/messages.slint:176 ui/messages.slint:218 ui/messages.slint:176 ui/messages.slint:218 ui/messages.slint:218 ui/messages.slint:168 ui/messages.slint:218 ui/messages.slint:176 ui/messages.slint:287
 msgctxt "Messages"
 msgid "Profile folder could not be deleted"
 msgstr "Profilordner konnte nicht gelöscht werden"
 
 #: ui/messages.slint:172 ui/messages.slint:180 ui/messages.slint:222
 #: ui/messages.slint:172 ui/messages.slint:180 ui/messages.slint:222 ui/messages.slint:180 ui/messages.slint:222
-#: ui/messages.slint:172 ui/messages.slint:180 ui/messages.slint:222 ui/messages.slint:180 ui/messages.slint:222
+#: ui/messages.slint:172 ui/messages.slint:180 ui/messages.slint:222 ui/messages.slint:180 ui/messages.slint:222 ui/messages.slint:222 ui/messages.slint:172
+#: ui/messages.slint:172 ui/messages.slint:180 ui/messages.slint:222 ui/messages.slint:180 ui/messages.slint:222 ui/messages.slint:222 ui/messages.slint:172 ui/messages.slint:222 ui/messages.slint:180
+#: ui/messages.slint:172 ui/messages.slint:180 ui/messages.slint:222 ui/messages.slint:180 ui/messages.slint:222 ui/messages.slint:222 ui/messages.slint:172 ui/messages.slint:222 ui/messages.slint:180 ui/messages.slint:291
 msgctxt "Messages"
 msgid "„{}“ is running. Stop it before deleting it."
 msgstr "„{}“ läuft. Beende den Client, bevor du den Account löschst."
 
 #: ui/messages.slint:176 ui/messages.slint:184 ui/messages.slint:226
 #: ui/messages.slint:176 ui/messages.slint:184 ui/messages.slint:226 ui/messages.slint:184 ui/messages.slint:226
-#: ui/messages.slint:176 ui/messages.slint:184 ui/messages.slint:226 ui/messages.slint:184 ui/messages.slint:226
+#: ui/messages.slint:176 ui/messages.slint:184 ui/messages.slint:226 ui/messages.slint:184 ui/messages.slint:226 ui/messages.slint:226 ui/messages.slint:176
+#: ui/messages.slint:176 ui/messages.slint:184 ui/messages.slint:226 ui/messages.slint:184 ui/messages.slint:226 ui/messages.slint:226 ui/messages.slint:176 ui/messages.slint:226 ui/messages.slint:184
+#: ui/messages.slint:176 ui/messages.slint:184 ui/messages.slint:226 ui/messages.slint:184 ui/messages.slint:226 ui/messages.slint:226 ui/messages.slint:176 ui/messages.slint:226 ui/messages.slint:184 ui/messages.slint:303
 msgctxt "Messages"
 msgid "Profile folder could not be opened"
 msgstr "Profilordner konnte nicht geöffnet werden"
 
 #: ui/messages.slint:181 ui/messages.slint:189 ui/messages.slint:231
 #: ui/messages.slint:181 ui/messages.slint:189 ui/messages.slint:231 ui/messages.slint:189 ui/messages.slint:231
-#: ui/messages.slint:181 ui/messages.slint:189 ui/messages.slint:231 ui/messages.slint:189 ui/messages.slint:231
+#: ui/messages.slint:181 ui/messages.slint:189 ui/messages.slint:231 ui/messages.slint:189 ui/messages.slint:231 ui/messages.slint:231 ui/messages.slint:181
+#: ui/messages.slint:181 ui/messages.slint:189 ui/messages.slint:231 ui/messages.slint:189 ui/messages.slint:231 ui/messages.slint:231 ui/messages.slint:181 ui/messages.slint:231 ui/messages.slint:189
+#: ui/messages.slint:181 ui/messages.slint:189 ui/messages.slint:231 ui/messages.slint:189 ui/messages.slint:231 ui/messages.slint:231 ui/messages.slint:181 ui/messages.slint:231 ui/messages.slint:189 ui/messages.slint:308
 msgctxt "Messages"
 msgid "There is no account „{}“."
 msgstr "Es gibt keinen Account „{}“."
@@ -998,209 +1153,288 @@ msgstr "Account anlegen"
 
 #: ui/app.slint:308 ui/app.slint:310 ui/app.slint:312 ui/app.slint:314
 #: ui/app.slint:308 ui/app.slint:310 ui/app.slint:312 ui/app.slint:314 ui/app.slint:310 ui/app.slint:312 ui/app.slint:314
-#: ui/app.slint:308 ui/app.slint:310 ui/app.slint:312 ui/app.slint:314 ui/app.slint:310 ui/app.slint:312 ui/app.slint:314
+#: ui/app.slint:308 ui/app.slint:310 ui/app.slint:312 ui/app.slint:314 ui/app.slint:310 ui/app.slint:312 ui/app.slint:314 ui/app.slint:312 ui/app.slint:314 ui/app.slint:308
+#: ui/app.slint:308 ui/app.slint:310 ui/app.slint:312 ui/app.slint:314 ui/app.slint:310 ui/app.slint:312 ui/app.slint:314 ui/app.slint:312 ui/app.slint:314 ui/app.slint:308 ui/app.slint:312 ui/app.slint:314 ui/app.slint:310
+#: ui/app.slint:308 ui/app.slint:310 ui/app.slint:312 ui/app.slint:314 ui/app.slint:310 ui/app.slint:312 ui/app.slint:314 ui/app.slint:312 ui/app.slint:314 ui/app.slint:308 ui/app.slint:312 ui/app.slint:314 ui/app.slint:310 ui/app.slint:314 ui/app.slint:865
 msgctxt "MainWindow"
 msgid "Settings"
 msgstr "Einstellungen"
 
 #: ui/settings.slint:110 ui/settings.slint:113 ui/settings.slint:116
 #: ui/settings.slint:110 ui/settings.slint:113 ui/settings.slint:116 ui/settings.slint:113 ui/settings.slint:116
+#: ui/settings.slint:110 ui/settings.slint:113 ui/settings.slint:116 ui/settings.slint:113 ui/settings.slint:116 ui/settings.slint:116
 msgctxt "PathField"
 msgid "Browse…"
 msgstr "Durchsuchen…"
 
 #: ui/settings.slint:157 ui/settings.slint:227 ui/settings.slint:94
 #: ui/settings.slint:157 ui/settings.slint:227 ui/settings.slint:94 ui/settings.slint:227 ui/settings.slint:94
-#: ui/settings.slint:157 ui/settings.slint:227 ui/settings.slint:94 ui/settings.slint:227 ui/settings.slint:94
+#: ui/settings.slint:157 ui/settings.slint:227 ui/settings.slint:94 ui/settings.slint:227 ui/settings.slint:94 ui/settings.slint:94 ui/settings.slint:157
+#: ui/settings.slint:157 ui/settings.slint:227 ui/settings.slint:94 ui/settings.slint:227 ui/settings.slint:94 ui/settings.slint:94 ui/settings.slint:157 ui/settings.slint:94 ui/settings.slint:227
+#: ui/settings.slint:157 ui/settings.slint:227 ui/settings.slint:94 ui/settings.slint:227 ui/settings.slint:94 ui/settings.slint:94 ui/settings.slint:157 ui/settings.slint:94 ui/settings.slint:227 ui/settings.slint:233
 msgctxt "SettingsPage"
 msgid "Back"
 msgstr "Zurück"
 
 #: ui/settings.slint:100 ui/settings.slint:161 ui/settings.slint:231
 #: ui/settings.slint:100 ui/settings.slint:161 ui/settings.slint:231 ui/settings.slint:161 ui/settings.slint:231
-#: ui/settings.slint:100 ui/settings.slint:161 ui/settings.slint:231 ui/settings.slint:161 ui/settings.slint:231
+#: ui/settings.slint:100 ui/settings.slint:161 ui/settings.slint:231 ui/settings.slint:161 ui/settings.slint:231 ui/settings.slint:231 ui/settings.slint:100
+#: ui/settings.slint:100 ui/settings.slint:161 ui/settings.slint:231 ui/settings.slint:161 ui/settings.slint:231 ui/settings.slint:231 ui/settings.slint:100 ui/settings.slint:231 ui/settings.slint:161
+#: ui/settings.slint:100 ui/settings.slint:161 ui/settings.slint:231 ui/settings.slint:161 ui/settings.slint:231 ui/settings.slint:231 ui/settings.slint:100 ui/settings.slint:231 ui/settings.slint:161 ui/settings.slint:237
 msgctxt "SettingsPage"
 msgid "Settings"
 msgstr "Einstellungen"
 
 #: ui/settings.slint:120 ui/settings.slint:122 ui/settings.slint:183
 #: ui/settings.slint:120 ui/settings.slint:122 ui/settings.slint:183 ui/settings.slint:122 ui/settings.slint:183
-#: ui/settings.slint:120 ui/settings.slint:122 ui/settings.slint:183 ui/settings.slint:122 ui/settings.slint:183
+#: ui/settings.slint:120 ui/settings.slint:122 ui/settings.slint:183 ui/settings.slint:122 ui/settings.slint:183 ui/settings.slint:183 ui/settings.slint:120
+#: ui/settings.slint:120 ui/settings.slint:122 ui/settings.slint:183 ui/settings.slint:122 ui/settings.slint:183 ui/settings.slint:183 ui/settings.slint:120 ui/settings.slint:183 ui/settings.slint:122
+#: ui/settings.slint:120 ui/settings.slint:122 ui/settings.slint:183 ui/settings.slint:122 ui/settings.slint:183 ui/settings.slint:183 ui/settings.slint:120 ui/settings.slint:183 ui/settings.slint:122 ui/settings.slint:259
 msgctxt "SettingsPage"
 msgid "// PATHS"
 msgstr "// PFADE"
 
 #: ui/settings.slint:126 ui/settings.slint:128 ui/settings.slint:189
 #: ui/settings.slint:126 ui/settings.slint:128 ui/settings.slint:189 ui/settings.slint:128 ui/settings.slint:189
-#: ui/settings.slint:126 ui/settings.slint:128 ui/settings.slint:189 ui/settings.slint:128 ui/settings.slint:189
+#: ui/settings.slint:126 ui/settings.slint:128 ui/settings.slint:189 ui/settings.slint:128 ui/settings.slint:189 ui/settings.slint:189 ui/settings.slint:126
+#: ui/settings.slint:126 ui/settings.slint:128 ui/settings.slint:189 ui/settings.slint:128 ui/settings.slint:189 ui/settings.slint:189 ui/settings.slint:126 ui/settings.slint:189 ui/settings.slint:128
+#: ui/settings.slint:126 ui/settings.slint:128 ui/settings.slint:189 ui/settings.slint:128 ui/settings.slint:189 ui/settings.slint:189 ui/settings.slint:126 ui/settings.slint:189 ui/settings.slint:128 ui/settings.slint:265
 msgctxt "SettingsPage"
 msgid "Gw2-64.exe found"
 msgstr "Gw2-64.exe gefunden"
 
 #: ui/settings.slint:127 ui/settings.slint:129 ui/settings.slint:135
 #: ui/settings.slint:127 ui/settings.slint:129 ui/settings.slint:135 ui/settings.slint:129 ui/settings.slint:135
-#: ui/settings.slint:127 ui/settings.slint:129 ui/settings.slint:135 ui/settings.slint:129 ui/settings.slint:135 ui/settings.slint:260 ui/settings.slint:127
-#: ui/settings.slint:127 ui/settings.slint:129 ui/settings.slint:135 ui/settings.slint:129 ui/settings.slint:135 ui/settings.slint:260 ui/settings.slint:127 ui/settings.slint:135 ui/settings.slint:254
-#: ui/settings.slint:127 ui/settings.slint:129 ui/settings.slint:135 ui/settings.slint:129 ui/settings.slint:135 ui/settings.slint:260 ui/settings.slint:127 ui/settings.slint:135 ui/settings.slint:254 ui/settings.slint:268 ui/settings.slint:266
-#: ui/settings.slint:127 ui/settings.slint:129 ui/settings.slint:135 ui/settings.slint:129 ui/settings.slint:135 ui/settings.slint:260 ui/settings.slint:127 ui/settings.slint:135 ui/settings.slint:254 ui/settings.slint:268 ui/settings.slint:266 ui/settings.slint:129 ui/settings.slint:135
-#: ui/settings.slint:127 ui/settings.slint:129 ui/settings.slint:135 ui/settings.slint:129 ui/settings.slint:135 ui/settings.slint:260 ui/settings.slint:127 ui/settings.slint:135 ui/settings.slint:254 ui/settings.slint:268 ui/settings.slint:266 ui/settings.slint:129 ui/settings.slint:135 ui/settings.slint:260 ui/settings.slint:268
-#: ui/settings.slint:127 ui/settings.slint:129 ui/settings.slint:135 ui/settings.slint:129 ui/settings.slint:135 ui/settings.slint:260 ui/settings.slint:127 ui/settings.slint:135 ui/settings.slint:254 ui/settings.slint:268 ui/settings.slint:266 ui/settings.slint:129 ui/settings.slint:135 ui/settings.slint:260 ui/settings.slint:268 ui/settings.slint:463 ui/settings.slint:274
+#: ui/settings.slint:127 ui/settings.slint:129 ui/settings.slint:135 ui/settings.slint:129 ui/settings.slint:135 ui/settings.slint:135 ui/settings.slint:127
+#: ui/settings.slint:127 ui/settings.slint:129 ui/settings.slint:135 ui/settings.slint:129 ui/settings.slint:135 ui/settings.slint:135 ui/settings.slint:127 ui/settings.slint:135 ui/settings.slint:129
+#: ui/settings.slint:127 ui/settings.slint:129 ui/settings.slint:135 ui/settings.slint:129 ui/settings.slint:135 ui/settings.slint:135 ui/settings.slint:127 ui/settings.slint:135 ui/settings.slint:129 ui/settings.slint:260 ui/settings.slint:127
+#: ui/settings.slint:127 ui/settings.slint:129 ui/settings.slint:135 ui/settings.slint:129 ui/settings.slint:135 ui/settings.slint:135 ui/settings.slint:127 ui/settings.slint:135 ui/settings.slint:129 ui/settings.slint:260 ui/settings.slint:127 ui/settings.slint:129 ui/settings.slint:135
+#: ui/settings.slint:127 ui/settings.slint:129 ui/settings.slint:135 ui/settings.slint:129 ui/settings.slint:135 ui/settings.slint:135 ui/settings.slint:127 ui/settings.slint:135 ui/settings.slint:129 ui/settings.slint:260 ui/settings.slint:127 ui/settings.slint:129 ui/settings.slint:135 ui/settings.slint:135 ui/settings.slint:260
+#: ui/settings.slint:127 ui/settings.slint:129 ui/settings.slint:135 ui/settings.slint:129 ui/settings.slint:135 ui/settings.slint:135 ui/settings.slint:127 ui/settings.slint:135 ui/settings.slint:129 ui/settings.slint:260 ui/settings.slint:127 ui/settings.slint:129 ui/settings.slint:135 ui/settings.slint:135 ui/settings.slint:260 ui/settings.slint:135 ui/settings.slint:254
+#: ui/settings.slint:127 ui/settings.slint:129 ui/settings.slint:135 ui/settings.slint:129 ui/settings.slint:135 ui/settings.slint:135 ui/settings.slint:127 ui/settings.slint:135 ui/settings.slint:129 ui/settings.slint:260 ui/settings.slint:127 ui/settings.slint:129 ui/settings.slint:135 ui/settings.slint:135 ui/settings.slint:260 ui/settings.slint:135 ui/settings.slint:254 ui/settings.slint:129 ui/settings.slint:135
+#: ui/settings.slint:127 ui/settings.slint:129 ui/settings.slint:135 ui/settings.slint:129 ui/settings.slint:135 ui/settings.slint:135 ui/settings.slint:127 ui/settings.slint:135 ui/settings.slint:129 ui/settings.slint:260 ui/settings.slint:127 ui/settings.slint:129 ui/settings.slint:135 ui/settings.slint:135 ui/settings.slint:260 ui/settings.slint:135 ui/settings.slint:254 ui/settings.slint:129 ui/settings.slint:135 ui/settings.slint:135 ui/settings.slint:260
+#: ui/settings.slint:127 ui/settings.slint:129 ui/settings.slint:135 ui/settings.slint:129 ui/settings.slint:135 ui/settings.slint:135 ui/settings.slint:127 ui/settings.slint:135 ui/settings.slint:129 ui/settings.slint:260 ui/settings.slint:127 ui/settings.slint:129 ui/settings.slint:135 ui/settings.slint:135 ui/settings.slint:260 ui/settings.slint:135 ui/settings.slint:254 ui/settings.slint:129 ui/settings.slint:135 ui/settings.slint:135 ui/settings.slint:260 ui/settings.slint:135 ui/settings.slint:254
+#: ui/settings.slint:127 ui/settings.slint:129 ui/settings.slint:135 ui/settings.slint:129 ui/settings.slint:135 ui/settings.slint:135 ui/settings.slint:127 ui/settings.slint:135 ui/settings.slint:129 ui/settings.slint:260 ui/settings.slint:127 ui/settings.slint:129 ui/settings.slint:135 ui/settings.slint:135 ui/settings.slint:260 ui/settings.slint:135 ui/settings.slint:254 ui/settings.slint:129 ui/settings.slint:135 ui/settings.slint:135 ui/settings.slint:260 ui/settings.slint:135 ui/settings.slint:254 ui/settings.slint:266 ui/settings.slint:127
+#: ui/settings.slint:127 ui/settings.slint:129 ui/settings.slint:135 ui/settings.slint:129 ui/settings.slint:135 ui/settings.slint:135 ui/settings.slint:127 ui/settings.slint:135 ui/settings.slint:129 ui/settings.slint:260 ui/settings.slint:127 ui/settings.slint:129 ui/settings.slint:135 ui/settings.slint:135 ui/settings.slint:260 ui/settings.slint:135 ui/settings.slint:254 ui/settings.slint:129 ui/settings.slint:135 ui/settings.slint:135 ui/settings.slint:260 ui/settings.slint:135 ui/settings.slint:254 ui/settings.slint:266 ui/settings.slint:127 ui/settings.slint:135 ui/settings.slint:129
+#: ui/settings.slint:127 ui/settings.slint:129 ui/settings.slint:135 ui/settings.slint:129 ui/settings.slint:135 ui/settings.slint:135 ui/settings.slint:127 ui/settings.slint:135 ui/settings.slint:129 ui/settings.slint:260 ui/settings.slint:127 ui/settings.slint:129 ui/settings.slint:135 ui/settings.slint:135 ui/settings.slint:260 ui/settings.slint:135 ui/settings.slint:254 ui/settings.slint:129 ui/settings.slint:135 ui/settings.slint:135 ui/settings.slint:260 ui/settings.slint:135 ui/settings.slint:254 ui/settings.slint:266 ui/settings.slint:127 ui/settings.slint:135 ui/settings.slint:129 ui/settings.slint:260 ui/settings.slint:127
+#: ui/settings.slint:127 ui/settings.slint:129 ui/settings.slint:135 ui/settings.slint:129 ui/settings.slint:135 ui/settings.slint:135 ui/settings.slint:127 ui/settings.slint:135 ui/settings.slint:129 ui/settings.slint:260 ui/settings.slint:127 ui/settings.slint:129 ui/settings.slint:135 ui/settings.slint:135 ui/settings.slint:260 ui/settings.slint:135 ui/settings.slint:254 ui/settings.slint:129 ui/settings.slint:135 ui/settings.slint:135 ui/settings.slint:260 ui/settings.slint:135 ui/settings.slint:254 ui/settings.slint:266 ui/settings.slint:127 ui/settings.slint:135 ui/settings.slint:129 ui/settings.slint:260 ui/settings.slint:127 ui/settings.slint:254 ui/settings.slint:268
+#: ui/settings.slint:127 ui/settings.slint:129 ui/settings.slint:135 ui/settings.slint:129 ui/settings.slint:135 ui/settings.slint:135 ui/settings.slint:127 ui/settings.slint:135 ui/settings.slint:129 ui/settings.slint:260 ui/settings.slint:127 ui/settings.slint:129 ui/settings.slint:135 ui/settings.slint:135 ui/settings.slint:260 ui/settings.slint:135 ui/settings.slint:254 ui/settings.slint:129 ui/settings.slint:135 ui/settings.slint:135 ui/settings.slint:260 ui/settings.slint:135 ui/settings.slint:254 ui/settings.slint:266 ui/settings.slint:127 ui/settings.slint:135 ui/settings.slint:129 ui/settings.slint:260 ui/settings.slint:127 ui/settings.slint:254 ui/settings.slint:268 ui/settings.slint:129 ui/settings.slint:135
+#: ui/settings.slint:127 ui/settings.slint:129 ui/settings.slint:135 ui/settings.slint:129 ui/settings.slint:135 ui/settings.slint:135 ui/settings.slint:127 ui/settings.slint:135 ui/settings.slint:129 ui/settings.slint:260 ui/settings.slint:127 ui/settings.slint:129 ui/settings.slint:135 ui/settings.slint:135 ui/settings.slint:260 ui/settings.slint:135 ui/settings.slint:254 ui/settings.slint:129 ui/settings.slint:135 ui/settings.slint:135 ui/settings.slint:260 ui/settings.slint:135 ui/settings.slint:254 ui/settings.slint:266 ui/settings.slint:127 ui/settings.slint:135 ui/settings.slint:129 ui/settings.slint:260 ui/settings.slint:127 ui/settings.slint:254 ui/settings.slint:268 ui/settings.slint:129 ui/settings.slint:135 ui/settings.slint:129 ui/settings.slint:135
+#: ui/settings.slint:127 ui/settings.slint:129 ui/settings.slint:135 ui/settings.slint:129 ui/settings.slint:135 ui/settings.slint:135 ui/settings.slint:127 ui/settings.slint:135 ui/settings.slint:129 ui/settings.slint:260 ui/settings.slint:127 ui/settings.slint:129 ui/settings.slint:135 ui/settings.slint:135 ui/settings.slint:260 ui/settings.slint:135 ui/settings.slint:254 ui/settings.slint:129 ui/settings.slint:135 ui/settings.slint:135 ui/settings.slint:260 ui/settings.slint:135 ui/settings.slint:254 ui/settings.slint:266 ui/settings.slint:127 ui/settings.slint:135 ui/settings.slint:129 ui/settings.slint:260 ui/settings.slint:127 ui/settings.slint:254 ui/settings.slint:268 ui/settings.slint:129 ui/settings.slint:135 ui/settings.slint:129 ui/settings.slint:135 ui/settings.slint:135 ui/settings.slint:260
+#: ui/settings.slint:127 ui/settings.slint:129 ui/settings.slint:135 ui/settings.slint:129 ui/settings.slint:135 ui/settings.slint:135 ui/settings.slint:127 ui/settings.slint:135 ui/settings.slint:129 ui/settings.slint:260 ui/settings.slint:127 ui/settings.slint:129 ui/settings.slint:135 ui/settings.slint:135 ui/settings.slint:260 ui/settings.slint:135 ui/settings.slint:254 ui/settings.slint:129 ui/settings.slint:135 ui/settings.slint:135 ui/settings.slint:260 ui/settings.slint:135 ui/settings.slint:254 ui/settings.slint:266 ui/settings.slint:127 ui/settings.slint:135 ui/settings.slint:129 ui/settings.slint:260 ui/settings.slint:127 ui/settings.slint:254 ui/settings.slint:268 ui/settings.slint:129 ui/settings.slint:135 ui/settings.slint:129 ui/settings.slint:135 ui/settings.slint:135 ui/settings.slint:260 ui/settings.slint:135 ui/settings.slint:254
+#: ui/settings.slint:127 ui/settings.slint:129 ui/settings.slint:135 ui/settings.slint:129 ui/settings.slint:135 ui/settings.slint:135 ui/settings.slint:127 ui/settings.slint:135 ui/settings.slint:129 ui/settings.slint:260 ui/settings.slint:127 ui/settings.slint:129 ui/settings.slint:135 ui/settings.slint:135 ui/settings.slint:260 ui/settings.slint:135 ui/settings.slint:254 ui/settings.slint:129 ui/settings.slint:135 ui/settings.slint:135 ui/settings.slint:260 ui/settings.slint:135 ui/settings.slint:254 ui/settings.slint:266 ui/settings.slint:127 ui/settings.slint:135 ui/settings.slint:129 ui/settings.slint:260 ui/settings.slint:127 ui/settings.slint:254 ui/settings.slint:268 ui/settings.slint:129 ui/settings.slint:135 ui/settings.slint:129 ui/settings.slint:135 ui/settings.slint:135 ui/settings.slint:260 ui/settings.slint:135 ui/settings.slint:254 ui/settings.slint:266 ui/settings.slint:129
+#: ui/settings.slint:127 ui/settings.slint:129 ui/settings.slint:135 ui/settings.slint:129 ui/settings.slint:135 ui/settings.slint:135 ui/settings.slint:127 ui/settings.slint:135 ui/settings.slint:129 ui/settings.slint:260 ui/settings.slint:127 ui/settings.slint:129 ui/settings.slint:135 ui/settings.slint:135 ui/settings.slint:260 ui/settings.slint:135 ui/settings.slint:254 ui/settings.slint:129 ui/settings.slint:135 ui/settings.slint:135 ui/settings.slint:260 ui/settings.slint:135 ui/settings.slint:254 ui/settings.slint:266 ui/settings.slint:127 ui/settings.slint:135 ui/settings.slint:129 ui/settings.slint:260 ui/settings.slint:127 ui/settings.slint:254 ui/settings.slint:268 ui/settings.slint:129 ui/settings.slint:135 ui/settings.slint:129 ui/settings.slint:135 ui/settings.slint:135 ui/settings.slint:260 ui/settings.slint:135 ui/settings.slint:254 ui/settings.slint:266 ui/settings.slint:129 ui/settings.slint:260 ui/settings.slint:268
+#: ui/settings.slint:127 ui/settings.slint:129 ui/settings.slint:135 ui/settings.slint:129 ui/settings.slint:135 ui/settings.slint:135 ui/settings.slint:127 ui/settings.slint:135 ui/settings.slint:129 ui/settings.slint:260 ui/settings.slint:127 ui/settings.slint:129 ui/settings.slint:135 ui/settings.slint:135 ui/settings.slint:260 ui/settings.slint:135 ui/settings.slint:254 ui/settings.slint:129 ui/settings.slint:135 ui/settings.slint:135 ui/settings.slint:260 ui/settings.slint:135 ui/settings.slint:254 ui/settings.slint:266 ui/settings.slint:127 ui/settings.slint:135 ui/settings.slint:129 ui/settings.slint:260 ui/settings.slint:127 ui/settings.slint:254 ui/settings.slint:268 ui/settings.slint:129 ui/settings.slint:135 ui/settings.slint:129 ui/settings.slint:135 ui/settings.slint:135 ui/settings.slint:260 ui/settings.slint:135 ui/settings.slint:254 ui/settings.slint:266 ui/settings.slint:129 ui/settings.slint:260 ui/settings.slint:268 ui/settings.slint:129 ui/settings.slint:135
+#: ui/settings.slint:127 ui/settings.slint:129 ui/settings.slint:135 ui/settings.slint:129 ui/settings.slint:135 ui/settings.slint:135 ui/settings.slint:127 ui/settings.slint:135 ui/settings.slint:129 ui/settings.slint:260 ui/settings.slint:127 ui/settings.slint:129 ui/settings.slint:135 ui/settings.slint:135 ui/settings.slint:260 ui/settings.slint:135 ui/settings.slint:254 ui/settings.slint:129 ui/settings.slint:135 ui/settings.slint:135 ui/settings.slint:260 ui/settings.slint:135 ui/settings.slint:254 ui/settings.slint:266 ui/settings.slint:127 ui/settings.slint:135 ui/settings.slint:129 ui/settings.slint:260 ui/settings.slint:127 ui/settings.slint:254 ui/settings.slint:268 ui/settings.slint:129 ui/settings.slint:135 ui/settings.slint:129 ui/settings.slint:135 ui/settings.slint:135 ui/settings.slint:260 ui/settings.slint:135 ui/settings.slint:254 ui/settings.slint:266 ui/settings.slint:129 ui/settings.slint:260 ui/settings.slint:268 ui/settings.slint:129 ui/settings.slint:135 ui/settings.slint:135 ui/settings.slint:260
+#: ui/settings.slint:127 ui/settings.slint:129 ui/settings.slint:135 ui/settings.slint:129 ui/settings.slint:135 ui/settings.slint:135 ui/settings.slint:127 ui/settings.slint:135 ui/settings.slint:129 ui/settings.slint:260 ui/settings.slint:127 ui/settings.slint:129 ui/settings.slint:135 ui/settings.slint:135 ui/settings.slint:260 ui/settings.slint:135 ui/settings.slint:254 ui/settings.slint:129 ui/settings.slint:135 ui/settings.slint:135 ui/settings.slint:260 ui/settings.slint:135 ui/settings.slint:254 ui/settings.slint:266 ui/settings.slint:127 ui/settings.slint:135 ui/settings.slint:129 ui/settings.slint:260 ui/settings.slint:127 ui/settings.slint:254 ui/settings.slint:268 ui/settings.slint:129 ui/settings.slint:135 ui/settings.slint:129 ui/settings.slint:135 ui/settings.slint:135 ui/settings.slint:260 ui/settings.slint:135 ui/settings.slint:254 ui/settings.slint:266 ui/settings.slint:129 ui/settings.slint:260 ui/settings.slint:268 ui/settings.slint:129 ui/settings.slint:135 ui/settings.slint:135 ui/settings.slint:260 ui/settings.slint:135 ui/settings.slint:254
+#: ui/settings.slint:127 ui/settings.slint:129 ui/settings.slint:135 ui/settings.slint:129 ui/settings.slint:135 ui/settings.slint:135 ui/settings.slint:127 ui/settings.slint:135 ui/settings.slint:129 ui/settings.slint:260 ui/settings.slint:127 ui/settings.slint:129 ui/settings.slint:135 ui/settings.slint:135 ui/settings.slint:260 ui/settings.slint:135 ui/settings.slint:254 ui/settings.slint:129 ui/settings.slint:135 ui/settings.slint:135 ui/settings.slint:260 ui/settings.slint:135 ui/settings.slint:254 ui/settings.slint:266 ui/settings.slint:127 ui/settings.slint:135 ui/settings.slint:129 ui/settings.slint:260 ui/settings.slint:127 ui/settings.slint:254 ui/settings.slint:268 ui/settings.slint:129 ui/settings.slint:135 ui/settings.slint:129 ui/settings.slint:135 ui/settings.slint:135 ui/settings.slint:260 ui/settings.slint:135 ui/settings.slint:254 ui/settings.slint:266 ui/settings.slint:129 ui/settings.slint:260 ui/settings.slint:268 ui/settings.slint:129 ui/settings.slint:135 ui/settings.slint:135 ui/settings.slint:260 ui/settings.slint:135 ui/settings.slint:254 ui/settings.slint:266 ui/settings.slint:129
+#: ui/settings.slint:127 ui/settings.slint:129 ui/settings.slint:135 ui/settings.slint:129 ui/settings.slint:135 ui/settings.slint:135 ui/settings.slint:127 ui/settings.slint:135 ui/settings.slint:129 ui/settings.slint:260 ui/settings.slint:127 ui/settings.slint:129 ui/settings.slint:135 ui/settings.slint:135 ui/settings.slint:260 ui/settings.slint:135 ui/settings.slint:254 ui/settings.slint:129 ui/settings.slint:135 ui/settings.slint:135 ui/settings.slint:260 ui/settings.slint:135 ui/settings.slint:254 ui/settings.slint:266 ui/settings.slint:127 ui/settings.slint:135 ui/settings.slint:129 ui/settings.slint:260 ui/settings.slint:127 ui/settings.slint:254 ui/settings.slint:268 ui/settings.slint:129 ui/settings.slint:135 ui/settings.slint:129 ui/settings.slint:135 ui/settings.slint:135 ui/settings.slint:260 ui/settings.slint:135 ui/settings.slint:254 ui/settings.slint:266 ui/settings.slint:129 ui/settings.slint:260 ui/settings.slint:268 ui/settings.slint:129 ui/settings.slint:135 ui/settings.slint:135 ui/settings.slint:260 ui/settings.slint:135 ui/settings.slint:254 ui/settings.slint:266 ui/settings.slint:129 ui/settings.slint:260 ui/settings.slint:268
+#: ui/settings.slint:127 ui/settings.slint:129 ui/settings.slint:135 ui/settings.slint:129 ui/settings.slint:135 ui/settings.slint:135 ui/settings.slint:127 ui/settings.slint:135 ui/settings.slint:129 ui/settings.slint:260 ui/settings.slint:127 ui/settings.slint:129 ui/settings.slint:135 ui/settings.slint:135 ui/settings.slint:260 ui/settings.slint:135 ui/settings.slint:254 ui/settings.slint:129 ui/settings.slint:135 ui/settings.slint:135 ui/settings.slint:260 ui/settings.slint:135 ui/settings.slint:254 ui/settings.slint:266 ui/settings.slint:127 ui/settings.slint:135 ui/settings.slint:129 ui/settings.slint:260 ui/settings.slint:127 ui/settings.slint:254 ui/settings.slint:268 ui/settings.slint:129 ui/settings.slint:135 ui/settings.slint:129 ui/settings.slint:135 ui/settings.slint:135 ui/settings.slint:260 ui/settings.slint:135 ui/settings.slint:254 ui/settings.slint:266 ui/settings.slint:129 ui/settings.slint:260 ui/settings.slint:268 ui/settings.slint:129 ui/settings.slint:135 ui/settings.slint:135 ui/settings.slint:260 ui/settings.slint:135 ui/settings.slint:254 ui/settings.slint:266 ui/settings.slint:129 ui/settings.slint:260 ui/settings.slint:268 ui/settings.slint:274
 msgctxt "SettingsPage"
 msgid "File not found. Check the path."
 msgstr "Datei nicht gefunden. Prüfe den Pfad."
 
 #: ui/settings.slint:134 ui/settings.slint:136 ui/settings.slint:197
 #: ui/settings.slint:134 ui/settings.slint:136 ui/settings.slint:197 ui/settings.slint:136 ui/settings.slint:197
-#: ui/settings.slint:134 ui/settings.slint:136 ui/settings.slint:197 ui/settings.slint:136 ui/settings.slint:197
+#: ui/settings.slint:134 ui/settings.slint:136 ui/settings.slint:197 ui/settings.slint:136 ui/settings.slint:197 ui/settings.slint:197 ui/settings.slint:134
+#: ui/settings.slint:134 ui/settings.slint:136 ui/settings.slint:197 ui/settings.slint:136 ui/settings.slint:197 ui/settings.slint:197 ui/settings.slint:134 ui/settings.slint:197 ui/settings.slint:136
+#: ui/settings.slint:134 ui/settings.slint:136 ui/settings.slint:197 ui/settings.slint:136 ui/settings.slint:197 ui/settings.slint:197 ui/settings.slint:134 ui/settings.slint:197 ui/settings.slint:136 ui/settings.slint:273
 msgctxt "SettingsPage"
 msgid "Blish HUD.exe found"
 msgstr "Blish HUD.exe gefunden"
 
 #: ui/messages.slint:126 ui/messages.slint:128 ui/messages.slint:133
 #: ui/messages.slint:126 ui/messages.slint:128 ui/messages.slint:133 ui/messages.slint:128 ui/messages.slint:133
-#: ui/messages.slint:126 ui/messages.slint:128 ui/messages.slint:133 ui/messages.slint:128 ui/messages.slint:133
+#: ui/messages.slint:126 ui/messages.slint:128 ui/messages.slint:133 ui/messages.slint:128 ui/messages.slint:133 ui/messages.slint:133 ui/messages.slint:126
+#: ui/messages.slint:126 ui/messages.slint:128 ui/messages.slint:133 ui/messages.slint:128 ui/messages.slint:133 ui/messages.slint:133 ui/messages.slint:126 ui/messages.slint:133 ui/messages.slint:128
+#: ui/messages.slint:126 ui/messages.slint:128 ui/messages.slint:133 ui/messages.slint:128 ui/messages.slint:133 ui/messages.slint:133 ui/messages.slint:126 ui/messages.slint:133 ui/messages.slint:128 ui/messages.slint:169
 msgctxt "Messages"
 msgid "Could not change the Windows startup setting"
 msgstr "Windows-Start-Einstellung konnte nicht geändert werden"
 
 #: ui/messages.slint:130 ui/messages.slint:132 ui/messages.slint:137
 #: ui/messages.slint:130 ui/messages.slint:132 ui/messages.slint:137 ui/messages.slint:132 ui/messages.slint:137
-#: ui/messages.slint:130 ui/messages.slint:132 ui/messages.slint:137 ui/messages.slint:132 ui/messages.slint:137
+#: ui/messages.slint:130 ui/messages.slint:132 ui/messages.slint:137 ui/messages.slint:132 ui/messages.slint:137 ui/messages.slint:137 ui/messages.slint:130
+#: ui/messages.slint:130 ui/messages.slint:132 ui/messages.slint:137 ui/messages.slint:132 ui/messages.slint:137 ui/messages.slint:137 ui/messages.slint:130 ui/messages.slint:137 ui/messages.slint:132
+#: ui/messages.slint:130 ui/messages.slint:132 ui/messages.slint:137 ui/messages.slint:132 ui/messages.slint:137 ui/messages.slint:137 ui/messages.slint:130 ui/messages.slint:137 ui/messages.slint:132 ui/messages.slint:173
 msgctxt "Messages"
 msgid "{}"
 msgstr "{}"
 
 #: ui/settings.slint:142 ui/settings.slint:203 ui/settings.slint:234
 #: ui/settings.slint:142 ui/settings.slint:203 ui/settings.slint:234 ui/settings.slint:203 ui/settings.slint:234
-#: ui/settings.slint:142 ui/settings.slint:203 ui/settings.slint:234 ui/settings.slint:203 ui/settings.slint:234
+#: ui/settings.slint:142 ui/settings.slint:203 ui/settings.slint:234 ui/settings.slint:203 ui/settings.slint:234 ui/settings.slint:234 ui/settings.slint:142
+#: ui/settings.slint:142 ui/settings.slint:203 ui/settings.slint:234 ui/settings.slint:203 ui/settings.slint:234 ui/settings.slint:234 ui/settings.slint:142 ui/settings.slint:234 ui/settings.slint:203
+#: ui/settings.slint:142 ui/settings.slint:203 ui/settings.slint:234 ui/settings.slint:203 ui/settings.slint:234 ui/settings.slint:234 ui/settings.slint:142 ui/settings.slint:234 ui/settings.slint:203 ui/settings.slint:337
 msgctxt "SettingsPage"
 msgid "// BEHAVIOR"
 msgstr "// VERHALTEN"
 
 #: ui/settings.slint:150 ui/settings.slint:164 ui/settings.slint:239
 #: ui/settings.slint:150 ui/settings.slint:164 ui/settings.slint:239 ui/settings.slint:164 ui/settings.slint:239
-#: ui/settings.slint:150 ui/settings.slint:164 ui/settings.slint:239 ui/settings.slint:164 ui/settings.slint:239 ui/settings.slint:341 ui/settings.slint:150
-#: ui/settings.slint:150 ui/settings.slint:164 ui/settings.slint:239 ui/settings.slint:164 ui/settings.slint:239 ui/settings.slint:341 ui/settings.slint:150 ui/settings.slint:239 ui/settings.slint:335
-#: ui/settings.slint:150 ui/settings.slint:164 ui/settings.slint:239 ui/settings.slint:164 ui/settings.slint:239 ui/settings.slint:341 ui/settings.slint:150 ui/settings.slint:239 ui/settings.slint:335 ui/settings.slint:373 ui/settings.slint:387
+#: ui/settings.slint:150 ui/settings.slint:164 ui/settings.slint:239 ui/settings.slint:164 ui/settings.slint:239 ui/settings.slint:239 ui/settings.slint:150
+#: ui/settings.slint:150 ui/settings.slint:164 ui/settings.slint:239 ui/settings.slint:164 ui/settings.slint:239 ui/settings.slint:239 ui/settings.slint:150 ui/settings.slint:239 ui/settings.slint:164
+#: ui/settings.slint:150 ui/settings.slint:164 ui/settings.slint:239 ui/settings.slint:164 ui/settings.slint:239 ui/settings.slint:239 ui/settings.slint:150 ui/settings.slint:239 ui/settings.slint:164 ui/settings.slint:341 ui/settings.slint:150
+#: ui/settings.slint:150 ui/settings.slint:164 ui/settings.slint:239 ui/settings.slint:164 ui/settings.slint:239 ui/settings.slint:239 ui/settings.slint:150 ui/settings.slint:239 ui/settings.slint:164 ui/settings.slint:341 ui/settings.slint:150 ui/settings.slint:164 ui/settings.slint:239
+#: ui/settings.slint:150 ui/settings.slint:164 ui/settings.slint:239 ui/settings.slint:164 ui/settings.slint:239 ui/settings.slint:239 ui/settings.slint:150 ui/settings.slint:239 ui/settings.slint:164 ui/settings.slint:341 ui/settings.slint:150 ui/settings.slint:164 ui/settings.slint:239 ui/settings.slint:239 ui/settings.slint:341
+#: ui/settings.slint:150 ui/settings.slint:164 ui/settings.slint:239 ui/settings.slint:164 ui/settings.slint:239 ui/settings.slint:239 ui/settings.slint:150 ui/settings.slint:239 ui/settings.slint:164 ui/settings.slint:341 ui/settings.slint:150 ui/settings.slint:164 ui/settings.slint:239 ui/settings.slint:239 ui/settings.slint:341 ui/settings.slint:239 ui/settings.slint:335
+#: ui/settings.slint:150 ui/settings.slint:164 ui/settings.slint:239 ui/settings.slint:164 ui/settings.slint:239 ui/settings.slint:239 ui/settings.slint:150 ui/settings.slint:239 ui/settings.slint:164 ui/settings.slint:341 ui/settings.slint:150 ui/settings.slint:164 ui/settings.slint:239 ui/settings.slint:239 ui/settings.slint:341 ui/settings.slint:239 ui/settings.slint:335 ui/settings.slint:164 ui/settings.slint:239
+#: ui/settings.slint:150 ui/settings.slint:164 ui/settings.slint:239 ui/settings.slint:164 ui/settings.slint:239 ui/settings.slint:239 ui/settings.slint:150 ui/settings.slint:239 ui/settings.slint:164 ui/settings.slint:341 ui/settings.slint:150 ui/settings.slint:164 ui/settings.slint:239 ui/settings.slint:239 ui/settings.slint:341 ui/settings.slint:239 ui/settings.slint:335 ui/settings.slint:164 ui/settings.slint:239 ui/settings.slint:239 ui/settings.slint:341
+#: ui/settings.slint:150 ui/settings.slint:164 ui/settings.slint:239 ui/settings.slint:164 ui/settings.slint:239 ui/settings.slint:239 ui/settings.slint:150 ui/settings.slint:239 ui/settings.slint:164 ui/settings.slint:341 ui/settings.slint:150 ui/settings.slint:164 ui/settings.slint:239 ui/settings.slint:239 ui/settings.slint:341 ui/settings.slint:239 ui/settings.slint:335 ui/settings.slint:164 ui/settings.slint:239 ui/settings.slint:239 ui/settings.slint:341 ui/settings.slint:239 ui/settings.slint:335
+#: ui/settings.slint:150 ui/settings.slint:164 ui/settings.slint:239 ui/settings.slint:164 ui/settings.slint:239 ui/settings.slint:239 ui/settings.slint:150 ui/settings.slint:239 ui/settings.slint:164 ui/settings.slint:341 ui/settings.slint:150 ui/settings.slint:164 ui/settings.slint:239 ui/settings.slint:239 ui/settings.slint:341 ui/settings.slint:239 ui/settings.slint:335 ui/settings.slint:164 ui/settings.slint:239 ui/settings.slint:239 ui/settings.slint:341 ui/settings.slint:239 ui/settings.slint:335 ui/settings.slint:387
 msgctxt "SettingsPage"
 msgid "Start with Windows"
 msgstr "Mit Windows starten"
 
 #: ui/settings.slint:155 ui/settings.slint:244 ui/settings.slint:275
 #: ui/settings.slint:155 ui/settings.slint:244 ui/settings.slint:275 ui/settings.slint:244 ui/settings.slint:275
-#: ui/settings.slint:155 ui/settings.slint:244 ui/settings.slint:275 ui/settings.slint:244 ui/settings.slint:275
+#: ui/settings.slint:155 ui/settings.slint:244 ui/settings.slint:275 ui/settings.slint:244 ui/settings.slint:275 ui/settings.slint:275 ui/settings.slint:155
+#: ui/settings.slint:155 ui/settings.slint:244 ui/settings.slint:275 ui/settings.slint:244 ui/settings.slint:275 ui/settings.slint:275 ui/settings.slint:155 ui/settings.slint:275 ui/settings.slint:244
+#: ui/settings.slint:155 ui/settings.slint:244 ui/settings.slint:275 ui/settings.slint:244 ui/settings.slint:275 ui/settings.slint:275 ui/settings.slint:155 ui/settings.slint:275 ui/settings.slint:244 ui/settings.slint:378
 msgctxt "SettingsPage"
 msgid "Opens the launcher when you sign in."
 msgstr "Öffnet den Launcher bei der Anmeldung."
 
 #: ui/messages.slint:137 ui/messages.slint:142 ui/messages.slint:149
 #: ui/messages.slint:137 ui/messages.slint:142 ui/messages.slint:149 ui/messages.slint:142 ui/messages.slint:149
-#: ui/messages.slint:137 ui/messages.slint:142 ui/messages.slint:149 ui/messages.slint:142 ui/messages.slint:149
+#: ui/messages.slint:137 ui/messages.slint:142 ui/messages.slint:149 ui/messages.slint:142 ui/messages.slint:149 ui/messages.slint:149 ui/messages.slint:137
+#: ui/messages.slint:137 ui/messages.slint:142 ui/messages.slint:149 ui/messages.slint:142 ui/messages.slint:149 ui/messages.slint:149 ui/messages.slint:137 ui/messages.slint:149 ui/messages.slint:142
+#: ui/messages.slint:137 ui/messages.slint:142 ui/messages.slint:149 ui/messages.slint:142 ui/messages.slint:149 ui/messages.slint:149 ui/messages.slint:137 ui/messages.slint:149 ui/messages.slint:142 ui/messages.slint:178
 msgctxt "Messages"
 msgid "Launch all ({})"
 msgstr "Alle starten ({})"
 
 #: ui/messages.slint:143 ui/messages.slint:148 ui/messages.slint:155
 #: ui/messages.slint:143 ui/messages.slint:148 ui/messages.slint:155 ui/messages.slint:148 ui/messages.slint:155
-#: ui/messages.slint:143 ui/messages.slint:148 ui/messages.slint:155 ui/messages.slint:148 ui/messages.slint:155
+#: ui/messages.slint:143 ui/messages.slint:148 ui/messages.slint:155 ui/messages.slint:148 ui/messages.slint:155 ui/messages.slint:155 ui/messages.slint:143
+#: ui/messages.slint:143 ui/messages.slint:148 ui/messages.slint:155 ui/messages.slint:148 ui/messages.slint:155 ui/messages.slint:155 ui/messages.slint:143 ui/messages.slint:155 ui/messages.slint:148
+#: ui/messages.slint:143 ui/messages.slint:148 ui/messages.slint:155 ui/messages.slint:148 ui/messages.slint:155 ui/messages.slint:155 ui/messages.slint:143 ui/messages.slint:155 ui/messages.slint:148 ui/messages.slint:184
 msgctxt "Messages"
 msgid "{} · Login required"
 msgstr "{} · Login nötig"
 
 #: ui/messages.slint:146 ui/messages.slint:151 ui/messages.slint:158
 #: ui/messages.slint:146 ui/messages.slint:151 ui/messages.slint:158 ui/messages.slint:151 ui/messages.slint:158
-#: ui/messages.slint:146 ui/messages.slint:151 ui/messages.slint:158 ui/messages.slint:151 ui/messages.slint:158
+#: ui/messages.slint:146 ui/messages.slint:151 ui/messages.slint:158 ui/messages.slint:151 ui/messages.slint:158 ui/messages.slint:158 ui/messages.slint:146
+#: ui/messages.slint:146 ui/messages.slint:151 ui/messages.slint:158 ui/messages.slint:151 ui/messages.slint:158 ui/messages.slint:158 ui/messages.slint:146 ui/messages.slint:158 ui/messages.slint:151
+#: ui/messages.slint:146 ui/messages.slint:151 ui/messages.slint:158 ui/messages.slint:151 ui/messages.slint:158 ui/messages.slint:158 ui/messages.slint:146 ui/messages.slint:158 ui/messages.slint:151 ui/messages.slint:187
 msgctxt "Messages"
 msgid "{} · Starting…"
 msgstr "{} · Startet…"
 
 #: ui/messages.slint:149 ui/messages.slint:154 ui/messages.slint:161
 #: ui/messages.slint:149 ui/messages.slint:154 ui/messages.slint:161 ui/messages.slint:154 ui/messages.slint:161
-#: ui/messages.slint:149 ui/messages.slint:154 ui/messages.slint:161 ui/messages.slint:154 ui/messages.slint:161
+#: ui/messages.slint:149 ui/messages.slint:154 ui/messages.slint:161 ui/messages.slint:154 ui/messages.slint:161 ui/messages.slint:161 ui/messages.slint:149
+#: ui/messages.slint:149 ui/messages.slint:154 ui/messages.slint:161 ui/messages.slint:154 ui/messages.slint:161 ui/messages.slint:161 ui/messages.slint:149 ui/messages.slint:161 ui/messages.slint:154
+#: ui/messages.slint:149 ui/messages.slint:154 ui/messages.slint:161 ui/messages.slint:154 ui/messages.slint:161 ui/messages.slint:161 ui/messages.slint:149 ui/messages.slint:161 ui/messages.slint:154 ui/messages.slint:190
 msgctxt "Messages"
 msgid "{} · Running"
 msgstr "{} · Läuft"
 
 #: ui/messages.slint:152 ui/messages.slint:157 ui/messages.slint:164
 #: ui/messages.slint:152 ui/messages.slint:157 ui/messages.slint:164 ui/messages.slint:157 ui/messages.slint:164
-#: ui/messages.slint:152 ui/messages.slint:157 ui/messages.slint:164 ui/messages.slint:157 ui/messages.slint:164
+#: ui/messages.slint:152 ui/messages.slint:157 ui/messages.slint:164 ui/messages.slint:157 ui/messages.slint:164 ui/messages.slint:164 ui/messages.slint:152
+#: ui/messages.slint:152 ui/messages.slint:157 ui/messages.slint:164 ui/messages.slint:157 ui/messages.slint:164 ui/messages.slint:164 ui/messages.slint:152 ui/messages.slint:164 ui/messages.slint:157
+#: ui/messages.slint:152 ui/messages.slint:157 ui/messages.slint:164 ui/messages.slint:157 ui/messages.slint:164 ui/messages.slint:164 ui/messages.slint:152 ui/messages.slint:164 ui/messages.slint:157 ui/messages.slint:193
 msgctxt "Messages"
 msgid "{} · Stopping…"
 msgstr "{} · Stoppt…"
 
 #: ui/messages.slint:155 ui/messages.slint:160 ui/messages.slint:167
 #: ui/messages.slint:155 ui/messages.slint:160 ui/messages.slint:167 ui/messages.slint:160 ui/messages.slint:167
-#: ui/messages.slint:155 ui/messages.slint:160 ui/messages.slint:167 ui/messages.slint:160 ui/messages.slint:167
+#: ui/messages.slint:155 ui/messages.slint:160 ui/messages.slint:167 ui/messages.slint:160 ui/messages.slint:167 ui/messages.slint:167 ui/messages.slint:155
+#: ui/messages.slint:155 ui/messages.slint:160 ui/messages.slint:167 ui/messages.slint:160 ui/messages.slint:167 ui/messages.slint:167 ui/messages.slint:155 ui/messages.slint:167 ui/messages.slint:160
+#: ui/messages.slint:155 ui/messages.slint:160 ui/messages.slint:167 ui/messages.slint:160 ui/messages.slint:167 ui/messages.slint:167 ui/messages.slint:155 ui/messages.slint:167 ui/messages.slint:160 ui/messages.slint:196
 msgctxt "Messages"
 msgid "{} · Locked"
 msgstr "{} · Gesperrt"
 
 #: ui/messages.slint:158 ui/messages.slint:163 ui/messages.slint:170
 #: ui/messages.slint:158 ui/messages.slint:163 ui/messages.slint:170 ui/messages.slint:163 ui/messages.slint:170
-#: ui/messages.slint:158 ui/messages.slint:163 ui/messages.slint:170 ui/messages.slint:163 ui/messages.slint:170
+#: ui/messages.slint:158 ui/messages.slint:163 ui/messages.slint:170 ui/messages.slint:163 ui/messages.slint:170 ui/messages.slint:170 ui/messages.slint:158
+#: ui/messages.slint:158 ui/messages.slint:163 ui/messages.slint:170 ui/messages.slint:163 ui/messages.slint:170 ui/messages.slint:170 ui/messages.slint:158 ui/messages.slint:170 ui/messages.slint:163
+#: ui/messages.slint:158 ui/messages.slint:163 ui/messages.slint:170 ui/messages.slint:163 ui/messages.slint:170 ui/messages.slint:170 ui/messages.slint:158 ui/messages.slint:170 ui/messages.slint:163 ui/messages.slint:199
 msgctxt "Messages"
 msgid "{} · Error"
 msgstr "{} · Fehler"
 
 #: ui/messages.slint:160 ui/messages.slint:165 ui/messages.slint:172
 #: ui/messages.slint:160 ui/messages.slint:165 ui/messages.slint:172 ui/messages.slint:165 ui/messages.slint:172
-#: ui/messages.slint:160 ui/messages.slint:165 ui/messages.slint:172 ui/messages.slint:165 ui/messages.slint:172
+#: ui/messages.slint:160 ui/messages.slint:165 ui/messages.slint:172 ui/messages.slint:165 ui/messages.slint:172 ui/messages.slint:172 ui/messages.slint:160
+#: ui/messages.slint:160 ui/messages.slint:165 ui/messages.slint:172 ui/messages.slint:165 ui/messages.slint:172 ui/messages.slint:172 ui/messages.slint:160 ui/messages.slint:172 ui/messages.slint:165
+#: ui/messages.slint:160 ui/messages.slint:165 ui/messages.slint:172 ui/messages.slint:165 ui/messages.slint:172 ui/messages.slint:172 ui/messages.slint:160 ui/messages.slint:172 ui/messages.slint:165 ui/messages.slint:201
 msgctxt "Messages"
 msgid "{} · Ready"
 msgstr "{} · Bereit"
 
 #: ui/messages.slint:164 ui/messages.slint:169 ui/messages.slint:176
 #: ui/messages.slint:164 ui/messages.slint:169 ui/messages.slint:176 ui/messages.slint:169 ui/messages.slint:176
-#: ui/messages.slint:164 ui/messages.slint:169 ui/messages.slint:176 ui/messages.slint:169 ui/messages.slint:176
+#: ui/messages.slint:164 ui/messages.slint:169 ui/messages.slint:176 ui/messages.slint:169 ui/messages.slint:176 ui/messages.slint:176 ui/messages.slint:164
+#: ui/messages.slint:164 ui/messages.slint:169 ui/messages.slint:176 ui/messages.slint:169 ui/messages.slint:176 ui/messages.slint:176 ui/messages.slint:164 ui/messages.slint:176 ui/messages.slint:169
+#: ui/messages.slint:164 ui/messages.slint:169 ui/messages.slint:176 ui/messages.slint:169 ui/messages.slint:176 ui/messages.slint:176 ui/messages.slint:164 ui/messages.slint:176 ui/messages.slint:169 ui/messages.slint:205
 msgctxt "Messages"
 msgid "Open window"
 msgstr "Fenster öffnen"
 
 #: ui/messages.slint:168 ui/messages.slint:173 ui/messages.slint:180
 #: ui/messages.slint:168 ui/messages.slint:173 ui/messages.slint:180 ui/messages.slint:173 ui/messages.slint:180
-#: ui/messages.slint:168 ui/messages.slint:173 ui/messages.slint:180 ui/messages.slint:173 ui/messages.slint:180
+#: ui/messages.slint:168 ui/messages.slint:173 ui/messages.slint:180 ui/messages.slint:173 ui/messages.slint:180 ui/messages.slint:180 ui/messages.slint:168
+#: ui/messages.slint:168 ui/messages.slint:173 ui/messages.slint:180 ui/messages.slint:173 ui/messages.slint:180 ui/messages.slint:180 ui/messages.slint:168 ui/messages.slint:180 ui/messages.slint:173
+#: ui/messages.slint:168 ui/messages.slint:173 ui/messages.slint:180 ui/messages.slint:173 ui/messages.slint:180 ui/messages.slint:180 ui/messages.slint:168 ui/messages.slint:180 ui/messages.slint:173 ui/messages.slint:209
 msgctxt "Messages"
 msgid "Quit"
 msgstr "Beenden"
 
 #: ui/messages.slint:172 ui/messages.slint:177 ui/messages.slint:184
 #: ui/messages.slint:172 ui/messages.slint:177 ui/messages.slint:184 ui/messages.slint:177 ui/messages.slint:184
-#: ui/messages.slint:172 ui/messages.slint:177 ui/messages.slint:184 ui/messages.slint:177 ui/messages.slint:184
+#: ui/messages.slint:172 ui/messages.slint:177 ui/messages.slint:184 ui/messages.slint:177 ui/messages.slint:184 ui/messages.slint:184 ui/messages.slint:172
+#: ui/messages.slint:172 ui/messages.slint:177 ui/messages.slint:184 ui/messages.slint:177 ui/messages.slint:184 ui/messages.slint:184 ui/messages.slint:172 ui/messages.slint:184 ui/messages.slint:177
+#: ui/messages.slint:172 ui/messages.slint:177 ui/messages.slint:184 ui/messages.slint:177 ui/messages.slint:184 ui/messages.slint:184 ui/messages.slint:172 ui/messages.slint:184 ui/messages.slint:177 ui/messages.slint:213
 msgctxt "Messages"
 msgid "Tray icon could not be created"
 msgstr "Tray-Symbol konnte nicht erstellt werden"
 
 #: ui/settings.slint:208 ui/settings.slint:239 ui/settings.slint:240
 #: ui/settings.slint:208 ui/settings.slint:239 ui/settings.slint:240 ui/settings.slint:239 ui/settings.slint:240
-#: ui/settings.slint:208 ui/settings.slint:239 ui/settings.slint:240 ui/settings.slint:239 ui/settings.slint:240
+#: ui/settings.slint:208 ui/settings.slint:239 ui/settings.slint:240 ui/settings.slint:239 ui/settings.slint:240 ui/settings.slint:240 ui/settings.slint:208
+#: ui/settings.slint:208 ui/settings.slint:239 ui/settings.slint:240 ui/settings.slint:239 ui/settings.slint:240 ui/settings.slint:240 ui/settings.slint:208 ui/settings.slint:240 ui/settings.slint:239
+#: ui/settings.slint:208 ui/settings.slint:239 ui/settings.slint:240 ui/settings.slint:239 ui/settings.slint:240 ui/settings.slint:240 ui/settings.slint:208 ui/settings.slint:240 ui/settings.slint:239 ui/settings.slint:342
 msgctxt "SettingsPage"
 msgid "After starting an account"
 msgstr "Nach dem Start"
 
 #: ui/settings.slint:214 ui/settings.slint:245 ui/settings.slint:246
 #: ui/settings.slint:214 ui/settings.slint:245 ui/settings.slint:246 ui/settings.slint:245 ui/settings.slint:246
-#: ui/settings.slint:214 ui/settings.slint:245 ui/settings.slint:246 ui/settings.slint:245 ui/settings.slint:246
+#: ui/settings.slint:214 ui/settings.slint:245 ui/settings.slint:246 ui/settings.slint:245 ui/settings.slint:246 ui/settings.slint:246 ui/settings.slint:214
+#: ui/settings.slint:214 ui/settings.slint:245 ui/settings.slint:246 ui/settings.slint:245 ui/settings.slint:246 ui/settings.slint:246 ui/settings.slint:214 ui/settings.slint:246 ui/settings.slint:245
+#: ui/settings.slint:214 ui/settings.slint:245 ui/settings.slint:246 ui/settings.slint:245 ui/settings.slint:246 ui/settings.slint:246 ui/settings.slint:214 ui/settings.slint:246 ui/settings.slint:245 ui/settings.slint:348
 msgctxt "SettingsPage"
 msgid "Keep the window open"
 msgstr "Fenster geöffnet lassen"
 
 #: ui/settings.slint:219 ui/settings.slint:250 ui/settings.slint:251
 #: ui/settings.slint:219 ui/settings.slint:250 ui/settings.slint:251 ui/settings.slint:250 ui/settings.slint:251
-#: ui/settings.slint:219 ui/settings.slint:250 ui/settings.slint:251 ui/settings.slint:250 ui/settings.slint:251
+#: ui/settings.slint:219 ui/settings.slint:250 ui/settings.slint:251 ui/settings.slint:250 ui/settings.slint:251 ui/settings.slint:251 ui/settings.slint:219
+#: ui/settings.slint:219 ui/settings.slint:250 ui/settings.slint:251 ui/settings.slint:250 ui/settings.slint:251 ui/settings.slint:251 ui/settings.slint:219 ui/settings.slint:251 ui/settings.slint:250
+#: ui/settings.slint:219 ui/settings.slint:250 ui/settings.slint:251 ui/settings.slint:250 ui/settings.slint:251 ui/settings.slint:251 ui/settings.slint:219 ui/settings.slint:251 ui/settings.slint:250 ui/settings.slint:353
 msgctxt "SettingsPage"
 msgid "Minimize to the tray"
 msgstr "In den Tray minimieren"
 
 #: ui/settings.slint:224 ui/settings.slint:255 ui/settings.slint:256
 #: ui/settings.slint:224 ui/settings.slint:255 ui/settings.slint:256 ui/settings.slint:255 ui/settings.slint:256
-#: ui/settings.slint:224 ui/settings.slint:255 ui/settings.slint:256 ui/settings.slint:255 ui/settings.slint:256
+#: ui/settings.slint:224 ui/settings.slint:255 ui/settings.slint:256 ui/settings.slint:255 ui/settings.slint:256 ui/settings.slint:256 ui/settings.slint:224
+#: ui/settings.slint:224 ui/settings.slint:255 ui/settings.slint:256 ui/settings.slint:255 ui/settings.slint:256 ui/settings.slint:256 ui/settings.slint:224 ui/settings.slint:256 ui/settings.slint:255
+#: ui/settings.slint:224 ui/settings.slint:255 ui/settings.slint:256 ui/settings.slint:255 ui/settings.slint:256 ui/settings.slint:256 ui/settings.slint:224 ui/settings.slint:256 ui/settings.slint:255 ui/settings.slint:358
 msgctxt "SettingsPage"
 msgid "Close the launcher"
 msgstr "Launcher schließen"
 
 #: ui/messages.slint:176 ui/messages.slint:184 ui/messages.slint:188
 #: ui/messages.slint:176 ui/messages.slint:184 ui/messages.slint:188 ui/messages.slint:184 ui/messages.slint:188
-#: ui/messages.slint:176 ui/messages.slint:184 ui/messages.slint:188 ui/messages.slint:184 ui/messages.slint:188
+#: ui/messages.slint:176 ui/messages.slint:184 ui/messages.slint:188 ui/messages.slint:184 ui/messages.slint:188 ui/messages.slint:188 ui/messages.slint:176
+#: ui/messages.slint:176 ui/messages.slint:184 ui/messages.slint:188 ui/messages.slint:184 ui/messages.slint:188 ui/messages.slint:188 ui/messages.slint:176 ui/messages.slint:188 ui/messages.slint:184
+#: ui/messages.slint:176 ui/messages.slint:184 ui/messages.slint:188 ui/messages.slint:184 ui/messages.slint:188 ui/messages.slint:188 ui/messages.slint:176 ui/messages.slint:188 ui/messages.slint:184 ui/messages.slint:225
 msgctxt "Messages"
 msgid "Switcher overlay could not be created"
 msgstr "Switcher-Overlay konnte nicht erstellt werden"
@@ -1212,7 +1446,9 @@ msgstr "Im Launcher zeigen"
 
 #: ui/messages.slint:180 ui/messages.slint:185 ui/messages.slint:192
 #: ui/messages.slint:180 ui/messages.slint:185 ui/messages.slint:192 ui/messages.slint:185 ui/messages.slint:192
-#: ui/messages.slint:180 ui/messages.slint:185 ui/messages.slint:192 ui/messages.slint:185 ui/messages.slint:192
+#: ui/messages.slint:180 ui/messages.slint:185 ui/messages.slint:192 ui/messages.slint:185 ui/messages.slint:192 ui/messages.slint:192 ui/messages.slint:180
+#: ui/messages.slint:180 ui/messages.slint:185 ui/messages.slint:192 ui/messages.slint:185 ui/messages.slint:192 ui/messages.slint:192 ui/messages.slint:180 ui/messages.slint:192 ui/messages.slint:185
+#: ui/messages.slint:180 ui/messages.slint:185 ui/messages.slint:192 ui/messages.slint:185 ui/messages.slint:192 ui/messages.slint:192 ui/messages.slint:180 ui/messages.slint:192 ui/messages.slint:185 ui/messages.slint:221
 msgctxt "Messages"
 msgid "Stop"
 msgstr "Beenden"
@@ -1224,28 +1460,36 @@ msgstr "Launcher öffnen"
 
 #: ui/messages.slint:176 ui/messages.slint:181 ui/messages.slint:188
 #: ui/messages.slint:176 ui/messages.slint:181 ui/messages.slint:188 ui/messages.slint:181 ui/messages.slint:188
-#: ui/messages.slint:176 ui/messages.slint:181 ui/messages.slint:188 ui/messages.slint:181 ui/messages.slint:188
+#: ui/messages.slint:176 ui/messages.slint:181 ui/messages.slint:188 ui/messages.slint:181 ui/messages.slint:188 ui/messages.slint:188 ui/messages.slint:176
+#: ui/messages.slint:176 ui/messages.slint:181 ui/messages.slint:188 ui/messages.slint:181 ui/messages.slint:188 ui/messages.slint:188 ui/messages.slint:176 ui/messages.slint:188 ui/messages.slint:181
+#: ui/messages.slint:176 ui/messages.slint:181 ui/messages.slint:188 ui/messages.slint:181 ui/messages.slint:188 ui/messages.slint:188 ui/messages.slint:176 ui/messages.slint:188 ui/messages.slint:181 ui/messages.slint:217
 msgctxt "Messages"
 msgid "Start"
 msgstr "Starten"
 
 #: ui/app.slint:160 ui/app.slint:311 ui/app.slint:312 ui/app.slint:377
 #: ui/app.slint:160 ui/app.slint:311 ui/app.slint:312 ui/app.slint:377 ui/app.slint:311 ui/app.slint:312 ui/app.slint:377
-#: ui/app.slint:160 ui/app.slint:311 ui/app.slint:312 ui/app.slint:377 ui/app.slint:311 ui/app.slint:312 ui/app.slint:377
+#: ui/app.slint:160 ui/app.slint:311 ui/app.slint:312 ui/app.slint:377 ui/app.slint:311 ui/app.slint:312 ui/app.slint:377 ui/app.slint:312 ui/app.slint:377 ui/app.slint:160
+#: ui/app.slint:160 ui/app.slint:311 ui/app.slint:312 ui/app.slint:377 ui/app.slint:311 ui/app.slint:312 ui/app.slint:377 ui/app.slint:312 ui/app.slint:377 ui/app.slint:160 ui/app.slint:312 ui/app.slint:377 ui/app.slint:311
+#: ui/app.slint:160 ui/app.slint:311 ui/app.slint:312 ui/app.slint:377 ui/app.slint:311 ui/app.slint:312 ui/app.slint:377 ui/app.slint:312 ui/app.slint:377 ui/app.slint:160 ui/app.slint:312 ui/app.slint:377 ui/app.slint:311 ui/app.slint:377 ui/app.slint:521
 msgctxt "SteamSetupDialog"
 msgid "Steam needs a copy of Guild Wars 2"
 msgstr "Steam braucht eine Kopie von Guild Wars 2"
 
 #: ui/app.slint:161 ui/app.slint:312 ui/app.slint:313 ui/app.slint:378
 #: ui/app.slint:161 ui/app.slint:312 ui/app.slint:313 ui/app.slint:378 ui/app.slint:312 ui/app.slint:313 ui/app.slint:378
-#: ui/app.slint:161 ui/app.slint:312 ui/app.slint:313 ui/app.slint:378 ui/app.slint:312 ui/app.slint:313 ui/app.slint:378
+#: ui/app.slint:161 ui/app.slint:312 ui/app.slint:313 ui/app.slint:378 ui/app.slint:312 ui/app.slint:313 ui/app.slint:378 ui/app.slint:313 ui/app.slint:378 ui/app.slint:161
+#: ui/app.slint:161 ui/app.slint:312 ui/app.slint:313 ui/app.slint:378 ui/app.slint:312 ui/app.slint:313 ui/app.slint:378 ui/app.slint:313 ui/app.slint:378 ui/app.slint:161 ui/app.slint:313 ui/app.slint:378 ui/app.slint:312
+#: ui/app.slint:161 ui/app.slint:312 ui/app.slint:313 ui/app.slint:378 ui/app.slint:312 ui/app.slint:313 ui/app.slint:378 ui/app.slint:313 ui/app.slint:378 ui/app.slint:161 ui/app.slint:313 ui/app.slint:378 ui/app.slint:312 ui/app.slint:378 ui/app.slint:522
 msgctxt "SteamSetupDialog"
 msgid "Finish the installation in Steam"
 msgstr "Installation in Steam abschließen"
 
 #: ui/app.slint:206 ui/app.slint:357 ui/app.slint:358 ui/app.slint:423
 #: ui/app.slint:206 ui/app.slint:357 ui/app.slint:358 ui/app.slint:423 ui/app.slint:357 ui/app.slint:358 ui/app.slint:423
-#: ui/app.slint:206 ui/app.slint:357 ui/app.slint:358 ui/app.slint:423 ui/app.slint:357 ui/app.slint:358 ui/app.slint:423
+#: ui/app.slint:206 ui/app.slint:357 ui/app.slint:358 ui/app.slint:423 ui/app.slint:357 ui/app.slint:358 ui/app.slint:423 ui/app.slint:358 ui/app.slint:423 ui/app.slint:206
+#: ui/app.slint:206 ui/app.slint:357 ui/app.slint:358 ui/app.slint:423 ui/app.slint:357 ui/app.slint:358 ui/app.slint:423 ui/app.slint:358 ui/app.slint:423 ui/app.slint:206 ui/app.slint:358 ui/app.slint:423 ui/app.slint:357
+#: ui/app.slint:206 ui/app.slint:357 ui/app.slint:358 ui/app.slint:423 ui/app.slint:357 ui/app.slint:358 ui/app.slint:423 ui/app.slint:358 ui/app.slint:423 ui/app.slint:206 ui/app.slint:358 ui/app.slint:423 ui/app.slint:357 ui/app.slint:423 ui/app.slint:567
 msgctxt "SteamSetupDialog"
 msgid ""
 "„{}“ is a Steam account, and Steam only signs in a Guild Wars 2 that it "
@@ -1258,14 +1502,18 @@ msgstr ""
 
 #: ui/app.slint:212 ui/app.slint:363 ui/app.slint:364 ui/app.slint:429
 #: ui/app.slint:212 ui/app.slint:363 ui/app.slint:364 ui/app.slint:429 ui/app.slint:363 ui/app.slint:364 ui/app.slint:429
-#: ui/app.slint:212 ui/app.slint:363 ui/app.slint:364 ui/app.slint:429 ui/app.slint:363 ui/app.slint:364 ui/app.slint:429
+#: ui/app.slint:212 ui/app.slint:363 ui/app.slint:364 ui/app.slint:429 ui/app.slint:363 ui/app.slint:364 ui/app.slint:429 ui/app.slint:364 ui/app.slint:429 ui/app.slint:212
+#: ui/app.slint:212 ui/app.slint:363 ui/app.slint:364 ui/app.slint:429 ui/app.slint:363 ui/app.slint:364 ui/app.slint:429 ui/app.slint:364 ui/app.slint:429 ui/app.slint:212 ui/app.slint:364 ui/app.slint:429 ui/app.slint:363
+#: ui/app.slint:212 ui/app.slint:363 ui/app.slint:364 ui/app.slint:429 ui/app.slint:363 ui/app.slint:364 ui/app.slint:429 ui/app.slint:364 ui/app.slint:429 ui/app.slint:212 ui/app.slint:364 ui/app.slint:429 ui/app.slint:363 ui/app.slint:429 ui/app.slint:573
 msgctxt "SteamSetupDialog"
 msgid "A link will be created:"
 msgstr "Es wird eine Verknüpfung angelegt:"
 
 #: ui/app.slint:225 ui/app.slint:376 ui/app.slint:377 ui/app.slint:442
 #: ui/app.slint:225 ui/app.slint:376 ui/app.slint:377 ui/app.slint:442 ui/app.slint:376 ui/app.slint:377 ui/app.slint:442
-#: ui/app.slint:225 ui/app.slint:376 ui/app.slint:377 ui/app.slint:442 ui/app.slint:376 ui/app.slint:377 ui/app.slint:442
+#: ui/app.slint:225 ui/app.slint:376 ui/app.slint:377 ui/app.slint:442 ui/app.slint:376 ui/app.slint:377 ui/app.slint:442 ui/app.slint:377 ui/app.slint:442 ui/app.slint:225
+#: ui/app.slint:225 ui/app.slint:376 ui/app.slint:377 ui/app.slint:442 ui/app.slint:376 ui/app.slint:377 ui/app.slint:442 ui/app.slint:377 ui/app.slint:442 ui/app.slint:225 ui/app.slint:377 ui/app.slint:442 ui/app.slint:376
+#: ui/app.slint:225 ui/app.slint:376 ui/app.slint:377 ui/app.slint:442 ui/app.slint:376 ui/app.slint:377 ui/app.slint:442 ui/app.slint:377 ui/app.slint:442 ui/app.slint:225 ui/app.slint:377 ui/app.slint:442 ui/app.slint:376 ui/app.slint:442 ui/app.slint:586
 msgctxt "SteamSetupDialog"
 msgid ""
 "The link to your Guild Wars 2 folder is in place. Open Steam, select Guild "
@@ -1279,7 +1527,9 @@ msgstr ""
 
 #: ui/app.slint:231 ui/app.slint:382 ui/app.slint:383 ui/app.slint:448
 #: ui/app.slint:231 ui/app.slint:382 ui/app.slint:383 ui/app.slint:448 ui/app.slint:382 ui/app.slint:383 ui/app.slint:448
-#: ui/app.slint:231 ui/app.slint:382 ui/app.slint:383 ui/app.slint:448 ui/app.slint:382 ui/app.slint:383 ui/app.slint:448
+#: ui/app.slint:231 ui/app.slint:382 ui/app.slint:383 ui/app.slint:448 ui/app.slint:382 ui/app.slint:383 ui/app.slint:448 ui/app.slint:383 ui/app.slint:448 ui/app.slint:231
+#: ui/app.slint:231 ui/app.slint:382 ui/app.slint:383 ui/app.slint:448 ui/app.slint:382 ui/app.slint:383 ui/app.slint:448 ui/app.slint:383 ui/app.slint:448 ui/app.slint:231 ui/app.slint:383 ui/app.slint:448 ui/app.slint:382
+#: ui/app.slint:231 ui/app.slint:382 ui/app.slint:383 ui/app.slint:448 ui/app.slint:382 ui/app.slint:383 ui/app.slint:448 ui/app.slint:383 ui/app.slint:448 ui/app.slint:231 ui/app.slint:383 ui/app.slint:448 ui/app.slint:382 ui/app.slint:448 ui/app.slint:592
 msgctxt "SteamSetupDialog"
 msgid ""
 "Steam's installation was not found yet. Wait until Steam has finished and "
@@ -1290,56 +1540,72 @@ msgstr ""
 
 #: ui/app.slint:242 ui/app.slint:393 ui/app.slint:394 ui/app.slint:459
 #: ui/app.slint:242 ui/app.slint:393 ui/app.slint:394 ui/app.slint:459 ui/app.slint:393 ui/app.slint:394 ui/app.slint:459
-#: ui/app.slint:242 ui/app.slint:393 ui/app.slint:394 ui/app.slint:459 ui/app.slint:393 ui/app.slint:394 ui/app.slint:459
+#: ui/app.slint:242 ui/app.slint:393 ui/app.slint:394 ui/app.slint:459 ui/app.slint:393 ui/app.slint:394 ui/app.slint:459 ui/app.slint:394 ui/app.slint:459 ui/app.slint:242
+#: ui/app.slint:242 ui/app.slint:393 ui/app.slint:394 ui/app.slint:459 ui/app.slint:393 ui/app.slint:394 ui/app.slint:459 ui/app.slint:394 ui/app.slint:459 ui/app.slint:242 ui/app.slint:394 ui/app.slint:459 ui/app.slint:393
+#: ui/app.slint:242 ui/app.slint:393 ui/app.slint:394 ui/app.slint:459 ui/app.slint:393 ui/app.slint:394 ui/app.slint:459 ui/app.slint:394 ui/app.slint:459 ui/app.slint:242 ui/app.slint:394 ui/app.slint:459 ui/app.slint:393 ui/app.slint:459 ui/app.slint:603
 msgctxt "SteamSetupDialog"
 msgid "Cancel"
 msgstr "Abbrechen"
 
 #: ui/app.slint:242 ui/app.slint:393 ui/app.slint:394 ui/app.slint:459
 #: ui/app.slint:242 ui/app.slint:393 ui/app.slint:394 ui/app.slint:459 ui/app.slint:393 ui/app.slint:394 ui/app.slint:459
-#: ui/app.slint:242 ui/app.slint:393 ui/app.slint:394 ui/app.slint:459 ui/app.slint:393 ui/app.slint:394 ui/app.slint:459
+#: ui/app.slint:242 ui/app.slint:393 ui/app.slint:394 ui/app.slint:459 ui/app.slint:393 ui/app.slint:394 ui/app.slint:459 ui/app.slint:394 ui/app.slint:459 ui/app.slint:242
+#: ui/app.slint:242 ui/app.slint:393 ui/app.slint:394 ui/app.slint:459 ui/app.slint:393 ui/app.slint:394 ui/app.slint:459 ui/app.slint:394 ui/app.slint:459 ui/app.slint:242 ui/app.slint:394 ui/app.slint:459 ui/app.slint:393
+#: ui/app.slint:242 ui/app.slint:393 ui/app.slint:394 ui/app.slint:459 ui/app.slint:393 ui/app.slint:394 ui/app.slint:459 ui/app.slint:394 ui/app.slint:459 ui/app.slint:242 ui/app.slint:394 ui/app.slint:459 ui/app.slint:393 ui/app.slint:459 ui/app.slint:603
 msgctxt "SteamSetupDialog"
 msgid "Later"
 msgstr "Später"
 
 #: ui/app.slint:248 ui/app.slint:399 ui/app.slint:400 ui/app.slint:465
 #: ui/app.slint:248 ui/app.slint:399 ui/app.slint:400 ui/app.slint:465 ui/app.slint:399 ui/app.slint:400 ui/app.slint:465
-#: ui/app.slint:248 ui/app.slint:399 ui/app.slint:400 ui/app.slint:465 ui/app.slint:399 ui/app.slint:400 ui/app.slint:465
+#: ui/app.slint:248 ui/app.slint:399 ui/app.slint:400 ui/app.slint:465 ui/app.slint:399 ui/app.slint:400 ui/app.slint:465 ui/app.slint:400 ui/app.slint:465 ui/app.slint:248
+#: ui/app.slint:248 ui/app.slint:399 ui/app.slint:400 ui/app.slint:465 ui/app.slint:399 ui/app.slint:400 ui/app.slint:465 ui/app.slint:400 ui/app.slint:465 ui/app.slint:248 ui/app.slint:400 ui/app.slint:465 ui/app.slint:399
+#: ui/app.slint:248 ui/app.slint:399 ui/app.slint:400 ui/app.slint:465 ui/app.slint:399 ui/app.slint:400 ui/app.slint:465 ui/app.slint:400 ui/app.slint:465 ui/app.slint:248 ui/app.slint:400 ui/app.slint:465 ui/app.slint:399 ui/app.slint:465 ui/app.slint:609
 msgctxt "SteamSetupDialog"
 msgid "Create link"
 msgstr "Verknüpfung erstellen"
 
 #: ui/app.slint:254 ui/app.slint:405 ui/app.slint:406 ui/app.slint:471
 #: ui/app.slint:254 ui/app.slint:405 ui/app.slint:406 ui/app.slint:471 ui/app.slint:405 ui/app.slint:406 ui/app.slint:471
-#: ui/app.slint:254 ui/app.slint:405 ui/app.slint:406 ui/app.slint:471 ui/app.slint:405 ui/app.slint:406 ui/app.slint:471
+#: ui/app.slint:254 ui/app.slint:405 ui/app.slint:406 ui/app.slint:471 ui/app.slint:405 ui/app.slint:406 ui/app.slint:471 ui/app.slint:406 ui/app.slint:471 ui/app.slint:254
+#: ui/app.slint:254 ui/app.slint:405 ui/app.slint:406 ui/app.slint:471 ui/app.slint:405 ui/app.slint:406 ui/app.slint:471 ui/app.slint:406 ui/app.slint:471 ui/app.slint:254 ui/app.slint:406 ui/app.slint:471 ui/app.slint:405
+#: ui/app.slint:254 ui/app.slint:405 ui/app.slint:406 ui/app.slint:471 ui/app.slint:405 ui/app.slint:406 ui/app.slint:471 ui/app.slint:406 ui/app.slint:471 ui/app.slint:254 ui/app.slint:406 ui/app.slint:471 ui/app.slint:405 ui/app.slint:471 ui/app.slint:615
 msgctxt "SteamSetupDialog"
 msgid "Download finished"
 msgstr "Download fertig"
 
 #: ui/messages.slint:188 ui/messages.slint:193 ui/messages.slint:200
 #: ui/messages.slint:188 ui/messages.slint:193 ui/messages.slint:200 ui/messages.slint:193 ui/messages.slint:200
-#: ui/messages.slint:188 ui/messages.slint:193 ui/messages.slint:200 ui/messages.slint:193 ui/messages.slint:200
+#: ui/messages.slint:188 ui/messages.slint:193 ui/messages.slint:200 ui/messages.slint:193 ui/messages.slint:200 ui/messages.slint:200 ui/messages.slint:188
+#: ui/messages.slint:188 ui/messages.slint:193 ui/messages.slint:200 ui/messages.slint:193 ui/messages.slint:200 ui/messages.slint:200 ui/messages.slint:188 ui/messages.slint:200 ui/messages.slint:193
+#: ui/messages.slint:188 ui/messages.slint:193 ui/messages.slint:200 ui/messages.slint:193 ui/messages.slint:200 ui/messages.slint:200 ui/messages.slint:188 ui/messages.slint:200 ui/messages.slint:193 ui/messages.slint:229
 msgctxt "Messages"
 msgid "Steam is ready"
 msgstr "Steam ist bereit"
 
 #: ui/messages.slint:192 ui/messages.slint:197 ui/messages.slint:204
 #: ui/messages.slint:192 ui/messages.slint:197 ui/messages.slint:204 ui/messages.slint:197 ui/messages.slint:204
-#: ui/messages.slint:192 ui/messages.slint:197 ui/messages.slint:204 ui/messages.slint:197 ui/messages.slint:204
+#: ui/messages.slint:192 ui/messages.slint:197 ui/messages.slint:204 ui/messages.slint:197 ui/messages.slint:204 ui/messages.slint:204 ui/messages.slint:192
+#: ui/messages.slint:192 ui/messages.slint:197 ui/messages.slint:204 ui/messages.slint:197 ui/messages.slint:204 ui/messages.slint:204 ui/messages.slint:192 ui/messages.slint:204 ui/messages.slint:197
+#: ui/messages.slint:192 ui/messages.slint:197 ui/messages.slint:204 ui/messages.slint:197 ui/messages.slint:204 ui/messages.slint:204 ui/messages.slint:192 ui/messages.slint:204 ui/messages.slint:197 ui/messages.slint:233
 msgctxt "Messages"
 msgid "You can start „{}“ now."
 msgstr "„{}“ kann jetzt gestartet werden."
 
 #: ui/messages.slint:196 ui/messages.slint:201 ui/messages.slint:208
 #: ui/messages.slint:196 ui/messages.slint:201 ui/messages.slint:208 ui/messages.slint:201 ui/messages.slint:208
-#: ui/messages.slint:196 ui/messages.slint:201 ui/messages.slint:208 ui/messages.slint:201 ui/messages.slint:208
+#: ui/messages.slint:196 ui/messages.slint:201 ui/messages.slint:208 ui/messages.slint:201 ui/messages.slint:208 ui/messages.slint:208 ui/messages.slint:196
+#: ui/messages.slint:196 ui/messages.slint:201 ui/messages.slint:208 ui/messages.slint:201 ui/messages.slint:208 ui/messages.slint:208 ui/messages.slint:196 ui/messages.slint:208 ui/messages.slint:201
+#: ui/messages.slint:196 ui/messages.slint:201 ui/messages.slint:208 ui/messages.slint:201 ui/messages.slint:208 ui/messages.slint:208 ui/messages.slint:196 ui/messages.slint:208 ui/messages.slint:201 ui/messages.slint:237
 msgctxt "Messages"
 msgid "The link to Steam could not be created"
 msgstr "Die Verknüpfung zu Steam konnte nicht erstellt werden"
 
 #: ui/messages.slint:200 ui/messages.slint:205 ui/messages.slint:212
 #: ui/messages.slint:200 ui/messages.slint:205 ui/messages.slint:212 ui/messages.slint:205 ui/messages.slint:212
-#: ui/messages.slint:200 ui/messages.slint:205 ui/messages.slint:212 ui/messages.slint:205 ui/messages.slint:212
+#: ui/messages.slint:200 ui/messages.slint:205 ui/messages.slint:212 ui/messages.slint:205 ui/messages.slint:212 ui/messages.slint:212 ui/messages.slint:200
+#: ui/messages.slint:200 ui/messages.slint:205 ui/messages.slint:212 ui/messages.slint:205 ui/messages.slint:212 ui/messages.slint:212 ui/messages.slint:200 ui/messages.slint:212 ui/messages.slint:205
+#: ui/messages.slint:200 ui/messages.slint:205 ui/messages.slint:212 ui/messages.slint:205 ui/messages.slint:212 ui/messages.slint:212 ui/messages.slint:200 ui/messages.slint:212 ui/messages.slint:205 ui/messages.slint:241
 msgctxt "Messages"
 msgid ""
 "„{}“ already exists and does not point to your Guild Wars 2 "
@@ -1408,7 +1674,10 @@ msgstr "Jetzt einrichten"
 
 #: ui/app.slint:256 ui/app.slint:257 ui/app.slint:279 ui/app.slint:280
 #: ui/app.slint:256 ui/app.slint:257 ui/app.slint:279 ui/app.slint:280 ui/app.slint:257 ui/app.slint:279 ui/app.slint:280
-#: ui/app.slint:256 ui/app.slint:257 ui/app.slint:279 ui/app.slint:280 ui/app.slint:257 ui/app.slint:279 ui/app.slint:280 ui/app.slint:419 ui/app.slint:442
+#: ui/app.slint:256 ui/app.slint:257 ui/app.slint:279 ui/app.slint:280 ui/app.slint:257 ui/app.slint:279 ui/app.slint:280 ui/app.slint:279 ui/app.slint:280 ui/app.slint:256
+#: ui/app.slint:256 ui/app.slint:257 ui/app.slint:279 ui/app.slint:280 ui/app.slint:257 ui/app.slint:279 ui/app.slint:280 ui/app.slint:279 ui/app.slint:280 ui/app.slint:256 ui/app.slint:279 ui/app.slint:280 ui/app.slint:257
+#: ui/app.slint:256 ui/app.slint:257 ui/app.slint:279 ui/app.slint:280 ui/app.slint:257 ui/app.slint:279 ui/app.slint:280 ui/app.slint:279 ui/app.slint:280 ui/app.slint:256 ui/app.slint:279 ui/app.slint:280 ui/app.slint:257 ui/app.slint:280 ui/app.slint:419 ui/app.slint:442
+#: ui/app.slint:256 ui/app.slint:257 ui/app.slint:279 ui/app.slint:280 ui/app.slint:257 ui/app.slint:279 ui/app.slint:280 ui/app.slint:279 ui/app.slint:280 ui/app.slint:256 ui/app.slint:279 ui/app.slint:280 ui/app.slint:257 ui/app.slint:280 ui/app.slint:419 ui/app.slint:442 ui/app.slint:360
 msgctxt "LoginSetupBanner"
 msgid "Setting up „{}“"
 msgstr "„{}“ wird eingerichtet"
@@ -1469,42 +1738,54 @@ msgstr ""
 
 #: ui/settings.slint:208 ui/settings.slint:209 ui/settings.slint:213
 #: ui/settings.slint:208 ui/settings.slint:209 ui/settings.slint:213 ui/settings.slint:209 ui/settings.slint:213
-#: ui/settings.slint:208 ui/settings.slint:209 ui/settings.slint:213 ui/settings.slint:209 ui/settings.slint:213
+#: ui/settings.slint:208 ui/settings.slint:209 ui/settings.slint:213 ui/settings.slint:209 ui/settings.slint:213 ui/settings.slint:213 ui/settings.slint:208
+#: ui/settings.slint:208 ui/settings.slint:209 ui/settings.slint:213 ui/settings.slint:209 ui/settings.slint:213 ui/settings.slint:213 ui/settings.slint:208 ui/settings.slint:213 ui/settings.slint:209
+#: ui/settings.slint:208 ui/settings.slint:209 ui/settings.slint:213 ui/settings.slint:209 ui/settings.slint:213 ui/settings.slint:213 ui/settings.slint:208 ui/settings.slint:213 ui/settings.slint:209 ui/settings.slint:279
 msgctxt "SettingsPage"
 msgid "// GAME"
 msgstr "// SPIEL"
 
 #: ui/settings.slint:213 ui/settings.slint:214 ui/settings.slint:218
 #: ui/settings.slint:213 ui/settings.slint:214 ui/settings.slint:218 ui/settings.slint:214 ui/settings.slint:218
-#: ui/settings.slint:213 ui/settings.slint:214 ui/settings.slint:218 ui/settings.slint:214 ui/settings.slint:218
+#: ui/settings.slint:213 ui/settings.slint:214 ui/settings.slint:218 ui/settings.slint:214 ui/settings.slint:218 ui/settings.slint:218 ui/settings.slint:213
+#: ui/settings.slint:213 ui/settings.slint:214 ui/settings.slint:218 ui/settings.slint:214 ui/settings.slint:218 ui/settings.slint:218 ui/settings.slint:213 ui/settings.slint:218 ui/settings.slint:214
+#: ui/settings.slint:213 ui/settings.slint:214 ui/settings.slint:218 ui/settings.slint:214 ui/settings.slint:218 ui/settings.slint:218 ui/settings.slint:213 ui/settings.slint:218 ui/settings.slint:214 ui/settings.slint:284
 msgctxt "SettingsPage"
 msgid "Frame rate limit for loading screens"
 msgstr "Bildratenbegrenzung für Ladebildschirme"
 
 #: ui/settings.slint:219 ui/settings.slint:220 ui/settings.slint:224
 #: ui/settings.slint:219 ui/settings.slint:220 ui/settings.slint:224 ui/settings.slint:220 ui/settings.slint:224
-#: ui/settings.slint:219 ui/settings.slint:220 ui/settings.slint:224 ui/settings.slint:220 ui/settings.slint:224
+#: ui/settings.slint:219 ui/settings.slint:220 ui/settings.slint:224 ui/settings.slint:220 ui/settings.slint:224 ui/settings.slint:224 ui/settings.slint:219
+#: ui/settings.slint:219 ui/settings.slint:220 ui/settings.slint:224 ui/settings.slint:220 ui/settings.slint:224 ui/settings.slint:224 ui/settings.slint:219 ui/settings.slint:224 ui/settings.slint:220
+#: ui/settings.slint:219 ui/settings.slint:220 ui/settings.slint:224 ui/settings.slint:220 ui/settings.slint:224 ui/settings.slint:224 ui/settings.slint:219 ui/settings.slint:224 ui/settings.slint:220 ui/settings.slint:290
 msgctxt "SettingsPage"
 msgid "60 FPS"
 msgstr "60 FPS"
 
 #: ui/settings.slint:219 ui/settings.slint:220 ui/settings.slint:224
 #: ui/settings.slint:219 ui/settings.slint:220 ui/settings.slint:224 ui/settings.slint:220 ui/settings.slint:224
-#: ui/settings.slint:219 ui/settings.slint:220 ui/settings.slint:224 ui/settings.slint:220 ui/settings.slint:224
+#: ui/settings.slint:219 ui/settings.slint:220 ui/settings.slint:224 ui/settings.slint:220 ui/settings.slint:224 ui/settings.slint:224 ui/settings.slint:219
+#: ui/settings.slint:219 ui/settings.slint:220 ui/settings.slint:224 ui/settings.slint:220 ui/settings.slint:224 ui/settings.slint:224 ui/settings.slint:219 ui/settings.slint:224 ui/settings.slint:220
+#: ui/settings.slint:219 ui/settings.slint:220 ui/settings.slint:224 ui/settings.slint:220 ui/settings.slint:224 ui/settings.slint:224 ui/settings.slint:219 ui/settings.slint:224 ui/settings.slint:220 ui/settings.slint:290
 msgctxt "SettingsPage"
 msgid "30 FPS"
 msgstr "30 FPS"
 
 #: ui/settings.slint:219 ui/settings.slint:220 ui/settings.slint:224
 #: ui/settings.slint:219 ui/settings.slint:220 ui/settings.slint:224 ui/settings.slint:220 ui/settings.slint:224
-#: ui/settings.slint:219 ui/settings.slint:220 ui/settings.slint:224 ui/settings.slint:220 ui/settings.slint:224
+#: ui/settings.slint:219 ui/settings.slint:220 ui/settings.slint:224 ui/settings.slint:220 ui/settings.slint:224 ui/settings.slint:224 ui/settings.slint:219
+#: ui/settings.slint:219 ui/settings.slint:220 ui/settings.slint:224 ui/settings.slint:220 ui/settings.slint:224 ui/settings.slint:224 ui/settings.slint:219 ui/settings.slint:224 ui/settings.slint:220
+#: ui/settings.slint:219 ui/settings.slint:220 ui/settings.slint:224 ui/settings.slint:220 ui/settings.slint:224 ui/settings.slint:224 ui/settings.slint:219 ui/settings.slint:224 ui/settings.slint:220 ui/settings.slint:290
 msgctxt "SettingsPage"
 msgid "Unlimited"
 msgstr "Unbegrenzt"
 
 #: ui/settings.slint:226 ui/settings.slint:227 ui/settings.slint:231
 #: ui/settings.slint:226 ui/settings.slint:227 ui/settings.slint:231 ui/settings.slint:227 ui/settings.slint:231
-#: ui/settings.slint:226 ui/settings.slint:227 ui/settings.slint:231 ui/settings.slint:227 ui/settings.slint:231
+#: ui/settings.slint:226 ui/settings.slint:227 ui/settings.slint:231 ui/settings.slint:227 ui/settings.slint:231 ui/settings.slint:231 ui/settings.slint:226
+#: ui/settings.slint:226 ui/settings.slint:227 ui/settings.slint:231 ui/settings.slint:227 ui/settings.slint:231 ui/settings.slint:231 ui/settings.slint:226 ui/settings.slint:231 ui/settings.slint:227
+#: ui/settings.slint:226 ui/settings.slint:227 ui/settings.slint:231 ui/settings.slint:227 ui/settings.slint:231 ui/settings.slint:231 ui/settings.slint:226 ui/settings.slint:231 ui/settings.slint:227 ui/settings.slint:297
 msgctxt "SettingsPage"
 msgid ""
 "Only limits the loading screens. It does not apply in the game world or on "
@@ -1517,14 +1798,18 @@ msgstr ""
 
 #: ui/settings.slint:291 ui/settings.slint:295 ui/settings.slint:300
 #: ui/settings.slint:291 ui/settings.slint:295 ui/settings.slint:300 ui/settings.slint:295 ui/settings.slint:300
-#: ui/settings.slint:291 ui/settings.slint:295 ui/settings.slint:300 ui/settings.slint:295 ui/settings.slint:300
+#: ui/settings.slint:291 ui/settings.slint:295 ui/settings.slint:300 ui/settings.slint:295 ui/settings.slint:300 ui/settings.slint:300 ui/settings.slint:291
+#: ui/settings.slint:291 ui/settings.slint:295 ui/settings.slint:300 ui/settings.slint:295 ui/settings.slint:300 ui/settings.slint:300 ui/settings.slint:291 ui/settings.slint:300 ui/settings.slint:295
+#: ui/settings.slint:291 ui/settings.slint:295 ui/settings.slint:300 ui/settings.slint:295 ui/settings.slint:300 ui/settings.slint:300 ui/settings.slint:291 ui/settings.slint:300 ui/settings.slint:295 ui/settings.slint:468
 msgctxt "SettingsPage"
 msgid "// APPEARANCE"
 msgstr "// DARSTELLUNG"
 
 #: ui/settings.slint:296 ui/settings.slint:300 ui/settings.slint:305
 #: ui/settings.slint:296 ui/settings.slint:300 ui/settings.slint:305 ui/settings.slint:300 ui/settings.slint:305
-#: ui/settings.slint:296 ui/settings.slint:300 ui/settings.slint:305 ui/settings.slint:300 ui/settings.slint:305
+#: ui/settings.slint:296 ui/settings.slint:300 ui/settings.slint:305 ui/settings.slint:300 ui/settings.slint:305 ui/settings.slint:305 ui/settings.slint:296
+#: ui/settings.slint:296 ui/settings.slint:300 ui/settings.slint:305 ui/settings.slint:300 ui/settings.slint:305 ui/settings.slint:305 ui/settings.slint:296 ui/settings.slint:305 ui/settings.slint:300
+#: ui/settings.slint:296 ui/settings.slint:300 ui/settings.slint:305 ui/settings.slint:300 ui/settings.slint:305 ui/settings.slint:305 ui/settings.slint:296 ui/settings.slint:305 ui/settings.slint:300 ui/settings.slint:473
 msgctxt "SettingsPage"
 msgid "Theme"
 msgstr "Farbschema"
@@ -1532,132 +1817,183 @@ msgstr "Farbschema"
 #. The language names are shown in their own language on purpose.
 #: ui/settings.slint:302 ui/settings.slint:306 ui/settings.slint:311
 #: ui/settings.slint:302 ui/settings.slint:306 ui/settings.slint:311 ui/settings.slint:306 ui/settings.slint:311
-#: ui/settings.slint:302 ui/settings.slint:306 ui/settings.slint:311 ui/settings.slint:306 ui/settings.slint:311 ui/settings.slint:470 ui/settings.slint:302
-#: ui/settings.slint:302 ui/settings.slint:306 ui/settings.slint:311 ui/settings.slint:306 ui/settings.slint:311 ui/settings.slint:470 ui/settings.slint:302 ui/settings.slint:311 ui/settings.slint:436
-#: ui/settings.slint:302 ui/settings.slint:306 ui/settings.slint:311 ui/settings.slint:306 ui/settings.slint:311 ui/settings.slint:470 ui/settings.slint:302 ui/settings.slint:311 ui/settings.slint:436 ui/settings.slint:502 ui/settings.slint:479
+#: ui/settings.slint:302 ui/settings.slint:306 ui/settings.slint:311 ui/settings.slint:306 ui/settings.slint:311 ui/settings.slint:311 ui/settings.slint:302
+#: ui/settings.slint:302 ui/settings.slint:306 ui/settings.slint:311 ui/settings.slint:306 ui/settings.slint:311 ui/settings.slint:311 ui/settings.slint:302 ui/settings.slint:311 ui/settings.slint:306
+#: ui/settings.slint:302 ui/settings.slint:306 ui/settings.slint:311 ui/settings.slint:306 ui/settings.slint:311 ui/settings.slint:311 ui/settings.slint:302 ui/settings.slint:311 ui/settings.slint:306 ui/settings.slint:470 ui/settings.slint:302
+#: ui/settings.slint:302 ui/settings.slint:306 ui/settings.slint:311 ui/settings.slint:306 ui/settings.slint:311 ui/settings.slint:311 ui/settings.slint:302 ui/settings.slint:311 ui/settings.slint:306 ui/settings.slint:470 ui/settings.slint:302 ui/settings.slint:306 ui/settings.slint:311
+#: ui/settings.slint:302 ui/settings.slint:306 ui/settings.slint:311 ui/settings.slint:306 ui/settings.slint:311 ui/settings.slint:311 ui/settings.slint:302 ui/settings.slint:311 ui/settings.slint:306 ui/settings.slint:470 ui/settings.slint:302 ui/settings.slint:306 ui/settings.slint:311 ui/settings.slint:311 ui/settings.slint:470
+#: ui/settings.slint:302 ui/settings.slint:306 ui/settings.slint:311 ui/settings.slint:306 ui/settings.slint:311 ui/settings.slint:311 ui/settings.slint:302 ui/settings.slint:311 ui/settings.slint:306 ui/settings.slint:470 ui/settings.slint:302 ui/settings.slint:306 ui/settings.slint:311 ui/settings.slint:311 ui/settings.slint:470 ui/settings.slint:311 ui/settings.slint:436
+#: ui/settings.slint:302 ui/settings.slint:306 ui/settings.slint:311 ui/settings.slint:306 ui/settings.slint:311 ui/settings.slint:311 ui/settings.slint:302 ui/settings.slint:311 ui/settings.slint:306 ui/settings.slint:470 ui/settings.slint:302 ui/settings.slint:306 ui/settings.slint:311 ui/settings.slint:311 ui/settings.slint:470 ui/settings.slint:311 ui/settings.slint:436 ui/settings.slint:306 ui/settings.slint:311
+#: ui/settings.slint:302 ui/settings.slint:306 ui/settings.slint:311 ui/settings.slint:306 ui/settings.slint:311 ui/settings.slint:311 ui/settings.slint:302 ui/settings.slint:311 ui/settings.slint:306 ui/settings.slint:470 ui/settings.slint:302 ui/settings.slint:306 ui/settings.slint:311 ui/settings.slint:311 ui/settings.slint:470 ui/settings.slint:311 ui/settings.slint:436 ui/settings.slint:306 ui/settings.slint:311 ui/settings.slint:311 ui/settings.slint:470
+#: ui/settings.slint:302 ui/settings.slint:306 ui/settings.slint:311 ui/settings.slint:306 ui/settings.slint:311 ui/settings.slint:311 ui/settings.slint:302 ui/settings.slint:311 ui/settings.slint:306 ui/settings.slint:470 ui/settings.slint:302 ui/settings.slint:306 ui/settings.slint:311 ui/settings.slint:311 ui/settings.slint:470 ui/settings.slint:311 ui/settings.slint:436 ui/settings.slint:306 ui/settings.slint:311 ui/settings.slint:311 ui/settings.slint:470 ui/settings.slint:311 ui/settings.slint:436
+#: ui/settings.slint:302 ui/settings.slint:306 ui/settings.slint:311 ui/settings.slint:306 ui/settings.slint:311 ui/settings.slint:311 ui/settings.slint:302 ui/settings.slint:311 ui/settings.slint:306 ui/settings.slint:470 ui/settings.slint:302 ui/settings.slint:306 ui/settings.slint:311 ui/settings.slint:311 ui/settings.slint:470 ui/settings.slint:311 ui/settings.slint:436 ui/settings.slint:306 ui/settings.slint:311 ui/settings.slint:311 ui/settings.slint:470 ui/settings.slint:311 ui/settings.slint:436 ui/settings.slint:479
 msgctxt "SettingsPage"
 msgid "System"
 msgstr "System"
 
 #: ui/settings.slint:302 ui/settings.slint:306 ui/settings.slint:311
 #: ui/settings.slint:302 ui/settings.slint:306 ui/settings.slint:311 ui/settings.slint:306 ui/settings.slint:311
-#: ui/settings.slint:302 ui/settings.slint:306 ui/settings.slint:311 ui/settings.slint:306 ui/settings.slint:311
+#: ui/settings.slint:302 ui/settings.slint:306 ui/settings.slint:311 ui/settings.slint:306 ui/settings.slint:311 ui/settings.slint:311 ui/settings.slint:302
+#: ui/settings.slint:302 ui/settings.slint:306 ui/settings.slint:311 ui/settings.slint:306 ui/settings.slint:311 ui/settings.slint:311 ui/settings.slint:302 ui/settings.slint:311 ui/settings.slint:306
+#: ui/settings.slint:302 ui/settings.slint:306 ui/settings.slint:311 ui/settings.slint:306 ui/settings.slint:311 ui/settings.slint:311 ui/settings.slint:302 ui/settings.slint:311 ui/settings.slint:306 ui/settings.slint:479
 msgctxt "SettingsPage"
 msgid "Light"
 msgstr "Hell"
 
 #: ui/settings.slint:302 ui/settings.slint:306 ui/settings.slint:311
 #: ui/settings.slint:302 ui/settings.slint:306 ui/settings.slint:311 ui/settings.slint:306 ui/settings.slint:311
-#: ui/settings.slint:302 ui/settings.slint:306 ui/settings.slint:311 ui/settings.slint:306 ui/settings.slint:311
+#: ui/settings.slint:302 ui/settings.slint:306 ui/settings.slint:311 ui/settings.slint:306 ui/settings.slint:311 ui/settings.slint:311 ui/settings.slint:302
+#: ui/settings.slint:302 ui/settings.slint:306 ui/settings.slint:311 ui/settings.slint:306 ui/settings.slint:311 ui/settings.slint:311 ui/settings.slint:302 ui/settings.slint:311 ui/settings.slint:306
+#: ui/settings.slint:302 ui/settings.slint:306 ui/settings.slint:311 ui/settings.slint:306 ui/settings.slint:311 ui/settings.slint:311 ui/settings.slint:302 ui/settings.slint:311 ui/settings.slint:306 ui/settings.slint:479
 msgctxt "SettingsPage"
 msgid "Dark"
 msgstr "Dunkel"
 
 #: ui/settings.slint:309 ui/settings.slint:313 ui/settings.slint:318
 #: ui/settings.slint:309 ui/settings.slint:313 ui/settings.slint:318 ui/settings.slint:313 ui/settings.slint:318
-#: ui/settings.slint:309 ui/settings.slint:313 ui/settings.slint:318 ui/settings.slint:313 ui/settings.slint:318
+#: ui/settings.slint:309 ui/settings.slint:313 ui/settings.slint:318 ui/settings.slint:313 ui/settings.slint:318 ui/settings.slint:318 ui/settings.slint:309
+#: ui/settings.slint:309 ui/settings.slint:313 ui/settings.slint:318 ui/settings.slint:313 ui/settings.slint:318 ui/settings.slint:318 ui/settings.slint:309 ui/settings.slint:318 ui/settings.slint:313
+#: ui/settings.slint:309 ui/settings.slint:313 ui/settings.slint:318 ui/settings.slint:313 ui/settings.slint:318 ui/settings.slint:318 ui/settings.slint:309 ui/settings.slint:318 ui/settings.slint:313 ui/settings.slint:486
 msgctxt "SettingsPage"
 msgid "System follows the Windows app theme."
 msgstr "System folgt dem Windows-App-Design."
 
 #: ui/settings.slint:321 ui/settings.slint:349 ui/settings.slint:450
 #: ui/settings.slint:321 ui/settings.slint:349 ui/settings.slint:450 ui/settings.slint:349 ui/settings.slint:450
-#: ui/settings.slint:321 ui/settings.slint:349 ui/settings.slint:450 ui/settings.slint:349 ui/settings.slint:450
+#: ui/settings.slint:321 ui/settings.slint:349 ui/settings.slint:450 ui/settings.slint:349 ui/settings.slint:450 ui/settings.slint:450 ui/settings.slint:321
+#: ui/settings.slint:321 ui/settings.slint:349 ui/settings.slint:450 ui/settings.slint:349 ui/settings.slint:450 ui/settings.slint:450 ui/settings.slint:321 ui/settings.slint:450 ui/settings.slint:349
+#: ui/settings.slint:321 ui/settings.slint:349 ui/settings.slint:450 ui/settings.slint:349 ui/settings.slint:450 ui/settings.slint:450 ui/settings.slint:321 ui/settings.slint:450 ui/settings.slint:349 ui/settings.slint:517
 msgctxt "SettingsPage"
 msgid "// ABOUT"
 msgstr "// ÜBER"
 
 #: ui/settings.slint:350 ui/settings.slint:378 ui/settings.slint:479
 #: ui/settings.slint:350 ui/settings.slint:378 ui/settings.slint:479 ui/settings.slint:378 ui/settings.slint:479
-#: ui/settings.slint:350 ui/settings.slint:378 ui/settings.slint:479 ui/settings.slint:378 ui/settings.slint:479
+#: ui/settings.slint:350 ui/settings.slint:378 ui/settings.slint:479 ui/settings.slint:378 ui/settings.slint:479 ui/settings.slint:479 ui/settings.slint:350
+#: ui/settings.slint:350 ui/settings.slint:378 ui/settings.slint:479 ui/settings.slint:378 ui/settings.slint:479 ui/settings.slint:479 ui/settings.slint:350 ui/settings.slint:479 ui/settings.slint:378
+#: ui/settings.slint:350 ui/settings.slint:378 ui/settings.slint:479 ui/settings.slint:378 ui/settings.slint:479 ui/settings.slint:479 ui/settings.slint:350 ui/settings.slint:479 ui/settings.slint:378 ui/settings.slint:546
 msgctxt "SettingsPage"
 msgid "Version {} · breakbar.cc"
 msgstr "Version {} · breakbar.cc"
 
 #: ui/settings.slint:365 ui/settings.slint:393 ui/settings.slint:494
 #: ui/settings.slint:365 ui/settings.slint:393 ui/settings.slint:494 ui/settings.slint:393 ui/settings.slint:494
-#: ui/settings.slint:365 ui/settings.slint:393 ui/settings.slint:494 ui/settings.slint:393 ui/settings.slint:494
+#: ui/settings.slint:365 ui/settings.slint:393 ui/settings.slint:494 ui/settings.slint:393 ui/settings.slint:494 ui/settings.slint:494 ui/settings.slint:365
+#: ui/settings.slint:365 ui/settings.slint:393 ui/settings.slint:494 ui/settings.slint:393 ui/settings.slint:494 ui/settings.slint:494 ui/settings.slint:365 ui/settings.slint:494 ui/settings.slint:393
+#: ui/settings.slint:365 ui/settings.slint:393 ui/settings.slint:494 ui/settings.slint:393 ui/settings.slint:494 ui/settings.slint:494 ui/settings.slint:365 ui/settings.slint:494 ui/settings.slint:393 ui/settings.slint:561
 msgctxt "SettingsPage"
 msgid "License"
 msgstr "Lizenz"
 
 #: ui/settings.slint:327 ui/settings.slint:396 ui/settings.slint:424
 #: ui/settings.slint:327 ui/settings.slint:396 ui/settings.slint:424 ui/settings.slint:396 ui/settings.slint:424
-#: ui/settings.slint:327 ui/settings.slint:396 ui/settings.slint:424 ui/settings.slint:396 ui/settings.slint:424 ui/settings.slint:463 ui/settings.slint:327
-#: ui/settings.slint:327 ui/settings.slint:396 ui/settings.slint:424 ui/settings.slint:396 ui/settings.slint:424 ui/settings.slint:463 ui/settings.slint:327 ui/settings.slint:424 ui/settings.slint:429
-#: ui/settings.slint:327 ui/settings.slint:396 ui/settings.slint:424 ui/settings.slint:396 ui/settings.slint:424 ui/settings.slint:463 ui/settings.slint:327 ui/settings.slint:424 ui/settings.slint:429 ui/settings.slint:495
+#: ui/settings.slint:327 ui/settings.slint:396 ui/settings.slint:424 ui/settings.slint:396 ui/settings.slint:424 ui/settings.slint:424 ui/settings.slint:327
+#: ui/settings.slint:327 ui/settings.slint:396 ui/settings.slint:424 ui/settings.slint:396 ui/settings.slint:424 ui/settings.slint:424 ui/settings.slint:327 ui/settings.slint:424 ui/settings.slint:396
+#: ui/settings.slint:327 ui/settings.slint:396 ui/settings.slint:424 ui/settings.slint:396 ui/settings.slint:424 ui/settings.slint:424 ui/settings.slint:327 ui/settings.slint:424 ui/settings.slint:396 ui/settings.slint:463 ui/settings.slint:327
+#: ui/settings.slint:327 ui/settings.slint:396 ui/settings.slint:424 ui/settings.slint:396 ui/settings.slint:424 ui/settings.slint:424 ui/settings.slint:327 ui/settings.slint:424 ui/settings.slint:396 ui/settings.slint:463 ui/settings.slint:327 ui/settings.slint:396 ui/settings.slint:424
+#: ui/settings.slint:327 ui/settings.slint:396 ui/settings.slint:424 ui/settings.slint:396 ui/settings.slint:424 ui/settings.slint:424 ui/settings.slint:327 ui/settings.slint:424 ui/settings.slint:396 ui/settings.slint:463 ui/settings.slint:327 ui/settings.slint:396 ui/settings.slint:424 ui/settings.slint:424 ui/settings.slint:463
+#: ui/settings.slint:327 ui/settings.slint:396 ui/settings.slint:424 ui/settings.slint:396 ui/settings.slint:424 ui/settings.slint:424 ui/settings.slint:327 ui/settings.slint:424 ui/settings.slint:396 ui/settings.slint:463 ui/settings.slint:327 ui/settings.slint:396 ui/settings.slint:424 ui/settings.slint:424 ui/settings.slint:463 ui/settings.slint:424 ui/settings.slint:429
+#: ui/settings.slint:327 ui/settings.slint:396 ui/settings.slint:424 ui/settings.slint:396 ui/settings.slint:424 ui/settings.slint:424 ui/settings.slint:327 ui/settings.slint:424 ui/settings.slint:396 ui/settings.slint:463 ui/settings.slint:327 ui/settings.slint:396 ui/settings.slint:424 ui/settings.slint:424 ui/settings.slint:463 ui/settings.slint:424 ui/settings.slint:429 ui/settings.slint:396 ui/settings.slint:424
+#: ui/settings.slint:327 ui/settings.slint:396 ui/settings.slint:424 ui/settings.slint:396 ui/settings.slint:424 ui/settings.slint:424 ui/settings.slint:327 ui/settings.slint:424 ui/settings.slint:396 ui/settings.slint:463 ui/settings.slint:327 ui/settings.slint:396 ui/settings.slint:424 ui/settings.slint:424 ui/settings.slint:463 ui/settings.slint:424 ui/settings.slint:429 ui/settings.slint:396 ui/settings.slint:424 ui/settings.slint:424 ui/settings.slint:463
+#: ui/settings.slint:327 ui/settings.slint:396 ui/settings.slint:424 ui/settings.slint:396 ui/settings.slint:424 ui/settings.slint:424 ui/settings.slint:327 ui/settings.slint:424 ui/settings.slint:396 ui/settings.slint:463 ui/settings.slint:327 ui/settings.slint:396 ui/settings.slint:424 ui/settings.slint:424 ui/settings.slint:463 ui/settings.slint:424 ui/settings.slint:429 ui/settings.slint:396 ui/settings.slint:424 ui/settings.slint:424 ui/settings.slint:463 ui/settings.slint:424 ui/settings.slint:429
+#: ui/settings.slint:327 ui/settings.slint:396 ui/settings.slint:424 ui/settings.slint:396 ui/settings.slint:424 ui/settings.slint:424 ui/settings.slint:327 ui/settings.slint:424 ui/settings.slint:396 ui/settings.slint:463 ui/settings.slint:327 ui/settings.slint:396 ui/settings.slint:424 ui/settings.slint:424 ui/settings.slint:463 ui/settings.slint:424 ui/settings.slint:429 ui/settings.slint:396 ui/settings.slint:424 ui/settings.slint:424 ui/settings.slint:463 ui/settings.slint:424 ui/settings.slint:429
 msgctxt "SettingsPage"
 msgid "Language"
 msgstr "Sprache"
 
 #: ui/settings.slint:341 ui/settings.slint:442 ui/settings.slint:443
 #: ui/settings.slint:341 ui/settings.slint:442 ui/settings.slint:443 ui/settings.slint:442 ui/settings.slint:443
-#: ui/settings.slint:341 ui/settings.slint:442 ui/settings.slint:443 ui/settings.slint:442 ui/settings.slint:443
+#: ui/settings.slint:341 ui/settings.slint:442 ui/settings.slint:443 ui/settings.slint:442 ui/settings.slint:443 ui/settings.slint:443 ui/settings.slint:341
+#: ui/settings.slint:341 ui/settings.slint:442 ui/settings.slint:443 ui/settings.slint:442 ui/settings.slint:443 ui/settings.slint:443 ui/settings.slint:341 ui/settings.slint:443 ui/settings.slint:442
+#: ui/settings.slint:341 ui/settings.slint:442 ui/settings.slint:443 ui/settings.slint:442 ui/settings.slint:443 ui/settings.slint:443 ui/settings.slint:341 ui/settings.slint:443 ui/settings.slint:442 ui/settings.slint:509
 msgctxt "SettingsPage"
 msgid "System follows the Windows display language."
 msgstr "System folgt der Anzeigesprache von Windows."
 
 #: ui/settings.slint:344 ui/settings.slint:345 ui/settings.slint:355
 #: ui/settings.slint:344 ui/settings.slint:345 ui/settings.slint:355 ui/settings.slint:345 ui/settings.slint:355
-#: ui/settings.slint:344 ui/settings.slint:345 ui/settings.slint:355 ui/settings.slint:345 ui/settings.slint:355
+#: ui/settings.slint:344 ui/settings.slint:345 ui/settings.slint:355 ui/settings.slint:345 ui/settings.slint:355 ui/settings.slint:355 ui/settings.slint:344
+#: ui/settings.slint:344 ui/settings.slint:345 ui/settings.slint:355 ui/settings.slint:345 ui/settings.slint:355 ui/settings.slint:355 ui/settings.slint:344 ui/settings.slint:355 ui/settings.slint:345
+#: ui/settings.slint:344 ui/settings.slint:345 ui/settings.slint:355 ui/settings.slint:345 ui/settings.slint:355 ui/settings.slint:355 ui/settings.slint:344 ui/settings.slint:355 ui/settings.slint:345 ui/settings.slint:393
 msgctxt "SettingsPage"
 msgid "// SWITCHER"
 msgstr "// SWITCHER"
 
 #: ui/settings.slint:347 ui/settings.slint:348 ui/settings.slint:358
 #: ui/settings.slint:347 ui/settings.slint:348 ui/settings.slint:358 ui/settings.slint:348 ui/settings.slint:358
-#: ui/settings.slint:347 ui/settings.slint:348 ui/settings.slint:358 ui/settings.slint:348 ui/settings.slint:358
+#: ui/settings.slint:347 ui/settings.slint:348 ui/settings.slint:358 ui/settings.slint:348 ui/settings.slint:358 ui/settings.slint:358 ui/settings.slint:347
+#: ui/settings.slint:347 ui/settings.slint:348 ui/settings.slint:358 ui/settings.slint:348 ui/settings.slint:358 ui/settings.slint:358 ui/settings.slint:347 ui/settings.slint:358 ui/settings.slint:348
+#: ui/settings.slint:347 ui/settings.slint:348 ui/settings.slint:358 ui/settings.slint:348 ui/settings.slint:358 ui/settings.slint:358 ui/settings.slint:347 ui/settings.slint:358 ui/settings.slint:348 ui/settings.slint:396
 msgctxt "SettingsPage"
 msgid "Show the switcher"
 msgstr "Switcher anzeigen"
 
 #: ui/settings.slint:348 ui/settings.slint:349 ui/settings.slint:359
 #: ui/settings.slint:348 ui/settings.slint:349 ui/settings.slint:359 ui/settings.slint:349 ui/settings.slint:359
-#: ui/settings.slint:348 ui/settings.slint:349 ui/settings.slint:359 ui/settings.slint:349 ui/settings.slint:359
+#: ui/settings.slint:348 ui/settings.slint:349 ui/settings.slint:359 ui/settings.slint:349 ui/settings.slint:359 ui/settings.slint:359 ui/settings.slint:348
+#: ui/settings.slint:348 ui/settings.slint:349 ui/settings.slint:359 ui/settings.slint:349 ui/settings.slint:359 ui/settings.slint:359 ui/settings.slint:348 ui/settings.slint:359 ui/settings.slint:349
+#: ui/settings.slint:348 ui/settings.slint:349 ui/settings.slint:359 ui/settings.slint:349 ui/settings.slint:359 ui/settings.slint:359 ui/settings.slint:348 ui/settings.slint:359 ui/settings.slint:349 ui/settings.slint:397
 msgctxt "SettingsPage"
 msgid "A small bar over the game to jump between clients."
 msgstr "Eine kleine Leiste über dem Spiel, um zwischen Clients zu wechseln."
 
 #: ui/settings.slint:353 ui/settings.slint:354 ui/settings.slint:364
 #: ui/settings.slint:353 ui/settings.slint:354 ui/settings.slint:364 ui/settings.slint:354 ui/settings.slint:364
-#: ui/settings.slint:353 ui/settings.slint:354 ui/settings.slint:364 ui/settings.slint:354 ui/settings.slint:364
+#: ui/settings.slint:353 ui/settings.slint:354 ui/settings.slint:364 ui/settings.slint:354 ui/settings.slint:364 ui/settings.slint:364 ui/settings.slint:353
+#: ui/settings.slint:353 ui/settings.slint:354 ui/settings.slint:364 ui/settings.slint:354 ui/settings.slint:364 ui/settings.slint:364 ui/settings.slint:353 ui/settings.slint:364 ui/settings.slint:354
+#: ui/settings.slint:353 ui/settings.slint:354 ui/settings.slint:364 ui/settings.slint:354 ui/settings.slint:364 ui/settings.slint:364 ui/settings.slint:353 ui/settings.slint:364 ui/settings.slint:354 ui/settings.slint:402
 msgctxt "SettingsPage"
 msgid "Only while a client is running"
 msgstr "Nur wenn ein Client läuft"
 
 #: ui/settings.slint:354 ui/settings.slint:355 ui/settings.slint:365
 #: ui/settings.slint:354 ui/settings.slint:355 ui/settings.slint:365 ui/settings.slint:355 ui/settings.slint:365
-#: ui/settings.slint:354 ui/settings.slint:355 ui/settings.slint:365 ui/settings.slint:355 ui/settings.slint:365
+#: ui/settings.slint:354 ui/settings.slint:355 ui/settings.slint:365 ui/settings.slint:355 ui/settings.slint:365 ui/settings.slint:365 ui/settings.slint:354
+#: ui/settings.slint:354 ui/settings.slint:355 ui/settings.slint:365 ui/settings.slint:355 ui/settings.slint:365 ui/settings.slint:365 ui/settings.slint:354 ui/settings.slint:365 ui/settings.slint:355
+#: ui/settings.slint:354 ui/settings.slint:355 ui/settings.slint:365 ui/settings.slint:355 ui/settings.slint:365 ui/settings.slint:365 ui/settings.slint:354 ui/settings.slint:365 ui/settings.slint:355 ui/settings.slint:403
 msgctxt "SettingsPage"
 msgid "Otherwise it stays on screen as long as Breakbar runs."
 msgstr "Sonst bleibt sie sichtbar, solange Breakbar läuft."
 
 #: ui/settings.slint:360 ui/settings.slint:361 ui/settings.slint:371
 #: ui/settings.slint:360 ui/settings.slint:361 ui/settings.slint:371 ui/settings.slint:361 ui/settings.slint:371
-#: ui/settings.slint:360 ui/settings.slint:361 ui/settings.slint:371 ui/settings.slint:361 ui/settings.slint:371
+#: ui/settings.slint:360 ui/settings.slint:361 ui/settings.slint:371 ui/settings.slint:361 ui/settings.slint:371 ui/settings.slint:371 ui/settings.slint:360
+#: ui/settings.slint:360 ui/settings.slint:361 ui/settings.slint:371 ui/settings.slint:361 ui/settings.slint:371 ui/settings.slint:371 ui/settings.slint:360 ui/settings.slint:371 ui/settings.slint:361
+#: ui/settings.slint:360 ui/settings.slint:361 ui/settings.slint:371 ui/settings.slint:361 ui/settings.slint:371 ui/settings.slint:371 ui/settings.slint:360 ui/settings.slint:371 ui/settings.slint:361 ui/settings.slint:409
 msgctxt "SettingsPage"
 msgid "Lock the position"
 msgstr "Position sperren"
 
 #: ui/settings.slint:361 ui/settings.slint:362 ui/settings.slint:372
 #: ui/settings.slint:361 ui/settings.slint:362 ui/settings.slint:372 ui/settings.slint:362 ui/settings.slint:372
-#: ui/settings.slint:361 ui/settings.slint:362 ui/settings.slint:372 ui/settings.slint:362 ui/settings.slint:372
+#: ui/settings.slint:361 ui/settings.slint:362 ui/settings.slint:372 ui/settings.slint:362 ui/settings.slint:372 ui/settings.slint:372 ui/settings.slint:361
+#: ui/settings.slint:361 ui/settings.slint:362 ui/settings.slint:372 ui/settings.slint:362 ui/settings.slint:372 ui/settings.slint:372 ui/settings.slint:361 ui/settings.slint:372 ui/settings.slint:362
+#: ui/settings.slint:361 ui/settings.slint:362 ui/settings.slint:372 ui/settings.slint:362 ui/settings.slint:372 ui/settings.slint:372 ui/settings.slint:361 ui/settings.slint:372 ui/settings.slint:362 ui/settings.slint:410
 msgctxt "SettingsPage"
 msgid "The bar can no longer be dragged."
 msgstr "Die Leiste lässt sich nicht mehr verschieben."
 
 #: ui/settings.slint:372 ui/settings.slint:373 ui/settings.slint:384
 #: ui/settings.slint:372 ui/settings.slint:373 ui/settings.slint:384 ui/settings.slint:373 ui/settings.slint:384
-#: ui/settings.slint:372 ui/settings.slint:373 ui/settings.slint:384 ui/settings.slint:373 ui/settings.slint:384 ui/settings.slint:398 ui/settings.slint:372
-#: ui/settings.slint:372 ui/settings.slint:373 ui/settings.slint:384 ui/settings.slint:373 ui/settings.slint:384 ui/settings.slint:398 ui/settings.slint:372 ui/settings.slint:384 ui/settings.slint:389
-#: ui/settings.slint:372 ui/settings.slint:373 ui/settings.slint:384 ui/settings.slint:373 ui/settings.slint:384 ui/settings.slint:398 ui/settings.slint:372 ui/settings.slint:384 ui/settings.slint:389 ui/settings.slint:421 ui/settings.slint:435
+#: ui/settings.slint:372 ui/settings.slint:373 ui/settings.slint:384 ui/settings.slint:373 ui/settings.slint:384 ui/settings.slint:384 ui/settings.slint:372
+#: ui/settings.slint:372 ui/settings.slint:373 ui/settings.slint:384 ui/settings.slint:373 ui/settings.slint:384 ui/settings.slint:384 ui/settings.slint:372 ui/settings.slint:384 ui/settings.slint:373
+#: ui/settings.slint:372 ui/settings.slint:373 ui/settings.slint:384 ui/settings.slint:373 ui/settings.slint:384 ui/settings.slint:384 ui/settings.slint:372 ui/settings.slint:384 ui/settings.slint:373 ui/settings.slint:398 ui/settings.slint:372
+#: ui/settings.slint:372 ui/settings.slint:373 ui/settings.slint:384 ui/settings.slint:373 ui/settings.slint:384 ui/settings.slint:384 ui/settings.slint:372 ui/settings.slint:384 ui/settings.slint:373 ui/settings.slint:398 ui/settings.slint:372 ui/settings.slint:373 ui/settings.slint:384
+#: ui/settings.slint:372 ui/settings.slint:373 ui/settings.slint:384 ui/settings.slint:373 ui/settings.slint:384 ui/settings.slint:384 ui/settings.slint:372 ui/settings.slint:384 ui/settings.slint:373 ui/settings.slint:398 ui/settings.slint:372 ui/settings.slint:373 ui/settings.slint:384 ui/settings.slint:384 ui/settings.slint:398
+#: ui/settings.slint:372 ui/settings.slint:373 ui/settings.slint:384 ui/settings.slint:373 ui/settings.slint:384 ui/settings.slint:384 ui/settings.slint:372 ui/settings.slint:384 ui/settings.slint:373 ui/settings.slint:398 ui/settings.slint:372 ui/settings.slint:373 ui/settings.slint:384 ui/settings.slint:384 ui/settings.slint:398 ui/settings.slint:384 ui/settings.slint:389
+#: ui/settings.slint:372 ui/settings.slint:373 ui/settings.slint:384 ui/settings.slint:373 ui/settings.slint:384 ui/settings.slint:384 ui/settings.slint:372 ui/settings.slint:384 ui/settings.slint:373 ui/settings.slint:398 ui/settings.slint:372 ui/settings.slint:373 ui/settings.slint:384 ui/settings.slint:384 ui/settings.slint:398 ui/settings.slint:384 ui/settings.slint:389 ui/settings.slint:373 ui/settings.slint:384
+#: ui/settings.slint:372 ui/settings.slint:373 ui/settings.slint:384 ui/settings.slint:373 ui/settings.slint:384 ui/settings.slint:384 ui/settings.slint:372 ui/settings.slint:384 ui/settings.slint:373 ui/settings.slint:398 ui/settings.slint:372 ui/settings.slint:373 ui/settings.slint:384 ui/settings.slint:384 ui/settings.slint:398 ui/settings.slint:384 ui/settings.slint:389 ui/settings.slint:373 ui/settings.slint:384 ui/settings.slint:384 ui/settings.slint:398
+#: ui/settings.slint:372 ui/settings.slint:373 ui/settings.slint:384 ui/settings.slint:373 ui/settings.slint:384 ui/settings.slint:384 ui/settings.slint:372 ui/settings.slint:384 ui/settings.slint:373 ui/settings.slint:398 ui/settings.slint:372 ui/settings.slint:373 ui/settings.slint:384 ui/settings.slint:384 ui/settings.slint:398 ui/settings.slint:384 ui/settings.slint:389 ui/settings.slint:373 ui/settings.slint:384 ui/settings.slint:384 ui/settings.slint:398 ui/settings.slint:384 ui/settings.slint:389
+#: ui/settings.slint:372 ui/settings.slint:373 ui/settings.slint:384 ui/settings.slint:373 ui/settings.slint:384 ui/settings.slint:384 ui/settings.slint:372 ui/settings.slint:384 ui/settings.slint:373 ui/settings.slint:398 ui/settings.slint:372 ui/settings.slint:373 ui/settings.slint:384 ui/settings.slint:384 ui/settings.slint:398 ui/settings.slint:384 ui/settings.slint:389 ui/settings.slint:373 ui/settings.slint:384 ui/settings.slint:384 ui/settings.slint:398 ui/settings.slint:384 ui/settings.slint:389 ui/settings.slint:435
 msgctxt "SettingsPage"
 msgid "Opacity at rest"
 msgstr "Deckkraft im Ruhezustand"
 
 #: ui/settings.slint:393 ui/settings.slint:394 ui/settings.slint:404
 #: ui/settings.slint:393 ui/settings.slint:394 ui/settings.slint:404 ui/settings.slint:394 ui/settings.slint:404
-#: ui/settings.slint:393 ui/settings.slint:394 ui/settings.slint:404 ui/settings.slint:394 ui/settings.slint:404
+#: ui/settings.slint:393 ui/settings.slint:394 ui/settings.slint:404 ui/settings.slint:394 ui/settings.slint:404 ui/settings.slint:404 ui/settings.slint:393
+#: ui/settings.slint:393 ui/settings.slint:394 ui/settings.slint:404 ui/settings.slint:394 ui/settings.slint:404 ui/settings.slint:404 ui/settings.slint:393 ui/settings.slint:404 ui/settings.slint:394
+#: ui/settings.slint:393 ui/settings.slint:394 ui/settings.slint:404 ui/settings.slint:394 ui/settings.slint:404 ui/settings.slint:404 ui/settings.slint:393 ui/settings.slint:404 ui/settings.slint:394 ui/settings.slint:442
 msgctxt "SettingsPage"
 msgid ""
 "Under the pointer the bar is always fully opaque. It is visible over windows "
@@ -1685,7 +2021,8 @@ msgid "Set up one after another"
 msgstr "Nacheinander einrichten"
 
 #: ui/app.slint:373 ui/app.slint:398 ui/app.slint:453 ui/app.slint:478
-#: ui/app.slint:373 ui/app.slint:398 ui/app.slint:453 ui/app.slint:478 ui/app.slint:560
+#: ui/app.slint:373 ui/app.slint:398 ui/app.slint:453 ui/app.slint:478 ui/app.slint:398 ui/app.slint:453 ui/app.slint:478
+#: ui/app.slint:373 ui/app.slint:398 ui/app.slint:453 ui/app.slint:478 ui/app.slint:398 ui/app.slint:453 ui/app.slint:478
 msgctxt "PatchAvailableBanner"
 msgid "A Guild Wars 2 update is available"
 msgstr ""
@@ -1739,14 +2076,18 @@ msgstr ""
 
 #: ui/settings.slint:292 ui/settings.slint:293 ui/settings.slint:298
 #: ui/settings.slint:292 ui/settings.slint:293 ui/settings.slint:298 ui/settings.slint:293 ui/settings.slint:298
-#: ui/settings.slint:292 ui/settings.slint:293 ui/settings.slint:298 ui/settings.slint:293 ui/settings.slint:298
+#: ui/settings.slint:292 ui/settings.slint:293 ui/settings.slint:298 ui/settings.slint:293 ui/settings.slint:298 ui/settings.slint:298 ui/settings.slint:292
+#: ui/settings.slint:292 ui/settings.slint:293 ui/settings.slint:298 ui/settings.slint:293 ui/settings.slint:298 ui/settings.slint:298 ui/settings.slint:292 ui/settings.slint:298 ui/settings.slint:293
+#: ui/settings.slint:292 ui/settings.slint:293 ui/settings.slint:298 ui/settings.slint:293 ui/settings.slint:298 ui/settings.slint:298 ui/settings.slint:292 ui/settings.slint:298 ui/settings.slint:293 ui/settings.slint:304
 msgctxt "SettingsPage"
 msgid "Check for game updates online"
 msgstr "Online nach Spiel-Updates suchen"
 
 #: ui/settings.slint:509 ui/settings.slint:510 ui/settings.slint:533
 #: ui/settings.slint:509 ui/settings.slint:510 ui/settings.slint:533 ui/settings.slint:510 ui/settings.slint:533
-#: ui/settings.slint:509 ui/settings.slint:510 ui/settings.slint:533 ui/settings.slint:510 ui/settings.slint:533
+#: ui/settings.slint:509 ui/settings.slint:510 ui/settings.slint:533 ui/settings.slint:510 ui/settings.slint:533 ui/settings.slint:533 ui/settings.slint:509
+#: ui/settings.slint:509 ui/settings.slint:510 ui/settings.slint:533 ui/settings.slint:510 ui/settings.slint:533 ui/settings.slint:533 ui/settings.slint:509 ui/settings.slint:533 ui/settings.slint:510
+#: ui/settings.slint:509 ui/settings.slint:510 ui/settings.slint:533 ui/settings.slint:510 ui/settings.slint:533 ui/settings.slint:533 ui/settings.slint:509 ui/settings.slint:533 ui/settings.slint:510 ui/settings.slint:565
 msgctxt "SettingsPage"
 msgid "Report a problem"
 msgstr "Problem melden"
@@ -1795,7 +2136,9 @@ msgstr "// GEFAHRENBEREICH"
 
 #: ui/settings.slint:556 ui/settings.slint:573 ui/settings.slint:579
 #: ui/settings.slint:556 ui/settings.slint:573 ui/settings.slint:579 ui/settings.slint:573 ui/settings.slint:579
-#: ui/settings.slint:556 ui/settings.slint:573 ui/settings.slint:579 ui/settings.slint:573 ui/settings.slint:579 ui/settings.slint:628
+#: ui/settings.slint:556 ui/settings.slint:573 ui/settings.slint:579 ui/settings.slint:573 ui/settings.slint:579 ui/settings.slint:579 ui/settings.slint:556
+#: ui/settings.slint:556 ui/settings.slint:573 ui/settings.slint:579 ui/settings.slint:573 ui/settings.slint:579 ui/settings.slint:579 ui/settings.slint:556 ui/settings.slint:579 ui/settings.slint:573
+#: ui/settings.slint:556 ui/settings.slint:573 ui/settings.slint:579 ui/settings.slint:573 ui/settings.slint:579 ui/settings.slint:579 ui/settings.slint:556 ui/settings.slint:579 ui/settings.slint:573 ui/settings.slint:628 ui/settings.slint:611
 msgctxt "SettingsPage"
 msgid "Delete all data"
 msgstr "Alle Daten löschen"
@@ -1891,39 +2234,10 @@ msgctxt "SettingsPage"
 msgid "Update now"
 msgstr "Jetzt aktualisieren"
 
-#: ui/account-card.slint:426
+#: ui/account-card.slint:426 ui/account-card.slint:425
 msgctxt "AccountCard"
 msgid "Configure graphics & sound"
 msgstr "Grafik & Sound konfigurieren"
-
-#: ui/account-card.slint:435
-msgctxt "AccountCard"
-msgid "Use as template for other accounts"
-msgstr "Als Vorlage für andere Accounts verwenden"
-
-#: ui/app.slint:259 ui/app.slint:275
-msgctxt "ConfirmSyncSettings"
-msgid "Use „{}“'s settings for every other account?"
-msgstr "Die Einstellungen von „{}“ für alle anderen Accounts übernehmen?"
-
-#: ui/app.slint:283
-msgctxt "ConfirmSyncSettings"
-msgid ""
-"„{}“'s saved graphics and sound settings replace the current ones of: "
-"{}. This cannot be undone."
-msgstr ""
-"Die gespeicherten Grafik- und Soundeinstellungen von „{}“ ersetzen die "
-"aktuellen von: {}. Dies kann nicht rückgängig gemacht werden."
-
-#: ui/app.slint:294
-msgctxt "ConfirmSyncSettings"
-msgid "Cancel"
-msgstr "Abbrechen"
-
-#: ui/app.slint:300
-msgctxt "ConfirmSyncSettings"
-msgid "Use as template"
-msgstr "Als Vorlage verwenden"
 
 #: ui/messages.slint:47
 msgctxt "Messages"
@@ -1966,32 +2280,3 @@ msgstr "Einstellungen gespeichert"
 msgctxt "Messages"
 msgid "Graphics and sound settings saved for „{}“."
 msgstr "Grafik- und Soundeinstellungen für „{}“ gespeichert."
-
-#: ui/messages.slint:344
-msgctxt "Messages"
-msgid "There is no other account to copy settings to."
-msgstr "Es gibt keinen anderen Account, zu dem Einstellungen kopiert werden können."
-
-#: ui/messages.slint:348
-msgctxt "Messages"
-msgid ""
-"This account has no saved settings yet. Use „Configure graphics & sound“ "
-"first."
-msgstr ""
-"Für diesen Account sind noch keine Einstellungen gespeichert. Verwende "
-"zuerst „Grafik & Sound konfigurieren“."
-
-#: ui/messages.slint:352
-msgctxt "Messages"
-msgid "Settings copied to {} account(s)."
-msgstr "Einstellungen auf {} Account(s) kopiert."
-
-#: ui/messages.slint:356
-msgctxt "Messages"
-msgid "Settings could not be copied"
-msgstr "Einstellungen konnten nicht kopiert werden"
-
-#: ui/messages.slint:360
-msgctxt "Messages"
-msgid "„{}“ is currently running. Close it first."
-msgstr "„{}“ läuft gerade. Schließe es zuerst."

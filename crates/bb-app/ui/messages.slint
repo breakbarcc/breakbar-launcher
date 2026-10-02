@@ -339,24 +339,4 @@ export global Messages {
     public pure function configure-saved(name: string) -> string {
         @tr("Graphics and sound settings saved for „{}“.", name)
     }
-
-    public pure function sync-no-targets() -> string {
-        @tr("There is no other account to copy settings to.")
-    }
-
-    public pure function sync-nothing-saved-yet() -> string {
-        @tr("This account has no saved settings yet. Use „Configure graphics & sound“ first.")
-    }
-
-    public pure function sync-done(count: int) -> string {
-        @tr("Settings copied to {} account(s).", count)
-    }
-
-    public pure function sync-failed-title() -> string {
-        @tr("Settings could not be copied")
-    }
-
-    public pure function sync-account-running(name: string) -> string {
-        @tr("„{}“ is currently running. Close it first.", name)
-    }
 }

@@ -7,7 +7,6 @@ use super::{
     insert_row, is_active, is_startable, move_row, offer_login_setup, push_toast, refresh,
     remove_row, row, start_account, ui, update_row,
 };
-use crate::gw2_settings::{self, SyncError};
 
 /// Adds `account` to the config and the list, at `index` (the end if `None`).
 pub(super) fn insert_account(
@@ -369,83 +368,8 @@ pub(super) fn configure_settings(
     }
 }
 
-/// Opens the "Use as template" confirmation for `id`, listing every other account it would
-/// overwrite. Shows a toast instead if there is no other account to sync to.
-pub(super) fn request_sync_settings(window: &MainWindow, app: &RefCell<App>, id: AccountId) {
-    let messages = window.global::<Messages>();
-    let app_ref = app.borrow();
-    let Some(source) = app_ref.account(id) else {
-        return;
-    };
-    let targets: Vec<&str> = app_ref
-        .config
-        .accounts
-        .iter()
-        .filter(|account| account.id != id)
-        .map(|account| account.name.as_str())
-        .collect();
-    if targets.is_empty() {
-        push_toast(
-            window,
-            ToastKind::Warning,
-            messages.invoke_sync_no_targets(),
-            SharedString::new(),
-        );
-        return;
-    }
-    window.set_confirm_sync_id(id.0 as i32);
-    window.set_confirm_sync_name(source.name.as_str().into());
-    window.set_confirm_sync_targets(targets.join(", ").into());
-}
-
-/// Copies `source`'s graphics/sound settings into every other account's profile, after the user
-/// confirmed.
-pub(super) fn confirm_sync_settings(window: &MainWindow, app: &RefCell<App>, source: AccountId) {
-    let messages = window.global::<Messages>();
-    let targets: Vec<AccountId> = app
-        .borrow()
-        .config
-        .accounts
-        .iter()
-        .map(|account| account.id)
-        .filter(|&id| id != source)
-        .collect();
-    match gw2_settings::sync_settings(source, &targets) {
-        Ok(0) => push_toast(
-            window,
-            ToastKind::Warning,
-            messages.invoke_sync_nothing_saved_yet(),
-            SharedString::new(),
-        ),
-        Ok(count) => push_toast(
-            window,
-            ToastKind::Success,
-            messages.invoke_sync_done(count as i32),
-            SharedString::new(),
-        ),
-        Err(SyncError::Running(id)) => {
-            let name = app
-                .borrow()
-                .account(id)
-                .map_or_else(SharedString::new, |account| account.name.as_str().into());
-            push_toast(
-                window,
-                ToastKind::Error,
-                messages.invoke_sync_failed_title(),
-                messages.invoke_sync_account_running(name),
-            );
-        }
-        Err(error) => push_toast(
-            window,
-            ToastKind::Error,
-            messages.invoke_sync_failed_title(),
-            error.to_string().into(),
-        ),
-    }
-}
-
-/// Connects the Configure-mode and "Use as template" callbacks (split out of [`wire`], which
-/// would otherwise run over the line limit).
+/// Connects the Configure-mode callback (split out of [`wire`], which would otherwise run over
+/// the line limit).
 fn wire_settings(window: &MainWindow, app: &Rc<RefCell<App>>, queue: &Rc<LaunchQueue>) {
     window.on_configure_settings({
         let app = Rc::clone(app);
@@ -454,26 +378,6 @@ fn wire_settings(window: &MainWindow, app: &Rc<RefCell<App>>, queue: &Rc<LaunchQ
         move |id| {
             if let Some(window) = weak.upgrade() {
                 configure_settings(&window, &app, &queue, AccountId(id as u32));
-            }
-        }
-    });
-
-    window.on_request_sync_settings({
-        let app = Rc::clone(app);
-        let weak = window.as_weak();
-        move |id| {
-            if let Some(window) = weak.upgrade() {
-                request_sync_settings(&window, &app, AccountId(id as u32));
-            }
-        }
-    });
-
-    window.on_confirm_sync_settings({
-        let app = Rc::clone(app);
-        let weak = window.as_weak();
-        move |id| {
-            if let Some(window) = weak.upgrade() {
-                confirm_sync_settings(&window, &app, AccountId(id as u32));
             }
         }
     });

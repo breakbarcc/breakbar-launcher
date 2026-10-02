@@ -123,7 +123,6 @@ export component AccountCard {
     callback create-shortcut();
     callback open-folder();
     callback configure-settings();
-    callback sync-settings();
     callback request-delete();
     /// Keyboard reordering: -1 = up, +1 = down.
     callback move-by(int);
@@ -429,15 +428,6 @@ export component AccountCard {
                     activated => {
                         menu.close();
                         root.configure-settings();
-                    }
-                }
-                MenuItem {
-                    text: @tr("Use as template for other accounts");
-                    icon: Icons.layers;
-                    enabled: !root.active;
-                    activated => {
-                        menu.close();
-                        root.sync-settings();
                     }
                 }
                 Rectangle {
