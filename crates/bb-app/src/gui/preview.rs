@@ -92,8 +92,8 @@ fn render_ui_previews() {
             (420, 520),
         ),
         variant("narrow-dark", true, true, Accounts, (320, 360)),
-        variant("settings-dark", true, false, Settings, (420, 1400)),
-        variant("settings-light", false, false, Settings, (420, 1400)),
+        variant("settings-dark", true, false, Settings, (420, 1750)),
+        variant("settings-light", false, false, Settings, (420, 1750)),
         variant("settings-top-light", false, false, Settings, (420, 600)),
         variant("settings-top-dark", true, false, Settings, (420, 600)),
         variant("editor-steam-dark", true, false, Editor, (420, 780)),
@@ -109,6 +109,9 @@ fn render_ui_previews() {
             Accounts,
             (420, 520),
         ),
+        variant("nexus-banner-dark", true, true, Accounts, (420, 520)),
+        variant("nexus-banner-light", false, true, Accounts, (420, 520)),
+        variant("nexus-confirm-light", false, true, Accounts, (420, 520)),
         variant("steam-link-dark", true, true, Accounts, (420, 520)),
         variant("steam-install-light", false, true, Accounts, (420, 520)),
     ];
@@ -139,6 +142,12 @@ fn render_ui_previews() {
         ui.set_app_version(env!("CARGO_PKG_VERSION").into());
         if name.starts_with("login-refresh") {
             ui.set_refresh_names("Main, 2nd, Steam Acc".into());
+        }
+        if name.starts_with("settings") || name.starts_with("nexus") {
+            ui.set_nexus_enabled(true);
+            ui.set_nexus_status(NexusStatus::UpdateAvailable);
+            ui.set_nexus_version("v2026.2.17.1210".into());
+            ui.set_nexus_confirm_open(name == "nexus-confirm-light");
         }
         ui.set_overlay_enabled(true);
         ui.set_overlay_only_running(true);

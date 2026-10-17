@@ -10,6 +10,7 @@ mod gw2_build;
 mod headless;
 mod launcher;
 mod log;
+mod nexus;
 mod overlay;
 mod profile_link;
 mod steam_setup;

@@ -19,6 +19,9 @@ export enum LaunchFailure {
     exited-during-startup,
 }
 
+/// Why a Nexus install or removal failed.
+export enum NexusProblem { client-running, foreign, chainload-exists, not-nexus, mismatch, offline, io }
+
 export enum PathProblem { not-found, unreadable, not-executable, not-64-bit, not-gw2 }
 
 export global Messages {
@@ -102,6 +105,44 @@ export global Messages {
             return @tr("The login file of „{}“ did not change. Let the client finish loading before closing it, then try again.", name);
         }
         @tr("The login file of „{}“ did not change. Log in with „Remember email/password“ ticked and close the client normally, then try again.", name)
+    }
+
+    public pure function nexus-done-title() -> string {
+        @tr("Nexus")
+    }
+
+    public pure function nexus-installed(version: string) -> string {
+        @tr("Nexus {} is installed. Start the game and accept its agreement; Ctrl+O opens the menu.", version)
+    }
+
+    public pure function nexus-removed() -> string {
+        @tr("Nexus was removed from the game folder.")
+    }
+
+    public pure function nexus-failed-title() -> string {
+        @tr("Nexus could not be changed")
+    }
+
+    public pure function nexus-problem(kind: NexusProblem, detail: string) -> string {
+        if kind == NexusProblem.client-running {
+            return @tr("Close all Guild Wars 2 clients first, then try again.");
+        }
+        if kind == NexusProblem.foreign {
+            return @tr("Another d3d11.dll is in the game folder.");
+        }
+        if kind == NexusProblem.chainload-exists {
+            return @tr("d3d11_chainload.dll already exists in the game folder. Move it away first.");
+        }
+        if kind == NexusProblem.not-nexus {
+            return @tr("The d3d11.dll in the game folder is not Nexus, so it was left alone.");
+        }
+        if kind == NexusProblem.mismatch {
+            return @tr("The download did not match the checksum GitHub published, so it was discarded.");
+        }
+        if kind == NexusProblem.offline {
+            return @tr("The latest Nexus release could not be fetched from GitHub. Check your connection.");
+        }
+        @tr("{}", detail)
     }
 
     public pure function patch-done-title() -> string {

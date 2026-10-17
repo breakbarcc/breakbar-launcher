@@ -15,6 +15,9 @@ export enum FpsLimit { fps60, fps30, unlimited }
 /// Language of the UI. Mirrors `bb_store::LanguageChoice`.
 export enum LanguageChoice { system, english, german }
 
+/// What is in the game folder under the name `d3d11.dll`, as far as Nexus is concerned.
+export enum NexusStatus { not-installed, foreign, current, update-available }
+
 /// One row of the "Nach dem Start" radio group: a plain radio dot plus a label, no card chrome.
 component RadioOption {
     in property <string> text;
@@ -193,6 +196,14 @@ export component SettingsPage inherits VerticalLayout {
     in property <bool> check-for-updates;
     /// A manually started update (see `start-patch`) is currently downloading.
     in property <bool> patching;
+    /// Whether Breakbar manages the Nexus addon loader.
+    in property <bool> nexus-enabled;
+    in property <bool> nexus-check-for-updates;
+    in property <NexusStatus> nexus-status;
+    /// A Nexus download or removal is in progress.
+    in property <bool> nexus-busy;
+    /// Latest Nexus release, once known; empty before.
+    in property <string> nexus-version;
     /// Version of Breakbar, shown in the About section.
     in property <string> version;
     callback back();
@@ -214,6 +225,10 @@ export component SettingsPage inherits VerticalLayout {
     /// ArenaNet didn't list as a new version, which the online check in `check-for-updates` can't
     /// tell apart from no update at all.
     callback start-patch();
+    callback set-nexus-enabled(bool);
+    callback set-nexus-check-for-updates(bool);
+    callback nexus-install();
+    callback nexus-uninstall();
     callback open-website();
     callback open-license();
     callback open-slint();
@@ -462,6 +477,67 @@ export component SettingsPage inherits VerticalLayout {
                 ok-text: @tr("Discord.exe found");
                 error-text: @tr("File not found. Check the path.");
                 browse => { root.choose-discord-path(); }
+            }
+
+            SectionLabel {
+                text: @tr("// NEXUS");
+            }
+            ToggleRow {
+                text: @tr("Manage Nexus");
+                help: @tr("Nexus is an addon manager for Guild Wars 2. Breakbar can install it into the game folder (as d3d11.dll) and tell you when a new version is out.");
+                checked: root.nexus-enabled;
+                toggled(value) => { root.set-nexus-enabled(value); }
+            }
+            if root.nexus-enabled: VerticalLayout {
+                spacing: 10px;
+                HorizontalLayout {
+                    spacing: 12px;
+                    VerticalLayout {
+                        horizontal-stretch: 1;
+                        spacing: 2px;
+                        Text {
+                            text: root.nexus-status == NexusStatus.not-installed ? @tr("Nexus is not installed")
+                                : root.nexus-status == NexusStatus.foreign ? @tr("Another d3d11.dll is installed")
+                                : root.nexus-status == NexusStatus.update-available ? @tr("Nexus is installed - an update is available")
+                                : @tr("Nexus is installed");
+                            font-size: Theme.fs-body;
+                            color: Theme.text;
+                            wrap: word-wrap;
+                        }
+                        Text {
+                            text: root.nexus-status == NexusStatus.foreign
+                                ? @tr("Probably ArcDPS. Installing Nexus renames it to d3d11_chainload.dll, which Nexus loads itself. Nothing is deleted.")
+                                : root.nexus-version != "" ? @tr("Latest version: {}", root.nexus-version)
+                                : @tr("Close all Guild Wars 2 clients before installing or updating.");
+                            font-size: Theme.fs-help;
+                            color: Theme.text-dim;
+                            wrap: word-wrap;
+                        }
+                    }
+                }
+                HorizontalLayout {
+                    spacing: 8px;
+                    alignment: start;
+                    Button {
+                        kind: ButtonKind.primary;
+                        icon: Icons.download;
+                        text: root.nexus-status == NexusStatus.update-available ? @tr("Update")
+                            : root.nexus-status == NexusStatus.current ? @tr("Reinstall") : @tr("Install");
+                        enabled: !root.nexus-busy;
+                        clicked => { root.nexus-install(); }
+                    }
+                    if root.nexus-status == NexusStatus.current || root.nexus-status == NexusStatus.update-available: Button {
+                        text: @tr("Remove");
+                        enabled: !root.nexus-busy;
+                        clicked => { root.nexus-uninstall(); }
+                    }
+                }
+                ToggleRow {
+                    text: @tr("Check for Nexus updates");
+                    help: @tr("Asks GitHub every hour for a new Nexus release and shows a banner. Nothing is installed without you clicking Update.");
+                    checked: root.nexus-check-for-updates;
+                    toggled(value) => { root.set-nexus-check-for-updates(value); }
+                }
             }
 
             SectionLabel {

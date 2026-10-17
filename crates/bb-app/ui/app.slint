@@ -7,14 +7,14 @@ import {
 import { AccountCard, AccountRow, AccountState } from "account-card.slint";
 import { AccountEditor, EditorData, CompanionToggle, LoginState } from "editor.slint";
 import { SetupPathPage, SetupAccountPage } from "setup.slint";
-import { AfterStart, FpsLimit, LanguageChoice, SettingsPage } from "settings.slint";
-import { Messages, LaunchFailure, PathProblem } from "messages.slint";
+import { AfterStart, FpsLimit, LanguageChoice, NexusStatus, SettingsPage } from "settings.slint";
+import { Messages, LaunchFailure, NexusProblem, PathProblem } from "messages.slint";
 import { OverlaySwitcher, SwitcherEntry } from "overlay.slint";
 
 export {
     Theme, AccountRow, AccountState, ToastData, ToastKind, Messages, LaunchFailure, PathProblem,
     EditorData, CompanionToggle, LoginState, AfterStart, FpsLimit, LanguageChoice,
-    OverlaySwitcher, SwitcherEntry, ThemeChoice,
+    OverlaySwitcher, SwitcherEntry, ThemeChoice, NexusProblem, NexusStatus,
 }
 
 /// Which step of linking the ArenaNet installation into Steam is shown (hidden = no dialog).
@@ -504,6 +504,147 @@ component PatchAvailableBanner {
     }
 }
 
+/// Shown above the list when a newer Nexus release exists; installing is up to the user.
+component NexusUpdateBanner {
+    in property <string> version;
+    in property <bool> busy;
+    callback update();
+
+    height: content.preferred-height;
+    accessible-role: text;
+    accessible-label: @tr("A Nexus update is available");
+
+    Rectangle {
+        border-radius: Theme.radius-card;
+        background: Theme.accent-soft;
+        border-width: 1px;
+        border-color: Theme.accent-line;
+    }
+    content := VerticalLayout {
+        padding: 12px;
+        spacing: 10px;
+        HorizontalLayout {
+            spacing: 10px;
+            VerticalLayout {
+                alignment: start;
+                padding-top: 1px;
+                Icon {
+                    path: Icons.download;
+                    color: Theme.accent;
+                }
+            }
+            VerticalLayout {
+                horizontal-stretch: 1;
+                spacing: 4px;
+                Text {
+                    text: @tr("A Nexus update is available");
+                    font-size: Theme.fs-body;
+                    font-weight: 600;
+                    color: Theme.text;
+                    wrap: word-wrap;
+                }
+                Text {
+                    text: root.version != ""
+                        ? @tr("Version {} is out. Close all Guild Wars 2 clients, then update.", root.version)
+                        : @tr("Close all Guild Wars 2 clients, then update.");
+                    font-size: 12.5px;
+                    color: Theme.text-muted;
+                    wrap: word-wrap;
+                }
+            }
+        }
+        HorizontalLayout {
+            alignment: start;
+            Button {
+                kind: ButtonKind.primary;
+                icon: Icons.download;
+                text: @tr("Update");
+                enabled: !root.busy;
+                clicked => { root.update(); }
+            }
+        }
+    }
+}
+
+/// Asks before Nexus is installed over another d3d11.dll (ArcDPS, say): that file is renamed to
+/// d3d11_chainload.dll, where Nexus loads it from.
+component ConfirmNexusChainload {
+    callback confirmed();
+    callback cancelled();
+
+    init => {
+        cancel.focus();
+    }
+
+    Rectangle {
+        background: Theme.bg.with-alpha(0.72);
+        TouchArea {
+            clicked => { root.cancelled(); }
+        }
+    }
+    FocusScope {
+        key-pressed(event) => {
+            if event.text == Key.Escape {
+                root.cancelled();
+                return accept;
+            }
+            reject
+        }
+        Elevated {
+            x: (root.width - self.width) / 2;
+            y: (root.height - self.height) / 2;
+            width: min(root.width - 32px, 360px);
+            height: dialog.preferred-height;
+            accessible-role: groupbox;
+            accessible-label: @tr("Rename the existing d3d11.dll?");
+            TouchArea { }
+            dialog := VerticalLayout {
+                padding: 16px;
+                spacing: 12px;
+                HorizontalLayout {
+                    spacing: 10px;
+                    Icon {
+                        y: (parent.height - self.height) / 2;
+                        path: Icons.alert;
+                        color: Theme.accent;
+                        size: 17px;
+                    }
+                    Text {
+                        horizontal-stretch: 1;
+                        text: @tr("Rename the existing d3d11.dll?");
+                        font-size: Theme.fs-page-title;
+                        font-weight: 600;
+                        color: Theme.text;
+                        wrap: word-wrap;
+                    }
+                }
+                Text {
+                    text: @tr("The game folder already has a d3d11.dll, probably from ArcDPS. It is renamed to d3d11_chainload.dll so Nexus can load it. Nothing is deleted, and removing Nexus later restores the name.");
+                    font-size: 12.5px;
+                    color: Theme.text-muted;
+                    wrap: word-wrap;
+                }
+                HorizontalLayout {
+                    padding-top: 4px;
+                    spacing: 8px;
+                    alignment: end;
+                    cancel := Button {
+                        kind: ButtonKind.ghost;
+                        text: @tr("Cancel");
+                        clicked => { root.cancelled(); }
+                    }
+                    Button {
+                        kind: ButtonKind.primary;
+                        icon: Icons.download;
+                        text: @tr("Rename and install");
+                        clicked => { root.confirmed(); }
+                    }
+                }
+            }
+        }
+    }
+}
+
 /// Steam accounts need Steam's own copy of the game: offers to link the existing installation into
 /// Steam (step `link`), then waits for the user to click Install in Steam (step `install`).
 component SteamSetupDialog {
@@ -646,6 +787,13 @@ export component MainWindow inherits Window {
     in property <bool> discord-autostart;
     in property <string> discord-path;
     in property <bool> discord-path-ok;
+    in-out property <bool> nexus-enabled;
+    in-out property <bool> nexus-check-for-updates;
+    in-out property <NexusStatus> nexus-status;
+    in-out property <bool> nexus-busy;
+    in-out property <string> nexus-version;
+    /// Ask before moving another d3d11.dll out of the way (see `ConfirmNexusChainload`).
+    in-out property <bool> nexus-confirm-open: false;
     in property <bool> autostart;
     in property <AfterStart> after-start;
     in property <FpsLimit> fps-limit;
@@ -697,6 +845,11 @@ export component MainWindow inherits Window {
     callback choose-blish-path();
     callback set-discord-autostart(bool);
     callback choose-discord-path();
+    callback set-nexus-enabled(bool);
+    callback set-nexus-check-for-updates(bool);
+    /// Installs or updates Nexus; `rename-foreign` is the user's yes to the chainload rename.
+    callback nexus-install(bool);
+    callback nexus-uninstall();
     callback toggle-autostart();
     callback set-after-start(AfterStart);
     callback set-fps-limit(FpsLimit);
@@ -895,6 +1048,17 @@ export component MainWindow inherits Window {
             PatchAvailableBanner {
                 patching: root.patching;
                 begin-download => { root.start-patch(); }
+            }
+        }
+
+        if root.nexus-enabled && root.nexus-status == NexusStatus.update-available: HorizontalLayout {
+            padding-left: 12px;
+            padding-right: 12px;
+            padding-bottom: 8px;
+            NexusUpdateBanner {
+                version: root.nexus-version;
+                busy: root.nexus-busy;
+                update => { root.nexus-install(false); }
             }
         }
 
@@ -1098,6 +1262,11 @@ export component MainWindow inherits Window {
         discord-autostart: root.discord-autostart;
         discord-path: root.discord-path;
         discord-path-ok: root.discord-path-ok;
+        nexus-enabled: root.nexus-enabled;
+        nexus-check-for-updates: root.nexus-check-for-updates;
+        nexus-status: root.nexus-status;
+        nexus-busy: root.nexus-busy;
+        nexus-version: root.nexus-version;
         autostart: root.autostart;
         after-start: root.after-start;
         fps-limit: root.fps-limit;
@@ -1114,6 +1283,10 @@ export component MainWindow inherits Window {
         choose-blish-path => { root.choose-blish-path(); }
         set-discord-autostart(value) => { root.set-discord-autostart(value); }
         choose-discord-path => { root.choose-discord-path(); }
+        set-nexus-enabled(value) => { root.set-nexus-enabled(value); }
+        set-nexus-check-for-updates(value) => { root.set-nexus-check-for-updates(value); }
+        nexus-install => { root.nexus-install(false); }
+        nexus-uninstall => { root.nexus-uninstall(); }
         toggle-autostart => { root.toggle-autostart(); }
         set-after-start(value) => { root.set-after-start(value); }
         set-fps-limit(value) => { root.set-fps-limit(value); }
@@ -1179,6 +1352,18 @@ export component MainWindow inherits Window {
             root.confirm-delete-all-open = false;
         }
         cancelled => { root.confirm-delete-all-open = false; }
+    }
+
+    if root.nexus-confirm-open: ConfirmNexusChainload {
+        x: 0;
+        y: 0;
+        width: root.width;
+        height: root.height;
+        confirmed => {
+            root.nexus-confirm-open = false;
+            root.nexus-install(true);
+        }
+        cancelled => { root.nexus-confirm-open = false; }
     }
 
     // ── Login offer ──────────────────────────────────────────────────────────────────────────

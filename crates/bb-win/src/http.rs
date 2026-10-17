@@ -9,7 +9,8 @@ use std::time::Duration;
 
 use windows::Win32::Networking::WinHttp::{
     INTERNET_DEFAULT_HTTPS_PORT, WINHTTP_ACCESS_TYPE_NO_PROXY, WINHTTP_FLAG_SECURE,
-    WinHttpCloseHandle, WinHttpConnect, WinHttpOpen, WinHttpOpenRequest, WinHttpQueryDataAvailable,
+    WINHTTP_QUERY_FLAG_NUMBER, WINHTTP_QUERY_STATUS_CODE, WinHttpCloseHandle, WinHttpConnect,
+    WinHttpOpen, WinHttpOpenRequest, WinHttpQueryDataAvailable, WinHttpQueryHeaders,
     WinHttpReadData, WinHttpReceiveResponse, WinHttpSendRequest, WinHttpSetTimeouts,
 };
 use windows::core::{HSTRING, PCWSTR};
@@ -47,6 +48,53 @@ impl Drop for Handle {
 ///
 /// Returns the OS error if the request can't be made or the response isn't valid UTF-8 text.
 pub fn get(host: &str, path: &str, timeout: Duration) -> Result<String, io::Error> {
+    let mut body = Vec::new();
+    fetch(host, path, timeout, |chunk| {
+        body.extend_from_slice(chunk);
+        Ok(())
+    })?;
+    String::from_utf8(body).map_err(|error| io::Error::new(io::ErrorKind::InvalidData, error))
+}
+
+/// Performs one blocking HTTPS GET to `https://{host}{path}` and streams the response body into
+/// the new file `dest` (replacing an existing one), returning the number of bytes written. `WinHTTP`
+/// follows redirects on its own, which GitHub release downloads rely on. A partial file is removed
+/// again on failure.
+///
+/// # Errors
+///
+/// Returns the OS error if the request fails, the server answers with anything but `200`, or
+/// `dest` can't be written.
+pub fn download(
+    host: &str,
+    path: &str,
+    dest: &std::path::Path,
+    timeout: Duration,
+) -> Result<u64, io::Error> {
+    use std::io::Write;
+
+    let mut file = std::fs::File::create(dest)?;
+    let mut total = 0u64;
+    let result = fetch(host, path, timeout, |chunk| {
+        file.write_all(chunk)?;
+        total += chunk.len() as u64;
+        Ok(())
+    });
+    drop(file);
+    if let Err(error) = result {
+        let _ = std::fs::remove_file(dest);
+        return Err(error);
+    }
+    Ok(total)
+}
+
+/// The shared request: sends the GET, checks for a `200` and hands the body to `sink` in chunks.
+fn fetch(
+    host: &str,
+    path: &str,
+    timeout: Duration,
+    sink: impl FnMut(&[u8]) -> io::Result<()>,
+) -> Result<(), io::Error> {
     // SAFETY: all string arguments are valid wide strings for the duration of the call; the
     // returned handle is wrapped in `Handle` right away so every exit path below closes it.
     let session = Handle(unsafe {
@@ -99,7 +147,31 @@ pub fn get(host: &str, path: &str, timeout: Duration) -> Result<String, io::Erro
     // SAFETY: `request.0` has an outstanding send from the call just above.
     unsafe { WinHttpReceiveResponse(request.0, std::ptr::null_mut()) }.map_err(io::Error::other)?;
 
-    read_body(&request)
+    check_status(&request)?;
+    read_body(&request, sink)
+}
+
+fn check_status(request: &Handle) -> Result<(), io::Error> {
+    let mut status = 0u32;
+    let mut size = std::mem::size_of::<u32>() as u32;
+    // SAFETY: `request.0` is a valid request handle that has received a response; with the NUMBER
+    // flag the buffer receives a `u32` and `size` is its length in bytes.
+    unsafe {
+        WinHttpQueryHeaders(
+            request.0,
+            WINHTTP_QUERY_STATUS_CODE | WINHTTP_QUERY_FLAG_NUMBER,
+            PCWSTR::null(),
+            Some((&raw mut status).cast()),
+            &raw mut size,
+            std::ptr::null_mut(),
+        )
+    }
+    .map_err(io::Error::other)?;
+    if status == 200 {
+        Ok(())
+    } else {
+        Err(io::Error::other(format!("HTTP status {status}")))
+    }
 }
 
 fn set_timeouts(handle: &Handle, timeout: Duration) -> Result<(), io::Error> {
@@ -109,8 +181,10 @@ fn set_timeouts(handle: &Handle, timeout: Duration) -> Result<(), io::Error> {
         .map_err(io::Error::other)
 }
 
-fn read_body(request: &Handle) -> Result<String, io::Error> {
-    let mut body = Vec::new();
+fn read_body(
+    request: &Handle,
+    mut sink: impl FnMut(&[u8]) -> io::Result<()>,
+) -> Result<(), io::Error> {
     loop {
         let mut available = 0u32;
         // SAFETY: `request.0` is a valid, still-open request handle that has received a response;
@@ -134,9 +208,9 @@ fn read_body(request: &Handle) -> Result<String, io::Error> {
         }
         .map_err(io::Error::other)?;
         chunk.truncate(read as usize);
-        body.extend_from_slice(&chunk);
+        sink(&chunk)?;
     }
-    String::from_utf8(body).map_err(|error| io::Error::new(io::ErrorKind::InvalidData, error))
+    Ok(())
 }
 
 #[cfg(test)]

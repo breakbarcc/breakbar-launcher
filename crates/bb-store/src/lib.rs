@@ -135,6 +135,30 @@ pub struct Config {
     /// Path to Discord's launcher `.exe`.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub discord_path: Option<PathBuf>,
+    #[serde(default)]
+    pub nexus: NexusSettings,
+}
+
+/// Whether and how Breakbar manages the Nexus addon loader.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub struct NexusSettings {
+    /// Whether Breakbar manages Nexus (`d3d11.dll` in the game folder). Off by default: it changes
+    /// files in the game folder, so it must be asked for.
+    #[serde(default)]
+    pub enabled: bool,
+    /// Whether Breakbar asks GitHub for a new Nexus release and shows a banner for it. Only
+    /// relevant while [`enabled`](Self::enabled) is on.
+    #[serde(default = "default_true")]
+    pub check_for_updates: bool,
+}
+
+impl Default for NexusSettings {
+    fn default() -> Self {
+        Self {
+            enabled: false,
+            check_for_updates: true,
+        }
+    }
 }
 
 fn default_true() -> bool {
@@ -202,6 +226,7 @@ impl Default for Config {
             check_for_updates: true,
             discord_autostart: false,
             discord_path: None,
+            nexus: NexusSettings::default(),
         }
     }
 }

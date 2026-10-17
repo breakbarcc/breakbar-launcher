@@ -14,8 +14,8 @@ use raw_window_handle::{HasWindowHandle, RawWindowHandle};
 use slint::{ComponentHandle, Model, SharedString, VecModel};
 use ui::{
     AccountRow, AccountState, AfterStart, CompanionToggle, EditorData, FpsLimit, LanguageChoice,
-    LaunchFailure, LoginState, MainWindow, Messages, PathProblem, SteamSetupStep, Theme,
-    ThemeChoice, ToastData, ToastKind,
+    LaunchFailure, LoginState, MainWindow, Messages, NexusProblem, NexusStatus, PathProblem,
+    SteamSetupStep, Theme, ThemeChoice, ToastData, ToastKind,
 };
 
 use crate::companions::{self, SharedInstances};
@@ -27,6 +27,7 @@ mod convert;
 mod launch;
 mod list;
 mod login;
+mod nexus;
 mod patch;
 #[cfg(test)]
 mod preview;
@@ -315,6 +316,7 @@ pub fn run() -> Result<(), slint::PlatformError> {
     launch::wire(&window, &app, &queue);
     login::wire(&window, &app, &queue);
     patch::wire(&window, &app);
+    nexus::wire(&window, &app);
     reset::wire(&window, &app);
     steam_dialog::wire(&window, &app);
     list::wire(&window);
@@ -419,6 +421,8 @@ fn show_initial_state(window: &MainWindow, app: &App) {
     window.set_app_version(env!("CARGO_PKG_VERSION").into());
     window.set_language(to_ui_language(app.config.language));
     window.set_check_for_updates(app.config.check_for_updates);
+    window.set_nexus_enabled(app.config.nexus.enabled);
+    window.set_nexus_check_for_updates(app.config.nexus.check_for_updates);
     show_overlay_settings(window, app.config.overlay);
     window
         .global::<Theme>()
@@ -475,6 +479,7 @@ fn start_patch_check(window: &MainWindow, app: &Rc<RefCell<App>>) -> slint::Time
 /// otherwise runs `check_for_patch` on a background thread and reports the result back to the
 /// window.
 fn run_patch_check(window: &MainWindow, app: &Rc<RefCell<App>>) {
+    nexus::refresh(window, app);
     let (enabled, gw2_path) = {
         let app = app.borrow();
         (app.config.check_for_updates, app.config.gw2_path.clone())

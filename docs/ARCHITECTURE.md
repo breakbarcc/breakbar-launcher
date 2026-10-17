@@ -237,6 +237,18 @@ struct CompanionApp {
 - **Previews without a window:** `cargo test -p breakbar-launcher -- --ignored render_ui_previews` renders
   the main states in both themes with the software renderer into `%TEMP%\breakbar-ui\*.bmp` —
   no window opens, so it is safe to run while playing.
+- **Nexus** (`nexus.rs`, `gui/nexus.rs`; opt-in "// Nexus" section in Settings, off by default):
+  installs and updates the Nexus addon loader (`d3d11.dll` next to `Gw2-64.exe`) from the latest
+  GitHub release of RaidcoreGG/Nexus. The release JSON is parsed by hand (like `gw2_build`); the
+  download goes through `bb_win::http::download` (WinHTTP follows GitHub's redirect) into a
+  `.breakbar-part` file and is verified against the size and the SHA-256 `digest` GitHub reports
+  before it replaces `d3d11.dll`. Whether an install is current is decided by comparing its hash
+  with that digest, so nothing about it is stored in the config (only `[nexus]` `enabled` and
+  `check_for_updates`). A `d3d11.dll` that isn't Nexus (it contains no "RaidcoreGG" text; ArcDPS
+  is the usual case) is only renamed to `d3d11_chainload.dll` after the user confirms a dialog, and
+  is never overwritten; removing Nexus restores the name. Install, update and removal are refused
+  while any client runs (the DLL is loaded). An update is never installed on its own: the hourly
+  check (same timer as the game patch check) only shows a banner with an "Update" button.
 - **Settings page** (`ui/settings.slint`, reached via the gear icon next to "Add account"): so far
   the "// Paths" section (screen 11), showing the same Guild Wars 2 / Blish HUD paths that used to
   sit in the main window's footer, and a "// Behavior" section with the "After starting an
