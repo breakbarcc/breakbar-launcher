@@ -947,6 +947,7 @@ export component MainWindow inherits Window {
     callback open-license();
     callback open-slint();
     callback open-issues();
+    callback open-nexus();
     /// Settings: "Delete all data" was clicked. Shown as a confirmation dialog if accepted (see
     /// `confirm-delete-all-open`), or refused with a toast if an account is still active.
     callback request-delete-all-data();
@@ -1387,6 +1388,7 @@ export component MainWindow inherits Window {
         open-license => { root.open-license(); }
         open-slint => { root.open-slint(); }
         open-issues => { root.open-issues(); }
+        open-nexus => { root.open-nexus(); }
         request-delete-all-data => { root.request-delete-all-data(); }
     }
 

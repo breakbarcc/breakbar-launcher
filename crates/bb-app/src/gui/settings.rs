@@ -2,9 +2,10 @@
 
 use super::{
     APP_NAME, AfterStart, App, BLISH_HUD, CompanionApp, CompanionId, ComponentHandle, ISSUES_URL,
-    LICENSE_URL, MainWindow, Messages, Path, PathBuf, PathProblem, Rc, RefCell, SLINT_URL,
-    SharedString, Theme, ToastKind, WEBSITE_URL, apply_language, discord, from_ui_after_start,
-    from_ui_fps_limit, from_ui_language, from_ui_theme, game, native_handle, push_toast, ui,
+    LICENSE_URL, MainWindow, Messages, NEXUS_URL, Path, PathBuf, PathProblem, Rc, RefCell,
+    SLINT_URL, SharedString, Theme, ToastKind, WEBSITE_URL, apply_language, discord,
+    from_ui_after_start, from_ui_fps_limit, from_ui_language, from_ui_theme, game, native_handle,
+    push_toast, ui,
 };
 
 /// Shows the overlay settings on the settings page. The overlay window itself picks them up from
@@ -394,6 +395,7 @@ pub(super) fn wire(
     window.on_open_license(|| open_url(LICENSE_URL));
     window.on_open_slint(|| open_url(SLINT_URL));
     window.on_open_issues(|| open_url(ISSUES_URL));
+    window.on_open_nexus(|| open_url(NEXUS_URL));
 
     wire_overlay(window, app);
     wire_appearance(window, app, overlay);

@@ -232,6 +232,7 @@ export component SettingsPage inherits VerticalLayout {
     callback set-nexus-check-for-updates(bool);
     callback nexus-install();
     callback nexus-uninstall();
+    callback open-nexus();
     callback open-website();
     callback open-license();
     callback open-slint();
@@ -490,6 +491,13 @@ export component SettingsPage inherits VerticalLayout {
                 help: @tr("Nexus is an addon manager for Guild Wars 2. Breakbar can install it into the game folder (as d3d11.dll) and tell you when a new version is out.");
                 checked: root.nexus-enabled;
                 toggled(value) => { root.set-nexus-enabled(value); }
+            }
+            HorizontalLayout {
+                alignment: start;
+                LinkButton {
+                    text: "raidcore.gg/gw2/nexus";
+                    clicked => { root.open-nexus(); }
+                }
             }
             if root.nexus-enabled: VerticalLayout {
                 spacing: 10px;
