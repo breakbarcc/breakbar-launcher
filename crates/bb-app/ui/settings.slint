@@ -149,7 +149,10 @@ component ToggleRow {
     in property <string> help;
     in property <bool> checked;
     in property <bool> enabled: true;
+    /// Optional link that ends the help text; empty for none.
+    in property <string> link;
     callback toggled(bool);
+    callback link-clicked();
     HorizontalLayout {
         spacing: 12px;
         opacity: root.enabled ? 1 : 0.42;
@@ -166,6 +169,13 @@ component ToggleRow {
                 font-size: Theme.fs-help;
                 color: Theme.text-dim;
                 wrap: word-wrap;
+            }
+            if root.link != "": HorizontalLayout {
+                alignment: start;
+                LinkButton {
+                    text: root.link;
+                    clicked => { root.link-clicked(); }
+                }
             }
         }
         Toggle {
@@ -490,14 +500,9 @@ export component SettingsPage inherits VerticalLayout {
                 text: @tr("Manage Nexus");
                 help: @tr("Nexus is an addon manager for Guild Wars 2. Breakbar can install it into the game folder (as d3d11.dll) and tell you when a new version is out.");
                 checked: root.nexus-enabled;
+                link: @tr("Learn more");
+                link-clicked => { root.open-nexus(); }
                 toggled(value) => { root.set-nexus-enabled(value); }
-            }
-            HorizontalLayout {
-                alignment: start;
-                LinkButton {
-                    text: "raidcore.gg/gw2/nexus";
-                    clicked => { root.open-nexus(); }
-                }
             }
             if root.nexus-enabled: VerticalLayout {
                 spacing: 10px;

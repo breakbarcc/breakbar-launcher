@@ -145,47 +145,47 @@ msgctxt "AddAccountPage"
 msgid "Cancel"
 msgstr "Abbrechen"
 
-#: ui/app.slint:247 ui/app.slint:249 ui/app.slint:257 ui/app.slint:278 ui/app.slint:1041
+#: ui/app.slint:247 ui/app.slint:249 ui/app.slint:257 ui/app.slint:278 ui/app.slint:1042
 msgctxt "MainWindow"
 msgid "Start · {}"
 msgstr "Starten · {}"
 
-#: ui/app.slint:247 ui/app.slint:249 ui/app.slint:257 ui/app.slint:278 ui/app.slint:1041
+#: ui/app.slint:247 ui/app.slint:249 ui/app.slint:257 ui/app.slint:278 ui/app.slint:1042
 msgctxt "MainWindow"
 msgid "Start selection · {}"
 msgstr "Auswahl starten · {}"
 
-#: ui/app.slint:248 ui/app.slint:250 ui/app.slint:258 ui/app.slint:279 ui/app.slint:1042
+#: ui/app.slint:248 ui/app.slint:250 ui/app.slint:258 ui/app.slint:279 ui/app.slint:1043
 msgctxt "MainWindow"
 msgid "All"
 msgstr "Alle"
 
-#: ui/app.slint:248 ui/app.slint:250 ui/app.slint:258 ui/app.slint:279 ui/app.slint:1042
+#: ui/app.slint:248 ui/app.slint:250 ui/app.slint:258 ui/app.slint:279 ui/app.slint:1043
 msgctxt "MainWindow"
 msgid "Launch all"
 msgstr "Launch all"
 
-#: ui/app.slint:257 ui/app.slint:259 ui/app.slint:267 ui/app.slint:288 ui/app.slint:1051
+#: ui/app.slint:257 ui/app.slint:259 ui/app.slint:267 ui/app.slint:288 ui/app.slint:1052
 msgctxt "MainWindow"
 msgid "{} of {} clients running"
 msgstr "{} von {} Clients laufen"
 
-#: ui/app.slint:279 ui/app.slint:281 ui/app.slint:286 ui/app.slint:310 ui/app.slint:1073
+#: ui/app.slint:279 ui/app.slint:281 ui/app.slint:286 ui/app.slint:310 ui/app.slint:1074
 msgctxt "MainWindow"
 msgid "RUNNING"
 msgstr "LAUFEN"
 
-#: ui/app.slint:308 ui/app.slint:332 ui/app.slint:358 ui/app.slint:381 ui/app.slint:762 ui/app.slint:686 ui/app.slint:952 ui/app.slint:945 ui/app.slint:1109 ui/app.slint:1095
+#: ui/app.slint:308 ui/app.slint:332 ui/app.slint:358 ui/app.slint:381 ui/app.slint:686 ui/app.slint:952 ui/app.slint:945 ui/app.slint:1095 ui/app.slint:1096 ui/app.slint:1195
 msgctxt "MainWindow"
 msgid "Add account"
 msgstr "Account hinzufügen"
 
-#: ui/app.slint:338 ui/app.slint:340 ui/app.slint:342 ui/app.slint:362 ui/app.slint:1175
+#: ui/app.slint:338 ui/app.slint:340 ui/app.slint:342 ui/app.slint:362 ui/app.slint:1176
 msgctxt "MainWindow"
 msgid "No accounts yet"
 msgstr "Noch keine Accounts"
 
-#: ui/app.slint:345 ui/app.slint:346 ui/app.slint:347 ui/app.slint:369 ui/app.slint:1182
+#: ui/app.slint:345 ui/app.slint:346 ui/app.slint:347 ui/app.slint:369 ui/app.slint:1183
 msgctxt "MainWindow"
 msgid ""
 "Add an account and start it with one click. Several accounts run side by "
@@ -194,17 +194,17 @@ msgstr ""
 "Lege einen Account an und starte ihn mit einem Klick. Mehrere Accounts "
 "laufen parallel."
 
-#: ui/app.slint:372 ui/app.slint:374 ui/app.slint:376 ui/app.slint:396 ui/app.slint:1209
+#: ui/app.slint:372 ui/app.slint:374 ui/app.slint:376 ui/app.slint:396 ui/app.slint:1210
 msgctxt "MainWindow"
 msgid "// ACCOUNTS · {}"
 msgstr "// ACCOUNTS · {}"
 
-#: ui/app.slint:378 ui/app.slint:383 ui/app.slint:385 ui/app.slint:407 ui/app.slint:1220
+#: ui/app.slint:378 ui/app.slint:383 ui/app.slint:385 ui/app.slint:407 ui/app.slint:1221
 msgctxt "MainWindow"
 msgid "{} selected"
 msgstr "{} ausgewählt"
 
-#: ui/app.slint:385 ui/app.slint:390 ui/app.slint:392 ui/app.slint:414 ui/app.slint:1227
+#: ui/app.slint:385 ui/app.slint:390 ui/app.slint:392 ui/app.slint:414 ui/app.slint:1228
 msgctxt "MainWindow"
 msgid "Clear"
 msgstr "Aufheben"
@@ -234,7 +234,7 @@ msgctxt "Toast"
 msgid "Dismiss"
 msgstr "Hinweis schließen"
 
-#: ui/messages.slint:20 ui/messages.slint:21 ui/messages.slint:24 ui/messages.slint:29 ui/messages.slint:87
+#: ui/messages.slint:20 ui/messages.slint:21 ui/messages.slint:24 ui/messages.slint:87
 msgctxt "Messages"
 msgid "Start failed"
 msgstr "Start fehlgeschlagen"
@@ -474,7 +474,7 @@ msgctxt "AccountCard"
 msgid "Del"
 msgstr "Entf"
 
-#: ui/app.slint:108 ui/app.slint:124 ui/app.slint:140 ui/app.slint:92 ui/app.slint:97
+#: ui/app.slint:108 ui/app.slint:124 ui/app.slint:140 ui/app.slint:92 ui/app.slint:113
 msgctxt "ConfirmDelete"
 msgid "Delete „{}“?"
 msgstr "„{}“ löschen?"
@@ -498,17 +498,17 @@ msgctxt "ConfirmDelete"
 msgid "Delete"
 msgstr "Löschen"
 
-#: ui/app.slint:144 ui/app.slint:145 ui/app.slint:146 ui/app.slint:176 ui/app.slint:849
+#: ui/app.slint:144 ui/app.slint:145 ui/app.slint:146 ui/app.slint:176
 msgctxt "MainWindow"
 msgid "Breakbar Launcher – Setup"
 msgstr "Breakbar Launcher – Einrichtung"
 
-#: ui/app.slint:376 ui/app.slint:378 ui/app.slint:380 ui/app.slint:400 ui/app.slint:1213
+#: ui/app.slint:376 ui/app.slint:378 ui/app.slint:380 ui/app.slint:400 ui/app.slint:1214
 msgctxt "MainWindow"
 msgid "POS {}/{}"
 msgstr "POS {}/{}"
 
-#: ui/app.slint:395 ui/app.slint:397 ui/app.slint:399 ui/app.slint:419 ui/app.slint:1232
+#: ui/app.slint:395 ui/app.slint:397 ui/app.slint:399 ui/app.slint:419 ui/app.slint:1233
 msgctxt "MainWindow"
 msgid "Drag to sort"
 msgstr "Ziehen zum Sortieren"
@@ -847,42 +847,42 @@ msgctxt "SetupAccountPage"
 msgid "Create account"
 msgstr "Account anlegen"
 
-#: ui/app.slint:308 ui/app.slint:310 ui/app.slint:312 ui/app.slint:314 ui/app.slint:1102
+#: ui/app.slint:308 ui/app.slint:310 ui/app.slint:312 ui/app.slint:314 ui/app.slint:1103
 msgctxt "MainWindow"
 msgid "Settings"
 msgstr "Einstellungen"
 
-#: ui/settings.slint:110 ui/settings.slint:113 ui/settings.slint:116 ui/settings.slint:122
+#: ui/settings.slint:110 ui/settings.slint:113 ui/settings.slint:116
 msgctxt "PathField"
 msgid "Browse…"
 msgstr "Durchsuchen…"
 
-#: ui/settings.slint:157 ui/settings.slint:227 ui/settings.slint:94 ui/settings.slint:251
+#: ui/settings.slint:157 ui/settings.slint:227 ui/settings.slint:94 ui/settings.slint:262
 msgctxt "SettingsPage"
 msgid "Back"
 msgstr "Zurück"
 
-#: ui/settings.slint:100 ui/settings.slint:161 ui/settings.slint:231 ui/settings.slint:255
+#: ui/settings.slint:100 ui/settings.slint:161 ui/settings.slint:231 ui/settings.slint:266
 msgctxt "SettingsPage"
 msgid "Settings"
 msgstr "Einstellungen"
 
-#: ui/settings.slint:120 ui/settings.slint:122 ui/settings.slint:183 ui/settings.slint:277
+#: ui/settings.slint:120 ui/settings.slint:122 ui/settings.slint:183 ui/settings.slint:288
 msgctxt "SettingsPage"
 msgid "// PATHS"
 msgstr "// PFADE"
 
-#: ui/settings.slint:126 ui/settings.slint:128 ui/settings.slint:189 ui/settings.slint:283
+#: ui/settings.slint:126 ui/settings.slint:128 ui/settings.slint:189 ui/settings.slint:294
 msgctxt "SettingsPage"
 msgid "Gw2-64.exe found"
 msgstr "Gw2-64.exe gefunden"
 
-#: ui/settings.slint:127 ui/settings.slint:129 ui/settings.slint:135 ui/settings.slint:254 ui/settings.slint:266 ui/settings.slint:274 ui/settings.slint:281 ui/settings.slint:284 ui/settings.slint:292
+#: ui/settings.slint:127 ui/settings.slint:129 ui/settings.slint:135 ui/settings.slint:266 ui/settings.slint:274 ui/settings.slint:284 ui/settings.slint:292 ui/settings.slint:303 ui/settings.slint:492
 msgctxt "SettingsPage"
 msgid "File not found. Check the path."
 msgstr "Datei nicht gefunden. Prüfe den Pfad."
 
-#: ui/settings.slint:134 ui/settings.slint:136 ui/settings.slint:197 ui/settings.slint:291
+#: ui/settings.slint:134 ui/settings.slint:136 ui/settings.slint:197 ui/settings.slint:302
 msgctxt "SettingsPage"
 msgid "Blish HUD.exe found"
 msgstr "Blish HUD.exe gefunden"
@@ -892,22 +892,22 @@ msgctxt "Messages"
 msgid "Could not change the Windows startup setting"
 msgstr "Windows-Start-Einstellung konnte nicht geändert werden"
 
-#: ui/messages.slint:130 ui/messages.slint:132 ui/messages.slint:137 ui/messages.slint:214
+#: ui/messages.slint:130 ui/messages.slint:132 ui/messages.slint:137 ui/messages.slint:145
 msgctxt "Messages"
 msgid "{}"
 msgstr "{}"
 
-#: ui/settings.slint:142 ui/settings.slint:203 ui/settings.slint:234 ui/settings.slint:355
+#: ui/settings.slint:142 ui/settings.slint:203 ui/settings.slint:234 ui/settings.slint:366
 msgctxt "SettingsPage"
 msgid "// BEHAVIOR"
 msgstr "// VERHALTEN"
 
-#: ui/settings.slint:150 ui/settings.slint:164 ui/settings.slint:239 ui/settings.slint:335 ui/settings.slint:387 ui/settings.slint:391 ui/settings.slint:405
+#: ui/settings.slint:150 ui/settings.slint:164 ui/settings.slint:239 ui/settings.slint:387 ui/settings.slint:391 ui/settings.slint:402 ui/settings.slint:416
 msgctxt "SettingsPage"
 msgid "Start with Windows"
 msgstr "Mit Windows starten"
 
-#: ui/settings.slint:155 ui/settings.slint:244 ui/settings.slint:275 ui/settings.slint:396
+#: ui/settings.slint:155 ui/settings.slint:244 ui/settings.slint:275 ui/settings.slint:407
 msgctxt "SettingsPage"
 msgid "Opens the launcher when you sign in."
 msgstr "Öffnet den Launcher bei der Anmeldung."
@@ -967,22 +967,22 @@ msgctxt "Messages"
 msgid "Tray icon could not be created"
 msgstr "Tray-Symbol konnte nicht erstellt werden"
 
-#: ui/settings.slint:208 ui/settings.slint:239 ui/settings.slint:240 ui/settings.slint:360
+#: ui/settings.slint:208 ui/settings.slint:239 ui/settings.slint:240 ui/settings.slint:371
 msgctxt "SettingsPage"
 msgid "After starting an account"
 msgstr "Nach dem Start"
 
-#: ui/settings.slint:214 ui/settings.slint:245 ui/settings.slint:246 ui/settings.slint:366
+#: ui/settings.slint:214 ui/settings.slint:245 ui/settings.slint:246 ui/settings.slint:377
 msgctxt "SettingsPage"
 msgid "Keep the window open"
 msgstr "Fenster geöffnet lassen"
 
-#: ui/settings.slint:219 ui/settings.slint:250 ui/settings.slint:251 ui/settings.slint:371
+#: ui/settings.slint:219 ui/settings.slint:250 ui/settings.slint:251 ui/settings.slint:382
 msgctxt "SettingsPage"
 msgid "Minimize to the tray"
 msgstr "In den Tray minimieren"
 
-#: ui/settings.slint:224 ui/settings.slint:255 ui/settings.slint:256 ui/settings.slint:376
+#: ui/settings.slint:224 ui/settings.slint:255 ui/settings.slint:256 ui/settings.slint:387
 msgctxt "SettingsPage"
 msgid "Close the launcher"
 msgstr "Launcher schließen"
@@ -1012,17 +1012,17 @@ msgctxt "Messages"
 msgid "Start"
 msgstr "Starten"
 
-#: ui/app.slint:160 ui/app.slint:311 ui/app.slint:312 ui/app.slint:377 ui/app.slint:744
+#: ui/app.slint:160 ui/app.slint:311 ui/app.slint:312 ui/app.slint:377
 msgctxt "SteamSetupDialog"
 msgid "Steam needs a copy of Guild Wars 2"
 msgstr "Steam braucht eine Kopie von Guild Wars 2"
 
-#: ui/app.slint:161 ui/app.slint:312 ui/app.slint:313 ui/app.slint:378 ui/app.slint:745
+#: ui/app.slint:161 ui/app.slint:312 ui/app.slint:313 ui/app.slint:378
 msgctxt "SteamSetupDialog"
 msgid "Finish the installation in Steam"
 msgstr "Installation in Steam abschließen"
 
-#: ui/app.slint:206 ui/app.slint:357 ui/app.slint:358 ui/app.slint:423 ui/app.slint:790
+#: ui/app.slint:206 ui/app.slint:357 ui/app.slint:358 ui/app.slint:423
 msgctxt "SteamSetupDialog"
 msgid ""
 "„{}“ is a Steam account, and Steam only signs in a Guild Wars 2 that it "
@@ -1033,12 +1033,12 @@ msgstr ""
 "das es selbst installiert hat. Breakbar kann deine bestehende Installation "
 "mit Steam verknüpfen, sodass nichts erneut heruntergeladen werden muss."
 
-#: ui/app.slint:212 ui/app.slint:363 ui/app.slint:364 ui/app.slint:429 ui/app.slint:796
+#: ui/app.slint:212 ui/app.slint:363 ui/app.slint:364 ui/app.slint:429
 msgctxt "SteamSetupDialog"
 msgid "A link will be created:"
 msgstr "Es wird eine Verknüpfung angelegt:"
 
-#: ui/app.slint:225 ui/app.slint:376 ui/app.slint:377 ui/app.slint:442 ui/app.slint:809
+#: ui/app.slint:225 ui/app.slint:376 ui/app.slint:377 ui/app.slint:442
 msgctxt "SteamSetupDialog"
 msgid ""
 "The link to your Guild Wars 2 folder is in place. Open Steam, select Guild "
@@ -1050,7 +1050,7 @@ msgstr ""
 "findet die vorhandenen Dateien und lädt nur wenige Megabyte herunter. "
 "Bestätige hier, sobald es fertig ist."
 
-#: ui/app.slint:231 ui/app.slint:382 ui/app.slint:383 ui/app.slint:448 ui/app.slint:815
+#: ui/app.slint:231 ui/app.slint:382 ui/app.slint:383 ui/app.slint:448
 msgctxt "SteamSetupDialog"
 msgid ""
 "Steam's installation was not found yet. Wait until Steam has finished and "
@@ -1059,22 +1059,22 @@ msgstr ""
 "Die Steam-Installation wurde noch nicht gefunden. Warte, bis Steam fertig "
 "ist, und versuche es erneut."
 
-#: ui/app.slint:242 ui/app.slint:393 ui/app.slint:394 ui/app.slint:459 ui/app.slint:826
+#: ui/app.slint:242 ui/app.slint:393 ui/app.slint:394 ui/app.slint:459
 msgctxt "SteamSetupDialog"
 msgid "Cancel"
 msgstr "Abbrechen"
 
-#: ui/app.slint:242 ui/app.slint:393 ui/app.slint:394 ui/app.slint:459 ui/app.slint:826
+#: ui/app.slint:242 ui/app.slint:393 ui/app.slint:394 ui/app.slint:459
 msgctxt "SteamSetupDialog"
 msgid "Later"
 msgstr "Später"
 
-#: ui/app.slint:248 ui/app.slint:399 ui/app.slint:400 ui/app.slint:465 ui/app.slint:832
+#: ui/app.slint:248 ui/app.slint:399 ui/app.slint:400 ui/app.slint:465
 msgctxt "SteamSetupDialog"
 msgid "Create link"
 msgstr "Verknüpfung erstellen"
 
-#: ui/app.slint:254 ui/app.slint:405 ui/app.slint:406 ui/app.slint:471 ui/app.slint:838
+#: ui/app.slint:254 ui/app.slint:405 ui/app.slint:406 ui/app.slint:471
 msgctxt "SteamSetupDialog"
 msgid "Download finished"
 msgstr "Download fertig"
@@ -1161,7 +1161,7 @@ msgctxt "LoginOfferDialog"
 msgid "Set up now"
 msgstr "Jetzt einrichten"
 
-#: ui/app.slint:256 ui/app.slint:257 ui/app.slint:279 ui/app.slint:280 ui/app.slint:360 ui/app.slint:337
+#: ui/app.slint:256 ui/app.slint:257 ui/app.slint:279 ui/app.slint:280 ui/app.slint:337
 msgctxt "LoginSetupBanner"
 msgid "Setting up „{}“"
 msgstr "„{}“ wird eingerichtet"
@@ -1220,32 +1220,32 @@ msgstr ""
 "gesetztem „E-Mail/Passwort merken“ an, schließe den Client normal und "
 "versuche es erneut."
 
-#: ui/settings.slint:208 ui/settings.slint:209 ui/settings.slint:213 ui/settings.slint:297
+#: ui/settings.slint:208 ui/settings.slint:209 ui/settings.slint:213 ui/settings.slint:308
 msgctxt "SettingsPage"
 msgid "// GAME"
 msgstr "// SPIEL"
 
-#: ui/settings.slint:213 ui/settings.slint:214 ui/settings.slint:218 ui/settings.slint:302
+#: ui/settings.slint:213 ui/settings.slint:214 ui/settings.slint:218 ui/settings.slint:313
 msgctxt "SettingsPage"
 msgid "Frame rate limit for loading screens"
 msgstr "Bildratenbegrenzung für Ladebildschirme"
 
-#: ui/settings.slint:219 ui/settings.slint:220 ui/settings.slint:224 ui/settings.slint:308
+#: ui/settings.slint:219 ui/settings.slint:220 ui/settings.slint:224 ui/settings.slint:319
 msgctxt "SettingsPage"
 msgid "60 FPS"
 msgstr "60 FPS"
 
-#: ui/settings.slint:219 ui/settings.slint:220 ui/settings.slint:224 ui/settings.slint:308
+#: ui/settings.slint:219 ui/settings.slint:220 ui/settings.slint:224 ui/settings.slint:319
 msgctxt "SettingsPage"
 msgid "30 FPS"
 msgstr "30 FPS"
 
-#: ui/settings.slint:219 ui/settings.slint:220 ui/settings.slint:224 ui/settings.slint:308
+#: ui/settings.slint:219 ui/settings.slint:220 ui/settings.slint:224 ui/settings.slint:319
 msgctxt "SettingsPage"
 msgid "Unlimited"
 msgstr "Unbegrenzt"
 
-#: ui/settings.slint:226 ui/settings.slint:227 ui/settings.slint:231 ui/settings.slint:315
+#: ui/settings.slint:226 ui/settings.slint:227 ui/settings.slint:231 ui/settings.slint:326
 msgctxt "SettingsPage"
 msgid ""
 "Only limits the loading screens. It does not apply in the game world or on "
@@ -1256,103 +1256,103 @@ msgstr ""
 "Charakterauswahl-Bildschirm und hat nichts mit dem Framelimiter in den "
 "Grafikoptionen des Spiels zu tun."
 
-#: ui/settings.slint:291 ui/settings.slint:295 ui/settings.slint:300 ui/settings.slint:550
+#: ui/settings.slint:291 ui/settings.slint:295 ui/settings.slint:300 ui/settings.slint:563
 msgctxt "SettingsPage"
 msgid "// APPEARANCE"
 msgstr "// DARSTELLUNG"
 
-#: ui/settings.slint:296 ui/settings.slint:300 ui/settings.slint:305 ui/settings.slint:555
+#: ui/settings.slint:296 ui/settings.slint:300 ui/settings.slint:305 ui/settings.slint:568
 msgctxt "SettingsPage"
 msgid "Theme"
 msgstr "Farbschema"
 
-#: ui/settings.slint:302 ui/settings.slint:306 ui/settings.slint:311 ui/settings.slint:436 ui/settings.slint:479 ui/settings.slint:561 ui/settings.slint:584
+#: ui/settings.slint:302 ui/settings.slint:306 ui/settings.slint:311 ui/settings.slint:479 ui/settings.slint:561 ui/settings.slint:574 ui/settings.slint:597
 #. The language names are shown in their own language on purpose.
 msgctxt "SettingsPage"
 msgid "System"
 msgstr "System"
 
-#: ui/settings.slint:302 ui/settings.slint:306 ui/settings.slint:311 ui/settings.slint:561
+#: ui/settings.slint:302 ui/settings.slint:306 ui/settings.slint:311 ui/settings.slint:574
 msgctxt "SettingsPage"
 msgid "Light"
 msgstr "Hell"
 
-#: ui/settings.slint:302 ui/settings.slint:306 ui/settings.slint:311 ui/settings.slint:561
+#: ui/settings.slint:302 ui/settings.slint:306 ui/settings.slint:311 ui/settings.slint:574
 msgctxt "SettingsPage"
 msgid "Dark"
 msgstr "Dunkel"
 
-#: ui/settings.slint:309 ui/settings.slint:313 ui/settings.slint:318 ui/settings.slint:568
+#: ui/settings.slint:309 ui/settings.slint:313 ui/settings.slint:318 ui/settings.slint:581
 msgctxt "SettingsPage"
 msgid "System follows the Windows app theme."
 msgstr "System folgt dem Windows-App-Design."
 
-#: ui/settings.slint:321 ui/settings.slint:349 ui/settings.slint:450 ui/settings.slint:599
+#: ui/settings.slint:321 ui/settings.slint:349 ui/settings.slint:450 ui/settings.slint:612
 msgctxt "SettingsPage"
 msgid "// ABOUT"
 msgstr "// ÜBER"
 
-#: ui/settings.slint:350 ui/settings.slint:378 ui/settings.slint:479 ui/settings.slint:628
+#: ui/settings.slint:350 ui/settings.slint:378 ui/settings.slint:479 ui/settings.slint:641
 msgctxt "SettingsPage"
 msgid "Version {} · breakbar.cc"
 msgstr "Version {} · breakbar.cc"
 
-#: ui/settings.slint:365 ui/settings.slint:393 ui/settings.slint:494 ui/settings.slint:643
+#: ui/settings.slint:365 ui/settings.slint:393 ui/settings.slint:494 ui/settings.slint:656
 msgctxt "SettingsPage"
 msgid "License"
 msgstr "Lizenz"
 
-#: ui/settings.slint:327 ui/settings.slint:396 ui/settings.slint:424 ui/settings.slint:429 ui/settings.slint:571
+#: ui/settings.slint:327 ui/settings.slint:396 ui/settings.slint:424 ui/settings.slint:571 ui/settings.slint:590
 msgctxt "SettingsPage"
 msgid "Language"
 msgstr "Sprache"
 
-#: ui/settings.slint:341 ui/settings.slint:442 ui/settings.slint:443 ui/settings.slint:591
+#: ui/settings.slint:341 ui/settings.slint:442 ui/settings.slint:443 ui/settings.slint:604
 msgctxt "SettingsPage"
 msgid "System follows the Windows display language."
 msgstr "System folgt der Anzeigesprache von Windows."
 
-#: ui/settings.slint:344 ui/settings.slint:345 ui/settings.slint:355 ui/settings.slint:411
+#: ui/settings.slint:344 ui/settings.slint:345 ui/settings.slint:355 ui/settings.slint:422
 msgctxt "SettingsPage"
 msgid "// SWITCHER"
 msgstr "// SWITCHER"
 
-#: ui/settings.slint:347 ui/settings.slint:348 ui/settings.slint:358 ui/settings.slint:414
+#: ui/settings.slint:347 ui/settings.slint:348 ui/settings.slint:358 ui/settings.slint:425
 msgctxt "SettingsPage"
 msgid "Show the switcher"
 msgstr "Switcher anzeigen"
 
-#: ui/settings.slint:348 ui/settings.slint:349 ui/settings.slint:359 ui/settings.slint:415
+#: ui/settings.slint:348 ui/settings.slint:349 ui/settings.slint:359 ui/settings.slint:426
 msgctxt "SettingsPage"
 msgid "A small bar over the game to jump between clients."
 msgstr "Eine kleine Leiste über dem Spiel, um zwischen Clients zu wechseln."
 
-#: ui/settings.slint:353 ui/settings.slint:354 ui/settings.slint:364 ui/settings.slint:420
+#: ui/settings.slint:353 ui/settings.slint:354 ui/settings.slint:364 ui/settings.slint:431
 msgctxt "SettingsPage"
 msgid "Only while a client is running"
 msgstr "Nur wenn ein Client läuft"
 
-#: ui/settings.slint:354 ui/settings.slint:355 ui/settings.slint:365 ui/settings.slint:421
+#: ui/settings.slint:354 ui/settings.slint:355 ui/settings.slint:365 ui/settings.slint:432
 msgctxt "SettingsPage"
 msgid "Otherwise it stays on screen as long as Breakbar runs."
 msgstr "Sonst bleibt sie sichtbar, solange Breakbar läuft."
 
-#: ui/settings.slint:360 ui/settings.slint:361 ui/settings.slint:371 ui/settings.slint:427
+#: ui/settings.slint:360 ui/settings.slint:361 ui/settings.slint:371 ui/settings.slint:438
 msgctxt "SettingsPage"
 msgid "Lock the position"
 msgstr "Position sperren"
 
-#: ui/settings.slint:361 ui/settings.slint:362 ui/settings.slint:372 ui/settings.slint:428
+#: ui/settings.slint:361 ui/settings.slint:362 ui/settings.slint:372 ui/settings.slint:439
 msgctxt "SettingsPage"
 msgid "The bar can no longer be dragged."
 msgstr "Die Leiste lässt sich nicht mehr verschieben."
 
-#: ui/settings.slint:372 ui/settings.slint:373 ui/settings.slint:384 ui/settings.slint:389 ui/settings.slint:435 ui/settings.slint:439 ui/settings.slint:453
+#: ui/settings.slint:372 ui/settings.slint:373 ui/settings.slint:384 ui/settings.slint:435 ui/settings.slint:439 ui/settings.slint:450 ui/settings.slint:464
 msgctxt "SettingsPage"
 msgid "Opacity at rest"
 msgstr "Deckkraft im Ruhezustand"
 
-#: ui/settings.slint:393 ui/settings.slint:394 ui/settings.slint:404 ui/settings.slint:460
+#: ui/settings.slint:393 ui/settings.slint:394 ui/settings.slint:404 ui/settings.slint:471
 msgctxt "SettingsPage"
 msgid ""
 "Under the pointer the bar is always fully opaque. It is visible over windows "
@@ -1439,12 +1439,12 @@ msgstr ""
 "Das Update wurde nicht installiert. Prüfe deine Verbindung und versuche es "
 "erneut."
 
-#: ui/settings.slint:292 ui/settings.slint:293 ui/settings.slint:298 ui/settings.slint:322
+#: ui/settings.slint:292 ui/settings.slint:293 ui/settings.slint:298 ui/settings.slint:333
 msgctxt "SettingsPage"
 msgid "Check for game updates online"
 msgstr "Online nach Spiel-Updates suchen"
 
-#: ui/settings.slint:509 ui/settings.slint:510 ui/settings.slint:533 ui/settings.slint:647
+#: ui/settings.slint:509 ui/settings.slint:510 ui/settings.slint:533 ui/settings.slint:660
 msgctxt "SettingsPage"
 msgid "Report a problem"
 msgstr "Problem melden"
@@ -1491,7 +1491,7 @@ msgctxt "SettingsPage"
 msgid "// DANGER ZONE"
 msgstr "// GEFAHRENBEREICH"
 
-#: ui/settings.slint:556 ui/settings.slint:573 ui/settings.slint:579 ui/settings.slint:687 ui/settings.slint:693
+#: ui/settings.slint:556 ui/settings.slint:573 ui/settings.slint:579 ui/settings.slint:693 ui/settings.slint:706
 msgctxt "SettingsPage"
 msgid "Delete all data"
 msgstr "Alle Daten löschen"
@@ -1748,17 +1748,17 @@ msgstr ""
 "Die aktuelle Nexus-Version konnte nicht von GitHub geladen werden. Prüfe "
 "deine Verbindung."
 
-#: ui/settings.slint:483 ui/settings.slint:486
+#: ui/settings.slint:483 ui/settings.slint:486 ui/settings.slint:497
 msgctxt "SettingsPage"
 msgid "// NEXUS"
 msgstr "// NEXUS"
 
-#: ui/settings.slint:486 ui/settings.slint:489
+#: ui/settings.slint:486 ui/settings.slint:489 ui/settings.slint:500
 msgctxt "SettingsPage"
 msgid "Manage Nexus"
 msgstr "Nexus verwalten"
 
-#: ui/settings.slint:487 ui/settings.slint:490
+#: ui/settings.slint:487 ui/settings.slint:490 ui/settings.slint:501
 msgctxt "SettingsPage"
 msgid ""
 "Nexus is an addon manager for Guild Wars 2. Breakbar can install it into the "
@@ -1768,27 +1768,27 @@ msgstr ""
 "Spielordner installieren (als d3d11.dll) und dich informieren, wenn eine "
 "neue Version erscheint."
 
-#: ui/settings.slint:499 ui/settings.slint:502
+#: ui/settings.slint:499 ui/settings.slint:502 ui/settings.slint:515
 msgctxt "SettingsPage"
 msgid "Nexus is not installed"
 msgstr "Nexus ist nicht installiert"
 
-#: ui/settings.slint:500 ui/settings.slint:503
+#: ui/settings.slint:500 ui/settings.slint:503 ui/settings.slint:516
 msgctxt "SettingsPage"
 msgid "Another d3d11.dll is installed"
 msgstr "Eine andere d3d11.dll ist installiert"
 
-#: ui/settings.slint:501 ui/settings.slint:504
+#: ui/settings.slint:501 ui/settings.slint:504 ui/settings.slint:517
 msgctxt "SettingsPage"
 msgid "Nexus is installed - an update is available"
 msgstr "Nexus ist installiert - ein Update ist verfügbar"
 
-#: ui/settings.slint:502 ui/settings.slint:505
+#: ui/settings.slint:502 ui/settings.slint:505 ui/settings.slint:518
 msgctxt "SettingsPage"
 msgid "Nexus is installed"
 msgstr "Nexus ist installiert"
 
-#: ui/settings.slint:509 ui/settings.slint:512
+#: ui/settings.slint:509 ui/settings.slint:512 ui/settings.slint:525
 msgctxt "SettingsPage"
 msgid ""
 "Probably ArcDPS. Installing Nexus renames it to d3d11_chainload.dll, which "
@@ -1798,43 +1798,43 @@ msgstr ""
 "d3d11_chainload.dll umbenannt, die Nexus selbst lädt. Es wird nichts "
 "gelöscht."
 
-#: ui/settings.slint:510 ui/settings.slint:513
+#: ui/settings.slint:510 ui/settings.slint:513 ui/settings.slint:526
 msgctxt "SettingsPage"
 msgid "Latest version: {}"
 msgstr "Neueste Version: {}"
 
-#: ui/settings.slint:511 ui/settings.slint:514
+#: ui/settings.slint:511 ui/settings.slint:514 ui/settings.slint:527
 msgctxt "SettingsPage"
 msgid "Close all Guild Wars 2 clients before installing or updating."
 msgstr ""
 "Schließe vor dem Installieren oder Aktualisieren alle Guild-Wars-2-Clients."
 
-#: ui/settings.slint:524 ui/settings.slint:528
+#: ui/settings.slint:524 ui/settings.slint:528 ui/settings.slint:541
 msgctxt "SettingsPage"
 msgid "Update"
 msgstr "Aktualisieren"
 
-#: ui/settings.slint:525 ui/settings.slint:529
+#: ui/settings.slint:525 ui/settings.slint:529 ui/settings.slint:542
 msgctxt "SettingsPage"
 msgid "Reinstall"
 msgstr "Neu installieren"
 
-#: ui/settings.slint:525 ui/settings.slint:529
+#: ui/settings.slint:525 ui/settings.slint:529 ui/settings.slint:542
 msgctxt "SettingsPage"
 msgid "Install"
 msgstr "Installieren"
 
-#: ui/settings.slint:530 ui/settings.slint:535
+#: ui/settings.slint:530 ui/settings.slint:535 ui/settings.slint:548
 msgctxt "SettingsPage"
 msgid "Remove"
 msgstr "Entfernen"
 
-#: ui/settings.slint:536 ui/settings.slint:542
+#: ui/settings.slint:536 ui/settings.slint:542 ui/settings.slint:555
 msgctxt "SettingsPage"
 msgid "Check for Nexus updates"
 msgstr "Nach Nexus-Updates suchen"
 
-#: ui/settings.slint:537 ui/settings.slint:543
+#: ui/settings.slint:537 ui/settings.slint:543 ui/settings.slint:556
 msgctxt "SettingsPage"
 msgid ""
 "Asks GitHub every hour for a new Nexus release and shows a banner. Nothing "
@@ -1859,7 +1859,11 @@ msgid ""
 "d3d11.dll is deleted from the game folder. A d3d11_chainload.dll (for "
 "example ArcDPS) gets its old name back. Nexus's addons folder and settings "
 "stay, so installing it again brings everything back."
-msgstr "Die d3d11.dll wird aus dem Spielordner gelöscht. Eine d3d11_chainload.dll (zum Beispiel von ArcDPS) bekommt ihren alten Namen zurück. Der addons-Ordner und die Einstellungen von Nexus bleiben, eine erneute Installation bringt also alles zurück."
+msgstr ""
+"Die d3d11.dll wird aus dem Spielordner gelöscht. Eine d3d11_chainload.dll "
+"(zum Beispiel von ArcDPS) bekommt ihren alten Namen zurück. Der addons-"
+"Ordner und die Einstellungen von Nexus bleiben, eine erneute Installation "
+"bringt also alles zurück."
 
 #: ui/app.slint:636
 msgctxt "ConfirmNexusRemove"
@@ -1871,12 +1875,17 @@ msgctxt "ConfirmNexusRemove"
 msgid "Remove"
 msgstr "Entfernen"
 
-#: ui/settings.slint:527
+#: ui/settings.slint:527 ui/settings.slint:540
 msgctxt "SettingsPage"
 msgid "Installing…"
 msgstr "Installiere…"
 
-#: ui/settings.slint:535
+#: ui/settings.slint:535 ui/settings.slint:548
 msgctxt "SettingsPage"
 msgid "Removing…"
 msgstr "Entferne…"
+
+#: ui/settings.slint:503
+msgctxt "SettingsPage"
+msgid "Learn more"
+msgstr "Mehr erfahren"
