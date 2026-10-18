@@ -108,6 +108,9 @@ export component Button {
         : Theme.accent;
     in property <ButtonKind> kind: ButtonKind.secondary;
     in property <bool> enabled: true;
+    /// A task started by this button is running: the icon turns into a spinner and the button
+    /// ignores clicks, without dimming like a disabled one.
+    in property <bool> busy;
     /// 36 px instead of 32 px, with more padding.
     in property <bool> large;
     /// Show only the icon (narrow window); the text stays the accessible label.
@@ -124,7 +127,7 @@ export component Button {
     height: root.large ? Theme.control-height-lg : Theme.control-height;
     min-width: max(root.min-width-hint, root.height);
     horizontal-stretch: 0;
-    opacity: root.enabled ? 1 : 0.42;
+    opacity: root.enabled || root.busy ? 1 : 0.42;
     forward-focus: focus;
     accessible-role: button;
     accessible-label: root.text;
@@ -152,7 +155,12 @@ export component Button {
         spacing: 7px;
         alignment: center;
 
-        if root.icon != "": Icon {
+        if root.busy: Spinner {
+            y: (parent.height - self.height) / 2;
+            color: root.icon-color;
+            size: root.large ? 16px : 14px;
+        }
+        if root.icon != "" && !root.busy: Icon {
             y: (parent.height - self.height) / 2;
             path: root.icon;
             fill-path: root.icon-fill;
@@ -170,8 +178,8 @@ export component Button {
     }
 
     touch := TouchArea {
-        enabled: root.enabled;
-        mouse-cursor: root.enabled ? pointer : default;
+        enabled: root.enabled && !root.busy;
+        mouse-cursor: root.enabled && !root.busy ? pointer : default;
         clicked => {
             focus.focus();
             root.clicked();

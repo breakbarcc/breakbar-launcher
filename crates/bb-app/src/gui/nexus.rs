@@ -2,7 +2,7 @@
 //! removing the addon loader, and the hourly check for a new release.
 
 use super::{
-    App, ComponentHandle, MainWindow, Messages, NexusProblem, NexusStatus, Rc, RefCell,
+    App, ComponentHandle, MainWindow, Messages, NexusProblem, NexusStatus, NexusTask, Rc, RefCell,
     SharedString, ToastKind, push_toast, thread,
 };
 use crate::nexus::{self, Error, Release, Status};
@@ -81,10 +81,10 @@ fn install(window: &MainWindow, app: &Rc<RefCell<App>>, rename_foreign: bool) {
     let Some(gw2_path) = app.borrow().config.gw2_path.clone() else {
         return;
     };
-    if window.get_nexus_busy() {
+    if window.get_nexus_task() != NexusTask::Idle {
         return;
     }
-    window.set_nexus_busy(true);
+    window.set_nexus_task(NexusTask::Installing);
 
     let weak = window.as_weak();
     let _ = thread::Builder::new()
@@ -98,7 +98,7 @@ fn install(window: &MainWindow, app: &Rc<RefCell<App>>, rename_foreign: bool) {
             };
             let status = nexus::game_dir(&gw2_path).map(|dir| nexus::status(dir, None));
             let _ = weak.upgrade_in_event_loop(move |window| {
-                window.set_nexus_busy(false);
+                window.set_nexus_task(NexusTask::Idle);
                 if let Some(status) = status {
                     window.set_nexus_status(to_ui_status(status));
                 }
@@ -128,10 +128,10 @@ fn uninstall(window: &MainWindow, app: &Rc<RefCell<App>>) {
     let Some(gw2_path) = app.borrow().config.gw2_path.clone() else {
         return;
     };
-    if window.get_nexus_busy() {
+    if window.get_nexus_task() != NexusTask::Idle {
         return;
     }
-    window.set_nexus_busy(true);
+    window.set_nexus_task(NexusTask::Removing);
 
     let weak = window.as_weak();
     let _ = thread::Builder::new()
@@ -140,7 +140,7 @@ fn uninstall(window: &MainWindow, app: &Rc<RefCell<App>>) {
             let result = nexus::uninstall(&gw2_path);
             let status = nexus::game_dir(&gw2_path).map(|dir| nexus::status(dir, None));
             let _ = weak.upgrade_in_event_loop(move |window| {
-                window.set_nexus_busy(false);
+                window.set_nexus_task(NexusTask::Idle);
                 if let Some(status) = status {
                     window.set_nexus_status(to_ui_status(status));
                 }

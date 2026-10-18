@@ -14,8 +14,8 @@ use raw_window_handle::{HasWindowHandle, RawWindowHandle};
 use slint::{ComponentHandle, Model, SharedString, VecModel};
 use ui::{
     AccountRow, AccountState, AfterStart, CompanionToggle, EditorData, FpsLimit, LanguageChoice,
-    LaunchFailure, LoginState, MainWindow, Messages, NexusProblem, NexusStatus, PathProblem,
-    SteamSetupStep, Theme, ThemeChoice, ToastData, ToastKind,
+    LaunchFailure, LoginState, MainWindow, Messages, NexusProblem, NexusStatus, NexusTask,
+    PathProblem, SteamSetupStep, Theme, ThemeChoice, ToastData, ToastKind,
 };
 
 use crate::companions::{self, SharedInstances};

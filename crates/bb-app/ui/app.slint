@@ -7,14 +7,14 @@ import {
 import { AccountCard, AccountRow, AccountState } from "account-card.slint";
 import { AccountEditor, EditorData, CompanionToggle, LoginState } from "editor.slint";
 import { SetupPathPage, SetupAccountPage } from "setup.slint";
-import { AfterStart, FpsLimit, LanguageChoice, NexusStatus, SettingsPage } from "settings.slint";
+import { AfterStart, FpsLimit, LanguageChoice, NexusStatus, NexusTask, SettingsPage } from "settings.slint";
 import { Messages, LaunchFailure, NexusProblem, PathProblem } from "messages.slint";
 import { OverlaySwitcher, SwitcherEntry } from "overlay.slint";
 
 export {
     Theme, AccountRow, AccountState, ToastData, ToastKind, Messages, LaunchFailure, PathProblem,
     EditorData, CompanionToggle, LoginState, AfterStart, FpsLimit, LanguageChoice,
-    OverlaySwitcher, SwitcherEntry, ThemeChoice, NexusProblem, NexusStatus,
+    OverlaySwitcher, SwitcherEntry, ThemeChoice, NexusProblem, NexusStatus, NexusTask,
 }
 
 /// Which step of linking the ArenaNet installation into Steam is shown (hidden = no dialog).
@@ -507,7 +507,10 @@ component PatchAvailableBanner {
 /// Shown above the list when a newer Nexus release exists; installing is up to the user.
 component NexusUpdateBanner {
     in property <string> version;
+    /// Some Nexus task is running; the button can't be used.
     in property <bool> busy;
+    /// The task is this banner's own update.
+    in property <bool> installing;
     callback update();
 
     height: content.preferred-height;
@@ -558,9 +561,88 @@ component NexusUpdateBanner {
             Button {
                 kind: ButtonKind.primary;
                 icon: Icons.download;
-                text: @tr("Update");
+                text: root.installing ? @tr("Installing…") : @tr("Update");
+                busy: root.installing;
                 enabled: !root.busy;
                 clicked => { root.update(); }
+            }
+        }
+    }
+}
+
+/// Asks before Nexus is removed from the game folder.
+component ConfirmNexusRemove {
+    callback confirmed();
+    callback cancelled();
+
+    init => {
+        cancel.focus();
+    }
+
+    Rectangle {
+        background: Theme.bg.with-alpha(0.72);
+        TouchArea {
+            clicked => { root.cancelled(); }
+        }
+    }
+    FocusScope {
+        key-pressed(event) => {
+            if event.text == Key.Escape {
+                root.cancelled();
+                return accept;
+            }
+            reject
+        }
+        Elevated {
+            x: (root.width - self.width) / 2;
+            y: (root.height - self.height) / 2;
+            width: min(root.width - 32px, 360px);
+            height: dialog.preferred-height;
+            accessible-role: groupbox;
+            accessible-label: @tr("Remove Nexus?");
+            TouchArea { }
+            dialog := VerticalLayout {
+                padding: 16px;
+                spacing: 12px;
+                HorizontalLayout {
+                    spacing: 10px;
+                    Icon {
+                        y: (parent.height - self.height) / 2;
+                        path: Icons.trash;
+                        color: Theme.error;
+                        size: 17px;
+                    }
+                    Text {
+                        horizontal-stretch: 1;
+                        text: @tr("Remove Nexus?");
+                        font-size: Theme.fs-page-title;
+                        font-weight: 600;
+                        color: Theme.text;
+                        wrap: word-wrap;
+                    }
+                }
+                Text {
+                    text: @tr("d3d11.dll is deleted from the game folder. A d3d11_chainload.dll (for example ArcDPS) gets its old name back. Nexus's addons folder and settings stay, so installing it again brings everything back.");
+                    font-size: 12.5px;
+                    color: Theme.text-muted;
+                    wrap: word-wrap;
+                }
+                HorizontalLayout {
+                    padding-top: 4px;
+                    spacing: 8px;
+                    alignment: end;
+                    cancel := Button {
+                        kind: ButtonKind.ghost;
+                        text: @tr("Cancel");
+                        clicked => { root.cancelled(); }
+                    }
+                    Button {
+                        kind: ButtonKind.danger;
+                        icon: Icons.trash;
+                        text: @tr("Remove");
+                        clicked => { root.confirmed(); }
+                    }
+                }
             }
         }
     }
@@ -790,10 +872,12 @@ export component MainWindow inherits Window {
     in-out property <bool> nexus-enabled;
     in-out property <bool> nexus-check-for-updates;
     in-out property <NexusStatus> nexus-status;
-    in-out property <bool> nexus-busy;
+    in-out property <NexusTask> nexus-task: NexusTask.idle;
     in-out property <string> nexus-version;
     /// Ask before moving another d3d11.dll out of the way (see `ConfirmNexusChainload`).
     in-out property <bool> nexus-confirm-open: false;
+    /// Ask before removing Nexus (see `ConfirmNexusRemove`).
+    in-out property <bool> nexus-remove-confirm-open: false;
     in property <bool> autostart;
     in property <AfterStart> after-start;
     in property <FpsLimit> fps-limit;
@@ -1057,7 +1141,8 @@ export component MainWindow inherits Window {
             padding-bottom: 8px;
             NexusUpdateBanner {
                 version: root.nexus-version;
-                busy: root.nexus-busy;
+                busy: root.nexus-task != NexusTask.idle;
+                installing: root.nexus-task == NexusTask.installing;
                 update => { root.nexus-install(false); }
             }
         }
@@ -1265,7 +1350,7 @@ export component MainWindow inherits Window {
         nexus-enabled: root.nexus-enabled;
         nexus-check-for-updates: root.nexus-check-for-updates;
         nexus-status: root.nexus-status;
-        nexus-busy: root.nexus-busy;
+        nexus-task: root.nexus-task;
         nexus-version: root.nexus-version;
         autostart: root.autostart;
         after-start: root.after-start;
@@ -1286,7 +1371,7 @@ export component MainWindow inherits Window {
         set-nexus-enabled(value) => { root.set-nexus-enabled(value); }
         set-nexus-check-for-updates(value) => { root.set-nexus-check-for-updates(value); }
         nexus-install => { root.nexus-install(false); }
-        nexus-uninstall => { root.nexus-uninstall(); }
+        nexus-uninstall => { root.nexus-remove-confirm-open = true; }
         toggle-autostart => { root.toggle-autostart(); }
         set-after-start(value) => { root.set-after-start(value); }
         set-fps-limit(value) => { root.set-fps-limit(value); }
@@ -1364,6 +1449,18 @@ export component MainWindow inherits Window {
             root.nexus-install(true);
         }
         cancelled => { root.nexus-confirm-open = false; }
+    }
+
+    if root.nexus-remove-confirm-open: ConfirmNexusRemove {
+        x: 0;
+        y: 0;
+        width: root.width;
+        height: root.height;
+        confirmed => {
+            root.nexus-remove-confirm-open = false;
+            root.nexus-uninstall();
+        }
+        cancelled => { root.nexus-remove-confirm-open = false; }
     }
 
     // ── Login offer ──────────────────────────────────────────────────────────────────────────

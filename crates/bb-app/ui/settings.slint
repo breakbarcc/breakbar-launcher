@@ -18,6 +18,9 @@ export enum LanguageChoice { system, english, german }
 /// What is in the game folder under the name `d3d11.dll`, as far as Nexus is concerned.
 export enum NexusStatus { not-installed, foreign, current, update-available }
 
+/// What Breakbar is currently doing to the Nexus installation.
+export enum NexusTask { idle, installing, removing }
+
 /// One row of the "Nach dem Start" radio group: a plain radio dot plus a label, no card chrome.
 component RadioOption {
     in property <string> text;
@@ -201,7 +204,7 @@ export component SettingsPage inherits VerticalLayout {
     in property <bool> nexus-check-for-updates;
     in property <NexusStatus> nexus-status;
     /// A Nexus download or removal is in progress.
-    in property <bool> nexus-busy;
+    in property <NexusTask> nexus-task;
     /// Latest Nexus release, once known; empty before.
     in property <string> nexus-version;
     /// Version of Breakbar, shown in the About section.
@@ -521,14 +524,17 @@ export component SettingsPage inherits VerticalLayout {
                     Button {
                         kind: ButtonKind.primary;
                         icon: Icons.download;
-                        text: root.nexus-status == NexusStatus.update-available ? @tr("Update")
+                        text: root.nexus-task == NexusTask.installing ? @tr("Installing…")
+                            : root.nexus-status == NexusStatus.update-available ? @tr("Update")
                             : root.nexus-status == NexusStatus.current ? @tr("Reinstall") : @tr("Install");
-                        enabled: !root.nexus-busy;
+                        busy: root.nexus-task == NexusTask.installing;
+                        enabled: root.nexus-task == NexusTask.idle;
                         clicked => { root.nexus-install(); }
                     }
                     if root.nexus-status == NexusStatus.current || root.nexus-status == NexusStatus.update-available: Button {
-                        text: @tr("Remove");
-                        enabled: !root.nexus-busy;
+                        text: root.nexus-task == NexusTask.removing ? @tr("Removing…") : @tr("Remove");
+                        busy: root.nexus-task == NexusTask.removing;
+                        enabled: root.nexus-task == NexusTask.idle;
                         clicked => { root.nexus-uninstall(); }
                     }
                 }
