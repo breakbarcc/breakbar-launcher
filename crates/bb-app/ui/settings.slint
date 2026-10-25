@@ -277,9 +277,17 @@ export component SettingsPage inherits VerticalLayout {
 
     Flickable {
         vertical-stretch: 1;
-        content-height: content.preferred-height;
+        // The layout's own `preferred-height` doesn't know how far the wrapped texts in its rows
+        // end up wrapping, so it came out too short and cut off the bottom padding. The position
+        // of the last card, after layout, is exact. For it not to depend on the height computed
+        // from it (a binding loop), the layout gets a fixed height far beyond its content and a
+        // fixed `y` (an element that is smaller than its parent is centered otherwise);
+        // `alignment: start` keeps the rows at the top.
+        content-height: last-card.y + last-card.height + 16px;
 
         content := VerticalLayout {
+            y: 0px;
+            height: 10000px;
             padding: 16px;
             spacing: 14px;
             alignment: start;
@@ -694,7 +702,7 @@ export component SettingsPage inherits VerticalLayout {
             SectionLabel {
                 text: @tr("// DANGER ZONE");
             }
-            Rectangle {
+            last-card := Rectangle {
                 border-radius: Theme.radius-card;
                 background: Theme.surface;
                 border-width: 1px;
