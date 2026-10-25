@@ -107,6 +107,8 @@ pub(crate) const INSTANCE_MUTEX_NAME: &str = "Breakbar-Instance";
 const WEBSITE_URL: &str = "https://launcher.breakbar.cc/";
 /// Nexus's website, opened from its settings section.
 const NEXUS_URL: &str = "https://raidcore.gg/gw2/nexus";
+/// Reffect's repository, opened from the Nexus settings.
+const REFFECT_URL: &str = "https://github.com/zerthox/gw2-reffect";
 /// Slint's website, opened from the "Made with Slint" badge.
 const SLINT_URL: &str = "https://slint.dev/";
 /// The license text in the repository (`repository` of the workspace manifest).

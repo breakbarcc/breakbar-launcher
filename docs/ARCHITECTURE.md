@@ -249,6 +249,10 @@ struct CompanionApp {
   is never overwritten; removing Nexus restores the name. Install, update and removal are refused
   while any client runs (the DLL is loaded). An update is never installed on its own: the hourly
   check (same timer as the game patch check) only shows a banner with an "Update" button.
+  The same section can install **Reffect** (a Nexus addon, zerthox/gw2-reffect): the latest release's
+  `reffect.dll` is downloaded and verified the same way into `addonseffect.dll`, which is where
+  Nexus finds it (the user then loads it in Nexus's own window). It needs Nexus's `addons` folder
+  to exist and no running client. There is no update path: Nexus updates the addon itself.
 - **Settings page** (`ui/settings.slint`, reached via the gear icon next to "Add account"): so far
   the "// Paths" section (screen 11), showing the same Guild Wars 2 / Blish HUD paths that used to
   sit in the main window's footer, and a "// Behavior" section with the "After starting an

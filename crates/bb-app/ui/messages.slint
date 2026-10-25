@@ -20,7 +20,7 @@ export enum LaunchFailure {
 }
 
 /// Why a Nexus install or removal failed.
-export enum NexusProblem { client-running, foreign, chainload-exists, not-nexus, mismatch, offline, io }
+export enum NexusProblem { client-running, foreign, chainload-exists, not-nexus, addons-missing, mismatch, offline, io }
 
 export enum PathProblem { not-found, unreadable, not-executable, not-64-bit, not-gw2 }
 
@@ -115,6 +115,14 @@ export global Messages {
         @tr("Nexus {} is installed. Start the game and accept its agreement; Ctrl+O opens the menu.", version)
     }
 
+    public pure function reffect-title() -> string {
+        @tr("Reffect")
+    }
+
+    public pure function reffect-installed(version: string) -> string {
+        @tr("Reffect {} is installed. Open the Nexus window (Ctrl+O), click refresh if needed and load Reffect.", version)
+    }
+
     public pure function nexus-removed() -> string {
         @tr("Nexus was removed from the game folder.")
     }
@@ -136,11 +144,14 @@ export global Messages {
         if kind == NexusProblem.not-nexus {
             return @tr("The d3d11.dll in the game folder is not Nexus, so it was left alone.");
         }
+        if kind == NexusProblem.addons-missing {
+            return @tr("Nexus has no addons folder yet. Install Nexus and start the game once, then try again.");
+        }
         if kind == NexusProblem.mismatch {
             return @tr("The download did not match the checksum GitHub published, so it was discarded.");
         }
         if kind == NexusProblem.offline {
-            return @tr("The latest Nexus release could not be fetched from GitHub. Check your connection.");
+            return @tr("The latest release could not be fetched from GitHub. Check your connection.");
         }
         @tr("{}", detail)
     }

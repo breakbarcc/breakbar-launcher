@@ -1,4 +1,5 @@
-//! Installing and updating the Nexus addon loader (<https://github.com/RaidcoreGG/Nexus>).
+//! Installing and updating the Nexus addon loader (<https://github.com/RaidcoreGG/Nexus>), and
+//! installing the Reffect addon (<https://github.com/zerthox/gw2-reffect>) into its `addons` folder.
 //!
 //! Nexus is a single `d3d11.dll` that lives next to `Gw2-64.exe`. Breakbar downloads it from the
 //! project's GitHub releases, checks it against the digest GitHub reports, and swaps it in. A
@@ -11,20 +12,39 @@ use std::io;
 use std::path::{Path, PathBuf};
 use std::time::Duration;
 
-/// Host and path of GitHub's release API for Nexus, unauthenticated.
+/// Host of GitHub's release API, unauthenticated.
 const API_HOST: &str = "api.github.com";
-const API_PATH: &str = "/repos/RaidcoreGG/Nexus/releases/latest";
-/// Download URLs are only followed when they point into Nexus's own release downloads.
-const DOWNLOAD_PREFIX: &str = "https://github.com/RaidcoreGG/Nexus/releases/download/";
 const DOWNLOAD_HOST: &str = "github.com";
-/// The asset to install.
-const ASSET_NAME: &str = "d3d11.dll";
+
+/// A GitHub project whose latest release has one asset that Breakbar installs. Download URLs are
+/// only followed when they point into that project's own release downloads.
+struct Source {
+    /// `owner/name`, matched without regard to case (GitHub's own URLs mix it).
+    repo: &'static str,
+    asset: &'static str,
+}
+
+const NEXUS: Source = Source {
+    repo: "RaidcoreGG/Nexus",
+    asset: "d3d11.dll",
+};
+const REFFECT: Source = Source {
+    repo: "Zerthox/gw2-reffect",
+    asset: "reffect.dll",
+};
+
+/// Name of the folder Nexus loads its addons from, inside the game folder.
+const ADDONS_DIR: &str = "addons";
+/// Reffect's file inside [`ADDONS_DIR`].
+const REFFECT_DLL: &str = "reffect.dll";
 /// Name of the loader inside the game folder.
 pub const DLL_NAME: &str = "d3d11.dll";
 /// Name Nexus expects a pre-existing `d3d11.dll` to be renamed to.
 pub const CHAINLOAD_NAME: &str = "d3d11_chainload.dll";
 /// Left behind in the game folder only while a download is in flight.
 const PART_NAME: &str = "d3d11.dll.breakbar-part";
+/// Same for Reffect, inside [`ADDONS_DIR`].
+const REFFECT_PART_NAME: &str = "reffect.dll.breakbar-part";
 /// Text that is part of every Nexus build and of no other `d3d11.dll` a user is likely to have.
 const MARKER: &[u8] = b"RaidcoreGG";
 
@@ -32,11 +52,11 @@ const API_TIMEOUT: Duration = Duration::from_secs(8);
 /// Applies to each stage of the download, not the whole transfer.
 const DOWNLOAD_TIMEOUT: Duration = Duration::from_secs(60);
 
-/// A Nexus release that can be installed.
+/// A release that can be installed.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Release {
     pub tag: String,
-    /// Path on [`DOWNLOAD_HOST`] of the `d3d11.dll` asset.
+    /// Path on [`DOWNLOAD_HOST`] of the asset.
     download_path: String,
     pub size: u64,
     /// Lowercase hex SHA-256 from GitHub's `digest` field, if the release has one.
@@ -70,6 +90,8 @@ pub enum Error {
     ChainloadExists,
     #[error("the installed d3d11.dll is not Nexus")]
     NotNexus,
+    #[error("the game folder has no addons folder yet")]
+    AddonsMissing,
     #[error("the download did not match the published checksum")]
     Mismatch,
     #[error("{0}")]
@@ -80,22 +102,39 @@ pub enum Error {
 /// just skipped.
 #[must_use]
 pub fn fetch_latest() -> Option<Release> {
-    let body = bb_win::http::get(API_HOST, API_PATH, API_TIMEOUT).ok()?;
-    parse_release(&body)
+    fetch(&NEXUS)
+}
+
+/// Asks GitHub for the latest Reffect release.
+#[must_use]
+pub fn fetch_latest_reffect() -> Option<Release> {
+    fetch(&REFFECT)
+}
+
+fn fetch(source: &Source) -> Option<Release> {
+    let path = format!("/repos/{}/releases/latest", source.repo);
+    let body = bb_win::http::get(API_HOST, &path, API_TIMEOUT).ok()?;
+    parse_release(&body, source)
 }
 
 /// Pulls the fields we need out of GitHub's release JSON by hand, like `gw2_build` does: the
 /// payload is large but only four values matter, which doesn't justify a JSON dependency.
-fn parse_release(body: &str) -> Option<Release> {
+fn parse_release(body: &str, source: &Source) -> Option<Release> {
     let tag = string_field(body, "tag_name")?;
-    let marker = format!("\"name\":\"{ASSET_NAME}\"");
+    let marker = format!("\"name\":\"{}\"", source.asset);
     let after = body.split_once(marker.as_str())?.1;
     // The asset's own fields follow its name; stop before the next asset begins.
     let asset = after.split("\"name\":\"").next()?;
     let url = string_field(asset, "browser_download_url")?;
-    let download_path = url
-        .strip_prefix(DOWNLOAD_PREFIX)
-        .map(|rest| format!("/RaidcoreGG/Nexus/releases/download/{rest}"))?;
+    let path = url.strip_prefix("https://github.com/")?;
+    let expected = format!("{}/releases/download/", source.repo);
+    if !path
+        .to_ascii_lowercase()
+        .starts_with(&expected.to_ascii_lowercase())
+    {
+        return None;
+    }
+    let download_path = format!("/{path}");
     let size = number_field(asset, "size")?;
     let sha256 = string_field(asset, "digest")
         .and_then(|digest| digest.strip_prefix("sha256:").map(str::to_ascii_lowercase));
@@ -196,6 +235,38 @@ pub fn install(gw2_path: &Path, release: &Release, rename_foreign: bool) -> Resu
     result
 }
 
+/// Whether Reffect's file is in the `addons` folder next to `game_dir`'s `Gw2-64.exe`.
+#[must_use]
+pub fn reffect_installed(game_dir: &Path) -> bool {
+    game_dir.join(ADDONS_DIR).join(REFFECT_DLL).is_file()
+}
+
+/// Downloads `release` (Reffect) into the `addons` folder of `gw2_path`'s game folder, where
+/// Nexus finds it. Loading it is up to the user, in Nexus's own window. Nexus keeps it up to date
+/// from then on.
+///
+/// # Errors
+///
+/// [`Error::AddonsMissing`] if Nexus hasn't created its `addons` folder yet; see [`Error`] for
+/// the rest. An existing `reffect.dll` is only replaced once the download verified.
+pub fn install_reffect(gw2_path: &Path, release: &Release) -> Result<(), Error> {
+    let dir = game_dir(gw2_path).ok_or_else(|| io::Error::from(io::ErrorKind::NotFound))?;
+    // A loaded addon can't be replaced.
+    if !crate::launcher::running_clients(gw2_path).is_empty() {
+        return Err(Error::ClientRunning);
+    }
+    let addons = dir.join(ADDONS_DIR);
+    if !addons.is_dir() {
+        return Err(Error::AddonsMissing);
+    }
+
+    let part = addons.join(REFFECT_PART_NAME);
+    let result = download(release, &part)
+        .and_then(|()| fs::rename(&part, addons.join(REFFECT_DLL)).map_err(Error::from));
+    let _ = fs::remove_file(&part);
+    result
+}
+
 fn download(release: &Release, part: &Path) -> Result<(), Error> {
     let written = bb_win::http::download(
         DOWNLOAD_HOST,
@@ -289,7 +360,7 @@ mod tests {
 
     #[test]
     fn parses_the_release() {
-        let release = parse_release(RELEASE_JSON).unwrap();
+        let release = parse_release(RELEASE_JSON, &NEXUS).unwrap();
         assert_eq!(release.tag, "v2026.2.17.1210");
         assert_eq!(release.size, 7_618_048);
         assert_eq!(
@@ -305,13 +376,37 @@ mod tests {
     #[test]
     fn rejects_a_download_url_outside_the_nexus_releases() {
         let json = RELEASE_JSON.replace("github.com/RaidcoreGG/Nexus", "evil.example/x");
-        assert_eq!(parse_release(&json), None);
+        assert_eq!(parse_release(&json, &NEXUS), None);
+    }
+
+    #[test]
+    fn parses_the_reffect_release() {
+        let json = r#"{"tag_name":"0.13.1","assets":[{"name":"reffect.dll","size":2386432,"digest":"sha256:6ABABF20","browser_download_url":"https://github.com/Zerthox/gw2-reffect/releases/download/0.13.1/reffect.dll"}]}"#;
+        let release = parse_release(json, &REFFECT).unwrap();
+        assert_eq!(release.tag, "0.13.1");
+        assert_eq!(release.size, 2_386_432);
+        assert_eq!(
+            release.download_path,
+            "/Zerthox/gw2-reffect/releases/download/0.13.1/reffect.dll"
+        );
+        // The release of one project is no release of another.
+        assert_eq!(parse_release(json, &NEXUS), None);
+    }
+
+    #[test]
+    fn sees_whether_reffect_is_installed() {
+        let dir = temp_dir("reffect");
+        assert!(!reffect_installed(&dir));
+        fs::create_dir_all(dir.join(ADDONS_DIR)).unwrap();
+        assert!(!reffect_installed(&dir));
+        fs::write(dir.join(ADDONS_DIR).join(REFFECT_DLL), b"x").unwrap();
+        assert!(reffect_installed(&dir));
     }
 
     #[test]
     fn a_release_without_a_digest_still_parses() {
         let json = RELEASE_JSON.replace("\"digest\":\"sha256:8B1", "\"dig\":\"sha256:8B1");
-        assert_eq!(parse_release(&json).unwrap().sha256, None);
+        assert_eq!(parse_release(&json, &NEXUS).unwrap().sha256, None);
     }
 
     #[test]
@@ -377,10 +472,21 @@ mod tests {
         assert!(is_nexus(&fs::read(&part).unwrap()));
     }
 
+    /// Hits the real GitHub; run with `--ignored`.
+    #[test]
+    #[ignore = "needs network access"]
+    fn downloads_and_verifies_the_latest_reffect() {
+        let release = fetch_latest_reffect().expect("latest release");
+        let dir = temp_dir("network-reffect");
+        let part = dir.join(REFFECT_PART_NAME);
+        download(&release, &part).expect("download should verify");
+        assert_eq!(fs::read(&part).unwrap().len() as u64, release.size);
+    }
+
     #[test]
     fn status_reflects_the_folder_and_the_release() {
         let dir = temp_dir("status");
-        let release = parse_release(RELEASE_JSON).unwrap();
+        let release = parse_release(RELEASE_JSON, &NEXUS).unwrap();
         assert_eq!(status(&dir, Some(&release)), Status::NotInstalled);
 
         fs::write(dir.join(DLL_NAME), b"arcdps").unwrap();

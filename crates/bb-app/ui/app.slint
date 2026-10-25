@@ -873,6 +873,7 @@ export component MainWindow inherits Window {
     in-out property <bool> nexus-check-for-updates;
     in-out property <NexusStatus> nexus-status;
     in-out property <NexusTask> nexus-task: NexusTask.idle;
+    in-out property <bool> reffect-installed;
     in-out property <string> nexus-version;
     /// Ask before moving another d3d11.dll out of the way (see `ConfirmNexusChainload`).
     in-out property <bool> nexus-confirm-open: false;
@@ -934,6 +935,8 @@ export component MainWindow inherits Window {
     /// Installs or updates Nexus; `rename-foreign` is the user's yes to the chainload rename.
     callback nexus-install(bool);
     callback nexus-uninstall();
+    callback install-reffect();
+    callback open-reffect();
     callback toggle-autostart();
     callback set-after-start(AfterStart);
     callback set-fps-limit(FpsLimit);
@@ -1352,6 +1355,7 @@ export component MainWindow inherits Window {
         nexus-check-for-updates: root.nexus-check-for-updates;
         nexus-status: root.nexus-status;
         nexus-task: root.nexus-task;
+        reffect-installed: root.reffect-installed;
         nexus-version: root.nexus-version;
         autostart: root.autostart;
         after-start: root.after-start;
@@ -1373,6 +1377,8 @@ export component MainWindow inherits Window {
         set-nexus-check-for-updates(value) => { root.set-nexus-check-for-updates(value); }
         nexus-install => { root.nexus-install(false); }
         nexus-uninstall => { root.nexus-remove-confirm-open = true; }
+        install-reffect => { root.install-reffect(); }
+        open-reffect => { root.open-reffect(); }
         toggle-autostart => { root.toggle-autostart(); }
         set-after-start(value) => { root.set-after-start(value); }
         set-fps-limit(value) => { root.set-fps-limit(value); }

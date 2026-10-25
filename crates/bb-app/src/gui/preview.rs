@@ -149,6 +149,7 @@ fn render_ui_previews() {
             ui.set_nexus_status(NexusStatus::UpdateAvailable);
             ui.set_nexus_version("v2026.2.17.1210".into());
             ui.set_nexus_confirm_open(name == "nexus-confirm-light");
+            ui.set_reffect_installed(name == "settings-dark");
             ui.set_nexus_remove_confirm_open(name == "nexus-remove-dark");
             if name == "settings-light" {
                 ui.set_nexus_task(NexusTask::Installing);

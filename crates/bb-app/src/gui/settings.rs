@@ -2,8 +2,8 @@
 
 use super::{
     APP_NAME, AfterStart, App, BLISH_HUD, CompanionApp, CompanionId, ComponentHandle, ISSUES_URL,
-    LICENSE_URL, MainWindow, Messages, NEXUS_URL, Path, PathBuf, PathProblem, Rc, RefCell,
-    SLINT_URL, SharedString, Theme, ToastKind, WEBSITE_URL, apply_language, discord,
+    LICENSE_URL, MainWindow, Messages, NEXUS_URL, Path, PathBuf, PathProblem, REFFECT_URL, Rc,
+    RefCell, SLINT_URL, SharedString, Theme, ToastKind, WEBSITE_URL, apply_language, discord,
     from_ui_after_start, from_ui_fps_limit, from_ui_language, from_ui_theme, game, native_handle,
     push_toast, ui,
 };
@@ -391,14 +391,19 @@ pub(super) fn wire(
         }
     });
 
+    wire_links(window);
+    wire_overlay(window, app);
+    wire_appearance(window, app, overlay);
+}
+
+/// Connects the links to websites.
+fn wire_links(window: &MainWindow) {
     window.on_open_website(|| open_url(WEBSITE_URL));
     window.on_open_license(|| open_url(LICENSE_URL));
     window.on_open_slint(|| open_url(SLINT_URL));
     window.on_open_issues(|| open_url(ISSUES_URL));
     window.on_open_nexus(|| open_url(NEXUS_URL));
-
-    wire_overlay(window, app);
-    wire_appearance(window, app, overlay);
+    window.on_open_reffect(|| open_url(REFFECT_URL));
 }
 
 /// Connects the overlay settings.

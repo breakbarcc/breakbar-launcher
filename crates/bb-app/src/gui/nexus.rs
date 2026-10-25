@@ -26,6 +26,7 @@ fn problem(error: &Error) -> (NexusProblem, SharedString) {
         Error::ForeignDll => (NexusProblem::Foreign, SharedString::new()),
         Error::ChainloadExists => (NexusProblem::ChainloadExists, SharedString::new()),
         Error::NotNexus => (NexusProblem::NotNexus, SharedString::new()),
+        Error::AddonsMissing => (NexusProblem::AddonsMissing, SharedString::new()),
         Error::Mismatch => (NexusProblem::Mismatch, SharedString::new()),
         Error::Io(error) => (NexusProblem::Io, error.to_string().into()),
     }
@@ -66,8 +67,10 @@ pub(super) fn refresh(window: &MainWindow, app: &Rc<RefCell<App>>) {
             };
             let latest: Option<Release> = if check { nexus::fetch_latest() } else { None };
             let status = nexus::status(dir, latest.as_ref());
+            let reffect = nexus::reffect_installed(dir);
             let _ = weak.upgrade_in_event_loop(move |window| {
                 window.set_nexus_status(to_ui_status(status));
+                window.set_reffect_installed(reffect);
                 if let Some(latest) = latest {
                     window.set_nexus_version(latest.tag.as_str().into());
                 }
@@ -114,6 +117,50 @@ fn install(window: &MainWindow, app: &Rc<RefCell<App>>, rename_foreign: bool) {
                         );
                     }
                     Err(Some(Error::ForeignDll)) => window.set_nexus_confirm_open(true),
+                    Err(Some(error)) => {
+                        let (kind, detail) = problem(&error);
+                        toast_problem(&window, kind, detail);
+                    }
+                    Err(None) => toast_problem(&window, NexusProblem::Offline, SharedString::new()),
+                }
+            });
+        });
+}
+
+/// Installs Reffect into Nexus's addons folder.
+fn install_reffect(window: &MainWindow, app: &Rc<RefCell<App>>) {
+    let Some(gw2_path) = app.borrow().config.gw2_path.clone() else {
+        return;
+    };
+    if window.get_nexus_task() != NexusTask::Idle {
+        return;
+    }
+    window.set_nexus_task(NexusTask::InstallingReffect);
+
+    let weak = window.as_weak();
+    let _ = thread::Builder::new()
+        .name("reffect-install".to_owned())
+        .spawn(move || {
+            let outcome = match nexus::fetch_latest_reffect() {
+                None => Err(None),
+                Some(release) => nexus::install_reffect(&gw2_path, &release)
+                    .map(|()| release)
+                    .map_err(Some),
+            };
+            let installed = nexus::game_dir(&gw2_path).is_some_and(nexus::reffect_installed);
+            let _ = weak.upgrade_in_event_loop(move |window| {
+                window.set_nexus_task(NexusTask::Idle);
+                window.set_reffect_installed(installed);
+                match outcome {
+                    Ok(release) => {
+                        let messages = window.global::<Messages>();
+                        push_toast(
+                            &window,
+                            ToastKind::Success,
+                            messages.invoke_reffect_title(),
+                            messages.invoke_reffect_installed(release.tag.as_str().into()),
+                        );
+                    }
                     Err(Some(error)) => {
                         let (kind, detail) = problem(&error);
                         toast_problem(&window, kind, detail);
@@ -208,6 +255,16 @@ pub(super) fn wire(window: &MainWindow, app: &Rc<RefCell<App>>) {
         move |rename_foreign| {
             if let Some(window) = weak.upgrade() {
                 install(&window, &app, rename_foreign);
+            }
+        }
+    });
+
+    window.on_install_reffect({
+        let app = Rc::clone(app);
+        let weak = window.as_weak();
+        move || {
+            if let Some(window) = weak.upgrade() {
+                install_reffect(&window, &app);
             }
         }
     });
