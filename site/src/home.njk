@@ -15,7 +15,7 @@ permalink: "{{ text[locale.code].paths.home }}index.html"
 <section id="top" class="hero dots">
   <div class="wrap hero-inner">
     <div class="hero-copy">
-      <p class="eyebrow"><span class="mono">// v{{ site.version }}</span><span class="pill">{{ t.hero.status }}</span></p>
+      <p class="eyebrow"><span class="mono">// v{{ site.version }}</span></p>
       <h1>{{ t.hero.title }}</h1>
       <p class="lede">{{ t.hero.lede }}</p>
       <div class="cta-row">
@@ -261,7 +261,6 @@ permalink: "{{ text[locale.code].paths.home }}index.html"
       </div>
       <dl class="download-facts">
         <dt class="mono">{{ t.download.facts.version }}</dt><dd>{{ site.version }}</dd>
-        <dt class="mono">{{ t.download.facts.status }}</dt><dd>{{ t.download.facts.statusValue }}</dd>
         <dt class="mono">{{ t.download.facts.system }}</dt><dd>{{ t.download.facts.systemValue }}</dd>
         <dt class="mono">{{ t.download.facts.needs }}</dt><dd>{{ t.download.facts.needsValue }}</dd>
         <dt class="mono">{{ t.download.facts.license }}</dt><dd>{{ t.download.facts.licenseValue }}</dd>

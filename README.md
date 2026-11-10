@@ -9,7 +9,6 @@
 [![CI](https://github.com/breakbarcc/breakbar-launcher/actions/workflows/ci.yml/badge.svg)](https://github.com/breakbarcc/breakbar-launcher/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 ![Platform: Windows 10/11 x64](https://img.shields.io/badge/platform-Windows%2010%2F11%20x64-lightgrey)
-![Status: early development](https://img.shields.io/badge/status-early%20development-orange)
 
 <img src="docs/images/main-window-dark.png" alt="Breakbar Launcher, dark theme: the account list with accounts in different states" width="380">
 <img src="docs/images/settings-light.png" alt="Breakbar Launcher settings, light theme: paths, frame rate limit and behavior" width="380">
@@ -21,11 +20,10 @@ keeps them organized. It is a native Rust program built with a small native UI t
 instead of a bundled browser, so it stays lightweight.
 
 > [!NOTE]
-> Breakbar Launcher is in early development (version 0.x). Things may change between versions, see
-> the [changelog](CHANGELOG.md). Download the newest version from the
-> [website](https://launcher.breakbar.cc/) or the [releases](../../releases) page (the program is
-> not code-signed yet, so Windows SmartScreen may show a notice on the first start), or build it
-> yourself (see [Building](#building)).
+> Download the newest version from the [website](https://launcher.breakbar.cc/) or the
+> [releases](../../releases) page (the program is not code-signed yet, so Windows SmartScreen may
+> show a notice on the first start), or build it yourself (see [Building](#building)). Changes
+> between versions are listed in the [changelog](CHANGELOG.md).
 
 <details>
 <summary>More screenshots: light theme and instance switcher</summary>

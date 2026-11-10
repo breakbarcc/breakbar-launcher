@@ -48,7 +48,6 @@
     "slintAlt": "Made with Slint"
   },
   "hero": {
-    "status": "early development",
     "title": "All your Guild Wars 2 accounts, side by side.",
     "lede": "Breakbar Launcher starts several game clients at once, each with its own account, and keeps them organized. One small portable .exe. Free and open source.",
     "github": "View on GitHub",
@@ -275,8 +274,6 @@
     "allReleases": "All releases",
     "facts": {
       "version": "version",
-      "status": "status",
-      "statusValue": "Early development",
       "system": "system",
       "systemValue": "Windows 10/11 x64",
       "needs": "needs",
