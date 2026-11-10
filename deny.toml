@@ -5,10 +5,12 @@
 targets = ["x86_64-pc-windows-msvc"]
 
 [advisories]
-# Known vulnerabilities and yanked crates fail the check. Unmaintained crates are only reported for
-# the workspace itself. Two that Slint pulls in (bincode, ttf-parser) are reported as unmaintained by
-# `cargo audit`; there is nothing to do about them here until Slint moves on.
-ignore = []
+# Known vulnerabilities and yanked crates fail the check. Unmaintained crates that Slint pulls in
+# can't be replaced from here, so each one that is reported is listed below with the reason, until
+# Slint moves on. Remove an entry once the check no longer needs it.
+ignore = [
+  { id = "RUSTSEC-2026-0441", reason = "pin-utils is unmaintained (std has `pin!` now), but it only comes in through Slint's spin_on; Slint 1.18.1 is the latest release and there is no fix to take" },
+]
 
 [licenses]
 # Permissive licenses only. Slint is used under its royalty-free license (the "Made with Slint"
